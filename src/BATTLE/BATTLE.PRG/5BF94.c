@@ -96,7 +96,7 @@ typedef struct {
     u_int unk0_9 : 3;
     u_int unk0_12 : 1;
     u_int unk0_13 : 3;
-    char unk2;
+    char vramSlot;
     char unk3;
     u_char columns;
     u_char rows;
@@ -1890,7 +1890,7 @@ void renderTextImmediate(vs_TextBox* arg0, int arg1)
 }
 #pragma vsstring(end)
 
-void vs_battle_loadGim(int id, int arg1)
+void vs_battle_loadGim(int id, int vramSlot)
 {
     vs_Main_CdFile file;
     Gim* var_s0;
@@ -1905,7 +1905,7 @@ void vs_battle_loadGim(int id, int arg1)
             *(u_short*)var_s0 = 0;
             var_s0->loading = 1;
             var_s0->unk0_6 = 1;
-            var_s0->unk2 = arg1;
+            var_s0->vramSlot = vramSlot;
             var_s0->unk3 = 0x80;
             var_s0->id = id;
             var_s0->unk8 = 0;
@@ -1961,7 +1961,7 @@ void func_800C8550(u_int arg0, void* arg1, u_char* arg2)
     }
 
     if (gim->unk0_3 == 3) {
-        func_8007DFF0(gims->unk2 + gims->unk0_9, 1, 6);
+        func_8007DFF0(gims->vramSlot + gims->unk0_9, 1, 6);
     }
 }
 
@@ -1971,10 +1971,10 @@ void func_800C86AC(void)
     int i;
 
     if ((var_s0 != NULL) && (var_s0->unk0_6 == 3)) {
-        func_8007E0A8(var_s0->unk2, var_s0->unk0_9, 6);
+        func_8007E0A8(var_s0->vramSlot, var_s0->unk0_9, 6);
         for (i = 0; i < 3; ++i) {
             if (var_s0->unk0_3 == 3) {
-                func_8007E0A8(gims->unk2 + gims->unk0_9, 1, 6);
+                func_8007E0A8(gims->vramSlot + gims->unk0_9, 1, 6);
             }
             ++var_s0;
         }
@@ -2051,7 +2051,7 @@ void func_800C8778(void)
         }
 
         count = (count + 1) & 0xFFFE;
-        width = (gim->unk2 - 24) * 64;
+        width = (gim->vramSlot - 24) * 64;
         vs_battle_renderImage((width + 512) | 0x1FF0000, gim->data + count, 0x10040);
 
         for (j = 0; j < 3; ++j) {
@@ -2087,7 +2087,7 @@ void func_800C8778(void)
         third->unk0_9 = j;
         height *= 16;
         count += height;
-        func_8007DFF0(gim->unk2, gim->unk0_9, 6);
+        func_8007DFF0(gim->vramSlot, gim->unk0_9, 6);
 
         while (i > 0) {
             vs_battle_renderImage((width + 512) | 0x1000000, gim->data + count,
@@ -3716,7 +3716,7 @@ void func_800CBBCC(Gim* image, int clut, u_long* ot)
 
                 v = (v & 0x1F00) * 15;
                 tpage = getTPage(image->unk0_2, 1,
-                    ((image->unk2 - 18) * 64) + ((tile >> 2) & 0x1C0), 256);
+                    ((image->vramSlot - 18) * 64) + ((tile >> 2) & 0x1C0), 256);
 
                 if (scale == ONE) {
                     prim = vs_battle_setSprite(
@@ -3785,7 +3785,7 @@ void func_800CC204(Gim* image, int clut, u_long* ot)
     u_short* tiles = &image->imageTable[4];
     int mode = image->unk0_2;
     u_short* widths = image->unk18;
-    int page = image->unk2 - 18;
+    int page = image->vramSlot - 18;
     int color = image->unkE;
     int y;
     int column;
@@ -3909,7 +3909,7 @@ void func_800CC600(Gim* image, int clut, u_long* ot)
     }
 
     alpha = image->unk3;
-    page = (image->unk2 + image->unk0_9 - 16) * 64;
+    page = (image->vramSlot + image->unk0_9 - 16) * 64;
 
     if (alpha == 128) {
         func_800CBBCC(image, clut, ot);
@@ -3961,7 +3961,7 @@ void func_800CC600(Gim* image, int clut, u_long* ot)
             prim = vs_battle_setSprite(
                 128, (((y * 30 - height) >> 1) + x - top) << 16, vs_getWH(64, 15), ot);
             uv = ((tile * 64) & 192) | ((atlas & 31) * 15 << 8) | clut;
-            tx = ((image->unk2 - 18) * 64) + (atlas & 448);
+            tx = ((image->vramSlot - 18) * 64) + (atlas & 448);
             prim[4] = uv;
             prim[1] = _get_mode(0, 0, getTPage(mode, 0, tx, 256));
         }
@@ -3990,7 +3990,7 @@ void func_800CC600(Gim* image, int clut, u_long* ot)
 void func_800CCA90(int arg0)
 {
     Gim* gim = &gims[arg0];
-    int clut = (gim->unk2 - 16) << 6;
+    int clut = (gim->vramSlot - 16) << 6;
 
     if ((gim->unk3 == 0) && (gim->unk0_3 != 2)) {
         return;

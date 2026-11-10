@@ -655,9 +655,15 @@ int vs_battle_script_15_waitButtonPressed(u_char* script, UNUSED short arg1)
     return vs_battle_scriptRepeat;
 }
 
-int vs_battle_script_16_loadGim(u_char* arg0, UNUSED short arg1)
+/**
+ * @param script Opcode bytes:
+ *   - [1-2] = GIM index
+ *   - [3] = first VRAM page slot
+ */
+int vs_battle_script_16_loadGim(u_char* script, UNUSED short arg1)
 {
-    vs_battle_loadGim(vs_battle_getShort(arg0 + 1), arg0[3]);
+    vs_battle_loadGim(vs_battle_getShort(script + 1), script[3]);
+
     return vs_battle_scriptNext;
 }
 

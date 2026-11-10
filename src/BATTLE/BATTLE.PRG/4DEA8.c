@@ -147,33 +147,33 @@ typedef struct {
 } D_800F4BA4_t;
 
 typedef struct {
-    u_int unk0_0 : 1;
+    u_int visible : 1;
     u_int loading : 1;
     u_int unk0_2 : 1;
-    u_int unk0_3 : 3;
+    u_int drawMode : 3;
     u_int unk0_6 : 18;
-    u_int unk0_24 : 8;
+    u_int brightness : 8;
     int unk4;
-    short unk8;
-    short unkA;
-    short unkC;
+    short x;
+    short y;
+    short scale;
     int unk10[0xFA];
 } Gim;
 
 typedef struct {
     char unk0;
-    char unk1;
-    char unk2;
-    char unk3;
-    short unk4;
-    short unk6;
-    short unk8;
-    short unkA;
-    short unkC;
-    short unkE;
-    short unk10;
-    short unk12;
-} D_800F4B30_t;
+    char curve;
+    char elapsed;
+    char duration;
+    short startX;
+    short startY;
+    short deltaX;
+    short deltaY;
+    short startScale;
+    short deltaScale;
+    short startBrightness;
+    short deltaBrightness;
+} GimTween;
 
 typedef struct {
     char unk0;
@@ -297,7 +297,8 @@ extern short D_800E9C24[];
 extern u_char D_800E9C28;
 extern u_char D_800E9C2C;
 extern u_short D_800F4B20;
-extern D_800F4B30_t D_800F4B30[];
+extern GimTween gimTweens[];
+VS_HIDDEN(gimTweens);
 extern D_800F4B88_t D_800F4B88;
 extern char D_800F4B8B;
 extern char D_800F4BA0;
@@ -667,25 +668,38 @@ int vs_battle_script_16_loadGim(u_char* script, UNUSED short arg1)
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_17(u_char* arg0, UNUSED short arg1)
+/**
+ * @param script Opcode bytes:
+ *   - [1] = (image << 6) | mode, image is 0-2 within the GIM and mode selects the draw
+ *     function
+ *   - [2] = x offset from the screen centre, signed, in units of 2 pixels
+ *   - [3] = y offset from the screen centre, signed, in units of 2 pixels
+ *   - [4] = scale, 0x20 is full size
+ *   - [5] = brightness, 0x80 is normal
+ */
+int vs_battle_script_17_showGimImage(u_char* script, UNUSED short arg1)
 {
-    D_800F4B30_t* new_var;
+    GimTween* tween;
 
-    Gim* temp_a1 = gims;
+    Gim* gim = gims;
 
-    if (temp_a1 == NULL) {
+    if (gim == NULL) {
         return vs_battle_scriptNext;
     }
 
-    new_var = &D_800F4B30[arg0[1] >> 6];
-    new_var->unk3 = 0;
-    temp_a1 = temp_a1 + ((arg0[1] >> 6));
-    temp_a1->unk0_3 = arg0[1] & 3;
-    temp_a1->unk8 = (signed char)arg0[2] * 2;
-    temp_a1->unkA = (signed char)arg0[3] * 2;
-    temp_a1->unkC = arg0[4] << 7;
-    temp_a1->unk0_24 = arg0[5];
-    func_800C8550(arg0[1] >> 6, temp_a1, arg0);
+    tween = &gimTweens[script[1] >> 6];
+    tween->duration = 0;
+
+    gim += script[1] >> 6;
+
+    gim->drawMode = script[1] & 3;
+    gim->x = (signed char)script[2] * 2;
+    gim->y = (signed char)script[3] * 2;
+    gim->scale = script[4] << 7;
+    gim->brightness = script[5];
+
+    func_800C8550(script[1] >> 6, gim, script);
+
     return vs_battle_scriptNext;
 }
 
@@ -693,7 +707,7 @@ int vs_battle_script_18(u_char* arg0, UNUSED short arg1)
 {
     Gim* temp_a3 = gims;
     int temp_a2 = arg0[5] >> 6;
-    D_800F4B30_t* temp_a1 = &D_800F4B30[temp_a2];
+    GimTween* tween = &gimTweens[temp_a2];
 
     if (temp_a3 == NULL) {
         return vs_battle_scriptNext;
@@ -701,17 +715,17 @@ int vs_battle_script_18(u_char* arg0, UNUSED short arg1)
 
     temp_a3 += temp_a2;
 
-    if (temp_a1->unk3 != 0) {
+    if (tween->duration != 0) {
         return vs_battle_scriptRepeat;
     }
 
-    temp_a1->unk8 = (((signed char)arg0[1] * 2) - (temp_a1->unk4 = temp_a3->unk8));
-    temp_a1->unkA = (((signed char)arg0[2] * 2) - (temp_a1->unk6 = temp_a3->unkA));
-    temp_a1->unkE = ((arg0[3] << 7) - (temp_a1->unkC = temp_a3->unkC));
-    temp_a1->unk12 = arg0[4] - (temp_a1->unk10 = ((char*)temp_a3)[3]);
-    temp_a1->unk1 = arg0[5] & 7;
-    temp_a1->unk3 = arg0[6];
-    temp_a1->unk2 = 0;
+    tween->deltaX = (((signed char)arg0[1] * 2) - (tween->startX = temp_a3->x));
+    tween->deltaY = (((signed char)arg0[2] * 2) - (tween->startY = temp_a3->y));
+    tween->deltaScale = ((arg0[3] << 7) - (tween->startScale = temp_a3->scale));
+    tween->deltaBrightness = arg0[4] - (tween->startBrightness = ((char*)temp_a3)[3]);
+    tween->curve = arg0[5] & 7;
+    tween->duration = arg0[6];
+    tween->elapsed = 0;
     return vs_battle_scriptNext;
 }
 
@@ -724,7 +738,7 @@ int vs_battle_script_19(UNUSED u_char* arg0, UNUSED short arg1)
 
 int vs_battle_script_1A(UNUSED u_char* arg0, UNUSED short arg1)
 {
-    return (D_800F4B30[2].unk3 | (D_800F4B30[0].unk3 | D_800F4B30[1].unk3)) != 0
+    return (gimTweens[2].duration | (gimTweens[0].duration | gimTweens[1].duration)) != 0
              ? vs_battle_scriptRepeat
              : vs_battle_scriptNext;
 }
@@ -2889,21 +2903,22 @@ void func_800BB9B0(void)
 {
     short i;
     short temp_a0;
-    D_800F4B30_t* var_s0 = D_800F4B30;
-    Gim* var_s1 = gims;
+    GimTween* tween = gimTweens;
+    Gim* gim = gims;
 
-    for (i = 0; i < 3; ++i, ++var_s0, ++var_s1) {
-        if (var_s0->unk3 != 0) {
-            var_s0->unk2 += vs_gametime_tickspeed >> 1;
-            temp_a0 = func_800BFEBC(var_s0->unk1, var_s0->unk2, var_s0->unk3);
+    for (i = 0; i < 3; ++i, ++tween, ++gim) {
+        if (tween->duration != 0) {
+            tween->elapsed += vs_gametime_tickspeed >> 1;
+            temp_a0 = func_800BFEBC(tween->curve, tween->elapsed, tween->duration);
             if (gims != NULL) {
-                var_s1->unk8 = (var_s0->unk4 + ((var_s0->unk8 * temp_a0) >> 0xC));
-                var_s1->unkA = (var_s0->unk6 + ((var_s0->unkA * temp_a0) >> 0xC));
-                var_s1->unkC = (var_s0->unkC + ((var_s0->unkE * temp_a0) >> 0xC));
-                var_s1->unk0_24 = (var_s0->unk10 + ((var_s0->unk12 * temp_a0) >> 0xC));
+                gim->x = (tween->startX + ((tween->deltaX * temp_a0) >> 0xC));
+                gim->y = (tween->startY + ((tween->deltaY * temp_a0) >> 0xC));
+                gim->scale = (tween->startScale + ((tween->deltaScale * temp_a0) >> 0xC));
+                gim->brightness =
+                    tween->startBrightness + ((tween->deltaBrightness * temp_a0) >> 0xC);
             }
-            if (var_s0->unk2 >= var_s0->unk3) {
-                var_s0->unk3 = 0;
+            if (tween->elapsed >= tween->duration) {
+                tween->duration = 0;
             }
         }
     }
@@ -4600,7 +4615,7 @@ void parseEvt(u_char* data)
     }
 
     D_800F4B8B = 0;
-    D_800F4B30[0].unk3 = D_800F4B30[1].unk3 = D_800F4B30[2].unk3 = 0;
+    gimTweens[0].duration = gimTweens[1].duration = gimTweens[2].duration = 0;
     D_800F4C69 = vs_main_getcurrentMusicSlot();
     evtCdSlot = NULL;
 

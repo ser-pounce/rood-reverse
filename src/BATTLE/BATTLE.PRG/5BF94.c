@@ -88,26 +88,26 @@ typedef struct {
 } func_800D6894_t;
 
 typedef struct {
-    u_int unk0_0 : 1;
+    u_int visible : 1;
     u_int loading : 1;
     u_int unk0_2 : 1;
-    u_int unk0_3 : 3;
-    u_int unk0_6 : 3;
-    u_int unk0_9 : 3;
+    u_int drawMode : 3;
+    u_int loadState : 3;
+    u_int pageCount : 3;
     u_int unk0_12 : 1;
     u_int unk0_13 : 3;
     char vramSlot;
-    char unk3;
+    char brightness;
     u_char columns;
     u_char rows;
     short id;
-    short unk8;
-    short unkA;
-    short unkC;
+    short x;
+    short y;
+    short scale;
     u_short unkE;
     u_short* data;
     vs_Main_CdQueueSlot* cdQueueSlot;
-    u_short unk18[240];
+    u_short widths[240];
     u_short imageTable[254];
     int unk3F4;
 } Gim;
@@ -1904,13 +1904,13 @@ void vs_battle_loadGim(int id, int vramSlot)
         for (i = 0; i < 3; ++i) {
             *(u_short*)var_s0 = 0;
             var_s0->loading = 1;
-            var_s0->unk0_6 = 1;
+            var_s0->loadState = 1;
             var_s0->vramSlot = vramSlot;
-            var_s0->unk3 = 0x80;
+            var_s0->brightness = 0x80;
             var_s0->id = id;
-            var_s0->unk8 = 0;
-            var_s0->unkA = 0;
-            var_s0->unkC = 0x1000;
+            var_s0->x = 0;
+            var_s0->y = 0;
+            var_s0->scale = 0x1000;
             ++var_s0;
         }
         file.lba = gimLbas[id] >> 8;
@@ -1927,10 +1927,10 @@ void func_800C8550(u_int arg0, void* arg1, u_char* arg2)
     int next;
     int i;
 
-    gim->unk0_0 = 1;
+    gim->visible = 1;
 
-    if (gim->unk0_3 == 2) {
-        u_short* p = gim->unk18;
+    if (gim->drawMode == 2) {
+        u_short* p = gim->widths;
         int angle = vs_battle_keystreamBits(9);
         int target = vs_battle_keystreamBits(10);
 
@@ -1960,8 +1960,8 @@ void func_800C8550(u_int arg0, void* arg1, u_char* arg2)
         }
     }
 
-    if (gim->unk0_3 == 3) {
-        func_8007DFF0(gims->vramSlot + gims->unk0_9, 1, 6);
+    if (gim->drawMode == 3) {
+        func_8007DFF0(gims->vramSlot + gims->pageCount, 1, 6);
     }
 }
 
@@ -1970,11 +1970,11 @@ void func_800C86AC(void)
     Gim* var_s0 = gims;
     int i;
 
-    if ((var_s0 != NULL) && (var_s0->unk0_6 == 3)) {
-        func_8007E0A8(var_s0->vramSlot, var_s0->unk0_9, 6);
+    if ((var_s0 != NULL) && (var_s0->loadState == 3)) {
+        func_8007E0A8(var_s0->vramSlot, var_s0->pageCount, 6);
         for (i = 0; i < 3; ++i) {
-            if (var_s0->unk0_3 == 3) {
-                func_8007E0A8(gims->vramSlot + gims->unk0_9, 1, 6);
+            if (var_s0->drawMode == 3) {
+                func_8007E0A8(gims->vramSlot + gims->pageCount, 1, 6);
             }
             ++var_s0;
         }
@@ -1999,7 +1999,7 @@ void func_800C8778(void)
         return;
     }
 
-    switch (gim->unk0_6) {
+    switch (gim->loadState) {
     case 0:
         break;
     case 1:
@@ -2082,12 +2082,12 @@ void func_800C8778(void)
         height = i >> 8;
         i &= 0xFF;
         j = (i + 16) / 17;
-        gim->unk0_9 = j;
-        second->unk0_9 = j;
-        third->unk0_9 = j;
+        gim->pageCount = j;
+        second->pageCount = j;
+        third->pageCount = j;
         height *= 16;
         count += height;
-        func_8007DFF0(gim->vramSlot, gim->unk0_9, 6);
+        func_8007DFF0(gim->vramSlot, gim->pageCount, 6);
 
         while (i > 0) {
             vs_battle_renderImage((width + 512) | 0x1000000, gim->data + count,
@@ -2097,7 +2097,7 @@ void func_800C8778(void)
             width += 64;
         }
 
-        gim->unk0_6 = 2;
+        gim->loadState = 2;
         break;
     case 2:
         vs_main_freeHeapR(gim->data);
@@ -2106,11 +2106,11 @@ void func_800C8778(void)
             gim[j].loading = 0;
         }
 
-        gim->unk0_6 = 3;
+        gim->loadState = 3;
         break;
     case 3:
         for (j = 0; j < 3; ++j) {
-            if (gim[j].unk0_0) {
+            if (gim[j].visible) {
                 func_800CCA90(j);
             }
         }
@@ -3616,24 +3616,24 @@ void func_800CB83C(void)
 
 void func_800CBBCC(Gim* image, int clut, u_long* ot)
 {
-    int alpha = image->unk3;
+    int alpha = image->brightness;
     int background;
     int quadColor;
     u_short* tiles = &image->imageTable[4];
-    int scale = image->unkC & 0x3FFF;
+    int scale = image->scale & 0x3FFF;
     int columns = image->columns;
     int rows = image->rows;
     int color;
     short* columnX = (short*)(0x1F800400 - (columns + 1) * 2);
     short* rowY = columnX - (rows + 1);
     int i;
-    int j = image->unk8 + 160;
+    int j = image->x + 160;
 
     for (i = 0; i <= columns; ++i) {
         columnX[i] = (((i * 2 - columns) * scale) >> 7) + j;
     }
 
-    j = image->unkA + 120;
+    j = image->y + 120;
 
     for (i = 0; i <= rows; ++i) {
         rowY[i] = (((i * 2 - rows) * scale * 15) >> 13) + j;
@@ -3755,7 +3755,7 @@ void func_800CC128(Gim* arg0, int arg1, u_long* arg2)
     int var_s1;
     int new_var;
 
-    int temp_s0 = arg0->unk3;
+    int temp_s0 = arg0->brightness;
 
     if (temp_s0 == 0x80) {
         func_800CBBCC(arg0, arg1, arg2);
@@ -3784,18 +3784,18 @@ void func_800CC204(Gim* image, int clut, u_long* ot)
     short right[240];
     u_short* tiles = &image->imageTable[4];
     int mode = image->unk0_2;
-    u_short* widths = image->unk18;
+    u_short* widths = image->widths;
     int page = image->vramSlot - 18;
     int color = image->unkE;
     int y;
     int column;
-    int end = image->unk3;
-    int x = image->unkC & 0x3FFF;
+    int end = image->brightness;
+    int x = image->scale & 0x3FFF;
 
     if (x == ONE) {
-        image->unk3 = 128;
+        image->brightness = 128;
         func_800CBBCC(image, clut, ot);
-        image->unk3 = end;
+        image->brightness = end;
         return;
     }
 
@@ -3908,8 +3908,8 @@ void func_800CC600(Gim* image, int clut, u_long* ot)
         fb = 320;
     }
 
-    alpha = image->unk3;
-    page = (image->vramSlot + image->unk0_9 - 16) * 64;
+    alpha = image->brightness;
+    page = (image->vramSlot + image->pageCount - 16) * 64;
 
     if (alpha == 128) {
         func_800CBBCC(image, clut, ot);
@@ -3922,7 +3922,7 @@ void func_800CC600(Gim* image, int clut, u_long* ot)
     alpha += 7;
     columns = image->columns;
     height = image->rows * 15;
-    top = image->unkA + 120 - (height >> 1);
+    top = image->y + 120 - (height >> 1);
 
     for (column = 0; column < columns; ++column) {
         u_long* prim = vs_battle_setSprite(
@@ -3945,7 +3945,7 @@ void func_800CC600(Gim* image, int clut, u_long* ot)
             }
         }
 
-        x = image->unkA + 120;
+        x = image->y + 120;
 
         for (y = 0; y < image->rows; ++y) {
             int tile = tiles[y * columns + column];
@@ -3992,7 +3992,7 @@ void func_800CCA90(int arg0)
     Gim* gim = &gims[arg0];
     int clut = (gim->vramSlot - 16) << 6;
 
-    if ((gim->unk3 == 0) && (gim->unk0_3 != 2)) {
+    if ((gim->brightness == 0) && (gim->drawMode != 2)) {
         return;
     }
 
@@ -4007,8 +4007,8 @@ void func_800CCA90(int arg0)
     }
 
     D_800F51C8 = 0;
-    D_800EC25C[gim->unk0_3](gim, clut << 16,
-        gim->unkC & 0x4000 ? vs_scratch.unk4 + 0x1FF8 - arg0 * 4
+    D_800EC25C[gim->drawMode](gim, clut << 16,
+        gim->scale & 0x4000 ? vs_scratch.unk4 + 0x1FF8 - arg0 * 4
                            : vs_scratch.unk8 + 0x18 - arg0 * 8);
 }
 

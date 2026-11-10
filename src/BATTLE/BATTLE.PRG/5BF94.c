@@ -1133,7 +1133,8 @@ int selectTextBox(u_char boxMask)
             yPositions[sortedIndex] = 0x7FFF;
         }
 
-        selectedIndex = vs_main_stateFlags.textBoxDefaultSelection - 1;
+        // The second scratch flag is the script's preselected choice (1-based)
+        selectedIndex = vs_main_stateFlags.scriptScratch[1] - 1;
 
         if (selectedIndex >= count) {
             selectedIndex = 0;
@@ -5777,7 +5778,7 @@ void func_800D0C60(D_800F53B8_t* arg0, func_800D0548_arg1* arg1)
 
     if (arg1->actor < 0x10U) {
         func_800A1720(arg1->actor, arg1->bone, &arg1->attachment, sp20);
-        func_800A1108(arg1->actor, &sp10);
+        vs_battle_getActorPosition(arg1->actor, &sp10);
         arg1->saved.pad = sp10.unk0.unk4.pad;
         return;
     }

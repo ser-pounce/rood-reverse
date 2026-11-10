@@ -194,5 +194,5 @@ int func_800A0768(int, CVECTOR*);
 int func_800A07FC(int, CVECTOR*);
 void func_800A087C(int actorId, int);
 u_int func_800A0BE0(int actorId);
-int func_800A1108(int, vs_ActorPosition*);
+int vs_battle_getActorPosition(int, vs_ActorPosition*);
 int func_800A13EC(int, int, int*, int);

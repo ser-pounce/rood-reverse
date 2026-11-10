@@ -4,7 +4,7 @@
 enum itemIdentifiers { bronzeKey = 458, chamomileSigil = 466 };
 
 // Indices into vs_main_stateFlags, an alternative to accessing its members by name
-enum stateFlagIds { textBoxSelection = 0x10 };
+enum stateFlagIds { scriptScratch = 0x10 };
 
 typedef struct {
     char clearCount;
@@ -23,22 +23,7 @@ typedef struct {
     char unkD;
     char unkE;
     char unkF;
-    char textBoxSelection;
-    char textBoxDefaultSelection;
-    char unk12;
-    char unk13;
-    char unk14;
-    char unk15;
-    char unk16;
-    char unk17;
-    char unk18;
-    char unk19;
-    char unk1A;
-    char unk1B;
-    char unk1C;
-    char unk1D;
-    char unk1E;
-    char unk1F;
+    char scriptScratch[16]; // reset when an event starts
     char unk20;
     char unk21[0x1F];
     char unk40;

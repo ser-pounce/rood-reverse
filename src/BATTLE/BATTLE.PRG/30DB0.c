@@ -4289,7 +4289,7 @@ u_int func_800A0BE0(int actorId)
     return D_800F49E0;
 }
 
-int func_800A1108(int actorId, vs_ActorPosition* arg1)
+int vs_battle_getActorPosition(int actorId, vs_ActorPosition* position)
 {
     D_800F4538_t* var_v1 = D_800F4538[actorId];
 
@@ -4300,10 +4300,10 @@ int func_800A1108(int actorId, vs_ActorPosition* arg1)
         }
     }
 
-    arg1->unk0.unk0 = var_v1->unk0.currentTile;
-    memcpy(&arg1->unk0.unk4.vx, &var_v1->unk0.position.vx, 4);
-    memcpy(&arg1->unk0.unk4.vz, &var_v1->unk0.position.vz, 4);
-    arg1->unk0.unk4.pad = var_v1->unk0.facing;
+    position->unk0.unk0 = var_v1->unk0.currentTile;
+    memcpy(&position->unk0.unk4.vx, &var_v1->unk0.position.vx, 4);
+    memcpy(&position->unk0.unk4.vz, &var_v1->unk0.position.vz, 4);
+    position->unk0.unk4.pad = var_v1->unk0.facing;
     return 0;
 }
 

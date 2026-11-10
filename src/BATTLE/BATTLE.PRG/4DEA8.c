@@ -507,7 +507,7 @@ int vs_battle_script_11_showTextBox(u_char* script, UNUSED short arg1)
 
         // Dead code: vs_battle_setTextBox only returns 0 or -1
         if (printStatus > 0) {
-            vs_main_stateFlags.textBoxSelection = printStatus;
+            vs_main_stateFlags.scriptScratch[0] = printStatus;
         }
 
         textBoxStatuses[script[1]] = 0;
@@ -812,7 +812,8 @@ int vs_battle_script_1C_selectTextBox(u_char* script, UNUSED short arg1)
         short selection = selectTextBox(script[1]);
 
         if ((selection << 0x10) != 0) {
-            vs_battle_setStateFlag(textBoxSelection, selection);
+            // The first scratch flag returns the choice (1-based) to the script
+            vs_battle_setStateFlag(scriptScratch, selection);
 
             textBoxSelectionPending = 0;
 
@@ -850,29 +851,41 @@ int vs_battle_script_1E_actorDeath(u_char* script, UNUSED short arg1)
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_1F(u_char* arg0, UNUSED short arg1)
+/**
+ * @param script Opcode bytes:
+ *   - [1-2] = actor selector
+ *   - [3-4] = first of three consecutive state flags that receive the actor's tile
+ *     x, surface and z. The first flag is set to 0xFF if the actor does not exist.
+ */
+int vs_battle_script_1F_getActorTile(u_char* script, UNUSED short arg1)
 {
     vs_ActorPosition position;
-    u_short actor = getShort(arg0 + 1);
-    u_short flag = getShort(arg0 + 3);
+    u_short actor = getShort(script + 1);
+    u_short flag = getShort(script + 3);
 
     if (actor & 0x1000) {
+
         actor &= 0x1F;
+
         if (getActor(actor) == NULL) {
             vs_battle_setStateFlag(flag, 0xFF);
             return vs_battle_scriptNext;
         }
     } else {
+
         actor = func_8007CF18(actor);
+
         if (actor == 1) {
             vs_battle_setStateFlag(flag, 0xFF);
             return vs_battle_scriptNext;
         }
     }
-    func_800A1108(actor, &position);
+
+    vs_battle_getActorPosition(actor, &position);
     vs_battle_setStateFlag(flag, position.unk0.unk0.x);
     vs_battle_setStateFlag(flag + 1, position.unk0.unk0.surface);
     vs_battle_setStateFlag(flag + 2, position.unk0.unk0.z);
+
     return vs_battle_scriptNext;
 }
 
@@ -993,7 +1006,7 @@ int vs_battle_script_26(u_char* arg0, UNUSED short arg1)
     short temp_s3 = getShort(arg0 + 7);
 
     if (arg0[3] & 1) {
-        func_800A1108(temp_s4, &sp10);
+        vs_battle_getActorPosition(temp_s4, &sp10);
         applyVector(&sp10.unk0.unk4, temp_s1, temp_s2, temp_s3, +=);
     } else {
         setVector(&sp10.unk0.unk4, temp_s1, temp_s2, temp_s3);
@@ -1047,7 +1060,7 @@ int vs_battle_script_28(u_char* arg0, UNUSED short arg1)
     temp_s4 = getShort(arg0 + 7);
 
     if (arg0[3] & 1) {
-        func_800A1108(temp_s2, &sp10);
+        vs_battle_getActorPosition(temp_s2, &sp10);
         applyVector(&sp10.unk0.unk4, temp_s1, temp_s3, temp_s4, +=);
     } else {
         setVector(&sp10.unk0.unk4, temp_s1, temp_s3, temp_s4);
@@ -1104,7 +1117,7 @@ int vs_battle_script_2B(u_char* arg0, UNUSED short arg1)
     int var_a1;
 
     if (arg0[4] != 0) {
-        func_800A1108(temp_s1, &sp10);
+        vs_battle_getActorPosition(temp_s1, &sp10);
         var_a1 = (arg0[3] << 4) - sp10.unk0.unk4.pad;
         if (var_a1 < -ONE / 2) {
             var_a1 += ONE;
@@ -1140,7 +1153,7 @@ int vs_battle_script_2C(u_char* arg0, UNUSED short arg1)
     int var_a2;
 
     temp_s0 = resolveActorId(getShort(arg0 + 1));
-    func_800A1108(resolveActorId(getShort(arg0 + 3)), &sp10);
+    vs_battle_getActorPosition(resolveActorId(getShort(arg0 + 3)), &sp10);
     var_a2 = -1;
     temp_s0_2 = temp_s0 & 0xFFFF;
     if (arg0[5] != 0xFF) {
@@ -2510,8 +2523,8 @@ int vs_battle_script_B2(u_char* arg0, UNUSED short arg1)
     int temp_lo;
 
     temp_s3 = getShort(arg0 + 6);
-    func_800A1108(resolveActorId(getShort(arg0 + 1)), &sp10);
-    func_800A1108(resolveActorId(getShort(arg0 + 3)), &sp20);
+    vs_battle_getActorPosition(resolveActorId(getShort(arg0 + 1)), &sp10);
+    vs_battle_getActorPosition(resolveActorId(getShort(arg0 + 3)), &sp20);
     temp_v0 = sp10.unk0.unk4.vx - sp20.unk0.unk4.vx;
     temp_v0_2 = sp10.unk0.unk4.vz - sp20.unk0.unk4.vz;
     temp_lo = vs_gte_rsqrt((temp_v0 * temp_v0) + (temp_v0_2 * temp_v0_2)) / arg0[5];
@@ -2565,8 +2578,8 @@ int vs_battle_script_B6(u_char* arg0, UNUSED short arg1)
     short temp_s1;
     int var_v0;
 
-    func_800A1108(resolveActorId(getShort(arg0 + 1)), &sp10);
-    func_800A1108(resolveActorId(getShort(arg0 + 3)), &sp20);
+    vs_battle_getActorPosition(resolveActorId(getShort(arg0 + 1)), &sp10);
+    vs_battle_getActorPosition(resolveActorId(getShort(arg0 + 3)), &sp20);
     temp_s0 = sp10.unk0.unk4.vx - sp20.unk0.unk4.vx;
     temp_s1 = sp10.unk0.unk4.vz - sp20.unk0.unk4.vz;
     temp_s0_2 = getShort(arg0 + 5);
@@ -3064,7 +3077,7 @@ void func_800BBE94(void)
         D_800F4BA4->unk1EC.vx = 0;
         return;
     }
-    func_800A1108(D_800F4BA4->unk1E8, &sp10);
+    vs_battle_getActorPosition(D_800F4BA4->unk1E8, &sp10);
     D_800F4BA4->unk1EC.vx = sp10.unk0.unk4.vx * ONE;
     D_800F4BA4->unk1EC.vy = sp10.unk0.unk4.vy * ONE;
     D_800F4BA4->unk1EC.vz = sp10.unk0.unk4.vz * ONE;
@@ -3284,7 +3297,7 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
         int id = resolveActorId(getShort(script + 1));
         CameraScratch* s = (CameraScratch*)0x1F800088;
         s->value = id;
-        func_800A1108(id, &D_800F4BA4->unk1D0);
+        vs_battle_getActorPosition(id, &D_800F4BA4->unk1D0);
         s->rotation2.vz = 0;
         s->rotation2.vx = 0;
         s->rotation2.vy = D_800F4BA4->unk1D0.unk0.unk4.pad;
@@ -4332,7 +4345,7 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
                 return 1;
 
             case 1:
-                func_800A1108(0, &position);
+                vs_battle_getActorPosition(0, &position);
 
                 if (position.unk0.unk0.x == p[1] && position.unk0.unk0.z == p[2]) {
                     result = 1;
@@ -4342,7 +4355,7 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
                 break;
 
             case 2:
-                func_800A1108(0, &position);
+                vs_battle_getActorPosition(0, &position);
 
                 if (position.unk0.unk0.x >= p[1] && position.unk0.unk0.x < p[1] + p[3]
                     && position.unk0.unk0.z >= p[2]
@@ -4530,7 +4543,7 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
                     break;
                 }
 
-                func_800A1108(actorId, &position);
+                vs_battle_getActorPosition(actorId, &position);
 
                 if (position.unk0.unk0.x == p[3] && position.unk0.unk0.z == p[4]) {
                     result = 1;
@@ -4547,7 +4560,7 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
                     break;
                 }
 
-                func_800A1108(actorId, &position);
+                vs_battle_getActorPosition(actorId, &position);
 
                 if (position.unk0.unk0.x >= p[3] && position.unk0.unk0.x < p[3] + p[5]
                     && position.unk0.unk0.z >= p[4]

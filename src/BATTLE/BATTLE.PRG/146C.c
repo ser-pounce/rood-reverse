@@ -5136,7 +5136,7 @@ int func_80074A20(int arg0)
             func_80095B7C(arg0, 0);
             vs_battle_actors[arg0]->unk8 = 0x20;
             if (vs_battle_actors[arg0]->unk26 == 0) {
-                func_8009F314(arg0, &D_800F19CC->unk29A0.unk8.vec, 1);
+                startActorDeath(arg0, &D_800F19CC->unk29A0.unk8.vec, 1);
                 func_800A09D8(arg0, 1);
                 if ((vs_battle_actors[arg0]->unk27 != 0x80) || (arg0 == 0)) {
                     ret = 1;
@@ -8740,7 +8740,10 @@ void func_8007C28C(int arg0)
 
 void func_8007C31C(void) { func_80086754(0, vs_battle_characterState->stats); }
 
-void func_8007C348(int arg0, int arg1) { func_8009F314(arg0, NULL, arg1); }
+void triggerActorDeath(int actorId, int animate)
+{
+    startActorDeath(actorId, NULL, animate);
+}
 
 int func_8007C36C(int arg0)
 {

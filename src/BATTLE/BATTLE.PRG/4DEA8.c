@@ -196,10 +196,10 @@ typedef struct {
 } func_800BDBB4_t2;
 
 typedef struct {
-    char unk0;
-    char unk1;
-    char unk2[22];
-} func_800BB68C_t;
+    char remaining;
+    char next;
+    char actors[17];
+} ActorList;
 
 typedef struct {
     TextOffset offset;
@@ -247,8 +247,8 @@ typedef struct {
 
 static int tryTextBoxPlacement(
     SVECTOR* origin, u_char* script, TextPlacement* result, u_char direction);
-void func_800BB68C(u_short, func_800BB68C_t*);
-u_short func_800BB788(func_800BB68C_t* arg0);
+void expandActorSelector(u_short, ActorList*);
+u_short nextActor(ActorList* arg0);
 int getActorScreenPosition(int arg0, SVECTOR* arg1);
 void func_800BBE10(u_short);
 void func_800BBE04(int arg0);
@@ -827,18 +827,27 @@ int vs_battle_script_1C_selectTextBox(u_char* script, UNUSED short arg1)
     return vs_battle_scriptRepeat;
 }
 
-int vs_battle_script_1E(u_char* arg0, UNUSED short arg1)
+/**
+ * @param script Opcode bytes:
+ *   - [1-2] = actor selector, a single actor or a group
+ *   - [3] = nonzero: play the death animation first, 0: start the fade-out directly
+ */
+int vs_battle_script_1E_actorDeath(u_char* script, UNUSED short arg1)
 {
-    func_800BB68C_t sp10;
+    ActorList actors;
 
-    func_800BB68C(getShort(arg0 + 1), &sp10);
+    expandActorSelector(getShort(script + 1), &actors);
+
     while (1) {
-        int temp_a0 = func_800BB788(&sp10);
-        if (temp_a0 == 1) {
+        int actorId = nextActor(&actors);
+
+        if (actorId == 1) {
             break;
         }
-        func_8007C348(temp_a0, arg0[3]);
+
+        triggerActorDeath(actorId, script[3]);
     }
+
     return vs_battle_scriptNext;
 }
 
@@ -908,17 +917,17 @@ int vs_battle_script_22(u_char* arg0)
 
 int vs_battle_script_23(u_char* arg0, UNUSED short arg1)
 {
-    func_800BB68C_t sp10;
+    ActorList sp10;
     int temp_s0;
     int var_s1;
     int var_s2;
     int temp_v0;
     u_int a1;
 
-    func_800BB68C(getShort(arg0 + 1), &sp10);
+    expandActorSelector(getShort(arg0 + 1), &sp10);
 
     while (1) {
-        temp_s0 = func_800BB788(&sp10);
+        temp_s0 = nextActor(&sp10);
         if (temp_s0 == 1) {
             break;
         }
@@ -1168,11 +1177,11 @@ int vs_battle_script_2E(u_char* arg0, UNUSED short arg1)
 
 int vs_battle_script_2F(u_char* arg0, UNUSED short arg1)
 {
-    func_800BB68C_t sp10;
+    ActorList sp10;
 
-    func_800BB68C(getShort(arg0 + 1), &sp10);
+    expandActorSelector(getShort(arg0 + 1), &sp10);
     while (1) {
-        int temp_a0 = func_800BB788(&sp10);
+        int temp_a0 = nextActor(&sp10);
         if (temp_a0 == 1) {
             break;
         }
@@ -1387,13 +1396,13 @@ int vs_battle_script_3E(u_char* arg0, UNUSED short arg1)
 
 int vs_battle_script_3F(u_char* arg0, UNUSED short arg1)
 {
-    func_800BB68C_t sp10;
+    ActorList sp10;
     int temp_a0;
 
-    func_800BB68C(getShort(arg0 + 1), &sp10);
+    expandActorSelector(getShort(arg0 + 1), &sp10);
 
     while (1) {
-        temp_a0 = func_800BB788(&sp10);
+        temp_a0 = nextActor(&sp10);
         if (temp_a0 == 1) {
             break;
         }
@@ -1992,14 +2001,14 @@ int vs_battle_script_6F(u_char* arg0, UNUSED short arg1)
 
 int vs_battle_script_70(u_char* arg0, UNUSED short arg1)
 {
-    func_800BB68C_t sp18;
+    ActorList sp18;
     int temp_a2;
 
     switch (arg0[1] >> 4) {
     case 0:
-        func_800BB68C(getShort(arg0 + 2), &sp18);
+        expandActorSelector(getShort(arg0 + 2), &sp18);
         while (1) {
-            temp_a2 = func_800BB788(&sp18);
+            temp_a2 = nextActor(&sp18);
             if (temp_a2 == 1) {
                 break;
             }
@@ -2514,11 +2523,11 @@ int vs_battle_script_B2(u_char* arg0, UNUSED short arg1)
 
 int vs_battle_script_B3(u_char* arg0, UNUSED short arg1)
 {
-    func_800BB68C_t sp10;
+    ActorList sp10;
 
-    func_800BB68C(getShort(arg0 + 1), &sp10);
+    expandActorSelector(getShort(arg0 + 1), &sp10);
     while (1) {
-        int temp_a0 = func_800BB788(&sp10);
+        int temp_a0 = nextActor(&sp10);
         if (temp_a0 == 1) {
             break;
         }
@@ -2824,12 +2833,12 @@ int vs_battle_script_F2_playMenuSelectSfx(UNUSED u_char* arg0, UNUSED short arg1
     return vs_battle_scriptNext;
 }
 
-void func_800BB68C(u_short arg0, func_800BB68C_t* arg1)
+void expandActorSelector(u_short arg0, ActorList* arg1)
 {
     vs_Actor* temp_v0;
     short var_s3 = 0;
-    arg1->unk0 = 0;
-    arg1->unk1 = 0;
+    arg1->remaining = 0;
+    arg1->next = 0;
 
     if (arg0 & 0x2000) {
         short i;
@@ -2842,26 +2851,26 @@ void func_800BB68C(u_short arg0, func_800BB68C_t* arg1)
             temp_v0 = getActor(i);
             if (temp_v0 != NULL) {
                 if ((var_a0 < 0) || (temp_v0->unk1C == var_a0)) {
-                    arg1->unk2[var_s3++] = i;
-                    ++arg1->unk0;
+                    arg1->actors[var_s3++] = i;
+                    ++arg1->remaining;
                 }
             }
         }
 
         return;
     }
-    ++arg1->unk0;
-    arg1->unk2[0] = resolveActorId(arg0);
+    ++arg1->remaining;
+    arg1->actors[0] = resolveActorId(arg0);
 }
 
-u_short func_800BB788(func_800BB68C_t* arg0)
+u_short nextActor(ActorList* arg0)
 {
-    if (arg0->unk0 == 0) {
+    if (arg0->remaining == 0) {
         return 1;
     }
 
-    --arg0->unk0;
-    return arg0->unk2[(u_int)(arg0->unk1++)];
+    --arg0->remaining;
+    return arg0->actors[(u_int)(arg0->next++)];
 }
 
 int getActorScreenPosition(int arg0, SVECTOR* arg1)

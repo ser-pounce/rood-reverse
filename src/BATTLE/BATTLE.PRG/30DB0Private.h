@@ -92,8 +92,8 @@ VS_HIDDEN(func_8009EFEC);
 void func_8009F298(int, SVECTOR*, int);
 VS_HIDDEN(func_8009F298);
 
-void func_8009F314(int, void*, int);
-VS_HIDDEN(func_8009F314);
+void startActorDeath(int, void*, int);
+VS_HIDDEN(startActorDeath);
 
 void func_8009F530(int);
 VS_HIDDEN(func_8009F530);

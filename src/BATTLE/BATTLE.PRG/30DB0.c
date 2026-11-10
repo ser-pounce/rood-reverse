@@ -3283,7 +3283,7 @@ void func_8009F298(int arg0, SVECTOR* arg1, int arg2)
     }
 }
 
-void func_8009F314(int actorId, void* context, int animate)
+void startActorDeath(int actorId, UNUSED void* context, int animate)
 {
     u_short* found;
     D_800F4538_t* actor = D_800F4538[actorId];
@@ -3329,7 +3329,7 @@ void func_8009F314(int actorId, void* context, int animate)
         }
 
         if (actor->unk17FD >= 2) {
-            func_8009F314(actor->unk17FD, context, animate);
+            startActorDeath(actor->unk17FD, context, animate);
         }
     } else {
         D_800F45E0_t* object = D_800F45E0[actorId];

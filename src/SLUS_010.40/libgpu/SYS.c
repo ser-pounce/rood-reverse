@@ -32,7 +32,7 @@ u_int func_80029A54(short, short);
 u_int func_80029A70(RECT*);
 void func_8002A34C(u_long*);
 int func_8002A394(int);
-void func_8002A698(void);
+int func_8002A698(void);
 void func_8002AB84(void);
 int func_8002ABB8(void);
 int func_8002ACFC(int);
@@ -276,7 +276,7 @@ int func_8002A3E8(void (*exec)(void*, void*), u_int* arg0, int size, void* arg1)
         return 0;
     }
 
-    DMACallback(2, func_8002A698);
+    DMACallback(2, (void (*)(void))func_8002A698);
 
     if (size) {
         for (i = 0; i < size / 4; ++i) {

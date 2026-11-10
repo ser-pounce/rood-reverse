@@ -1133,7 +1133,7 @@ int selectTextBox(u_char boxMask)
             yPositions[sortedIndex] = 0x7FFF;
         }
 
-        selectedIndex = vs_main_stateFlags.unk11 - 1;
+        selectedIndex = vs_main_stateFlags.textBoxDefaultSelection - 1;
 
         if (selectedIndex >= count) {
             selectedIndex = 0;

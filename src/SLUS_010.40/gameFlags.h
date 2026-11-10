@@ -3,6 +3,9 @@
 
 enum itemIdentifiers { bronzeKey = 458, chamomileSigil = 466 };
 
+// Indices into vs_main_stateFlags, an alternative to accessing its members by name
+enum stateFlagIds { textBoxSelection = 0x10 };
+
 typedef struct {
     char clearCount;
     char difficulty;
@@ -21,7 +24,7 @@ typedef struct {
     char unkE;
     char unkF;
     char textBoxSelection;
-    char unk11;
+    char textBoxDefaultSelection;
     char unk12;
     char unk13;
     char unk14;

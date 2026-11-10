@@ -793,6 +793,10 @@ int vs_battle_script_1D(u_char* arg0, UNUSED short arg1)
     return vs_battle_scriptNext;
 }
 
+/**
+ * @param script Opcode bytes:
+ *   - [1] = mask of the text boxes to choose between, bit n is box n
+ */
 int vs_battle_script_1C_selectTextBox(u_char* script, UNUSED short arg1)
 {
     if (scriptSkipMode == vs_battle_scriptSkipping) {
@@ -800,16 +804,21 @@ int vs_battle_script_1C_selectTextBox(u_char* script, UNUSED short arg1)
     }
 
     if (textBoxSelectionPending != 0) {
-        short temp_v0 = selectTextBox(script[1]);
-        if ((temp_v0 << 0x10) != 0) {
-            vs_battle_setStateFlag(0x10, temp_v0);
+
+        short selection = selectTextBox(script[1]);
+
+        if ((selection << 0x10) != 0) {
+            vs_battle_setStateFlag(textBoxSelection, selection);
+
             textBoxSelectionPending = 0;
+
             return vs_battle_scriptNext;
         }
     } else {
         selectTextBox(script[1]);
         textBoxSelectionPending = 1;
     }
+
     return vs_battle_scriptRepeat;
 }
 

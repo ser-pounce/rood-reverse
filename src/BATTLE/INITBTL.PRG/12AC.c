@@ -18,7 +18,7 @@ static int (*skipOpcodeTableInit[])(u_char*, short) = { vs_battle_script_invalid
     vs_battle_script_yield, vs_battle_script_1B_setPrintfArgInt,
     vs_battle_script_invalidOpcode, vs_battle_script_1D_setTextBoxAnimationDuration,
     vs_battle_script_1E_actorDeath, vs_battle_script_1F_getActorTile,
-    vs_battle_script_20_spawnActor, vs_battle_script_21, vs_battle_script_nop,
+    vs_battle_script_20_spawnActor, vs_battle_script_21_walkToTile, vs_battle_script_nop,
     vs_battle_script_23, vs_battle_script_24, vs_battle_script_25, vs_battle_script_26,
     vs_battle_script_27, vs_battle_script_28, vs_battle_script_29, vs_battle_script_2A,
     vs_battle_script_2B, vs_battle_script_2C, vs_battle_script_2D, vs_battle_script_2E,

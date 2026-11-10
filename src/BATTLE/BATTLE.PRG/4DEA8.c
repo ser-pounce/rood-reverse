@@ -909,21 +909,33 @@ int vs_battle_script_20_spawnActor(u_char* script, UNUSED short arg1)
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_21(u_char* arg0, UNUSED short arg1)
+/**
+ * @param script Opcode bytes:
+ *   - [1-2] = actor selector
+ *   - [3] = tile x
+ *   - [4] = unused
+ *   - [5] = tile z
+ */
+int vs_battle_script_21_walkToTile(u_char* script, UNUSED short arg1)
 {
-    SVECTOR sp10;
-    u_short temp_v0 = resolveActorId(getShort(arg0 + 1));
-    sp10.vx = (arg0[3] << 7) + 0x40;
-    sp10.vy = 0;
-    sp10.vz = (arg0[5] << 7) + 0x40;
+    SVECTOR destination;
+    u_short actor = resolveActorId(getShort(script + 1));
+
+    destination.vx = (script[3] << 7) + 0x40;
+    destination.vy = 0;
+    destination.vz = (script[5] << 7) + 0x40;
+
     if (scriptSkipMode == vs_battle_scriptSkipping) {
-        sp10.pad = -0x8000;
-        func_800A9D90(temp_v0, &sp10, 0);
+        destination.pad = -0x8000;
+        func_800A9D90(actor, &destination, 0);
     } else {
-        func_8007CFF8(temp_v0, &sp10);
+        func_8007CFF8(actor, &destination);
     }
-    func_8009DC8C(temp_v0);
-    D_800F4B70[temp_v0] = 1;
+
+    func_8009DC8C(actor);
+
+    D_800F4B70[actor] = 1;
+
     return vs_battle_scriptNext;
 }
 

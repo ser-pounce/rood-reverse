@@ -15,7 +15,7 @@ typedef struct {
     signed char power;
 } D_800F4B28_t;
 
-extern int (*opcodeFunctionTable[])(u_char*, short);
+extern int (*normalOpcodeTable[])(u_char*, short);
 extern vs_Main_CdFile D_800F4BF0;
 
 int func_800BFE34(u_char*);
@@ -29,9 +29,9 @@ short func_800BFBB8(u_char** arg0, short arg1)
     int ret;
     u_char* script = *arg0;
 
-    if ((arg1 == 0) && (D_800F4C2C == 1)
-        && ((vs_main_buttonsPressed.all & PADstart) || (D_800F4C68 != 0))) {
-        D_800F4C68 = 0;
+    if ((arg1 == 0) && (scriptSkipMode == vs_battle_scriptSkippable)
+        && ((vs_main_buttonsPressed.all & PADstart) || (skipRequested != 0))) {
+        skipRequested = 0;
         D_800F4C58[3] = 0;
         D_800F4C58[2] = 0;
         D_800F4C58[1] = 0;
@@ -41,7 +41,7 @@ short func_800BFBB8(u_char** arg0, short arg1)
         vs_battle_textBoxStatuses[1] = 0;
         vs_battle_textBoxStatuses[0] = 0;
 
-        if (D_800F4C20 != 0) {
+        if (stopMusicOnSkip != 0) {
             vs_main_stopMusicSlot(0);
         }
 
@@ -51,14 +51,14 @@ short func_800BFBB8(u_char** arg0, short arg1)
         func_8007C46C(0, 0xFF, 0);
         vs_battle_disableDispMask();
         vs_battle_setStateFlag(0xA8, 1);
-        D_800F4C2C = 2;
+        scriptSkipMode = vs_battle_scriptSkipping;
     }
 
     while (1) {
-        if (D_800F4C2C != 2) {
-            ret = opcodeFunctionTable[*script](script, arg1);
+        if (scriptSkipMode != vs_battle_scriptSkipping) {
+            ret = normalOpcodeTable[*script](script, arg1);
         } else {
-            ret = D_800F4C28[*script](script, arg1);
+            ret = vs_battle_skipOpcodeTable[*script](script, arg1);
         }
 
         switch (ret) {
@@ -113,7 +113,7 @@ short vs_battle_getShort(u_char* arg0)
 
 int func_800BFE34(u_char* arg0) { return D_800E9C30[arg0[0]]; }
 
-int func_800BFE50(u_short arg0)
+int resolveActorId(u_short arg0)
 {
     switch (arg0 >> 12) {
     case 0:
@@ -184,8 +184,8 @@ void func_800C00E8(int arg0, void* arg1)
 {
     D_800F4BF0.size = VS_0000_EVT_SIZE;
     D_800F4BF0.lba = (evtFile * 3) + VS_0000_EVT_LBA; // .EVT files must be sequential
-    D_800F4BBC = vs_main_allocateCdQueueSlot(&D_800F4BF0);
-    vs_main_cdEnqueue(D_800F4BBC, arg1);
+    evtCdSlot = vs_main_allocateCdQueueSlot(&D_800F4BF0);
+    vs_main_cdEnqueue(evtCdSlot, arg1);
 }
 
 void func_800C0150(void)

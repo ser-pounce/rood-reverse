@@ -89,7 +89,7 @@ typedef struct {
 
 typedef struct {
     u_int unk0_0 : 1;
-    u_int unk0_1 : 1;
+    u_int loading : 1;
     u_int unk0_2 : 1;
     u_int unk0_3 : 3;
     u_int unk0_6 : 3;
@@ -452,7 +452,8 @@ extern int D_800F5618;
 extern VECTOR D_800F5620;
 extern func_800D2904_t* D_800F55FC;
 
-extern Gim* D_800EB9BC;
+extern Gim* gims;
+VS_HIDDEN(gims);
 
 int func_800C4794(SVECTOR* arg0)
 {
@@ -1087,8 +1088,8 @@ int vs_battle_setTextBox(int boxId, char* str)
         box->speed = 1;
         box->unk4 = 0;
         box->prevChunksPrinted = 0;
-        if (!(box->unk0.unk0_24 & 0x20)) {
-            func_800AAD4C(box->unk0.unk0_24, 0, box->unk2E + 1, 1);
+        if (!(box->unk0.speakerActor & 0x20)) {
+            func_800AAD4C(box->unk0.speakerActor, 0, box->speakerAnimation + 1, 1);
             box->unk2C = 1;
         }
         return 0;
@@ -1504,11 +1505,11 @@ void printVariableWidthFont(vs_TextBox* arg0)
             vs_main_playSfxDefault(0x7E, sfx);
         }
 
-        if (!(arg0->unk0.unk0_24 & 0x20)) {
+        if (!(arg0->unk0.speakerActor & 0x20)) {
             if (arg0->unk2C != 0) {
                 ++arg0->unk2C;
             } else {
-                func_800AAD4C(arg0->unk0.unk0_24, 0, 0, 0);
+                func_800AAD4C(arg0->unk0.speakerActor, 0, 0, 0);
             }
         }
         arg0->prevChunksPrinted = chunksPrinted;
@@ -1895,14 +1896,14 @@ void vs_battle_loadGim(int id, int arg1)
     Gim* var_s0;
     int i;
 
-    if (D_800EB9BC == NULL) {
+    if (gims == NULL) {
         var_s0 = vs_main_allocHeapR(sizeof *var_s0 * 3);
-        D_800EB9BC = var_s0;
+        gims = var_s0;
         var_s0->data = vs_main_allocHeapR((char)gimLbas[id] << 0xB);
 
         for (i = 0; i < 3; ++i) {
             *(u_short*)var_s0 = 0;
-            var_s0->unk0_1 = 1;
+            var_s0->loading = 1;
             var_s0->unk0_6 = 1;
             var_s0->unk2 = arg1;
             var_s0->unk3 = 0x80;
@@ -1914,14 +1915,14 @@ void vs_battle_loadGim(int id, int arg1)
         }
         file.lba = gimLbas[id] >> 8;
         file.size = (u_char)gimLbas[id] << 0xB;
-        D_800EB9BC->cdQueueSlot = vs_main_allocateCdQueueSlot(&file);
-        vs_main_cdEnqueue(D_800EB9BC->cdQueueSlot, D_800EB9BC->data);
+        gims->cdQueueSlot = vs_main_allocateCdQueueSlot(&file);
+        vs_main_cdEnqueue(gims->cdQueueSlot, gims->data);
     }
 }
 
 void func_800C8550(u_int arg0, void* arg1, u_char* arg2)
 {
-    Gim* gim = &D_800EB9BC[arg0];
+    Gim* gim = &gims[arg0];
     int step;
     int next;
     int i;
@@ -1960,31 +1961,31 @@ void func_800C8550(u_int arg0, void* arg1, u_char* arg2)
     }
 
     if (gim->unk0_3 == 3) {
-        func_8007DFF0(D_800EB9BC->unk2 + D_800EB9BC->unk0_9, 1, 6);
+        func_8007DFF0(gims->unk2 + gims->unk0_9, 1, 6);
     }
 }
 
 void func_800C86AC(void)
 {
-    Gim* var_s0 = D_800EB9BC;
+    Gim* var_s0 = gims;
     int i;
 
     if ((var_s0 != NULL) && (var_s0->unk0_6 == 3)) {
         func_8007E0A8(var_s0->unk2, var_s0->unk0_9, 6);
         for (i = 0; i < 3; ++i) {
             if (var_s0->unk0_3 == 3) {
-                func_8007E0A8(D_800EB9BC->unk2 + D_800EB9BC->unk0_9, 1, 6);
+                func_8007E0A8(gims->unk2 + gims->unk0_9, 1, 6);
             }
             ++var_s0;
         }
-        vs_main_freeHeapR(D_800EB9BC);
-        D_800EB9BC = NULL;
+        vs_main_freeHeapR(gims);
+        gims = NULL;
     }
 }
 
 void func_800C8778(void)
 {
-    Gim* gim = D_800EB9BC;
+    Gim* gim = gims;
     Gim* second = gim + 1;
     Gim* third = gim + 2;
     int i;
@@ -2102,7 +2103,7 @@ void func_800C8778(void)
         vs_main_freeHeapR(gim->data);
 
         for (j = 0; j < 3; ++j) {
-            gim[j].unk0_1 = 0;
+            gim[j].loading = 0;
         }
 
         gim->unk0_6 = 3;
@@ -3050,7 +3051,7 @@ void vs_battle_initUi(void* fontData)
     D_800F4ED4 = 0;
     D_800EB9B4 = NULL;
     D_800EB9B8 = NULL;
-    D_800EB9BC = NULL;
+    gims = NULL;
     vs_battle_menuItems = 0;
     D_800EB9CE = 0;
     vs_battle_lowerScreenUiState = 0;
@@ -3345,7 +3346,7 @@ void vs_battle_displaySceneMessage(int arg0, int arg1, int arg2)
         vs_battle_printf((char*)&D_800EB9D8[1],
             (char*)&vs_battle_menuStrings[VS_menuStrings_OFFSET_spellMastered]);
     } else if (arg0 == 11) {
-        vs_battle_textBoxes[7].unk0.unk0_8 = 0;
+        vs_battle_textBoxes[7].unk0.shape = 0;
         vs_battle_printf((char*)&D_800EB9D8[1],
             (char*)&vs_battle_menuStrings[vs_battle_menuStrings[vs_main_actions[arg1].type
                                                                 + 22]]);
@@ -3988,7 +3989,7 @@ void func_800CC600(Gim* image, int clut, u_long* ot)
 
 void func_800CCA90(int arg0)
 {
-    Gim* gim = &D_800EB9BC[arg0];
+    Gim* gim = &gims[arg0];
     int clut = (gim->unk2 - 16) << 6;
 
     if ((gim->unk3 == 0) && (gim->unk0_3 != 2)) {
@@ -4109,17 +4110,17 @@ TextOffset func_800CCE10(int arg0, int arg1, int arg2, int arg3)
     TextOffset* p = &D_800EC284[arg0][((arg1 >> 2) & 3) == 1 || ((arg1 >> 2) & 3) == 2];
     int offsetX = p->x;
     int offsetY = p->y;
-    int alignment = p->alignment;
+    int flip = p->flip;
 
     if ((arg1 >> 2) & 1) {
         offsetX = -offsetX;
-        alignment ^= 2;
+        flip ^= 2;
     }
 
     ret.x = offsetX - ((arg2 * 12 + 10) >> 1);
     ret.y = offsetY - ((arg3 * 13 + 4) >> 1);
-    ret.alignment = alignment;
-    ret.flags = p->flags;
+    ret.flip = flip;
+    ret.tail = p->tail;
     return ret;
 }
 
@@ -4129,7 +4130,7 @@ void vs_battle_initTextBox(
     vs_TextBox* box = &vs_battle_textBoxes[id];
 
     *(int*)&box->unk0 = flags & 0xFFFF;
-    box->unk0.unk0_24 = 32;
+    box->unk0.speakerActor = 32;
     box->x = x;
     box->y = y;
     box->unk4 = 0;
@@ -4137,7 +4138,7 @@ void vs_battle_initTextBox(
     box->speed = 0;
     box->xIndent = x + 5;
     box->yIndent = y + 3;
-    box->unk2E = 0;
+    box->speakerAnimation = 0;
     box->brightness = 0x80;
     box->charsPerLine = charsPerLine;
     box->lineCount = h;
@@ -4153,7 +4154,7 @@ void vs_battle_initTextBox(
     switch (box->unk0.unk0_0) {
     case 1:
         box->unk0.unk0_0 = 7;
-        box->unk0.unk0_8 = 0;
+        box->unk0.shape = 0;
         return;
     case 4:
         box->charsPerLine = 0x18;
@@ -4164,7 +4165,7 @@ void vs_battle_initTextBox(
         return;
     case 5:
         box->unk0.unk0_0 = 7;
-        box->unk0.unk0_8 = 2;
+        box->unk0.shape = 2;
         return;
     }
 }
@@ -4173,8 +4174,8 @@ int vs_battle_dismissTextBox(int id)
 {
     vs_TextBox* box = &vs_battle_textBoxes[id];
 
-    if (!(box->unk0.unk0_24 & 0x20)) {
-        func_800AAD4C(box->unk0.unk0_24, 0, 0, 0);
+    if (!(box->unk0.speakerActor & 0x20)) {
+        func_800AAD4C(box->unk0.speakerActor, 0, 0, 0);
     }
 
     if (box->state != 0) {
@@ -4249,7 +4250,7 @@ void func_800CD158(int id)
             (0xF00000 - (y << 16)) | 320);
     }
     if (box->state == box->unk22 + 1) {
-        func_800CD0FC(y - 7, box->unk0.unk0_8 - 1);
+        func_800CD0FC(y - 7, box->unk0.shape - 1);
     }
 }
 
@@ -4276,7 +4277,7 @@ void func_800CD3E4(int index)
     u_long* ot = D_800F51B8 + index * 4;
     u_int part;
     vs_TextBox* box = &vs_battle_textBoxes[index];
-    u_short* verts = (u_short*)D_800EB588[box->unk0.unk0_8];
+    u_short* verts = (u_short*)D_800EB588[box->unk0.shape];
     u_char* shape;
     int header;
     int* points = (int*)0x1F800088;
@@ -4298,9 +4299,9 @@ void func_800CD3E4(int index)
     }
 
     out = (short*)0x1F800088;
-    flip = box->unk0.unk0_6;
+    flip = box->unk0.flip;
     shape = (u_char*)verts;
-    part = ((int*)shape)[box->unk0.unk0_12];
+    part = ((int*)shape)[box->unk0.tail];
     verts = (u_short*)(shape + (shape[1] + 1) * 4);
     count = shape[2];
     header = *(int*)shape;
@@ -4310,7 +4311,7 @@ void func_800CD3E4(int index)
         *out++ = x + (((v & 0xFF) * w) >> 8);
         *out++ = y + (((v >> 8) * h) >> 8);
     }
-    if ((u_int)(box->unk0.unk0_12 - 1) < ((header >> 8) & 0xFF)) {
+    if ((u_int)(box->unk0.tail - 1) < ((header >> 8) & 0xFF)) {
         v = func_800CD3A0(verts[part & 0xFF], flip);
 
         for (; i < (header & 0xFF); ++i) {
@@ -4340,10 +4341,10 @@ void func_800CD3E4(int index)
         if (n == (part & 0xFF)) {
             v = 0;
 
-            for (k = 0; k < box->unk0.unk0_12; ++k) {
+            for (k = 0; k < box->unk0.tail; ++k) {
                 v += shape[k * 4 + 2];
             }
-            for (k = 0; k < shape[box->unk0.unk0_12 * 4 + 2]; ++k) {
+            for (k = 0; k < shape[box->unk0.tail * 4 + 2]; ++k) {
                 vs_battle_addTile(
                     ot + 2, vs_getRGB0(primLineF2, 48, 48, 48), points[n], points[v + k]);
                 n = v + k;
@@ -4370,7 +4371,7 @@ void func_800CD3E4(int index)
         for (k = 0; k < shape[n * 4 + 3]; ++k) {
             int quad;
 
-            if ((n != 0) && (n != box->unk0.unk0_12)) {
+            if ((n != 0) && (n != box->unk0.tail)) {
                 verts += 2;
                 continue;
             }

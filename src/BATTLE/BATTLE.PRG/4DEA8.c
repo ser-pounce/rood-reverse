@@ -911,13 +911,14 @@ int vs_battle_script_20_spawnActor(u_char* script, UNUSED short arg1)
 }
 
 /**
+ * Walks an actor to a tile, with pathfinding.
  * @param script Opcode bytes:
  *   - [1-2] = actor selector
  *   - [3] = tile x
  *   - [4] = unused
  *   - [5] = tile z
  */
-int vs_battle_script_21_walkToTile(u_char* script, UNUSED short arg1)
+int vs_battle_script_21_walkActorToTile(u_char* script, UNUSED short arg1)
 {
     SVECTOR destination;
     u_short actor = resolveActorId(getShort(script + 1));
@@ -1040,6 +1041,7 @@ int vs_battle_script_24_setActorSfxPanVolume(u_char* script, UNUSED short arg1)
 /**
  * Moves an actor to a tile and turns it to a facing, ignoring the tile map.
  * Animated move (non-zero values for the frames) does not seem to be used by the scripts.
+ * Does not respect paths; walkActorToTile is used for walking in practice.
  * @param script Opcode bytes:
  *   - [1-2] = actor selector
  *   - [3-5] = tile x, surface and z
@@ -1075,6 +1077,7 @@ int vs_battle_script_25_moveActorToTile(u_char* script, UNUSED short arg1)
 
 /**
  * Like moveActorToTile, but to a position given in world coordinates instead of a tile.
+ * Does not respect paths; walkActorToCoordinate is used for walking in practice.
  * @param script Opcode bytes:
  *   - [1-2] = actor selector
  *   - [3-4] = x in bits 1-15 (value >> 1). If bit 0 is set, x, y and z are added to the
@@ -1088,7 +1091,6 @@ int vs_battle_script_25_moveActorToTile(u_char* script, UNUSED short arg1)
 int vs_battle_script_26_moveActorToCoordinate(u_char* arg0, UNUSED short arg1)
 {
     vs_ActorPosition position;
-
     u_short actor = resolveActorId(getShort(arg0 + 1));
     int x = getShort(arg0 + 3) >> 1;
     short y = getShort(arg0 + 5);
@@ -1121,25 +1123,38 @@ int vs_battle_script_26_moveActorToCoordinate(u_char* arg0, UNUSED short arg1)
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_27(u_char* arg0, UNUSED short arg1)
+/**
+ * Slides an actor to a tile over time, ignoring the tile map. Unlike moveActorToTile
+ * the actor only changes position, there is no walk animation and no turning.
+ * @param script Opcode bytes:
+ *   - [1-2] = actor selector
+ *   - [3-5] = tile x, surface and z
+ *   - [6] = frame count, 0xFF = default (from distance and the actor's unk5C2)
+ */
+int vs_battle_script_27_slideActorToTile(u_char* script, UNUSED short arg1)
 {
-    vs_TilePosition sp10[4];
-    u_short temp_s0 = resolveActorId(getShort(arg0 + 1));
-    sp10[0].x = arg0[3];
-    sp10[0].surface = arg0[4];
-    sp10[0].z = arg0[5];
-    sp10[0].extra = 0xFF;
+    vs_TilePosition tile[4];
+    u_short actor = resolveActorId(getShort(script + 1));
+
+    tile[0].x = script[3];
+    tile[0].surface = script[4];
+    tile[0].z = script[5];
+    tile[0].extra = 0xFF;
+
     if (scriptSkipMode == vs_battle_scriptSkipping) {
-        func_800A9C54(temp_s0, sp10, 0);
+        func_800A9C54(actor, tile, 0);
     } else {
-        func_800A9C54(temp_s0, sp10, arg0[6] != 0xFF ? arg0[6] : -1);
+        func_800A9C54(actor, tile, script[6] != 0xFF ? script[6] : -1);
     }
-    func_8009DC8C(temp_s0);
-    D_800F4B70[temp_s0] = 1;
+
+    func_8009DC8C(actor);
+
+    D_800F4B70[actor] = 1;
+
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_28(u_char* arg0, UNUSED short arg1)
+int vs_battle_script_28_slideActorToCoordinate(u_char* arg0, UNUSED short arg1)
 {
     vs_ActorPosition sp10;
     short temp_s3;
@@ -1184,7 +1199,7 @@ int vs_battle_script_29(u_char* arg0, UNUSED short arg1)
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_2A(u_char* arg0, UNUSED short arg1)
+int vs_battle_script_2A_walkActorToCoordinate(u_char* arg0, UNUSED short arg1)
 {
     SVECTOR sp10;
     u_short temp_s1 = resolveActorId(getShort(arg0 + 1) & 0xFFFF);

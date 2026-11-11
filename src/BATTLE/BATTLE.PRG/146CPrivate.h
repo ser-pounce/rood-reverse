@@ -140,8 +140,8 @@ VS_HIDDEN(func_8007C28C);
 void func_8007C31C(void);
 VS_HIDDEN(func_8007C31C);
 
-void func_8007C348(int, int);
-VS_HIDDEN(func_8007C348);
+void triggerActorDeath(int, int);
+VS_HIDDEN(triggerActorDeath);
 
 int func_8007C398(void);
 VS_HIDDEN(func_8007C398);

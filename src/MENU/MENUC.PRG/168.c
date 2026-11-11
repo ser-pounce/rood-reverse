@@ -1743,7 +1743,7 @@ static int attachGemsMenu(int arg0)
             }
 
             if (var_s2 != 0) {
-                vs_battle_stringContext.integers[0] = itemInfo;
+                vs_battle_printfArgs.integers[0] = itemInfo;
                 vs_battle_printf(textBuf + i * 96,
                     (char*)&vs_mainMenu_menu12Text[vs_mainMenu_menu12Text
                             [isShield * 2

@@ -748,7 +748,7 @@ static int renameMenuInput(int initialize)
 
         vs_battle_initInformationTextBox(1);
 
-        vs_battle_stringContext.strings[0] = nameBuffer;
+        vs_battle_printfArgs.strings[0] = nameBuffer;
 
         vs_battle_printf(vs_battle_stringBuf,
             (char*)(renderRenameMenuStrings + VS_rename_OFFSET_confirmPrompt));

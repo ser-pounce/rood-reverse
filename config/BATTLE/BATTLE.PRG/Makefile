@@ -15,8 +15,7 @@ $(buildDir)/30DB0.c.o: CC1FLAGS += -Wno-return-type -Wno-sign-compare -Wno-unini
 $(patsubst %,$(buildDir)/%.c.o,38C1C 3A1A0 40564 44F14 49268 6E4CC 6FC00 71618 73700 74088 770A4 7CD68 7EE98): CC1FLAGS += -Wno-uninitialized
 
 $(BUILD)/config/$(battle.prg)/link.d: \
-	config/SLUS_010.40/symbol_addrs.txt \
-	config/MENU/MAINMENU.PRG/symbol_addrs.txt
+	config/SLUS_010.40/symbol_addrs.txt
 
 # Patch single byte in string table padding, seems it might actually be used though
 $(BUILD)/data/BATTLE/BATTLE.PRG: FIXUP = $(XDELTA) -dfans $@ tools/data/BATTLE/BATTLE.PRG.xdelta $@
@@ -29,6 +28,6 @@ $(BUILD)/assets/BATTLE/BATTLE.PRG/keyStrings.vsStringFixed.yaml.o: $(BUILD)/asse
 	$(ECHO) Converting $<
 	$(OBJCOPY) $(OBJCOPYFLAGS) $< $@
 
-BATTLE_LDLIBS := $(patsubst %,$(BUILD)/data/%.sym.elf,GIM/SCREFF2.PRG EFFECT/EFFPURGE.BIN)
+BATTLE_LDLIBS := $(patsubst %,$(BUILD)/data/%.sym.elf,GIM/SCREFF2.PRG EFFECT/EFFPURGE.BIN MENU/MAINMENU.PRG SLUS_010.40)
 $(BUILD)/data/$(battle.prg).elf: $(BATTLE_LDLIBS)
 $(BUILD)/data/$(battle.prg).elf: private LDLIBS += $(BATTLE_LDLIBS)

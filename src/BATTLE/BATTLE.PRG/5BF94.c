@@ -1001,7 +1001,7 @@ char* vs_battle_printf(char* dest, char* src)
             switch (c) {
             case vs_char_printHex:
                 c = *src++;
-                integer = vs_battle_stringContext.integers[c % 10];
+                integer = vs_battle_printfArgs.integers[c % 10];
                 if (integer < 0) {
                     integer = -integer;
                     *dest++ = '-';
@@ -1033,7 +1033,7 @@ char* vs_battle_printf(char* dest, char* src)
                 break;
             case vs_char_printDecimal:
                 c = *src++;
-                integer = vs_battle_stringContext.integers[c % 10];
+                integer = vs_battle_printfArgs.integers[c % 10];
                 if (integer < 0) {
                     integer = -integer;
                     *dest++ = '-';
@@ -1062,8 +1062,8 @@ char* vs_battle_printf(char* dest, char* src)
                 }
                 break;
             case vs_char_printString:
-                dest = vs_battle_printf(
-                    dest, vs_battle_stringContext.strings[(u_char)*src++]);
+                dest =
+                    vs_battle_printf(dest, vs_battle_printfArgs.strings[(u_char)*src++]);
                 break;
             default:
                 *dest++ = c;
@@ -1133,7 +1133,8 @@ int selectTextBox(u_char boxMask)
             yPositions[sortedIndex] = 0x7FFF;
         }
 
-        selectedIndex = vs_main_stateFlags.unk11 - 1;
+        // The second scratch flag is the script's preselected choice (1-based)
+        selectedIndex = vs_main_stateFlags.scriptScratch[1] - 1;
 
         if (selectedIndex >= count) {
             selectedIndex = 0;
@@ -1409,7 +1410,7 @@ void printVariableWidthFont(vs_TextBox* arg0)
                     break;
                 case 0xFD: // Print hex
                     hexBufPos = 0;
-                    var_a2 = vs_battle_stringContext.integers[opcodeParam % 10];
+                    var_a2 = vs_battle_printfArgs.integers[opcodeParam % 10];
                     var_a0 = 0x10000000;
                     if (var_a2 < 0) {
                         var_a2 = -var_a2;
@@ -1449,7 +1450,7 @@ void printVariableWidthFont(vs_TextBox* arg0)
                     break;
                 case 0xFE: // Print decimal
                     decBufPos = 0;
-                    decInt = vs_battle_stringContext.integers[opcodeParam % 10];
+                    decInt = vs_battle_printfArgs.integers[opcodeParam % 10];
                     var_a2 = 1000000000;
                     if (decInt < 0) {
                         decInt = -decInt;
@@ -1490,7 +1491,7 @@ void printVariableWidthFont(vs_TextBox* arg0)
                     break;
                 case 0xFF: // Print string reference
                     savedString = currentString;
-                    currentString = (char*)vs_battle_stringContext.strings[opcodeParam];
+                    currentString = (char*)vs_battle_printfArgs.strings[opcodeParam];
                     inInlineString = 1;
                     break;
                 }
@@ -1965,20 +1966,24 @@ void activateGimImage(u_int image, UNUSED void* arg1, UNUSED u_char* arg2)
     }
 }
 
-void func_800C86AC(void)
+void unloadGim(void)
 {
     Gim* var_s0 = gims;
-    int i;
 
     if ((var_s0 != NULL) && (var_s0->loadState == 3)) {
+        int i;
+
         func_8007E0A8(var_s0->vramSlot, var_s0->pageCount, 6);
+
         for (i = 0; i < 3; ++i) {
             if (var_s0->drawMode == 3) {
                 func_8007E0A8(gims->vramSlot + gims->pageCount, 1, 6);
             }
             ++var_s0;
         }
+
         vs_main_freeHeapR(gims);
+
         gims = NULL;
     }
 }
@@ -2500,7 +2505,7 @@ int func_800C930C(int mode)
             }
         }
 
-        vs_battle_stringContext.strings[0] =
+        vs_battle_printfArgs.strings[0] =
             (char*)&vs_battle_menuStrings[vs_battle_menuStrings[mode + 12]];
     } else {
         vs_battle_textBoxes[7].state = 0;
@@ -2893,7 +2898,7 @@ void func_800CA2DC(void)
     } else {
         k = vs_battle_textBoxes[7].state;
         if (!(vs_battle_lowerScreenUiState & 2)
-            && ((k == 0) || (k != (vs_battle_textBoxes[7].unk22 + 1)))) {
+            && ((k == 0) || (k != (vs_battle_textBoxes[7].animationDuration + 1)))) {
             k = 0xB80008;
 
             for (i = 0; i < 5; ++i) {
@@ -3340,7 +3345,7 @@ void displaySceneMessage(int arg0, int arg1, int arg2)
     vs_battle_initTextBox(7, 0x304, 0, 1, 0, 3, 0, 0);
 
     D_800EB9D8[0] = 0x00F8 | (0x04FB << 16);
-    vs_battle_stringContext.strings[0] = vs_main_actions[arg1].name;
+    vs_battle_printfArgs.strings[0] = vs_main_actions[arg1].name;
 
     if (arg0 == 12) {
         vs_battle_printf((char*)&D_800EB9D8[1],
@@ -3352,7 +3357,7 @@ void displaySceneMessage(int arg0, int arg1, int arg2)
                                                                 + 22]]);
     } else {
         if (arg1 != 0) {
-            vs_battle_stringContext.strings[0] = D_800EBF58[(arg1 - 0x1CA) * 2];
+            vs_battle_printfArgs.strings[0] = D_800EBF58[(arg1 - 458) * 2];
         }
         vs_battle_printf((char*)D_800EB9D8, (char*)&D_800EBDDC[D_800EBDDC[arg0]]);
     }
@@ -3514,7 +3519,7 @@ void func_800CB83C(void)
             continue;
         }
 
-        duration = box->unk22;
+        duration = box->animationDuration;
         scale = vs_gametime_tickspeed >> 1;
 
         if (state < 0) {
@@ -4145,7 +4150,7 @@ void vs_battle_initTextBox(
     box->centerX = centerX;
     box->centerY = centerY;
     // looks up { 10, 20, 10, 8 };
-    box->unk22 = ((0x45A5 >> ((box->unk0.unk0_4 * 4))) & 0xF) * 2;
+    box->animationDuration = ((0x45A5 >> ((box->unk0.unk0_4 * 4))) & 0xF) * 2;
 
     if (box->state <= 0) {
         box->state = 1;
@@ -4180,7 +4185,7 @@ int vs_battle_dismissTextBox(int id)
 
     if (box->state != 0) {
         if (box->state > 0) {
-            box->unk22 = 8;
+            box->animationDuration = 8;
             box->state = -1;
             box->unk0.unk0_4 = 0;
         }
@@ -4249,7 +4254,7 @@ void func_800CD158(int id)
         vs_battle_addTile(ot, vs_getRGB0(primTile, 0, 0, 0), vs_getXY(0, y),
             (0xF00000 - (y << 16)) | 320);
     }
-    if (box->state == box->unk22 + 1) {
+    if (box->state == box->animationDuration + 1) {
         func_800CD0FC(y - 7, box->unk0.shape - 1);
     }
 }
@@ -5773,7 +5778,7 @@ void func_800D0C60(D_800F53B8_t* arg0, func_800D0548_arg1* arg1)
 
     if (arg1->actor < 0x10U) {
         func_800A1720(arg1->actor, arg1->bone, &arg1->attachment, sp20);
-        func_800A1108(arg1->actor, &sp10);
+        vs_battle_getActorPosition(arg1->actor, &sp10);
         arg1->saved.pad = sp10.unk0.unk4.pad;
         return;
     }

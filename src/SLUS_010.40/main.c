@@ -1244,7 +1244,7 @@ void vs_main_captureSaveState(void)
 
     vs_main_spawnPoint = vs_battle_spawnPoint;
 
-    func_800A1108(0, &position);
+    vs_battle_getActorPosition(0, &position);
 
     vs_main_spawnPoint.x = position.unk0.unk0.x;
     vs_main_spawnPoint.z = position.unk0.unk0.z;
@@ -2593,10 +2593,7 @@ int vs_main_playMusicSlot(int slot, int volume, int duration)
     return 0;
 }
 
-static UNUSED int vs_main_getcurrentMusicSlot(void)
-{
-    return vs_main_soundData.currentMusicSlot;
-}
+int vs_main_getcurrentMusicSlot(void) { return vs_main_soundData.currentMusicSlot; }
 
 int vs_main_getCurrentMusicId(void)
 {

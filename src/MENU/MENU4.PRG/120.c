@@ -236,13 +236,13 @@ static void initBladeDescription(
 {
     char* str;
 
-    vs_battle_stringContext.strings[9] =
+    vs_battle_printfArgs.strings[9] =
         vs_mainMenu_itemNames[blade->material - 1 + VS_ITEMNAME_BIN_INDEX_wood];
-    vs_battle_stringContext.strings[8] = (char*)&vs_mainMenu_itemHelp
+    vs_battle_printfArgs.strings[8] = (char*)&vs_mainMenu_itemHelp
         [vs_mainMenu_itemHelp[blade->category + VS_ITEMHELP_BIN_INDEX_dagger - 1]];
-    vs_battle_stringContext.strings[7] = (char*)&vs_mainMenu_itemHelp
+    vs_battle_printfArgs.strings[7] = (char*)&vs_mainMenu_itemHelp
         [vs_mainMenu_itemHelp[blade->damageType + VS_ITEMHELP_BIN_INDEX_blunt - 1]];
-    vs_battle_stringContext.strings[6] = (char*)&vs_mainMenu_itemHelp
+    vs_battle_printfArgs.strings[6] = (char*)&vs_mainMenu_itemHelp
         [vs_mainMenu_itemHelp[vs_mainMenu_weaponHands[blade->category - 1]
                               + VS_ITEMHELP_BIN_INDEX_oneHanded]];
 
@@ -263,7 +263,7 @@ static void initGripInfo(vs_UiEquipment* grip, char* menuText[], UNUSED int rowT
 
     u_short* gripId = &grip->id;
 
-    vs_battle_stringContext.strings[5] = (char*)&vs_mainMenu_itemHelp
+    vs_battle_printfArgs.strings[5] = (char*)&vs_mainMenu_itemHelp
         [vs_mainMenu_itemHelp[grip->category + VS_ITEMHELP_BIN_INDEX_shortGrip - 1]];
 
     str = vs_battle_printf(vs_battle_stringBuf,
@@ -2232,9 +2232,9 @@ static void renderSelectedLimbCondition(void)
 {
     vs_UiEquipment_limb* limb =
         &vs_battle_actors[selectedActor - 1]->stats->limbs[selectedElement];
-    vs_battle_stringContext.strings[0] =
+    vs_battle_printfArgs.strings[0] =
         (char*)&vs_battle_statusStrings[vs_battle_statusStrings[limb->nameIndex]];
-    vs_battle_stringContext.strings[1] =
+    vs_battle_printfArgs.strings[1] =
         (char*)&statusStrings[statusStrings[vs_battle_getLimbStatus(limb)
                                             + VS_status_INDEX_critical]];
     vs_battle_printf(vs_battle_stringBuf, (char*)&statusStrings[VS_status_OFFSET_values]);

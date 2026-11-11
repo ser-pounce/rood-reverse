@@ -614,7 +614,7 @@ void vs_battle_saveEnemyState(int actorId, int arg1)
 
     temp_v0->actorState = func_800E6694(actorId);
 
-    func_800A1108(actorId, &sp10);
+    vs_battle_getActorPosition(actorId, &sp10);
     func_800A36E0(actorId, stats->unk30, &sp10);
 
     temp_v0->tile = sp10.unk0.unk0;
@@ -1689,7 +1689,7 @@ int func_8006C5AC(int arg0)
     for (i = 0; i < temp_s3->targetCount; ++i) {
         if (temp_s3->targets[i].kind == 0) {
 
-            func_800A1108(temp_s3->targets[i].unk0.hit.targetActor, &sp10);
+            vs_battle_getActorPosition(temp_s3->targets[i].unk0.hit.targetActor, &sp10);
 
             sp20.vx = sp10.unk0.unk4.vx;
             sp20.vz = sp10.unk0.unk4.vz;
@@ -2582,7 +2582,7 @@ void func_8006E640(int arg0)
     SVECTOR targetPos;
     UNUSED int _[2];
 
-    func_800A1108(arg0, &sp10);
+    vs_battle_getActorPosition(arg0, &sp10);
     targetPos.vx = sp10.unk0.unk4.vx;
     targetPos.vz = sp10.unk0.unk4.vz;
     targetPos.vy = sp10.unk0.unk4.vy - 0x5A;
@@ -2628,7 +2628,7 @@ int func_8006E7F0(void)
     int temp_s1;
     vs_ActorStats* stats;
 
-    func_800A1108(0, &position);
+    vs_battle_getActorPosition(0, &position);
     func_80074B14(0, &position.unk0.unk0);
     stats = vs_battle_characterState->stats;
     temp_s1 = func_800A0BE0(0);
@@ -2757,7 +2757,7 @@ int func_8006EBF8(void)
     if (D_800F1968 == 0) {
         func_800A4D8C();
     }
-    func_800A1108(0, &sp10);
+    vs_battle_getActorPosition(0, &sp10);
 
     position.vx = sp10.unk0.unk4.vx << 0xC;
     position.vy = (sp10.unk0.unk4.vy << 0xC) + 0xFFFA6000;
@@ -2820,7 +2820,7 @@ void func_8006EC7C(void)
     }
 
     func_800AA850(0, vs_battle_cameraCurrentSpherical.values.yaw & 0xFFF, 0);
-    func_800A1108(0, &sp10);
+    vs_battle_getActorPosition(0, &sp10);
     vs_scratch.camera.position.vx = sp10.unk0.unk4.vx * ONE;
     vs_scratch.camera.position.vz = sp10.unk0.unk4.vz * ONE;
     vs_scratch.camera.position.vy = (sp10.unk0.unk4.vy - 180) * ONE;
@@ -3278,7 +3278,7 @@ void func_8006FD1C(void)
             vs_battle_actors[D_800F19CC->unk8.targets[0].unk0.hit.targetActor]
                 ->stats->unk36;
         D_800F19CC->unk8.targetCount = 1;
-        func_800A1108(saved.unk0.hit.targetActor, &position);
+        vs_battle_getActorPosition(saved.unk0.hit.targetActor, &position);
         D_800F19CC->unk8.unk844.vx = position.unk0.unk4.vx;
         D_800F19CC->unk8.unk844.vz = position.unk0.unk4.vz;
         D_800F19CC->unk8.unk844.vy = position.unk0.unk4.vy;
@@ -3441,7 +3441,7 @@ void func_8007087C(D_800F19CC_t2* arg0)
 {
     vs_ActorPosition sp10;
 
-    func_800A1108(arg0->unk4.unk0.hit.targetActor, &sp10);
+    vs_battle_getActorPosition(arg0->unk4.unk0.hit.targetActor, &sp10);
     arg0->unk844.vx = sp10.unk0.unk4.vx + rsin(sp10.unk0.unk4.pad + ONE / 2);
     arg0->unk844.vz = sp10.unk0.unk4.vz + rcos(sp10.unk0.unk4.pad + ONE / 2);
     arg0->unk844.vy = sp10.unk0.unk4.vy;
@@ -3725,7 +3725,7 @@ void func_8007138C(void)
         return;
     }
 
-    func_800A1108(action->unk4.unk0.hit.targetActor, &actorPosition);
+    vs_battle_getActorPosition(action->unk4.unk0.hit.targetActor, &actorPosition);
     soundPosition.vx = actorPosition.unk0.unk4.vx;
     soundPosition.vz = actorPosition.unk0.unk4.vz;
     soundPosition.vy = actorPosition.unk0.unk4.vy;
@@ -3992,7 +3992,7 @@ void func_80071F68(int arg0)
     D_800F19CC->unk29A0.unk0 = vs_main_actions[action].shape;
     spec = &vs_main_actions[action];
     D_800F19CC->unk29A0.unk1 = 1;
-    func_800A1108(D_800F19CC->unk8.unk4.unk0.hit.targetActor, &state);
+    vs_battle_getActorPosition(D_800F19CC->unk8.unk4.unk0.hit.targetActor, &state);
     D_800F19CC->unk29A0.unk2 = state.unk0.unk4.pad;
     stats = vs_battle_actors[D_800F19CC->unk8.unk4.unk0.hit.targetActor]->stats;
 
@@ -4147,7 +4147,7 @@ void func_80072734(int arg0)
     D_800F19CC->unk29A0.unk0 = vs_main_actions[action].shape;
     spec = &vs_main_actions[action];
     D_800F19CC->unk29A0.unk1 = 2;
-    func_800A1108(D_800F19CC->unk8.unk4.unk0.hit.targetActor, &state);
+    vs_battle_getActorPosition(D_800F19CC->unk8.unk4.unk0.hit.targetActor, &state);
     D_800F19CC->unk29A0.unk2 = state.unk0.unk4.pad;
     count = 0;
 
@@ -4239,7 +4239,7 @@ void func_80072BA8(int action)
     if (action == 0) {
         D_800F19CC->unk29A0.unk0 = 1;
         D_800F19CC->unk29A0.unk1 = 3;
-        func_800A1108(0, &state);
+        vs_battle_getActorPosition(0, &state);
         D_800F19CC->unk29A0.unk2 = state.unk0.unk4.pad;
         D_800F19CC->unk29A0.unk4.values[0] = 4;
         D_800F19CC->unk29A0.unk4.values[1] = 4;
@@ -4250,7 +4250,7 @@ void func_80072BA8(int action)
 
         D_800F19CC->unk29B0.unk0 = 2;
         D_800F19CC->unk29B0.unk1 = 3;
-        func_800A1108(1, &state);
+        vs_battle_getActorPosition(1, &state);
         D_800F19CC->unk29B0.unk2 = state.unk0.unk4.pad;
         D_800F19CC->unk29B0.unk4.values[0] = 4;
         D_800F19CC->unk29B0.unk4.values[1] = 4;
@@ -4370,7 +4370,7 @@ void initBattleCameraTransition(void)
     vs_battle_cameraTransition->toNearClip = 4;
     vs_battle_cameraTransition->toProjectionDistance = 224;
     vs_battle_cameraTransition->toFarClip = 0x2000;
-    func_800A1108(0, &sp20);
+    vs_battle_getActorPosition(0, &sp20);
 
     vs_battle_cameraTransition->toSpherical.values.yaw = sp20.unk0.unk4.pad;
     vs_battle_cameraTransition->toSpherical.values.pitch = 0;
@@ -4508,7 +4508,7 @@ void func_800735F8(D_800F18EC_t* arg0)
         func_80072EC4(0, (u_short)arg0->executeAbility.s32);
         return;
     case 10:
-        func_800A1108(0, &sp18);
+        vs_battle_getActorPosition(0, &sp18);
         func_8006F4B0(&sp18.unk0);
         vs_battle_setStateFlag(0xB7, 1);
         func_8007C694(arg0->executeAbility.fields.unk0_0,
@@ -4811,7 +4811,7 @@ void func_80074050(MpdRoomSectionA* arg0, int arg1)
     cameraMode = 1;
     func_8006EF10();
     D_800F1910.unk0 = arg0;
-    func_800A1108(arg1, &D_800F1910.unk4);
+    vs_battle_getActorPosition(arg1, &D_800F1910.unk4);
     D_800F1910.unk4.unkC = arg1;
 
     for (i = 0; i < 16; ++i) {
@@ -4903,7 +4903,7 @@ int func_80074374(void)
     short sp18[6];
     int temp_s0;
 
-    func_800A1108(0, (vs_ActorPosition*)sp18);
+    vs_battle_getActorPosition(0, (vs_ActorPosition*)sp18);
     sp10.vx = sp18[2];
     sp10.vz = sp18[4];
     sp10.vy = sp18[3] - 0x5A;
@@ -4999,7 +4999,7 @@ void checkFirstPersonViewExit(void)
     firstPersonViewEnabled = 0;
     D_800F19C8 = 0;
 
-    func_800A1108(0, &sp10);
+    vs_battle_getActorPosition(0, &sp10);
     func_80074B14(0, &sp10.unk0.unk0);
     syncCameraAnglesFromPosition(&vs_battle_cameraTransition->toSpherical);
 
@@ -5073,7 +5073,7 @@ int func_80074860(int arg0)
     vs_ActorPosition sp10;
     u_char sp20[4];
 
-    func_800A1108(arg0, &sp10);
+    vs_battle_getActorPosition(arg0, &sp10);
     func_80074798(&sp10, sp20);
     // BUG: arg2 should be an actor ID?
     return func_800BEC58(4, 0, (int)sp20, 1) == 1;
@@ -5086,7 +5086,7 @@ MpdRoomSectionA* func_800748B8(int arg0)
     MpdRoomSectionA* temp_s1;
     u_char* s0 = sp20;
 
-    func_800A1108(arg0, &sp10);
+    vs_battle_getActorPosition(arg0, &sp10);
     func_80074798(&sp10, sp20);
     temp_s1 = func_8008BC04(s0[0], s0[2], s0[1]);
     if (((((func_8008DC7C((s0[0] << 7) | 0x40, (s0[2] << 7) | 0x40) << 0x11) >> 0x11)
@@ -5106,7 +5106,7 @@ MpdRoomSection13* func_80074950(int arg0)
     int temp_s2;
     u_char* s1 = sp20;
 
-    func_800A1108(arg0, &sp10);
+    vs_battle_getActorPosition(arg0, &sp10);
     temp_s2 = func_80074798(&sp10, sp20);
     temp_v0 = func_8008D508(s1[0], s1[2], s1[1]);
 
@@ -5136,7 +5136,7 @@ int func_80074A20(int arg0)
             func_80095B7C(arg0, 0);
             vs_battle_actors[arg0]->unk8 = 0x20;
             if (vs_battle_actors[arg0]->unk26 == 0) {
-                func_8009F314(arg0, &D_800F19CC->unk29A0.unk8.vec, 1);
+                startActorDeath(arg0, &D_800F19CC->unk29A0.unk8.vec, 1);
                 func_800A09D8(arg0, 1);
                 if ((vs_battle_actors[arg0]->unk27 != 0x80) || (arg0 == 0)) {
                     ret = 1;
@@ -5533,7 +5533,7 @@ int func_80075554(void)
             continue;
         }
 
-        func_800A1108(i, &position);
+        vs_battle_getActorPosition(i, &position);
 
         if (actor->unkB_0) {
             func_800AE4FC(actor->unk44, actor->unkB_0);
@@ -5582,7 +5582,7 @@ int func_80075554(void)
                 func_800B64CC(i, actor->commandArgs.s16[0],
                     actor->commandArgs.s16[1] << 12, actor->commandArgs.s16[0]);
             } else {
-                func_800A1108(actor->unkA, &target);
+                vs_battle_getActorPosition(actor->unkA, &target);
                 angle = ratan2(target.unk0.unk4.vx - position.unk0.unk4.vx,
                             target.unk0.unk4.vz - position.unk0.unk4.vz)
                       + 0x800;
@@ -5604,7 +5604,7 @@ int func_80075554(void)
             }
 
             if (actor->unkA < 16) {
-                func_800A1108(actor->unkA, &target);
+                vs_battle_getActorPosition(actor->unkA, &target);
                 angle = ratan2(target.unk0.unk4.vx - position.unk0.unk4.vx,
                             target.unk0.unk4.vz - position.unk0.unk4.vz)
                       + 0x800;
@@ -5673,7 +5673,7 @@ int func_80075554(void)
             if (actor->unkA >= 16) {
                 angle = position.unk0.unk4.pad;
             } else {
-                func_800A1108(actor->unkA, &target);
+                vs_battle_getActorPosition(actor->unkA, &target);
                 angle = ratan2((target.unk0.unk0.x - actor->commandArgs.u8[0]) << 12,
                             (target.unk0.unk0.z - actor->commandArgs.u8[2]) << 12)
                       + 0x800;
@@ -5696,7 +5696,7 @@ int func_80075554(void)
             if (actor->unkA >= 16) {
                 angle = ratan2(offset.vx, offset.vz) + 0x800;
             } else {
-                func_800A1108(actor->unkA, &target);
+                vs_battle_getActorPosition(actor->unkA, &target);
                 angle = ratan2(target.unk0.unk4.vx - position.unk0.unk4.vx,
                             target.unk0.unk4.vz - position.unk0.unk4.vz)
                       + 0x800;
@@ -5719,7 +5719,7 @@ int func_80075554(void)
             if (actor->unkA >= 16) {
                 angle = ratan2(offset.vx, offset.vz) + 0x800;
             } else {
-                func_800A1108(actor->unkA, &target);
+                vs_battle_getActorPosition(actor->unkA, &target);
                 angle = ratan2(target.unk0.unk4.vx - position.unk0.unk4.vx,
                             target.unk0.unk4.vz - position.unk0.unk4.vz)
                       + 0x800;
@@ -5736,7 +5736,7 @@ int func_80075554(void)
             if (actor->unkA >= 16) {
                 angle = ratan2(offset.vx, offset.vz) + 0x800;
             } else {
-                func_800A1108(actor->unkA, &target);
+                vs_battle_getActorPosition(actor->unkA, &target);
                 angle = ratan2(target.unk0.unk4.vx - position.unk0.unk4.vx,
                             target.unk0.unk4.vz - position.unk0.unk4.vz)
                       + 0x800;
@@ -5766,7 +5766,7 @@ int func_80075554(void)
                 offset.vz = actor->commandArgs.s16[2] / ONE - position.unk0.unk4.vz;
                 angle = ratan2(offset.vx, offset.vz) + 0x800;
             } else {
-                func_800A1108(actor->unkA, &target);
+                vs_battle_getActorPosition(actor->unkA, &target);
                 angle = ratan2(target.unk0.unk4.vx - position.unk0.unk4.vx,
                             target.unk0.unk4.vz - position.unk0.unk4.vz)
                       + 0x800;
@@ -5782,7 +5782,7 @@ int func_80075554(void)
                 offset.vz = actor->commandArgs.u8[2] / ONE - position.unk0.unk0.z;
                 angle = ratan2(offset.vx, offset.vz) + 0x800;
             } else {
-                func_800A1108(actor->unkA, &target);
+                vs_battle_getActorPosition(actor->unkA, &target);
                 angle = ratan2(target.unk0.unk4.vx - position.unk0.unk4.vx,
                             target.unk0.unk4.vz - position.unk0.unk4.vz)
                       + 0x800;
@@ -6712,7 +6712,7 @@ int isLookAtAtDestination(void)
     func_80077DF0_t sp10;
     vs_ActorPosition sp30;
 
-    func_800A1108(0, &sp30);
+    vs_battle_getActorPosition(0, &sp30);
     sp10.position.vx = sp30.unk0.unk4.vx * ONE;
     sp10.position.vy = sp30.unk0.unk4.vy * ONE + 0xFFFA6000;
     sp10.position.vz = sp30.unk0.unk4.vz * ONE;
@@ -7526,7 +7526,7 @@ void vs_battle_exec(void)
 
                     func_8008C8A8();
                     status = func_800A0BE0(0);
-                    func_800A1108(0, &position);
+                    vs_battle_getActorPosition(0, &position);
 
                     if ((vs_battle_screenTransitionStep != 1)
                         && (vs_battle_screenTransitionStep != 2)
@@ -8740,7 +8740,10 @@ void func_8007C28C(int arg0)
 
 void func_8007C31C(void) { func_80086754(0, vs_battle_characterState->stats); }
 
-void func_8007C348(int arg0, int arg1) { func_8009F314(arg0, NULL, arg1); }
+void triggerActorDeath(int actorId, int animate)
+{
+    startActorDeath(actorId, NULL, animate);
+}
 
 int func_8007C36C(int arg0)
 {
@@ -8830,7 +8833,7 @@ void func_8007C580(vs_Warp* arg0, int arg1, int arg2)
     vs_ActorPosition sp10;
 
     func_8007C4E0(arg0, arg1, arg2);
-    func_800A1108(0, &sp10);
+    vs_battle_getActorPosition(0, &sp10);
     func_8008B960(sp10.unk0.unk0.x, sp10.unk0.unk0.z, sp10.unk0.unk0.surface);
 }
 
@@ -8852,7 +8855,7 @@ void func_8007C654(vs_Warp* arg0, int arg1, int arg2)
     vs_ActorPosition sp10;
 
     func_8007C5C0(arg0, arg1, arg2);
-    func_800A1108(0, &sp10);
+    vs_battle_getActorPosition(0, &sp10);
     func_8008B960(sp10.unk0.unk0.x, sp10.unk0.unk0.z, sp10.unk0.unk0.surface);
 }
 
@@ -8871,7 +8874,7 @@ int func_8007C694(int arg0, int arg1, int arg2, int effect, int speed)
     vs_battle_spawnPoint.z = arg2;
     vs_battle_spawnPoint.targetTile.arrivalSurface = 0;
 
-    func_800A1108(0, &sp10);
+    vs_battle_getActorPosition(0, &sp10);
 
     temp_v1_2 = sp10.unk0.unk4.pad + 0x200;
     var_a0 = temp_v1_2 - ((temp_v1_2 / ONE) * ONE);
@@ -9100,7 +9103,7 @@ void initialiseCameraFromSpherical(
         vs_battle_cameraCurrentSpherical.values.distance = 0x900;
         vs_battle_cameraCurrentSpherical.delta.mode = mode;
     }
-    func_800A1108(0, &sp10);
+    vs_battle_getActorPosition(0, &sp10);
     outputLookAt->vx = sp10.unk0.unk4.vx << 0xC;
     outputLookAt->vy = (sp10.unk0.unk4.vy << 0xC) + 0xFFFA6000;
     outputLookAt->vz = sp10.unk0.unk4.vz << 0xC;
@@ -15063,7 +15066,7 @@ void func_80089888(void)
         }
         func_800A9D24(0, &sp10, 0);
     }
-    func_800A1108(0, &sp18);
+    vs_battle_getActorPosition(0, &sp18);
     func_8009E5C4(0);
     func_800A4828(0, &vs_scratch.viewMatrix);
     func_800A0A1C(0, 0);
@@ -15319,7 +15322,7 @@ void func_80089DC0(int arg0)
 
     D_800F1908 = 0;
 
-    func_800A1108(0, &sp40);
+    vs_battle_getActorPosition(0, &sp40);
 
     sp20.vx = sp40.unk0.unk4.vx * ONE;
     sp20.vy = sp40.unk0.unk4.vy * ONE - 90 * ONE;
@@ -15331,7 +15334,7 @@ void func_80089DC0(int arg0)
     vs_scratch.camera.angles.vy = vs_battle_cameraCurrentSpherical.values.yaw;
 
     setCameraPositionFromAngles(&vs_battle_cameraCurrentSpherical.values);
-    func_800A1108(0, &sp40);
+    vs_battle_getActorPosition(0, &sp40);
     func_80074B14(0, &sp40.unk0.unk0);
     func_8007D360();
     vs_main_commitClut();
@@ -15422,7 +15425,7 @@ int func_8008A4FC(void)
     int var_a1;
     vs_battle_tilePosition* s0;
 
-    func_800A1108(0, &sp10);
+    vs_battle_getActorPosition(0, &sp10);
 
     temp_v0_2 = func_800A0BE0(0);
     temp_a2 = temp_v0_2 & 0x70000;

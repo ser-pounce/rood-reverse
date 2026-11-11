@@ -554,7 +554,7 @@ void moveActorToCoordinate(int id, SVECTOR* target, int arg2, int arg3)
     }
 
     angle = (short)angle;
-    func_800A9EB4(id, angle, arg3);
+    turnActorToFacing(id, angle, arg3);
 
     if (arg2 == -1) {
         actor->unk5C4 = actor->unk5C2;
@@ -660,7 +660,7 @@ void slideActorToCoordinate(int arg0, SVECTOR* arg1, int arg2)
     temp_s1->unk5C2 = temp_s0;
 }
 
-void func_800A9E38(int arg0, short arg1, int arg2)
+void turnActorToRelativeFacing(int arg0, short arg1, int arg2)
 {
     u_short temp_s0;
     D_800F4538_t* temp_s1 = D_800F4538[arg0];
@@ -678,7 +678,7 @@ void func_800A9E38(int arg0, short arg1, int arg2)
     temp_s1->unk5C0 = temp_s0;
 }
 
-void func_800A9EB4(int arg0, short arg1, int arg2)
+void turnActorToFacing(int arg0, short arg1, int arg2)
 {
     u_short temp_s0;
     D_800F4538_t* temp_s1 = D_800F4538[arg0];
@@ -1967,7 +1967,7 @@ void processActorMove(int arg0, D_800F4538_t* arg1)
             if (facing != 32768) {
                 facing = facing & 0xFFF;
                 if ((arg1->unk5AC_2) == 0) {
-                    func_800A9EB4(arg0, facing, arg1->unk5C6);
+                    turnActorToFacing(arg0, facing, arg1->unk5C6);
                 } else {
                     func_800AA850(arg0, facing, arg1->unk5C6);
                 }

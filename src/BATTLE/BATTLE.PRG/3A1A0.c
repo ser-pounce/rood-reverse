@@ -140,7 +140,7 @@ void func_800A2CD4(D_800F4538_t* arg0)
     case 1:
         vs_battle_setActorAnimation(arg0->unk0.unkF, 9, 0, 8);
         slideActorToTile(arg0->unk0.unkF, &arg0->unk5EC.tile, -1);
-        func_800A9EB4(arg0->unk0.unkF, arg0->unk5EC.vec.pad, 8);
+        turnActorToFacing(arg0->unk0.unkF, arg0->unk5EC.vec.pad, 8);
         arg0->unk5CA = arg0->unk0.unk1A;
         arg0->unk0.unk1A = 0;
 
@@ -185,7 +185,7 @@ void func_800A2CD4(D_800F4538_t* arg0)
         vs_battle_setActorAnimation(arg0->unk0.unkF, 7, 0, 8);
         func_800A01C8(arg0->unk0.unkF, 37, 8, 0);
         func_800AA620(arg0->unk0.unkF, &arg0->unk5EC.vec, -1);
-        func_800A9EB4(arg0->unk0.unkF, arg0->unk5EC.vec.pad, 8);
+        turnActorToFacing(arg0->unk0.unkF, arg0->unk5EC.vec.pad, 8);
         arg0->unk5CA = arg0->unk0.unk1A;
         arg0->unk0.unk1A = 0;
         arg0->unk0.unkA_5 = 1;

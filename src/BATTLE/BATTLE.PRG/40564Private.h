@@ -35,11 +35,11 @@ VS_HIDDEN(func_800A9D24);
 void slideActorToCoordinate(int, SVECTOR*, int);
 VS_HIDDEN(slideActorToCoordinate);
 
-void func_800A9E38(int, short, int);
-VS_HIDDEN(func_800A9E38);
+void turnActorToRelativeFacing(int, short, int);
+VS_HIDDEN(turnActorToRelativeFacing);
 
-void func_800A9EB4(int, short, int);
-VS_HIDDEN(func_800A9EB4);
+void turnActorToFacing(int, short, int);
+VS_HIDDEN(turnActorToFacing);
 
 void func_800A9F64(int, SVECTOR*, int);
 VS_HIDDEN(func_800A9F64);

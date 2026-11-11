@@ -561,7 +561,7 @@ void func_800A208C(D_800F4538_t* actor, vs_TilePosition* target, int speed, shor
     actor->unk181A = 2;
     vs_battle_setActorAnimation(actor->unk0.unkF, animation, 0, 4);
     actor->unk0.unkA_0 = 2;
-    func_800A9EB4(actor->unk0.unkF, facing, 8);
+    turnActorToFacing(actor->unk0.unkF, facing, 8);
 }
 
 void func_800A249C(int arg0, int arg1)
@@ -614,7 +614,7 @@ void func_800A249C(int arg0, int arg1)
 void func_800A2574(int arg0, short arg1)
 {
     D_800F4538_t* temp_s1 = D_800F4538[arg0];
-    func_800A9EB4(arg0, arg1, 8);
+    turnActorToFacing(arg0, arg1, 8);
     func_8009DF3C(arg0, 3);
     temp_s1->unk0.unkB_4 = 6;
 }

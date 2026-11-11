@@ -1246,39 +1246,56 @@ int vs_battle_script_2A_walkActorToCoordinate(u_char* script, UNUSED short arg1)
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_2B(u_char* arg0, UNUSED short arg1)
+/**
+ * Turns an actor to face a direction.
+ * @param script Opcode bytes:
+ *   - [1-2] = actor selector
+ *   - [3] = facing (1/256 turn)
+ *   - [4] = turn direction: 0 = shortest, 1 = positive, -1 = negative
+ *   - [5] = frame count, 0 = immediately, 0xFF = default (from angle and the actor's
+ *     unk5C0)
+ */
+int vs_battle_script_2B_turnActorToFacing(u_char* script, UNUSED short arg1)
 {
-    vs_ActorPosition sp10;
-    u_short temp_s1 = resolveActorId(getShort(arg0 + 1));
-    short var_s2 = arg0[5] != 0xFF ? arg0[5] : -1;
-    int var_a1;
+    vs_ActorPosition position;
+    u_short actor = resolveActorId(getShort(script + 1));
+    short frames = script[5] != 0xFF ? script[5] : -1;
 
-    if (arg0[4] != 0) {
-        vs_battle_getActorPosition(temp_s1, &sp10);
-        var_a1 = (arg0[3] << 4) - sp10.unk0.unk4.pad;
-        if (var_a1 < -ONE / 2) {
-            var_a1 += ONE;
+    if (script[4] != 0) {
+        int angle;
+
+        vs_battle_getActorPosition(actor, &position);
+
+        angle = (script[3] << 4) - position.unk0.unk4.pad;
+
+        if (angle < -ONE / 2) {
+            angle += ONE;
         }
-        if (var_a1 > ONE / 2) {
-            var_a1 -= ONE;
+
+        if (angle > ONE / 2) {
+            angle -= ONE;
         }
-        switch ((signed char)arg0[4]) {
+
+        switch ((signed char)script[4]) {
         case -1:
-            if (var_a1 > 0) {
-                var_a1 -= ONE;
+            if (angle > 0) {
+                angle -= ONE;
             }
             break;
         case 1:
-            if (var_a1 < 0) {
-                var_a1 += ONE;
+            if (angle < 0) {
+                angle += ONE;
             }
             break;
         }
-        func_800A9E38(temp_s1, var_a1, var_s2);
+
+        turnActorToRelativeFacing(actor, angle, frames);
     } else {
-        func_800A9EB4(temp_s1, arg0[3] << 4, var_s2);
+        turnActorToFacing(actor, script[3] << 4, frames);
     }
-    D_800F4B70[temp_s1] = 1;
+
+    D_800F4B70[actor] = 1;
+
     return vs_battle_scriptNext;
 }
 

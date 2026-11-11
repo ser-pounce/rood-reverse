@@ -110,8 +110,8 @@ VS_HIDDEN(func_8009F8DC);
 void setActorsSfxOverride(int, SfxOverride*);
 VS_HIDDEN(setActorsSfxOverride);
 
-int func_8009FBD8(int, int);
-VS_HIDDEN(func_8009FBD8);
+int setActorMoveAnimation(int, int);
+VS_HIDDEN(setActorMoveAnimation);
 
 int setActorLook(int, int, SVECTOR*, int);
 VS_HIDDEN(setActorLook);

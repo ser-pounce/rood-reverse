@@ -3571,7 +3571,7 @@ void func_8009FB64(VECTOR* arg0)
     }
 }
 
-int func_8009FBD8(int arg0, int arg1)
+int setActorMoveAnimation(int arg0, int arg1)
 {
     UNUSED int _[2];
     D_800F4538_t* temp_a0 = D_800F4538[arg0];

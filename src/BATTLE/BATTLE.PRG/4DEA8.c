@@ -1540,15 +1540,24 @@ int vs_battle_script_36_queueAnimationFromFrame(u_char* script, UNUSED short arg
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_37(u_char* arg0, UNUSED short arg1)
+/**
+ * Sets the animation an actor plays while moving with moveActorToTile or
+ * moveActorToCoordinate.
+ * @param script Opcode bytes:
+ *   - [1-2] = actor selector
+ *   - [3] = animation bank, selects the base id in animationBankBase
+ *   - [4] = animation index within the bank, 0xFF = the default
+ */
+int vs_battle_script_37_setActorMoveAnimation(u_char* script, UNUSED short arg1)
 {
-    int temp_a0 = resolveActorId(getShort(arg0 + 1));
+    int actor = resolveActorId(getShort(script + 1));
 
-    if (arg0[4] == 0xFF) {
-        func_8009FBD8(temp_a0, -1);
+    if (script[4] == 0xFF) {
+        setActorMoveAnimation(actor, -1);
     } else {
-        func_8009FBD8(temp_a0, animationBankBase[arg0[3]] + arg0[4]);
+        setActorMoveAnimation(actor, animationBankBase[script[3]] + script[4]);
     }
+
     return vs_battle_scriptNext;
 }
 

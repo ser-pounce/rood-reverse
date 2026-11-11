@@ -1108,10 +1108,10 @@ int vs_battle_script_26_moveActorToCoordinate(u_char* arg0, UNUSED short arg1)
     }
 
     if (scriptSkipMode == vs_battle_scriptSkipping) {
-        func_800A9988(actor, &position.unk0.unk4, 0, 0);
+        moveActorToCoordinate(actor, &position.unk0.unk4, 0, 0);
     } else {
-        func_800A9988(actor, &position.unk0.unk4, arg0[10] != 0xFF ? arg0[10] : -1,
-            arg0[11] != 0xFF ? arg0[11] : -1);
+        moveActorToCoordinate(actor, &position.unk0.unk4,
+            arg0[10] != 0xFF ? arg0[10] : -1, arg0[11] != 0xFF ? arg0[11] : -1);
     }
 
     func_8009DC8C(actor);

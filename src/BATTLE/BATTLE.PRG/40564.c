@@ -506,7 +506,7 @@ void moveActorToTile(int arg0, vs_TilePosition* arg1, int arg2, int arg3)
     }
 }
 
-void func_800A9988(int id, SVECTOR* target, int arg2, int arg3)
+void moveActorToCoordinate(int id, SVECTOR* target, int arg2, int arg3)
 {
     D_800F4538_t* actor = D_800F4538[id];
     int angle;

@@ -20,8 +20,8 @@ VS_HIDDEN(func_800A9378);
 void moveActorToTile(int, vs_TilePosition*, int, int);
 VS_HIDDEN(moveActorToTile);
 
-void func_800A9988(int, SVECTOR*, int, int);
-VS_HIDDEN(func_800A9988);
+void moveActorToCoordinate(int, SVECTOR*, int, int);
+VS_HIDDEN(moveActorToCoordinate);
 
 void func_800A9C54(int, vs_TilePosition*, int);
 VS_HIDDEN(func_800A9C54);

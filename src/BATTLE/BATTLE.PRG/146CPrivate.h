@@ -212,8 +212,8 @@ VS_HIDDEN(func_8007CFCC);
 void walkActorToCoordinate(int, SVECTOR*);
 VS_HIDDEN(walkActorToCoordinate);
 
-int func_8007D03C(int);
-VS_HIDDEN(func_8007D03C);
+int isActorWalkDone(int);
+VS_HIDDEN(isActorWalkDone);
 
 int func_8007D08C(int, int);
 VS_HIDDEN(func_8007D08C);

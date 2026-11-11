@@ -50,7 +50,7 @@ VS_HIDDEN(func_800E4C1C);
 void func_800E4C28(int, int);
 VS_HIDDEN(func_800E4C28);
 
-int func_800E5154(void);
+int func_800E5154(int);
 VS_HIDDEN(func_800E5154);
 
 void func_800E5998(void);

@@ -9176,9 +9176,9 @@ void walkActorToCoordinate(int arg0, SVECTOR* arg1)
     func_800E527C(arg0, arg1->vx, arg1->vz);
 }
 
-int func_8007D03C(int arg0)
+int isActorWalkDone(int arg0)
 {
-    int temp_v0 = func_800E5154();
+    int temp_v0 = func_800E5154(arg0);
     if (temp_v0 == 0) {
         func_800A0A1C(arg0, func_800A0A74(arg0) & ~2);
         return 1;

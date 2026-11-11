@@ -1402,7 +1402,7 @@ int vs_battle_script_30_waitActorActivity(u_char* script, UNUSED short arg1)
     u_short mask = getShort(script + 3);
 
     if (mask & 1) {
-        if (func_8007D03C(actor) == 0) {
+        if (isActorWalkDone(actor) == 0) {
             status |= 1;
         }
     }

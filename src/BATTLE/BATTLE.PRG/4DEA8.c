@@ -931,7 +931,7 @@ int vs_battle_script_21_walkActorToTile(u_char* script, UNUSED short arg1)
         destination.pad = -0x8000;
         slideActorToCoordinate(actor, &destination, 0);
     } else {
-        func_8007CFF8(actor, &destination);
+        walkActorToCoordinate(actor, &destination);
     }
 
     func_8009DC8C(actor);
@@ -1217,21 +1217,32 @@ int vs_battle_script_29_attachActor(u_char* script, UNUSED short arg1)
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_2A_walkActorToCoordinate(u_char* arg0, UNUSED short arg1)
+/**
+ * Like walkActorToTile, but to a position given in world coordinates instead of a tile.
+ * @param script Opcode bytes:
+ *   - [1-2] = actor selector
+ *   - [3-4] = x
+ *   - [5-6] = z
+ */
+int vs_battle_script_2A_walkActorToCoordinate(u_char* script, UNUSED short arg1)
 {
-    SVECTOR sp10;
-    u_short temp_s1 = resolveActorId(getShort(arg0 + 1) & 0xFFFF);
-    sp10.vx = getShort(arg0 + 3);
-    sp10.vy = 0;
-    sp10.vz = getShort(arg0 + 5);
+    SVECTOR destination;
+    u_short actor = resolveActorId(getShort(script + 1));
+    destination.vx = getShort(script + 3);
+    destination.vy = 0;
+    destination.vz = getShort(script + 5);
+
     if (scriptSkipMode == vs_battle_scriptSkipping) {
-        sp10.pad = -0x8000;
-        slideActorToCoordinate(temp_s1, &sp10, 0);
+        destination.pad = -0x8000;
+        slideActorToCoordinate(actor, &destination, 0);
     } else {
-        func_8007CFF8(temp_s1, &sp10);
+        walkActorToCoordinate(actor, &destination);
     }
-    func_8009DC8C(temp_s1);
-    D_800F4B70[temp_s1] = 1;
+
+    func_8009DC8C(actor);
+
+    D_800F4B70[actor] = 1;
+
     return vs_battle_scriptNext;
 }
 

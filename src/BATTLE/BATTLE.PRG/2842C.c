@@ -461,10 +461,10 @@ void func_80091468(int arg0, int arg1)
     D_800F1DB6 = arg1;
 }
 
-void func_8009147C(vs_BackgroundLayout* arg0, int arg1, int arg2, int arg3)
+void func_8009147C(BackgroundLayout* arg0, int arg1, int arg2, int arg3)
 {
     void* buffer = ((vs_Scratch*)0x1F800000)->unk0;
-    vs_BackgroundTile* tiles = arg0->tiles;
+    BackgroundTile* tiles = arg0->tiles;
     int cosStep = rcos(((vs_Scratch*)0x1F800000)->camera.angles.vz) * 32;
     int sinStep = rsin(((vs_Scratch*)0x1F800000)->camera.angles.vz) * 32;
     int row;
@@ -481,7 +481,7 @@ void func_8009147C(vs_BackgroundLayout* arg0, int arg1, int arg2, int arg3)
                         - rsin(((vs_Scratch*)0x1F800000)->camera.angles.vz) * y;
             int screenY = rsin(((vs_Scratch*)0x1F800000)->camera.angles.vz) * x
                         + rcos(((vs_Scratch*)0x1F800000)->camera.angles.vz) * y;
-            vs_BackgroundTile* tile;
+            BackgroundTile* tile;
 
             if ((screenX < -64 * ONE) || (screenX > 384 * ONE) || (screenY < -64 * ONE)
                 || (screenY > 304 * ONE)) {

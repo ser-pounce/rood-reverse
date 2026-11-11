@@ -17,16 +17,16 @@ VS_HIDDEN(func_800A92B8);
 int func_800A9378(int, int, int, int);
 VS_HIDDEN(func_800A9378);
 
-void func_800A97EC(int, vs_battle_tilePosition*, int, int);
+void func_800A97EC(int, vs_TilePosition*, int, int);
 VS_HIDDEN(func_800A97EC);
 
 void func_800A9988(int, SVECTOR*, int, int);
 VS_HIDDEN(func_800A9988);
 
-void func_800A9C54(int, vs_battle_tilePosition*, int);
+void func_800A9C54(int, vs_TilePosition*, int);
 VS_HIDDEN(func_800A9C54);
 
-void func_800A9CDC(int, vs_battle_tilePosition*, int);
+void func_800A9CDC(int, vs_TilePosition*, int);
 VS_HIDDEN(func_800A9CDC);
 
 void func_800A9D24(int, SVECTOR*, int);
@@ -47,7 +47,7 @@ VS_HIDDEN(func_800A9F64);
 void func_800A9FD0(int, SVECTOR*, int);
 VS_HIDDEN(func_800A9FD0);
 
-void func_800AA454(int, vs_battle_tilePosition*, int);
+void func_800AA454(int, vs_TilePosition*, int);
 VS_HIDDEN(func_800AA454);
 
 void func_800AA620(int, SVECTOR*, int);

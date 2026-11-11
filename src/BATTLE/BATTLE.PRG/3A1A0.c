@@ -718,7 +718,7 @@ int func_800A3DB4(int x, int z, int minimumHeight)
 int func_800A3E6C(int actorId)
 {
     SVECTOR position;
-    vs_battle_tilePosition tile;
+    vs_TilePosition tile;
     D_800F4538_t* actor = D_800F4538[actorId];
     D_800F45E0_t* object;
     int objectId;

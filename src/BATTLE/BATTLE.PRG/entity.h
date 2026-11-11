@@ -164,8 +164,8 @@ typedef struct {
     SVECTOR lastPosition;
     CVECTOR unk54;
     CVECTOR unk58;
-    vs_battle_tilePosition currentTile;
-    vs_battle_tilePosition lastTouchedTile;
+    vs_TilePosition currentTile;
+    vs_TilePosition lastTouchedTile;
     D_800F4538_unk64 unk64;
     D_800F4538_unk68* unk68;
 } D_800F4538_unk0;
@@ -226,8 +226,8 @@ typedef struct {
     SVECTOR lastPosition;
     CVECTOR unk54;
     CVECTOR unk58;
-    vs_battle_tilePosition currentTile;
-    vs_battle_tilePosition lastTouchedTile;
+    vs_TilePosition currentTile;
+    vs_TilePosition lastTouchedTile;
     D_800F4538_unk64 unk64;
     D_800F4538_unk68* unk68;
 } D_800F45E0_unk0;
@@ -350,7 +350,7 @@ typedef struct {
     void* unk5DC[4];
     union {
         SVECTOR vec;
-        vs_battle_tilePosition tile;
+        vs_TilePosition tile;
     } unk5EC;
     TexMapOverlay texMapOverlays[8];
     D_800F4538_unk614 unk614[2];
@@ -435,7 +435,7 @@ typedef struct {
     u_char unk1862;
     u_char unk1863;
     D_800F4538_unk1864 unk1864;
-    vs_battle_tilePosition unk1868;
+    vs_TilePosition unk1868;
     void* unk187C;
     u_short unk1880[4][2];
     MATRIX unk1890[2];

@@ -177,7 +177,7 @@ void parsePfileBlock13(void* arg0)
 
 static int loadfile(int lba, int size, void* buf)
 {
-    vs_Main_CdFile cdFile;
+    vs_CdFile cdFile;
 
     if (D_800F568C == NULL) {
         cdFile.lba = lba;

@@ -898,7 +898,7 @@ int vs_battle_script_1F_getActorTile(u_char* script, UNUSED short arg1)
  */
 int vs_battle_script_20_spawnActor(u_char* script, UNUSED short arg1)
 {
-    vs_battle_tilePosition tile[3];
+    vs_TilePosition tile[3];
 
     tile[0].x = script[5];
     tile[0].surface = script[6];
@@ -1023,7 +1023,7 @@ int vs_battle_script_24(u_char* arg0, UNUSED short arg1)
 
 int vs_battle_script_25(u_char* arg0, UNUSED short arg1)
 {
-    vs_battle_tilePosition sp10[3];
+    vs_TilePosition sp10[3];
     u_short temp_v0 = resolveActorId(getShort(arg0 + 1));
     sp10[0].x = arg0[3];
     sp10[0].surface = arg0[4];
@@ -1074,7 +1074,7 @@ int vs_battle_script_26(u_char* arg0, UNUSED short arg1)
 
 int vs_battle_script_27(u_char* arg0, UNUSED short arg1)
 {
-    vs_battle_tilePosition sp10[4];
+    vs_TilePosition sp10[4];
     u_short temp_s0 = resolveActorId(getShort(arg0 + 1));
     sp10[0].x = arg0[3];
     sp10[0].surface = arg0[4];
@@ -1210,7 +1210,7 @@ int vs_battle_script_2C(u_char* arg0, UNUSED short arg1)
 
 int vs_battle_script_2D(u_char* arg0, UNUSED short arg1)
 {
-    vs_battle_tilePosition sp10;
+    vs_TilePosition sp10;
     int temp_s0 = resolveActorId(getShort(arg0 + 1)) & 0xFFFF;
 
     sp10.x = arg0[3];
@@ -2891,7 +2891,7 @@ int vs_battle_script_F2_playMenuSelectSfx(UNUSED u_char* arg0, UNUSED short arg1
 
 void expandActorSelector(u_short arg0, ActorList* arg1)
 {
-    vs_Actor* temp_v0;
+    Actor* temp_v0;
     short var_s3 = 0;
     arg1->remaining = 0;
     arg1->next = 0;

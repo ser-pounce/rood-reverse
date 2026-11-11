@@ -128,7 +128,7 @@ VS_HIDDEN(func_8009FF08);
 int func_8009FFA8(int arg0, int arg1);
 VS_HIDDEN(func_8009FFA8);
 
-int func_800A0024(int arg0, vs_ActorLocation* arg1);
+int func_800A0024(int arg0, ActorLocation* arg1);
 VS_HIDDEN(func_800A0024);
 
 int func_800A0104(int index, int material);

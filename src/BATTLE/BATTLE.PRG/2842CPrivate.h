@@ -29,7 +29,7 @@ VS_HIDDEN(func_800913BC);
 void func_80091468(int, int);
 VS_HIDDEN(func_80091468);
 
-void func_8009147C(vs_BackgroundLayout*, int, int, int);
+void func_8009147C(BackgroundLayout*, int, int, int);
 VS_HIDDEN(func_8009147C);
 
 void func_800918E8(int);

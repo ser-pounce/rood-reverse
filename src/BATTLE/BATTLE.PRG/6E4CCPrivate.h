@@ -59,7 +59,7 @@ VS_HIDDEN(func_800E5998);
 void func_800E6158(void);
 VS_HIDDEN(func_800E6158);
 
-int func_800E6178(vs_Actor*, short);
+int func_800E6178(Actor*, short);
 VS_HIDDEN(func_800E6178);
 
 short func_800E6694(int actorId);
@@ -80,7 +80,7 @@ VS_HIDDEN(func_800E6C34);
 void func_800E6F1C(void);
 VS_HIDDEN(func_800E6F1C);
 
-void func_800E7454(vs_Actor*);
+void func_800E7454(Actor*);
 VS_HIDDEN(func_800E7454);
 
 void func_800E7608(int);

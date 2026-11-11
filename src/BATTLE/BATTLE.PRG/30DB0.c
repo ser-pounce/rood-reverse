@@ -83,15 +83,15 @@ extern u_char D_800E9090[];
 extern u_char D_800E919C[];
 extern void* wepFileData;
 extern int wepFileLoaded;
-extern vs_Main_CdFile wepFile;
-extern vs_Main_CdQueueSlot* wepCdSlot;
+extern vs_CdFile wepFile;
+extern vs_CdQueueSlot* wepCdSlot;
 extern void* shpDataBuf;
 extern int shpAllocated;
-extern vs_Main_CdFile shpFile;
-extern vs_Main_CdQueueSlot* shpCdSlot;
+extern vs_CdFile shpFile;
+extern vs_CdQueueSlot* shpCdSlot;
 extern u_short* etmData;
-extern vs_Main_CdFile etmFile;
-extern vs_Main_CdQueueSlot* etmFileCdSlot;
+extern vs_CdFile etmFile;
+extern vs_CdQueueSlot* etmFileCdSlot;
 extern void* wepFileEpilog;
 extern u_char* D_800F22B4;
 extern u_char D_800F22B8;
@@ -100,8 +100,8 @@ extern int D_800F22C0;
 extern int D_800F22C4;
 extern void* D_800F22C8;
 extern int D_800F22D0;
-extern vs_Main_CdFile D_800F22D8;
-extern vs_Main_CdQueueSlot* D_800F22E0;
+extern vs_CdFile D_800F22D8;
+extern vs_CdQueueSlot* D_800F22E0;
 extern u_char* D_800F22E4;
 extern u_char D_800F244F[];
 extern VECTOR D_800F4438;
@@ -3745,7 +3745,7 @@ int func_8009FFA8(int arg0, int arg1)
     // BUG: no return value, in practice it isn't read by the only caller.
 }
 
-int func_800A0024(int arg0, vs_ActorLocation* arg1)
+int func_800A0024(int arg0, ActorLocation* arg1)
 {
     D_800F45E0_t* temp_s0;
     int var_v0_2;

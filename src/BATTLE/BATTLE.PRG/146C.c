@@ -141,9 +141,9 @@ typedef struct {
 } ZudHeader;
 
 typedef struct {
-    vs_Actor_dat2 unk0;
+    Actor_dat2 unk0;
     char unkB2C[0x1788];
-    vs_ActorSubModel unk22B4;
+    ActorSubModel unk22B4;
     char unk289C[0x1318];
 } func_800775C0_t;
 
@@ -214,8 +214,8 @@ typedef struct {
 } MpdObjectSpawn;
 
 int loadMpdRoomSection(int, void* data);
-int dropMisc(vs_Loot*, vs_UiMisc*);
-int dropMiscRand(vs_Loot*, vs_UiMiscRand*);
+int dropMisc(vs_Loot*, UiMisc*);
+int dropMiscRand(vs_Loot*, UiMiscRand*);
 void snapLookAtToPosition(VECTOR*);
 void func_8006C350(void);
 void func_8006C39C(void);
@@ -228,7 +228,7 @@ void applyArmorStats(vs_UiArmor* arg0, ArmorIntermediate* arg1);
 static void copyUiEquipmentStats(vs_InventoryArmor*, vs_UiEquipment* equipment);
 void func_8006B214(void);
 void func_8006B2D4(void);
-void updateEnemyKills(vs_Actor*);
+void updateEnemyKills(Actor*);
 void drawScreenTransition(void*);
 void updateWeaponKillStreak(int);
 void clampPositionToZoneBounds(VECTOR*, VECTOR*);
@@ -254,12 +254,12 @@ void func_80073718(void);
 void func_80073D30(MpdRoomSectionA*, vs_ActorPosition*, int);
 void func_80073E30(MpdRoomSectionA*, int);
 int func_80074798(vs_ActorPosition*, u_char*);
-void func_80074B14(int arg0, vs_battle_tilePosition* arg1);
+void func_80074B14(int arg0, vs_TilePosition* arg1);
 void func_80076D50(u_int, int, int, int, int);
-void func_80077130(vs_Actor*, int, int, int, int);
-vs_Actor_dat* func_80077240(int, int, int, int, int, int, vs_battle_tilePosition*, int);
-void func_800773BC(vs_Actor*, int, int, int, int, int);
-vs_Actor* func_800775C0(int, MpdEnemy*, vs_CharInitData*, int);
+void func_80077130(Actor*, int, int, int, int);
+Actor_dat* func_80077240(int, int, int, int, int, int, vs_TilePosition*, int);
+void func_800773BC(Actor*, int, int, int, int, int);
+Actor* func_800775C0(int, MpdEnemy*, vs_CharInitData*, int);
 int func_80077F70(void);
 void func_800780A8(SVECTOR*);
 int func_80078828(int);
@@ -412,7 +412,7 @@ extern char D_800F18F8;
 extern int D_800F18FC;
 extern int D_800F1908;
 extern D_800F1910_t D_800F1910;
-extern vs_Actor* D_800F192C;
+extern Actor* D_800F192C;
 extern int D_800F19A0;
 extern u_char D_800F19A8[];
 extern D_800F19CC_t* D_800F19CC;
@@ -452,15 +452,15 @@ extern short D_800F1D68;
 extern u_char D_800F1D6E;
 extern char D_800F1D6F;
 extern u_char D_800F1D70[];
-extern vs_Main_CdQueueSlot* D_800F1DAC;
-extern vs_Main_CdQueueSlot* D_800F1DB0;
+extern vs_CdQueueSlot* D_800F1DAC;
+extern vs_CdQueueSlot* D_800F1DB0;
 extern short D_800F1DB8;
 extern short D_800F1DBA;
 extern short D_800F1DBE;
 extern char D_800F1DC6;
 extern char D_800F1DC8;
 extern u_char D_800F1DC9;
-extern vs_BackgroundLayout* D_800F1DCC;
+extern BackgroundLayout* D_800F1DCC;
 extern u_long* D_800F1DD0;
 extern short D_800F5160;
 
@@ -499,7 +499,7 @@ void func_80069D14(void)
 
     for (i = 0; i < 16; ++i) {
 
-        vs_Actor* actor = vs_battle_actors[i];
+        Actor* actor = vs_battle_actors[i];
 
         if ((actor != NULL) && (actor->unk8 == 0x80)
             && (vs_battle_actors[i]->unk9 == 0x18)) {
@@ -582,7 +582,7 @@ void vs_battle_saveEnemyState(int actorId, int arg1)
     int i;
     vs_SavedEnemyState* temp_v0;
     vs_ActorStats* stats;
-    vs_Actor* temp_s0 = vs_battle_actors[actorId];
+    Actor* temp_s0 = vs_battle_actors[actorId];
 
     if ((temp_s0 == NULL) || (temp_s0->unk27 == 0x80)) {
         return;
@@ -620,7 +620,7 @@ void vs_battle_saveEnemyState(int actorId, int arg1)
     temp_v0->tile = sp10.unk0.unk0;
 }
 
-int insertActor(vs_Actor* actor)
+int insertActor(Actor* actor)
 {
 
     if ((actor->unk1C & 7) && (actor->id != 0)) {
@@ -645,7 +645,7 @@ int insertActor(vs_Actor* actor)
     return 0;
 }
 
-int removeActor(vs_Actor* actor)
+int removeActor(Actor* actor)
 {
     if (actor->id != 0) {
         int i;
@@ -668,7 +668,7 @@ int removeActorById(u_int actorId, int arg1)
 
     if (actorId < 16) {
 
-        vs_Actor* actor = vs_battle_actors[actorId];
+        Actor* actor = vs_battle_actors[actorId];
 
         if (actor != NULL) {
 
@@ -1375,7 +1375,7 @@ int dropShieldRand(vs_LootedShield* looted, vs_UiShield* base)
     return 0;
 }
 
-int dropAccessoryRand(vs_LootedAccessory* looted, vs_UiAccessory* base)
+int dropAccessoryRand(LootedAccessory* looted, vs_UiAccessory* base)
 {
     if (vs_main_getRand(0xFF) < base->dropRate) {
 
@@ -1388,7 +1388,7 @@ int dropAccessoryRand(vs_LootedAccessory* looted, vs_UiAccessory* base)
     return 0;
 }
 
-int dropArmorRand(vs_LootedArmor* looted, vs_UiArmor* base)
+int dropArmorRand(LootedArmor* looted, vs_UiArmor* base)
 {
     if (vs_main_getRand(0xFF) < base->dropRate) {
         int i;
@@ -1407,7 +1407,7 @@ int dropArmorRand(vs_LootedArmor* looted, vs_UiArmor* base)
     return 0;
 }
 
-int dropMisc(vs_Loot* looted, vs_UiMisc* base)
+int dropMisc(vs_Loot* looted, UiMisc* base)
 {
     int ret;
     int i;
@@ -1428,7 +1428,7 @@ int dropMisc(vs_Loot* looted, vs_UiMisc* base)
     return ret;
 }
 
-int dropMiscRand(vs_Loot* looted, vs_UiMiscRand* base)
+int dropMiscRand(vs_Loot* looted, UiMiscRand* base)
 {
     looted->misc[2].id = base->id;
 
@@ -1443,7 +1443,7 @@ int dropMiscRand(vs_Loot* looted, vs_UiMiscRand* base)
     return 0;
 }
 
-void dropLoot(vs_Actor* enemy)
+void dropLoot(Actor* enemy)
 {
     int i;
     vs_ActorStats* stats = enemy->stats;
@@ -1494,7 +1494,7 @@ void dropLoot(vs_Actor* enemy)
     vs_main_freeHeapR(lootList);
 }
 
-void updateEnemyKills(vs_Actor* enemy)
+void updateEnemyKills(Actor* enemy)
 {
     u_int subType = enemy->subType;
 
@@ -1548,7 +1548,7 @@ void updateWeaponKillStreak(UNUSED int arg0)
 
 void enemyDefeated(int arg0, int actorId, int arg2)
 {
-    vs_Actor* enemy = vs_battle_actors[actorId];
+    Actor* enemy = vs_battle_actors[actorId];
 
     if ((enemy->unk27 == 0x80) || (enemy->defeated != 0)) {
         return;
@@ -2970,7 +2970,7 @@ void func_8006F450(u_short* arg0)
     func_800CF3F8(&request, 0);
 }
 
-void func_8006F4B0(vs_ActorLocation* arg0)
+void func_8006F4B0(ActorLocation* arg0)
 {
     ActionEffectRequest request;
 
@@ -3847,7 +3847,7 @@ void func_8007138C(void)
     func_800CF0E8(&request, mode, action->unk2);
 
     if (action->actionIndex >= 141 && action->actionIndex < 224) {
-        vs_Actor* actor = vs_battle_actors[action->unk4.unk0.hit.targetActor];
+        Actor* actor = vs_battle_actors[action->unk4.unk0.hit.targetActor];
 
         object.dataType = 7;
         object.index = action->unk4.unk0.hit.targetActor;
@@ -4300,7 +4300,7 @@ void func_80072EC4(int arg0, int arg1)
 {
     int i;
     u_int temp_v0;
-    vs_Actor* temp_a0;
+    Actor* temp_a0;
 
     D_800F196C = 2;
     vs_main_bzero(&D_800F19CC->unk8, 0x84C);
@@ -4782,7 +4782,7 @@ void func_80073E30(MpdRoomSectionA* arg0, int arg1)
     func_8009E070(0, &sp10, 3);
 }
 
-void func_80073F7C(MpdRoomSectionA* arg0, vs_ActorLocation* arg1, int arg2)
+void func_80073F7C(MpdRoomSectionA* arg0, ActorLocation* arg1, int arg2)
 {
     int i;
 
@@ -5148,7 +5148,7 @@ int func_80074A20(int arg0)
     return ret;
 }
 
-void func_80074B14(int arg0, vs_battle_tilePosition* arg1)
+void func_80074B14(int arg0, vs_TilePosition* arg1)
 {
     u_int temp_v0;
     int var_a2;
@@ -5173,15 +5173,15 @@ void func_80074B14(int arg0, vs_battle_tilePosition* arg1)
     func_8008C40C();
 }
 
-int func_80074BAC(int actorIndex, vs_ActorLocation* position)
+int func_80074BAC(int actorIndex, ActorLocation* position)
 {
-    vs_ActorLocation* coordinates = position;
+    ActorLocation* coordinates = position;
     int flags = vs_battle_getActorFlags(actorIndex);
     u_int cellIndex;
     int actorOffset;
     int result = 0;
     MpdRoomSection3* cell;
-    vs_Actor* actor;
+    Actor* actor;
     int layer = (u_int)flags >> 14;
 
     layer &= 1;
@@ -5203,7 +5203,7 @@ int func_80074BAC(int actorIndex, vs_ActorLocation* position)
     }
 
     actorOffset = actorIndex * sizeof(*vs_battle_actors);
-    actor = *(vs_Actor**)((char*)vs_battle_actors + actorOffset);
+    actor = *(Actor**)((char*)vs_battle_actors + actorOffset);
 
     if (coordinates->unk0.x != actor->currentTile.x
         || coordinates->unk0.surface != actor->currentTile.surface
@@ -5341,15 +5341,15 @@ int func_80074BAC(int actorIndex, vs_ActorLocation* position)
     return 0;
 }
 
-int func_800751B8(int arg0, vs_ActorLocation* arg1)
+int func_800751B8(int arg0, ActorLocation* arg1)
 {
     MpdRoomSection9* temp_v0_2;
     MpdRoomSection3* temp_s4;
     int temp_s3;
     u_int temp_a2;
     u_int temp_v0;
-    vs_Actor* temp_s0;
-    vs_ActorLocation* s2 = arg1;
+    Actor* temp_s0;
+    ActorLocation* s2 = arg1;
     UNUSED int _[4];
 
     temp_v0 = vs_battle_getActorFlags(arg0);
@@ -5407,7 +5407,7 @@ int func_800751B8(int arg0, vs_ActorLocation* arg1)
     return 0;
 }
 
-void func_800753F8(vs_Actor* arg0, SVECTOR* arg1)
+void func_800753F8(Actor* arg0, SVECTOR* arg1)
 {
     if (arg0->commandArgs.s32[0] < 0) {
         if (arg0->commandArgs.s32[0] >= -0x7FFF) {
@@ -5467,7 +5467,7 @@ int func_80075554(void)
         vs_ActorPosition position;
         vs_ActorPosition target;
         int state;
-        vs_Actor* actor = vs_battle_actors[i];
+        Actor* actor = vs_battle_actors[i];
         int angle;
 
         if (actor == NULL || (vs_battle_getActorFlags(i) & 0x1000000)) {
@@ -5923,7 +5923,7 @@ void func_8007647C(int arg0, int arg1)
 {
     int i;
 
-    vs_Actor* temp_s1 = vs_battle_actors[arg0];
+    Actor* temp_s1 = vs_battle_actors[arg0];
     vs_ActorStats* stats = temp_s1->stats;
 
     vs_main_bzero(stats, sizeof *stats);
@@ -5956,13 +5956,13 @@ void func_8007647C(int arg0, int arg1)
     stats->unk957 = 0x80;
 }
 
-vs_Actor* func_800765B0(
-    int index, int actorId, vs_battle_tilePosition* arg2, int material, int arg4)
+Actor* func_800765B0(
+    int index, int actorId, vs_TilePosition* arg2, int material, int arg4)
 {
     vs_ObjectData objData;
     int i;
     int var_v1_2;
-    vs_Actor_dat2* temp_v0;
+    Actor_dat2* temp_v0;
 
     if (index == 0xFF) {
         for (i = 2; i < 16; ++i) {
@@ -6185,7 +6185,7 @@ void func_80076784(int arg0, vs_ActorStats* stats, vs_CharInitData* init, int ar
 
 void func_80076D50(u_int id, int arg1, int arg2, int arg3, int arg4)
 {
-    vs_Actor* temp_s1 = vs_battle_actors[id];
+    Actor* temp_s1 = vs_battle_actors[id];
     vs_ActorStats* stats = temp_s1->stats;
 
     temp_s1->id = id;
@@ -6261,7 +6261,7 @@ void func_80076D50(u_int id, int arg1, int arg2, int arg3, int arg4)
 void func_80076F24(int id, vs_CharInitData* arg1, int arg2, int arg3, int arg4, int arg5)
 {
     int temp_v1;
-    vs_Actor* temp_s0;
+    Actor* temp_s0;
     vs_ActorStats* stats;
 
     temp_s0 = vs_battle_actors[id];
@@ -6313,8 +6313,7 @@ void func_80076F24(int id, vs_CharInitData* arg1, int arg2, int arg3, int arg4, 
     func_80076784(id, stats, arg1, arg5);
 }
 
-int func_80077078(
-    vs_Actor* arg0, int index, int wepId, vs_battle_tilePosition* arg3, int arg4)
+int func_80077078(Actor* arg0, int index, int wepId, vs_TilePosition* arg3, int arg4)
 {
     vs_ObjectData sp10;
 
@@ -6334,7 +6333,7 @@ int func_80077078(
     return vs_battle_populateDataSlot(&sp10);
 }
 
-void func_800770FC(UNUSED vs_Actor* arg0, int arg1)
+void func_800770FC(UNUSED Actor* arg0, int arg1)
 {
     vs_ObjectData sp10;
 
@@ -6345,7 +6344,7 @@ void func_800770FC(UNUSED vs_Actor* arg0, int arg1)
     vs_battle_populateDataSlot(&sp10);
 }
 
-void func_80077130(vs_Actor* actor, int actorId, int wepId, int isShield, int material)
+void func_80077130(Actor* actor, int actorId, int wepId, int isShield, int material)
 {
     vs_ObjectData sp10;
 
@@ -6382,11 +6381,11 @@ void func_800771E0(char* arg0, int arg1, int arg2, int arg3)
     }
 }
 
-vs_Actor_dat* func_80077240(int arg0, int arg1, int bladeWepId, int bladeMaterial,
-    int shieldWepId, int shieldMaterial, vs_battle_tilePosition* arg6, int arg7)
+Actor_dat* func_80077240(int arg0, int arg1, int bladeWepId, int bladeMaterial,
+    int shieldWepId, int shieldMaterial, vs_TilePosition* arg6, int arg7)
 {
     int i;
-    vs_Actor_dat* temp_v0;
+    Actor_dat* temp_v0;
     UNUSED int _[6];
 
     if (vs_battle_actors[arg0] != NULL) {
@@ -6425,7 +6424,7 @@ vs_Actor_dat* func_80077240(int arg0, int arg1, int bladeWepId, int bladeMateria
     return NULL;
 }
 
-void func_800773BC(vs_Actor* arg0, int arg1, int arg2, int arg3, int arg4, int arg5)
+void func_800773BC(Actor* arg0, int arg1, int arg2, int arg3, int arg4, int arg5)
 {
     vs_battle_setActorAnimation(arg1, 0, 0, 0);
     vs_battle_setActorFlags(arg1, 0x1847);
@@ -6450,10 +6449,10 @@ void func_800773BC(vs_Actor* arg0, int arg1, int arg2, int arg3, int arg4, int a
     func_800E6178(arg0, -1);
 }
 
-vs_Actor* func_800774FC(int arg0, int arg1, int bladeWepId, int bladeMaterial,
-    int shieldWepId, int shieldMaterial, vs_battle_tilePosition* arg6, int arg7)
+Actor* func_800774FC(int arg0, int arg1, int bladeWepId, int bladeMaterial,
+    int shieldWepId, int shieldMaterial, vs_TilePosition* arg6, int arg7)
 {
-    vs_Actor* temp_v0 = (vs_Actor*)func_80077240(
+    Actor* temp_v0 = (Actor*)func_80077240(
         arg0, arg1, bladeWepId, bladeMaterial, shieldWepId, shieldMaterial, arg6, arg7);
     if (temp_v0 != NULL) {
         while (vs_battle_getEmptyObjectDataSlot() != 0) {
@@ -6466,11 +6465,11 @@ vs_Actor* func_800774FC(int arg0, int arg1, int bladeWepId, int bladeMaterial,
     return 0;
 }
 
-vs_Actor* func_800775C0(int id, MpdEnemy* spawn, vs_CharInitData* init, int flags)
+Actor* func_800775C0(int id, MpdEnemy* spawn, vs_CharInitData* init, int flags)
 {
     vs_ObjectData object;
-    vs_Main_CdFile file;
-    vs_Actor* actor;
+    vs_CdFile file;
+    Actor* actor;
     ZudHeader* zud;
     vs_SavedEnemyState* saved;
     int zudIndex;
@@ -6495,7 +6494,7 @@ vs_Actor* func_800775C0(int id, MpdEnemy* spawn, vs_CharInitData* init, int flag
             data->unk0.unk0.unk0.unk48[0] = &data->unk22B4;
             actor = &data->unk0.unk0.unk0;
         } else {
-            vs_Actor_dat* data = vs_main_allocHeap(sizeof *data);
+            Actor_dat* data = vs_main_allocHeap(sizeof *data);
 
             data->unk0.unk0.unk0.stats = &data->unk0.unk0.unk50;
             data->unk0.unk0.unk0.unk40 = 1;
@@ -8591,7 +8590,7 @@ void func_8007BE20(int arg0, int arg1)
     int i;
 
     int count = 0;
-    vs_Actor** actors = vs_battle_actors;
+    Actor** actors = vs_battle_actors;
 
     request.count = 1;
     request.source.type = 5;
@@ -8944,11 +8943,11 @@ int func_8007C8F8(int arg0)
     return vs_battle_populateDataSlot(&sp10) + 1;
 }
 
-int spawnModelActor(u_int slot, int modelId, vs_battle_tilePosition* tile)
+int spawnModelActor(u_int slot, int modelId, vs_TilePosition* tile)
 {
     UNUSED int _[6];
-    vs_Actor_dat* temp_v0;
-    vs_Actor** temp_s1;
+    Actor_dat* temp_v0;
+    Actor** temp_s1;
     int s0;
 
     if (slot < 16) {
@@ -8972,7 +8971,7 @@ int spawnModelActor(u_int slot, int modelId, vs_battle_tilePosition* tile)
 
 void func_8007CA20(int actorId, int bladeWepId, int shieldWepId)
 {
-    vs_Actor* temp_s0 = vs_battle_actors[actorId];
+    Actor* temp_s0 = vs_battle_actors[actorId];
     if (temp_s0 != NULL) {
         func_80077130(temp_s0, actorId, bladeWepId, 0, 0);
         func_80077130(temp_s0, actorId, shieldWepId, 1, 0);
@@ -8981,7 +8980,7 @@ void func_8007CA20(int actorId, int bladeWepId, int shieldWepId)
 
 void func_8007CAA4(int arg0)
 {
-    vs_Actor* temp_s1;
+    Actor* temp_s1;
     vs_ActorStats* stats;
 
     temp_s1 = vs_battle_actors[arg0];
@@ -9147,7 +9146,7 @@ int func_8007CF18(int arg0)
     return 1;
 }
 
-vs_Actor* getActor(int actorId) { return vs_battle_actors[actorId]; }
+Actor* getActor(int actorId) { return vs_battle_actors[actorId]; }
 
 int func_8007CF80(int arg0)
 {
@@ -9220,7 +9219,7 @@ int func_8007D15C(int arg0)
 void setActorInactive(int actorId, int inactive)
 {
     int temp_s0;
-    vs_Actor* temp_a0 = vs_battle_actors[actorId];
+    Actor* temp_a0 = vs_battle_actors[actorId];
     if (temp_a0 != NULL) {
         if (inactive != 0) {
             temp_s0 = removeActor(temp_a0);
@@ -9242,7 +9241,7 @@ void setActorInactive(int actorId, int inactive)
 
 void func_8007D260(int arg0)
 {
-    vs_Actor* temp_a1 = vs_battle_actors[arg0];
+    Actor* temp_a1 = vs_battle_actors[arg0];
     if ((temp_a1 != NULL) && (temp_a1->unk8 != 0x20)) {
         temp_a1->unk8 = 0;
     }
@@ -14455,7 +14454,7 @@ int func_80088554(void)
 
     for (i = 0; i < 16; ++i) {
 
-        vs_Actor* temp_s3 = vs_battle_actors[i];
+        Actor* temp_s3 = vs_battle_actors[i];
         var_s1 = 0;
 
         if ((temp_s3 != NULL) && ((temp_s3->unk27 != 0x80) || (i == 0))) {
@@ -14693,7 +14692,7 @@ void loadZndEnemies(long* data, UNUSED int arg1)
 
 static void loadZnd(int id)
 {
-    vs_Main_CdFile cdFile;
+    vs_CdFile cdFile;
 
     cdFile.lba = vs_main_zndFiles[id].lba;
     cdFile.size = vs_main_zndFiles[id].size;
@@ -14793,7 +14792,7 @@ void func_80089114(void)
 {
     UNUSED int _[4];
     int slots[16];
-    vs_battle_tilePosition data;
+    vs_TilePosition data;
     MpdEnemy* enemy;
     vs_SavedEnemyState* saved;
     ZndEnemy* template;
@@ -15143,7 +15142,7 @@ void disableDispMask(void) { SetDispMask(0); }
 
 void loadMpd(int id)
 {
-    vs_Main_CdFile file;
+    vs_CdFile file;
 
     file.lba = zoneContext.mpdLbas[id].lba;
     file.size = zoneContext.mpdLbas[id].size;
@@ -15425,7 +15424,7 @@ int func_8008A4FC(void)
     u_int var_a2;
     int var_a0;
     int var_a1;
-    vs_battle_tilePosition* s0;
+    vs_TilePosition* s0;
 
     vs_battle_getActorPosition(0, &sp10);
 
@@ -17525,8 +17524,8 @@ int func_8008EFCC(int arg0)
 {
     u_short* temp_s0;
     int new_var;
-    vs_Main_CdFile* temp_s2;
-    vs_Main_CdFile* temp_s3;
+    vs_CdFile* temp_s2;
+    vs_CdFile* temp_s3;
     int var_a0;
     int var_s0;
 
@@ -17536,8 +17535,8 @@ int func_8008EFCC(int arg0)
         D_800F1DBE = *temp_s0;
         if (func_8007DFF0(D_800F1DC8, D_800F1DBE, 5) != 0) {
             new_var = 0x800;
-            temp_s2 = (vs_Main_CdFile*)(temp_s0 + 0x20);
-            temp_s3 = (vs_Main_CdFile*)(temp_s0 + 0x42);
+            temp_s2 = (vs_CdFile*)(temp_s0 + 0x20);
+            temp_s3 = (vs_CdFile*)(temp_s0 + 0x42);
             var_a0 = temp_s2->size;
             var_s0 = temp_s3->size;
             if ((var_a0 & 0x7FF) != 0) {

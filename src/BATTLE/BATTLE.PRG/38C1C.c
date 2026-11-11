@@ -418,8 +418,7 @@ MATRIX* func_800A1DE8(int actorId, int bone, MATRIX* unused)
     return &scratch->matrix;
 }
 
-void func_800A208C(
-    D_800F4538_t* actor, vs_battle_tilePosition* target, int speed, short facing)
+void func_800A208C(D_800F4538_t* actor, vs_TilePosition* target, int speed, short facing)
 {
     int x;
     int y;

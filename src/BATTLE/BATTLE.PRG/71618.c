@@ -143,7 +143,7 @@ int func_800DA1D4(func_800E78F4_t* arg0)
     int flag;
     int distance;
     func_800DCAA0_t* entry;
-    vs_Actor* actor;
+    Actor* actor;
 
     switch (arg0->unk131) {
     case 0:
@@ -312,7 +312,7 @@ int func_800DA6A4(func_800E78F4_t* arg0)
 
 int func_800DA738(func_800E78F4_t* arg0)
 {
-    vs_battle_tilePosition point;
+    vs_TilePosition point;
     int active = 0;
     int old;
     int candidate = func_800DBB2C(arg0, &point, 3);
@@ -330,7 +330,7 @@ int func_800DA738(func_800E78F4_t* arg0)
     if (valid && active && arg0->unk1A4[target].unk0_5) {
         int x;
         int z;
-        vs_battle_tilePosition tile = D_800F4538[target]->unk0.currentTile;
+        vs_TilePosition tile = D_800F4538[target]->unk0.currentTile;
         int angle =
             ratan2(point.x * 128 - (x = D_800F4538[target]->unk0.position.vx - 64),
                 point.z * 128 - (z = D_800F4538[target]->unk0.position.vz - 64));
@@ -415,7 +415,7 @@ int func_800DAAD8(func_800E78F4_t* arg0)
 {
     func_800DCAA0_t* entry = arg0->unk430[0];
     int id;
-    vs_Actor* actor;
+    Actor* actor;
 
     if (!arg0->unk131 && func_800DA4BC(arg0, entry)) {
         return 1;
@@ -505,7 +505,7 @@ int func_800DAD9C(func_800E78F4_t* arg0)
 
     if (entry->unk4_5) {
         for (j = 0; j < 4; ++j) {
-            vs_Actor* actor = D_800F58BC->unk28[j];
+            Actor* actor = D_800F58BC->unk28[j];
 
             if (actor != NULL) {
                 D_800F45E0_t* model;
@@ -526,7 +526,7 @@ int func_800DAD9C(func_800E78F4_t* arg0)
 
 void func_800DAED0(void)
 {
-    vs_Actor* actor;
+    Actor* actor;
 
     for (actor = vs_battle_actors[0]->next; actor != NULL; actor = actor->next) {
         func_800E78F4_t* state = ((func_800E78F4_t**)0x1F80037C)[actor->id];
@@ -592,7 +592,7 @@ int func_800DB0BC(func_800E78F4_t* arg0)
 
         if (!arg0->unkFA) {
             u_char directions[4];
-            vs_battle_tilePosition probe;
+            vs_TilePosition probe;
             u_int angle = ratan2(arg0->unk4C.vx - arg0->unk168.x * 128 - 64,
                 arg0->unk4C.vz - arg0->unk168.z * 128 - 64);
             u_int quadrant;

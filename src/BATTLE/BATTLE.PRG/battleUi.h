@@ -89,7 +89,7 @@ typedef struct {
     char returnState;
     char executeAbilityType;
     char loading;
-    vs_Main_CdQueueSlot* cdQueue;
+    vs_CdQueueSlot* cdQueue;
 } vs_MenuState;
 
 typedef struct {
@@ -102,10 +102,10 @@ typedef struct {
     u_int speakerActor : 6;
     u_int done : 1;
     u_int unk0_31 : 1;
-} vs_TextBox_fields;
+} TextBox_fields;
 
 typedef struct {
-    vs_TextBox_fields unk0;
+    TextBox_fields unk0;
     short unk4;
     short unk6;
     char* string;
@@ -168,7 +168,7 @@ typedef struct {
 typedef struct {
     int integers[10];
     char* strings[10];
-} vs_PrintfArgs;
+} PrintfArgs;
 
 int vs_battle_setTextBox(int, char*);
 char* vs_battle_printf(char*, char*);
@@ -307,7 +307,7 @@ extern char vs_battle_unlockedBattleAbility;
 extern char D_800F4FDB;
 extern vs_TextBox vs_battle_textBoxes[];
 extern u_char vs_battle_miscItemInvoked;
-extern vs_PrintfArgs vs_battle_printfArgs;
+extern PrintfArgs vs_battle_printfArgs;
 extern vs_MenuState vs_battle_menuState;
 
 void vs_battle_copyAligned(void* dst, const void* src, int numBytes);

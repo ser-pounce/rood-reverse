@@ -988,9 +988,9 @@ static int initMemcard(int init)
     static u_short eventSpecs[] = { EvSpIOE, EvSpERROR, EvSpTIMOUT, EvSpNEW };
     static char initMemcardState;
     static UNUSED char _[3];
-    static vs_Main_CdQueueSlot* initMemcardCdQueueSlot;
+    static vs_CdQueueSlot* initMemcardCdQueueSlot;
 
-    vs_Main_CdFile cdFile;
+    vs_CdFile cdFile;
     int i;
     u_int event;
 

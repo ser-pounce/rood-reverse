@@ -2668,11 +2668,11 @@ static int loadSyd(int id)
     static int sydLbas[] = { VS_BLADE_SYD_LBA, VS_SHIELD_SYD_LBA, VS_ARMOR_SYD_LBA };
     static int sydSizes[] = { VS_BLADE_SYD_SIZE, VS_SHIELD_SYD_SIZE, VS_ARMOR_SYD_SIZE };
 
-    static vs_Main_CdQueueSlot* sydCdQueueSlot;
+    static vs_CdQueueSlot* sydCdQueueSlot;
     static char sydFileLoading;
     static UNUSED char _[3];
 
-    vs_Main_CdFile cdFile;
+    vs_CdFile cdFile;
 
     if (id != 0) {
         --id;

@@ -106,7 +106,7 @@ typedef struct {
     short scale;
     u_short unkE;
     u_short* data;
-    vs_Main_CdQueueSlot* cdQueueSlot;
+    vs_CdQueueSlot* cdQueueSlot;
     u_short widths[240];
     u_short imageTable[254];
     int unk3F4;
@@ -425,7 +425,7 @@ extern int D_800F4ED4;
 extern short D_800F4ED8[8];
 extern u_long* D_800F51B8;
 extern char D_800F51C8;
-extern vs_Main_CdQueueSlot* D_800F5218;
+extern vs_CdQueueSlot* D_800F5218;
 extern u_int D_800F521C;
 extern int D_800F5224;
 extern int D_800F5228;
@@ -1893,7 +1893,7 @@ void renderTextImmediate(vs_TextBox* arg0, int arg1)
 
 void loadGim(int id, int vramSlot)
 {
-    vs_Main_CdFile file;
+    vs_CdFile file;
     Gim* var_s0;
     int i;
 
@@ -2139,7 +2139,7 @@ int vs_battle_loadMenuPrg(int arg0)
 
     if (loadedSubMenu != subMenu) {
         void* overlaySlot;
-        vs_Main_CdFile file;
+        vs_CdFile file;
         u_int fileData;
 
         loadedSubMenu = subMenu;
@@ -3438,7 +3438,7 @@ D_800F18EC_t* func_800CB66C(void) { return &D_800F4E98; }
 
 void loadScreff2(int arg0)
 {
-    vs_Main_CdFile file;
+    vs_CdFile file;
     D_800EB9B4_t* p = D_800EB9B4;
     void* const* new_var;
 
@@ -4735,7 +4735,7 @@ void func_800CE8F4(D_800F53B8_t* arg0)
 int func_800CE9B0(void)
 {
     UNUSED int _[10];
-    vs_Main_CdFile sp38;
+    vs_CdFile sp38;
     D_800F53B8_t* temp_s1;
     D_800F53B8_t* var_s0;
     int i;

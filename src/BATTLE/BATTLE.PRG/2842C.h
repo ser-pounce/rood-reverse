@@ -7,13 +7,13 @@
 typedef struct {
     RECT uv;
     CVECTOR colors[4];
-} vs_BackgroundTile;
+} BackgroundTile;
 
 typedef struct {
     int width;
     int height;
     int unk8;
-    vs_BackgroundTile tiles[0];
-} vs_BackgroundLayout;
+    BackgroundTile tiles[0];
+} BackgroundLayout;
 
 extern vs_ObjectData vs_battle_objectDataSlots[16];

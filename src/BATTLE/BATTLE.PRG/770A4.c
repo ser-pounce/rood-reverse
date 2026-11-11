@@ -18,20 +18,20 @@ typedef struct {
     u_short direction : 2;
     u_short distance : 2;
     u_short unk0_15 : 1;
-} vs_Route;
+} Route;
 
 extern u_char D_800F175C[];
 
-int func_800DFAF8(func_800E78F4_t* arg0, vs_battle_tilePosition arg1, int arg2);
+int func_800DFAF8(func_800E78F4_t* arg0, vs_TilePosition arg1, int arg2);
 void func_800E1238(func_800E78F4_t*, int);
 
 void func_800DF8A4(func_800E78F4_t* arg0)
 {
-    vs_battle_tilePosition pos;
+    vs_TilePosition pos;
     int i;
 
     if (arg0->unk34.surface < 2) {
-        vs_battle_tilePosition none = { 0xFF, 0xFF, 0xFF, 0xFF };
+        vs_TilePosition none = { 0xFF, 0xFF, 0xFF, 0xFF };
 
         arg0->unk19C = none;
         func_800E4BD8(arg0->unk19B);
@@ -47,7 +47,7 @@ void func_800DF8A4(func_800E78F4_t* arg0)
         pos.surface = 0;
 
         if (func_800D954C(arg0, pos) > 0) {
-            vs_battle_tilePosition none = { 0xFF, 0xFF, 0xFF, 0xFF };
+            vs_TilePosition none = { 0xFF, 0xFF, 0xFF, 0xFF };
 
             arg0->unk19C = none;
             arg0->unk19B = 0;
@@ -64,7 +64,7 @@ void func_800DF8A4(func_800E78F4_t* arg0)
     return (void)&pos;
 }
 
-void func_800DF9A8(vs_battle_tilePosition* arg0, vs_battle_tilePosition* arg1)
+void func_800DF9A8(vs_TilePosition* arg0, vs_TilePosition* arg1)
 {
     int i;
 
@@ -84,7 +84,7 @@ void func_800DF9A8(vs_battle_tilePosition* arg0, vs_battle_tilePosition* arg1)
     *arg1 = *arg0;
 }
 
-void func_800DFA54(int arg0, int arg1, int arg2, vs_battle_tilePosition* arg3)
+void func_800DFA54(int arg0, int arg1, int arg2, vs_TilePosition* arg3)
 {
     int i;
 
@@ -102,7 +102,7 @@ found:
     arg3->z = D_800F5910[i * 2].unk0_5;
 }
 
-int func_800DFAF8(UNUSED func_800E78F4_t* arg0, vs_battle_tilePosition arg1, int arg2)
+int func_800DFAF8(UNUSED func_800E78F4_t* arg0, vs_TilePosition arg1, int arg2)
 {
     SVECTOR sp10[4];
     SVECTOR* m;
@@ -130,17 +130,17 @@ int func_800DFAF8(UNUSED func_800E78F4_t* arg0, vs_battle_tilePosition arg1, int
 int func_800DFBCC(func_800E78F4_t* arg0, int index, int area)
 {
     typedef union {
-        vs_Route r[2];
+        Route r[2];
         u_int raw;
     } RoutePair;
 
-    vs_Route routes[2];
+    Route routes[2];
     int distances[2];
-    vs_battle_tilePosition position;
+    vs_TilePosition position;
     int count;
     int i;
     int x;
-    vs_Route route;
+    Route route;
     RoutePair* pair;
 
     position = arg0->unk34;
@@ -159,7 +159,7 @@ int func_800DFBCC(func_800E78F4_t* arg0, int index, int area)
     }
 
     for (i = 0; i < count; ++i) {
-        vs_battle_tilePosition candidate;
+        vs_TilePosition candidate;
         int result;
 
         route = (i == 0) ? routes[0] : routes[1];
@@ -344,7 +344,7 @@ int func_800E02B4(func_800E78F4_t* arg0, int arg1, int arg2)
     int dz;
     u_int radius;
     u_int height;
-    vs_Actor* actor;
+    Actor* actor;
 
     if ((((D_1F8003D0_t*)0x1F8003D0)->unk2 >> arg1) & 1) {
         return ((D_1F8003D0_t*)0x1F8003D0)->unk4[arg1];
@@ -802,10 +802,9 @@ void func_800E1238(func_800E78F4_t* arg0, int arg1)
     }
 }
 
-void func_800E1388(
-    func_800E78F4_t* arg0, vs_battle_tilePosition arg1, int arg2, u_int arg3)
+void func_800E1388(func_800E78F4_t* arg0, vs_TilePosition arg1, int arg2, u_int arg3)
 {
-    vs_battle_tilePosition dest;
+    vs_TilePosition dest;
     int i;
     int angle = (-arg2 + ONE * 3 / 4) & 0xFFF;
     u_int step = arg3 >> 3;
@@ -854,7 +853,7 @@ void func_800E153C(func_800E78F4_t* arg0, int arg1)
 
         if ((arg0->unk15E & 6)
             && (arg0->unkD || func_800E45F4(arg0->unk168, arg0->unk34) < 16)) {
-            vs_battle_tilePosition tile = arg0->unk48;
+            vs_TilePosition tile = arg0->unk48;
 
             if ((int)((tile.x | tile.surface << 8 | tile.z << 16) << 8) >= 0) {
                 arg0->unk168 = tile;
@@ -866,7 +865,7 @@ void func_800E153C(func_800E78F4_t* arg0, int arg1)
 
         if (++arg0->unk8C >= 6) {
             int i;
-            vs_battle_tilePosition dest = arg0->unk168;
+            vs_TilePosition dest = arg0->unk168;
 
             if (func_800D954C(arg0, dest) <= 0) {
                 for (i = 0; i < 4; ++i) {
@@ -896,7 +895,7 @@ fallback:
 
 void func_800E1764(func_800E78F4_t* arg0, int arg1)
 {
-    vs_battle_tilePosition previous[2];
+    vs_TilePosition previous[2];
     u_int distance;
     int opposite = (arg1 + ONE / 2) & 0xFFF;
 
@@ -914,7 +913,7 @@ void func_800E1764(func_800E78F4_t* arg0, int arg1)
     func_800E153C(arg0, arg1);
 }
 
-u_char func_800E1850(u_char arg0, vs_battle_tilePosition arg1, int arg2)
+u_char func_800E1850(u_char arg0, vs_TilePosition arg1, int arg2)
 {
     int x = arg1.x;
     int z = arg1.z;
@@ -939,7 +938,7 @@ void func_800E1908(func_800E78F4_t* arg0)
     u_char* tile =
         &(*(u_char**)0x1F8003C4)[arg0->unk34.z * *(u_char*)0x1F8003DC + arg0->unk34.x];
     int old = *tile;
-    vs_Actor* actor = arg0->unk54;
+    Actor* actor = arg0->unk54;
     int result;
 
     *tile = func_800E1850(old, arg0->unk34, arg0->unk4C.vy);
@@ -1010,10 +1009,9 @@ void func_800E19FC(func_800E78F4_t* arg0)
         ratan2(arg0->unk4C.vx - arg0->unk17C, arg0->unk4C.vz - arg0->unk180) & 0xFFF, 0);
 }
 
-int func_800E1BB8(
-    func_800E78F4_t* arg0, vs_battle_tilePosition arg1, u_int arg2, int arg3)
+int func_800E1BB8(func_800E78F4_t* arg0, vs_TilePosition arg1, u_int arg2, int arg3)
 {
-    vs_battle_tilePosition candidate;
+    vs_TilePosition candidate;
     u_int count = 0;
     int choices[4];
     int i;
@@ -1091,7 +1089,7 @@ static inline int randomHeading(int direction)
     return angle + offset;
 }
 
-void func_800E1EAC(func_800E78F4_t* arg0, vs_battle_tilePosition arg1, u_int arg2)
+void func_800E1EAC(func_800E78F4_t* arg0, vs_TilePosition arg1, u_int arg2)
 {
     int rate = arg0->unkD8;
     u_short rest = arg0->unkD4;
@@ -1377,7 +1375,7 @@ int func_800E24EC(func_800E78F4_t* s, int option)
                 s->unk1 = func_800E4FB0(s, target, s->unkDC);
 
                 if (s->unk15E & 8) {
-                    vs_battle_tilePosition oldPosition = s->unk168;
+                    vs_TilePosition oldPosition = s->unk168;
                     int angle = ratan2(s->unk4C.vx - (s->unk168.x * 128) - 64,
                                     s->unk4C.vz - (s->unk168.z * 128) - 64)
                               & 0xFFF;
@@ -1585,7 +1583,7 @@ void func_800E2CCC(func_800E78F4_t* arg0)
         u_char* bounds;
         int bestHeight = 0x80000000;
         int bestDirection = -1;
-        vs_battle_tilePosition source = arg0->unk34;
+        vs_TilePosition source = arg0->unk34;
         u_int x = source.x;
         u_int z = source.z;
         u_int z2 = z;
@@ -1640,7 +1638,7 @@ int func_800E2F5C(func_800E78F4_t* state, int (*test)(func_800E78F4_t*, int), in
         }
 
         if (!state->unk4 && !path.changed && !test(state, path.direction)) {
-            vs_battle_tilePosition ahead;
+            vs_TilePosition ahead;
 
             ahead.x = state->unk34.x + ((D_800F16EC_t*)0x1F8003EC)[path.direction].dx;
             ahead.z = state->unk34.z + ((D_800F16EC_t*)0x1F8003EC)[path.direction].dz;
@@ -1719,7 +1717,7 @@ int func_800E2F5C(func_800E78F4_t* state, int (*test)(func_800E78F4_t*, int), in
         if (cell != path.cell) {
             int turn = -1;
             int i;
-            vs_battle_tilePosition point;
+            vs_TilePosition point;
 
             path.cell = cell;
 

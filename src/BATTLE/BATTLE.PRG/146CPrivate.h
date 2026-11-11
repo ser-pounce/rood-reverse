@@ -173,7 +173,7 @@ VS_HIDDEN(func_8007C654);
 void func_8007C8A4(int, int);
 VS_HIDDEN(func_8007C8A4);
 
-int spawnModelActor(u_int slot, int modelId, vs_battle_tilePosition* tile);
+int spawnModelActor(u_int slot, int modelId, vs_TilePosition* tile);
 VS_HIDDEN(spawnModelActor);
 
 void func_8007CA20(int, int, int);

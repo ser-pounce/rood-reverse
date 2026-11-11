@@ -1151,7 +1151,7 @@ int vs_battle_script_31(u_char* arg0, UNUSED short arg1)
     if (sp10.r | sp10.g | sp10.b) {
         func_800A07FC(resolveActorId(vs_battle_getShort(arg0 + 1)), &sp10);
     } else {
-        func_800A07FC(resolveActorId(vs_battle_getShort(arg0 + 1)), 0);
+        func_800A07FC(resolveActorId(vs_battle_getShort(arg0 + 1)), NULL);
     }
     return vs_battle_scriptNext;
 }

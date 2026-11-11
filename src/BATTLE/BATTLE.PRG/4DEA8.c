@@ -1389,24 +1389,25 @@ int vs_battle_script_2F_despawnActor(u_char* script, UNUSED short arg1)
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_30(u_char* arg0, UNUSED short arg1)
+/**
+ * Waits until the selected activities of an actor have finished.
+ * @param script Opcode bytes:
+ *   - [1-2] = actor selector
+ *   - [3-4] = mask of the vs_battle_getActorFlags bits to wait for
+ */
+int vs_battle_script_30_waitActorActivity(u_char* script, UNUSED short arg1)
 {
-    short temp_v0;
-    u_short temp_s3;
-    int temp_s2;
-    u_short var_v0;
+    u_short actor = resolveActorId(getShort(script + 1)) & 0xFFFF;
+    u_short status = vs_battle_getActorFlags(actor) ^ 0x81;
+    u_short mask = getShort(script + 3);
 
-    temp_s2 = resolveActorId(getShort(arg0 + 1)) & 0xFFFF;
-    temp_s3 = vs_battle_getActorFlags(temp_s2) ^ 0x81;
-    temp_v0 = getShort(arg0 + 3);
-
-    if (temp_v0 & 1) {
-        if (func_8007D03C(temp_s2) == 0) {
-            temp_s3 |= 1;
+    if (mask & 1) {
+        if (func_8007D03C(actor) == 0) {
+            status |= 1;
         }
     }
-    var_v0 = (temp_s3 & temp_v0);
-    return var_v0 != 0 ? vs_battle_scriptRepeat : vs_battle_scriptNext;
+
+    return (status & mask) != 0 ? vs_battle_scriptRepeat : vs_battle_scriptNext;
 }
 
 int vs_battle_script_31(u_char* arg0, UNUSED short arg1)

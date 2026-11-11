@@ -87,6 +87,19 @@ typedef struct {
     u_char unk3;
 } D_800F4538_unk64;
 
+enum SfxOverrideMode {
+    sfxOverrideOff, // sounds follow the actor's screen position
+    sfxOverrideSet, // fixed pan and volume, ramped over duration frames
+    sfxOverrideMute // centered and silent
+};
+
+typedef struct {
+    u_char mode; // enum SfxOverrideMode
+    u_char pan;
+    u_char volume;
+    u_char duration;
+} SfxOverride;
+
 typedef struct {
     u_char unk0;
     u_char unk1;
@@ -405,8 +418,8 @@ typedef struct {
     u_short unk11A4[2][0xA0];
     u_short unk1424[0x140];
     u_short unk16A4[0xA0];
-    D_800F4538_unk64 unk17E4;
-    D_800F4538_unk64 unk17E8;
+    SfxOverride unk17E4;
+    SfxOverride unk17E8;
     SVECTOR unk17EC;
     SVECTOR unk17F4;
     signed char unk17FC;

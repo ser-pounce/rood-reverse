@@ -234,7 +234,7 @@ loop:
         target5 = D_800F4538[id];
         sfx[1] = script[2];
 
-        if (target5->unk17E4.unk0 == 2) {
+        if (target5->unk17E4.mode == sfxOverrideMute) {
             sfx[0] = 0x80;
         } else {
             if (target5->unk0.unk9_0 || target5->unk0.unk9_4 || !target5->unk0.unk9_7
@@ -245,8 +245,8 @@ loop:
             sfx[0] =
                 vs_main_computeSfxPan(*(int*)&target5->unk6FC, target5->unk6FC.vz) >> 16;
 
-            if (target5->unk17E4.unk1 != 0) {
-                sfx[0] = target5->unk17E4.unk1;
+            if (target5->unk17E4.pan != 0) {
+                sfx[0] = target5->unk17E4.pan;
             }
         }
 
@@ -259,7 +259,7 @@ loop:
         arg = script[1];
         target7 = D_800F4538[id];
 
-        if (target7->unk17E4.unk0 == 2) {
+        if (target7->unk17E4.mode == sfxOverrideMute) {
             sfx[0] = 0x80;
             sfx[1] = 0;
         } else {
@@ -273,14 +273,14 @@ loop:
             value = vs_main_computeSfxPan(*(int*)&target7->unk6FC, target7->unk6FC.vz);
             sfx[0] = value >> 16;
 
-            if (target7->unk17E4.unk1 != 0) {
-                sfx[0] = target7->unk17E4.unk1;
+            if (target7->unk17E4.pan != 0) {
+                sfx[0] = target7->unk17E4.pan;
             }
 
             sfx[1] = value & 0xFFFF;
 
-            if (target7->unk17E4.unk2 != 0) {
-                sfx[1] = target7->unk17E4.unk2;
+            if (target7->unk17E4.volume != 0) {
+                sfx[1] = target7->unk17E4.volume;
             }
         }
 
@@ -294,7 +294,7 @@ loop:
         target8 = D_800F4538[id];
         sfx[1] = script[2];
 
-        if (target8->unk17E4.unk0 == 2) {
+        if (target8->unk17E4.mode == sfxOverrideMute) {
             sfx[0] = 0x80;
         } else {
             if (target8->unk0.unk9_0 || target8->unk0.unk9_4 || !target8->unk0.unk9_7
@@ -305,8 +305,8 @@ loop:
             sfx[0] =
                 vs_main_computeSfxPan(*(int*)&target8->unk6FC, target8->unk6FC.vz) >> 16;
 
-            if (target8->unk17E4.unk1 != 0) {
-                sfx[0] = target8->unk17E4.unk1;
+            if (target8->unk17E4.pan != 0) {
+                sfx[0] = target8->unk17E4.pan;
             }
         }
 
@@ -628,7 +628,7 @@ void func_800AE4FC(D_800F4538_t* arg0, int arg1)
 
     actor = D_800F4538[arg0->unk0.unkF];
 
-    if (actor->unk17E4.unk0 == 2) {
+    if (actor->unk17E4.mode == sfxOverrideMute) {
         sp[0] = 0x80;
         sp[1] = 0;
     } else {
@@ -639,14 +639,14 @@ void func_800AE4FC(D_800F4538_t* arg0, int arg1)
         temp = vs_main_computeSfxPan(*(int*)&actor->unk6FC, actor->unk6FC.vz);
         sp[0] = temp >> 0x10;
 
-        if (actor->unk17E4.unk1 != 0) {
-            sp[0] = actor->unk17E4.unk1;
+        if (actor->unk17E4.pan != 0) {
+            sp[0] = actor->unk17E4.pan;
         }
 
         sp[1] = temp & 0xFFFF;
 
-        if (actor->unk17E4.unk2 != 0) {
-            sp[1] = actor->unk17E4.unk2;
+        if (actor->unk17E4.volume != 0) {
+            sp[1] = actor->unk17E4.volume;
         }
     }
 
@@ -671,7 +671,7 @@ void func_800AE6C0(D_800F4538_t* arg0, int arg1, int arg2)
     int sp10[2];
     D_800F4538_t* temp_s0 = D_800F4538[arg0->unk0.unkF];
 
-    if (temp_s0->unk17E4.unk0 == 2) {
+    if (temp_s0->unk17E4.mode == sfxOverrideMute) {
         sp10[0] = 0x80;
         sp10[1] = 0;
     } else {
@@ -685,14 +685,14 @@ void func_800AE6C0(D_800F4538_t* arg0, int arg1, int arg2)
         temp_v0 = vs_main_computeSfxPan(*(int*)&temp_s0->unk6FC, temp_s0->unk6FC.vz);
         sp10[0] = temp_v0 >> 0x10;
 
-        if (temp_s0->unk17E4.unk1 != 0) {
-            sp10[0] = temp_s0->unk17E4.unk1;
+        if (temp_s0->unk17E4.pan != 0) {
+            sp10[0] = temp_s0->unk17E4.pan;
         }
 
         sp10[1] = temp_v0 & 0xFFFF;
 
-        if (temp_s0->unk17E4.unk2 != 0) {
-            sp10[1] = temp_s0->unk17E4.unk2;
+        if (temp_s0->unk17E4.volume != 0) {
+            sp10[1] = temp_s0->unk17E4.volume;
         }
     }
 
@@ -868,33 +868,33 @@ inline void func_800AEEC4(D_800F4538_t* actor)
     int step;
     int delta;
 
-    if (actor->unk17E4.unk0 != 1 || actor->unk17E4.unk3 == 0) {
+    if (actor->unk17E4.mode != sfxOverrideSet || actor->unk17E4.duration == 0) {
         return;
     }
 
     step = vs_gametime_tickspeed / 2;
 
-    if (actor->unk17E4.unk3 < step) {
-        step = actor->unk17E4.unk3;
+    if (actor->unk17E4.duration < step) {
+        step = actor->unk17E4.duration;
     }
 
-    delta = actor->unk17E8.unk2 - actor->unk17E4.unk2;
+    delta = actor->unk17E8.volume - actor->unk17E4.volume;
 
     if (delta != 0) {
         delta *= step;
-        delta /= actor->unk17E4.unk3;
-        actor->unk17E4.unk2 += delta;
+        delta /= actor->unk17E4.duration;
+        actor->unk17E4.volume += delta;
     }
 
-    delta = actor->unk17E8.unk1 - actor->unk17E4.unk1;
+    delta = actor->unk17E8.pan - actor->unk17E4.pan;
 
     if (delta != 0) {
         delta *= step;
-        delta /= actor->unk17E4.unk3;
-        actor->unk17E4.unk1 += delta;
+        delta /= actor->unk17E4.duration;
+        actor->unk17E4.pan += delta;
     }
 
-    actor->unk17E4.unk3 -= step;
+    actor->unk17E4.duration -= step;
 }
 
 void func_800AEF94(MATRIX* camera)

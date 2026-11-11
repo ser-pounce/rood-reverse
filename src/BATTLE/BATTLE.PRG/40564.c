@@ -2211,7 +2211,7 @@ void func_800AD62C(int arg0, int* arg1, int* arg2, UNUSED int arg3)
     int temp_v0;
     D_800F4538_t* temp_s0 = D_800F4538[arg0];
 
-    if (temp_s0->unk17E4.unk0 == 2) {
+    if (temp_s0->unk17E4.mode == sfxOverrideMute) {
         *arg1 = 0x80;
         if (arg2 != NULL) {
             *arg2 = 0;
@@ -2225,14 +2225,14 @@ void func_800AD62C(int arg0, int* arg1, int* arg2, UNUSED int arg3)
         temp_v0 = vs_main_computeSfxPan(*(int*)&temp_s0->unk6FC, temp_s0->unk6FC.vz);
         *arg1 = temp_v0 >> 0x10;
 
-        if (temp_s0->unk17E4.unk1 != 0) {
-            *arg1 = temp_s0->unk17E4.unk1;
+        if (temp_s0->unk17E4.pan != 0) {
+            *arg1 = temp_s0->unk17E4.pan;
         }
 
         if (arg2 != NULL) {
             *arg2 = temp_v0 & 0xFFFF;
-            if (temp_s0->unk17E4.unk2 != 0) {
-                *arg2 = temp_s0->unk17E4.unk2;
+            if (temp_s0->unk17E4.volume != 0) {
+                *arg2 = temp_s0->unk17E4.volume;
             }
         }
     }

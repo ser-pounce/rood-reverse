@@ -4586,7 +4586,7 @@ void func_80073898(void)
 
 void func_800738E4(void)
 {
-    D_800F4538_unk64 sp10;
+    SfxOverride sp10;
     int i;
 
     func_8008D594(0);
@@ -4608,7 +4608,7 @@ void func_800738E4(void)
         return;
     }
 
-    sp10.unk0 = 0;
+    sp10.mode = sfxOverrideOff;
     func_8009F990(-1, &sp10);
 
     for (i = 0; i < 16; ++i) {

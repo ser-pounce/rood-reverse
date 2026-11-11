@@ -1018,13 +1018,13 @@ int vs_battle_script_23_setActorFlags(u_char* script, UNUSED short arg1)
  */
 int vs_battle_script_24_setActorSfxPanVolume(u_char* script, UNUSED short arg1)
 {
-    D_800F4538_unk64 sp10;
+    SfxOverride override;
     int actorId;
 
-    sp10.unk0 = script[3];
-    sp10.unk1 = script[4];
-    sp10.unk2 = script[5];
-    sp10.unk3 = script[6];
+    override.mode = script[3];
+    override.pan = script[4];
+    override.volume = script[5];
+    override.duration = script[6];
 
     actorId = resolveActorId(getShort(script + 1));
 
@@ -1032,7 +1032,7 @@ int vs_battle_script_24_setActorSfxPanVolume(u_char* script, UNUSED short arg1)
         actorId = -1;
     }
 
-    func_8009F990(actorId, &sp10);
+    func_8009F990(actorId, &override);
 
     return vs_battle_scriptNext;
 }

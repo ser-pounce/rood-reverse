@@ -51,7 +51,7 @@ void func_8009CAEC(D_800F4538_t* arg0, int arg1);
 int func_8009E228(D_800F4538_t* arg0, SVECTOR* arg1);
 void func_8009E700(int, int);
 int func_8009F794(D_800F45E0_t* arg0);
-void func_8009F9F4(int, D_800F4538_unk64*);
+void func_8009F9F4(int, SfxOverride*);
 void func_8009FD38(D_800F4538_t* arg0);
 void func_800A06B8(D_800F4538_t*, int);
 void func_800A11D8(int, int, MATRIX*, u_long*);
@@ -2132,7 +2132,7 @@ void func_8009D460(void) { }
 
 void func_8009D468(int arg0)
 {
-    D_800F4538_unk64 sp10;
+    SfxOverride sp10;
     int var_a2;
     D_800F4538_unk1864* s0;
     D_800F4538_t* temp_s1 = D_800F4538[arg0];
@@ -2169,7 +2169,7 @@ void func_8009D468(int arg0)
             temp_s1->unk17FD = 0;
         }
         temp_s1->unk0.unk9_7 = 1;
-        sp10.unk0 = 0;
+        sp10.mode = sfxOverrideOff;
         func_8009F990(arg0, &sp10);
         temp_s1->unk5BE = 4;
         temp_s1->unk17FF = 0;
@@ -3492,7 +3492,7 @@ void func_8009F940(int arg0, int arg1, CVECTOR* arg2, CVECTOR* arg3)
     }
 }
 
-void func_8009F990(int arg0, D_800F4538_unk64* arg1)
+void func_8009F990(int arg0, SfxOverride* arg1)
 {
     int i;
 
@@ -3505,7 +3505,7 @@ void func_8009F990(int arg0, D_800F4538_unk64* arg1)
     }
 }
 
-void func_8009F9F4(int arg0, D_800F4538_unk64* arg1)
+void func_8009F9F4(int arg0, SfxOverride* arg1)
 {
     int temp_a2;
     D_800F4538_t* temp_s0 = D_800F4538[arg0];
@@ -3514,13 +3514,13 @@ void func_8009F9F4(int arg0, D_800F4538_unk64* arg1)
         return;
     }
 
-    temp_a2 = arg1->unk0;
+    temp_a2 = arg1->mode;
 
-    if (temp_a2 == 0) {
-        temp_s0->unk17E4.unk1 = 0;
-        temp_s0->unk17E4.unk2 = 0;
-    } else if (temp_a2 == 1) {
-        if (arg1->unk3 == 0) {
+    if (temp_a2 == sfxOverrideOff) {
+        temp_s0->unk17E4.pan = 0;
+        temp_s0->unk17E4.volume = 0;
+    } else if (temp_a2 == sfxOverrideSet) {
+        if (arg1->duration == 0) {
             temp_s0->unk17E4 = *arg1;
         } else {
             int sp10;
@@ -3528,34 +3528,34 @@ void func_8009F9F4(int arg0, D_800F4538_unk64* arg1)
             int temp_v1;
 
             temp_s0->unk17E8 = *arg1;
-            temp_s0->unk17E4.unk3 = arg1->unk3;
-            temp_v1 = temp_s0->unk17E4.unk0;
+            temp_s0->unk17E4.duration = arg1->duration;
+            temp_v1 = temp_s0->unk17E4.mode;
 
-            if (temp_v1 == 0) {
+            if (temp_v1 == sfxOverrideOff) {
                 func_800AD62C(arg0, &sp10, &sp14, arg0);
-                temp_s0->unk17E4.unk1 = sp10;
-                temp_s0->unk17E4.unk2 = sp14;
+                temp_s0->unk17E4.pan = sp10;
+                temp_s0->unk17E4.volume = sp14;
             } else if (temp_v1 == temp_a2) {
                 func_800AD62C(arg0, &sp10, &sp14, arg0);
-                if (temp_s0->unk17E4.unk1 == 0) {
-                    temp_s0->unk17E4.unk1 = sp10;
+                if (temp_s0->unk17E4.pan == 0) {
+                    temp_s0->unk17E4.pan = sp10;
                 }
-                if (temp_s0->unk17E4.unk2 == 0) {
-                    temp_s0->unk17E4.unk2 = sp14;
+                if (temp_s0->unk17E4.volume == 0) {
+                    temp_s0->unk17E4.volume = sp14;
                 }
-            } else if (temp_v1 == 2) {
-                temp_s0->unk17E4.unk1 = 0x80;
-                temp_s0->unk17E4.unk2 = temp_a2;
+            } else if (temp_v1 == sfxOverrideMute) {
+                temp_s0->unk17E4.pan = 0x80;
+                temp_s0->unk17E4.volume = temp_a2;
             }
-            if (arg1->unk1 == 0) {
-                temp_s0->unk17E4.unk1 = 0;
+            if (arg1->pan == 0) {
+                temp_s0->unk17E4.pan = 0;
             }
-            if (arg1->unk2 == 0) {
-                temp_s0->unk17E4.unk2 = 0;
+            if (arg1->volume == 0) {
+                temp_s0->unk17E4.volume = 0;
             }
         }
     }
-    temp_s0->unk17E4.unk0 = arg1->unk0;
+    temp_s0->unk17E4.mode = arg1->mode;
 }
 
 void func_8009FB64(VECTOR* arg0)

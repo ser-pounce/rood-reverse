@@ -32,7 +32,7 @@ int vs_battle_script_29_attachActor(u_char*, short);
 int vs_battle_script_2A_walkActorToCoordinate(u_char*, short);
 int vs_battle_script_2B_turnActorToFacing(u_char*, short);
 int vs_battle_script_2C_turnActorToFaceActor(u_char*, short);
-int vs_battle_script_2D(u_char*, short);
+int vs_battle_script_2D_turnActorToFaceTile(u_char*, short);
 int vs_battle_script_2E(u_char*, short);
 int vs_battle_script_2F(u_char*, short);
 int vs_battle_script_31(u_char*, short);

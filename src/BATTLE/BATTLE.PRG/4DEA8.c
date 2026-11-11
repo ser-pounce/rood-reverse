@@ -1320,17 +1320,28 @@ int vs_battle_script_2C_turnActorToFaceActor(u_char* script, UNUSED short arg1)
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_2D(u_char* arg0, UNUSED short arg1)
+/**
+ * Turns an actor to face a tile.
+ * @param script Opcode bytes:
+ *   - [1-2] = actor selector
+ *   - [3-5] = tile x, surface and z
+ *   - [6] = frame count, 0 = immediately, 0xFF = default (from angle and the actor's
+ *     unk5C0)
+ */
+int vs_battle_script_2D_turnActorToFaceTile(u_char* script, UNUSED short arg1)
 {
-    vs_TilePosition sp10;
-    int temp_s0 = resolveActorId(getShort(arg0 + 1)) & 0xFFFF;
+    vs_TilePosition tile;
+    u_short actor = resolveActorId(getShort(script + 1));
 
-    sp10.x = arg0[3];
-    sp10.surface = arg0[4];
-    sp10.z = arg0[5];
+    tile.x = script[3];
+    tile.surface = script[4];
+    tile.z = script[5];
 
-    turnActorToFaceTile(temp_s0, &sp10, arg0[6] != 0xFF ? arg0[6] : -1);
-    D_800F4B70[temp_s0] = 1;
+    // BUG: tile.extra is uninitialised, but used as the facing if already on the tile
+    turnActorToFaceTile(actor, &tile, script[6] != 0xFF ? script[6] : -1);
+
+    D_800F4B70[actor] = 1;
+
     return vs_battle_scriptNext;
 }
 

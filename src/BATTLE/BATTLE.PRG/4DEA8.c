@@ -501,7 +501,7 @@ int vs_battle_script_11_showTextBox(u_char* script, UNUSED short arg1)
         return vs_battle_scriptNext;
     }
 
-    printStatus = vs_battle_setTextBox(script[1], 0);
+    printStatus = vs_battle_setTextBox(script[1], NULL);
 
     if (printStatus >= 0) {
 

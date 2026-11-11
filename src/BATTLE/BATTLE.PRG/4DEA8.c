@@ -1185,7 +1185,7 @@ int vs_battle_script_31(u_char* arg0, UNUSED short arg1)
     if (sp10.r | sp10.g | sp10.b) {
         func_800A07FC(resolveActorId(getShort(arg0 + 1)), &sp10);
     } else {
-        func_800A07FC(resolveActorId(vs_battle_getShort(arg0 + 1)), NULL);
+        func_800A07FC(resolveActorId(getShort(arg0 + 1)), NULL);
     }
     return vs_battle_scriptNext;
 }
@@ -1353,7 +1353,7 @@ int vs_battle_script_3E(u_char* arg0, UNUSED short arg1)
         sp10[2].cd = arg0[6];
         func_8009F940(resolveActorId(getShort(arg0 + 1)), 1, &sp10[2], &sp10[0]);
     } else {
-        func_8009F940(resolveActorId(vs_battle_getShort(arg0 + 1)), 0, NULL, NULL);
+        func_8009F940(resolveActorId(getShort(arg0 + 1)), 0, NULL, NULL);
     }
     return vs_battle_scriptNext;
 }

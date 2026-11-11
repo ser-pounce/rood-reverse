@@ -51,7 +51,7 @@ void func_8009CAEC(D_800F4538_t* arg0, int arg1);
 int func_8009E228(D_800F4538_t* arg0, SVECTOR* arg1);
 void func_8009E700(int, int);
 int func_8009F794(D_800F45E0_t* arg0);
-void func_8009F9F4(int, SfxOverride*);
+void setActorSfxOverride(int, SfxOverride*);
 void func_8009FD38(D_800F4538_t* arg0);
 void func_800A06B8(D_800F4538_t*, int);
 void func_800A11D8(int, int, MATRIX*, u_long*);
@@ -2170,7 +2170,7 @@ void func_8009D468(int arg0)
         }
         temp_s1->unk0.unk9_7 = 1;
         sp10.mode = sfxOverrideOff;
-        func_8009F990(arg0, &sp10);
+        setActorsSfxOverride(arg0, &sp10);
         temp_s1->unk5BE = 4;
         temp_s1->unk17FF = 0;
         temp_s1->unk0.unk64.unk0 = 0;
@@ -3492,20 +3492,20 @@ void func_8009F940(int arg0, int arg1, CVECTOR* arg2, CVECTOR* arg3)
     }
 }
 
-void func_8009F990(int arg0, SfxOverride* arg1)
+void setActorsSfxOverride(int arg0, SfxOverride* arg1)
 {
     int i;
 
     if (arg0 == -1) {
         for (i = 0; i < 17; ++i) {
-            func_8009F9F4(i, arg1);
+            setActorSfxOverride(i, arg1);
         }
     } else {
-        func_8009F9F4(arg0, arg1);
+        setActorSfxOverride(arg0, arg1);
     }
 }
 
-void func_8009F9F4(int arg0, SfxOverride* arg1)
+void setActorSfxOverride(int arg0, SfxOverride* arg1)
 {
     int temp_a2;
     D_800F4538_t* temp_s0 = D_800F4538[arg0];

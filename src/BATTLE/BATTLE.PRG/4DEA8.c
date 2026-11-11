@@ -1032,7 +1032,7 @@ int vs_battle_script_24_setActorSfxPanVolume(u_char* script, UNUSED short arg1)
         actorId = -1;
     }
 
-    func_8009F990(actorId, &override);
+    setActorsSfxOverride(actorId, &override);
 
     return vs_battle_scriptNext;
 }

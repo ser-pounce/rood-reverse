@@ -107,8 +107,8 @@ VS_HIDDEN(func_8009F898);
 int func_8009F8DC(int);
 VS_HIDDEN(func_8009F8DC);
 
-void func_8009F990(int, SfxOverride*);
-VS_HIDDEN(func_8009F990);
+void setActorsSfxOverride(int, SfxOverride*);
+VS_HIDDEN(setActorsSfxOverride);
 
 int func_8009FBD8(int, int);
 VS_HIDDEN(func_8009FBD8);

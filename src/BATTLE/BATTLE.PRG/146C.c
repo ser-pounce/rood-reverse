@@ -4609,7 +4609,7 @@ void func_800738E4(void)
     }
 
     sp10.mode = sfxOverrideOff;
-    func_8009F990(-1, &sp10);
+    setActorsSfxOverride(-1, &sp10);
 
     for (i = 0; i < 16; ++i) {
         func_8009D7E8(i, 0);

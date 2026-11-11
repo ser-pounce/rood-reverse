@@ -1043,13 +1043,13 @@ int vs_battle_script_24_setActorSfxPanVolume(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1-2] = actor selector
  *   - [3-5] = tile x, surface and z
- *   - [6] = final facing (1/256 turn), 0xFF keeps the arrival facing
+ *   - [6] = final facing (1/256 turn). With frame counts, 0xFF skips the final turn;
  *   - [7] = movement frame count, 0 = immediately, 0xFF = default (from distance and
  *     the actor's unk5C2)
  *   - [8] = turn frame count, 0 = immediately, 0xFF = default (from angle and the
  *     actor's unk5C0)
  */
-int vs_battle_script_25_moveActor(u_char* script, UNUSED short arg1)
+int vs_battle_script_25_moveActorToTile(u_char* script, UNUSED short arg1)
 {
     vs_TilePosition tile[3];
     u_short actor = resolveActorId(getShort(script + 1));
@@ -1067,40 +1067,57 @@ int vs_battle_script_25_moveActor(u_char* script, UNUSED short arg1)
     }
 
     func_8009DC8C(actor);
+
     D_800F4B70[actor] = 1;
 
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_26(u_char* arg0, UNUSED short arg1)
+/**
+ * Like moveActorToTile, but to a position given in world coordinates instead of a tile.
+ * @param script Opcode bytes:
+ *   - [1-2] = actor selector
+ *   - [3-4] = x in bits 1-15 (value >> 1). If bit 0 is set, x, y and z are added to the
+ *     actor's current position instead of replacing it
+ *   - [5-6] = y (height), 0x8000 = the ground height at the target (absolute only)
+ *   - [7-8] = z
+ *   - [9] = facing (1/256 turn), 0xFF = none: turn towards the direction of travel
+ *   - [10] = movement frame count, 0 = immediately, 0xFF = default
+ *   - [11] = turn frame count, 0 = immediately, 0xFF = default
+ */
+int vs_battle_script_26_moveActorToCoordinate(u_char* arg0, UNUSED short arg1)
 {
-    vs_ActorPosition sp10;
+    vs_ActorPosition position;
 
-    u_short temp_s4 = resolveActorId(getShort(arg0 + 1));
-    int temp_s1 = getShort(arg0 + 3) >> 1;
-    short temp_s2 = getShort(arg0 + 5);
-    short temp_s3 = getShort(arg0 + 7);
+    u_short actor = resolveActorId(getShort(arg0 + 1));
+    int x = getShort(arg0 + 3) >> 1;
+    short y = getShort(arg0 + 5);
+    short z = getShort(arg0 + 7);
 
     if (arg0[3] & 1) {
-        vs_battle_getActorPosition(temp_s4, &sp10);
-        applyVector(&sp10.unk0.unk4, temp_s1, temp_s2, temp_s3, +=);
+        vs_battle_getActorPosition(actor, &position);
+        applyVector(&position.unk0.unk4, x, y, z, +=);
     } else {
-        setVector(&sp10.unk0.unk4, temp_s1, temp_s2, temp_s3);
+        setVector(&position.unk0.unk4, x, y, z);
     }
+
     if (arg0[9] != 0xFF) {
-        char v = 0x10;
-        sp10.unk0.unk4.pad = arg0[9] * v;
+        position.unk0.unk4.pad = arg0[9] << 4;
     } else {
-        sp10.unk0.unk4.pad = -0x8000;
+        position.unk0.unk4.pad = -0x8000;
     }
+
     if (scriptSkipMode == vs_battle_scriptSkipping) {
-        func_800A9988(temp_s4, &sp10.unk0.unk4, 0, 0);
+        func_800A9988(actor, &position.unk0.unk4, 0, 0);
     } else {
-        func_800A9988(temp_s4, &sp10.unk0.unk4, arg0[10] != 0xFF ? arg0[10] : -1,
+        func_800A9988(actor, &position.unk0.unk4, arg0[10] != 0xFF ? arg0[10] : -1,
             arg0[11] != 0xFF ? arg0[11] : -1);
     }
-    func_8009DC8C(temp_s4);
-    D_800F4B70[temp_s4] = 1;
+
+    func_8009DC8C(actor);
+
+    D_800F4B70[actor] = 1;
+
     return vs_battle_scriptNext;
 }
 

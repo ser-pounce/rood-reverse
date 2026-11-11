@@ -1,10 +1,11 @@
 #include "common.h"
-#include "40564.h"
-#include "146C.h"
-#include "30DB0.h"
+#include "mpdPrivate.h"
+#include "40564Private.h"
+#include "146CPrivate.h"
+#include "30DB0Private.h"
 #include "38C1C.h"
 #include "3A1A0.h"
-#include "44F14.h"
+#include "44F14Private.h"
 #include "battleUnk.h"
 #include "entity.h"
 #include "src/SLUS_010.40/32154.h"
@@ -43,7 +44,7 @@ extern u_char D_800E92E8[];
 extern u_char D_800E92F0[];
 extern u_char D_800E92F8[];
 extern u_char D_800E9300[];
-extern _mpdRoomSection3* D_800F49F0;
+extern MpdRoomSection3* D_800F49F0;
 extern u_char D_800F4B19;
 
 extern u_char D_800F2450[];
@@ -53,11 +54,11 @@ extern u_char D_800E8F2C;
 
 static inline DR_MOVE* vs_battlePacketBegin(void)
 {
-    return ((vs_scratch_t*)0x1F800000)->unk0;
+    return ((vs_Scratch*)0x1F800000)->unk0;
 }
 static inline void vs_battlePacketEnd(DR_MOVE* p)
 {
-    ((vs_scratch_t*)0x1F800000)->unk0 = p + 1;
+    ((vs_Scratch*)0x1F800000)->unk0 = p + 1;
 }
 
 // Inlined copy of 3A1A0 func_800A4A24
@@ -82,11 +83,11 @@ static inline SVECTOR* func_800A4A24(int id)
     return NULL;
 }
 
-_mpdRoomSection3* func_800A8D64(SVECTOR* arg0, int arg1)
+MpdRoomSection3* func_800A8D64(SVECTOR* arg0, int arg1)
 {
     int temp_s1 = arg0->vx / 128;
     int temp_s0 = arg0->vz / 128;
-    _mpdRoomSection3* temp_v0 = func_8008B764(temp_s1, temp_s0, arg1);
+    MpdRoomSection3* temp_v0 = func_8008B764(temp_s1, temp_s0, arg1);
 
     if (temp_v0 == NULL) {
         return NULL;
@@ -154,7 +155,7 @@ int func_800A8E84(D_800F4538_t* actor, SVECTOR* position)
             continue;
         }
 
-        if (other->unk0.skip || (other->unk5AC_24) || other->unk0.unk13 == 0xFC
+        if (other->unk0.skip || (other->inactive) || other->unk0.unk13 == 0xFC
             || other->unk0.unkB_0 == 2 || scratch->excluded[i]) {
             continue;
         }
@@ -218,7 +219,7 @@ int func_800A8FD4(D_800F4538_t* actor, SVECTOR* motion)
         int oldDistance;
 
         if (other != NULL
-            && !(other->unk0.skip || (other->unk5AC_24) || other->unk0.unk13 == 0xFC
+            && !(other->unk0.skip || (other->inactive) || other->unk0.unk13 == 0xFC
                  || other->unk0.unkB_0 == 2)) {
             otherRadius = other->unk640;
 
@@ -474,7 +475,7 @@ void func_800A97EC(int arg0, vs_battle_tilePosition* arg1, int arg2, int arg3)
 
         func_800AA290(arg0, arg1, -1, 0);
 
-        angle = arg1->status;
+        angle = arg1->extra;
         angle <<= 4;
         angle %= ONE;
         angle -= actor->unk0.facing;
@@ -505,10 +506,10 @@ void func_800A97EC(int arg0, vs_battle_tilePosition* arg1, int arg2, int arg3)
         actor->unk5EC.vec.vy = func_800A6EE8(&actor->unk5EC.vec, 0, 0, 1);
         angle = 0x8000;
 
-        if (arg1->status == 0xFF) {
+        if (arg1->extra == 0xFF) {
             actor->unk5EC.vec.pad = angle;
         } else {
-            actor->unk5EC.vec.pad = arg1->status * 16;
+            actor->unk5EC.vec.pad = arg1->extra * 16;
         }
 
         actor->unk5AC_0 = 1;
@@ -797,7 +798,7 @@ void func_800AA108(int arg0, vs_battle_tilePosition* arg1, int arg2, int arg3)
 
             func_800AA290(arg0, arg1, -1, 0);
 
-            temp_a1 = arg1->status;
+            temp_a1 = arg1->extra;
             temp_a1 *= 0x10;
             temp_a1 %= 0x1000;
             temp_a1 -= temp_s0->unk0.facing;
@@ -909,7 +910,7 @@ void func_800AA490(int arg0, vs_battle_tilePosition* arg1, int arg2, int arg3)
     dz = arg1->z - actor->unk0.currentTile.z;
 
     if (angle == 0 && dz == 0) {
-        angle = arg1->status * 16;
+        angle = arg1->extra * 16;
     } else {
         angle = 0xC00 - ratan2(dz, angle);
         angle %= ONE;
@@ -1361,11 +1362,11 @@ int func_800AAE9C(D_800F4538_t* actor)
 
 void func_800AB098(D_800F4538_t* actor, int index, int frame)
 {
-    texMapAnimation_t fallback;
+    TexMapAnimation fallback;
     RECT rect;
     DR_MOVE* packet;
-    texMapAnimation_t* animation;
-    texMapOverlay_t* overlay;
+    TexMapAnimation* animation;
+    TexMapOverlay* overlay;
     int srcX;
     int srcY;
     int dstX;
@@ -1449,7 +1450,7 @@ void func_800AB358(int index, u_char* script)
     RECT rect;
     DR_MOVE* packet;
     D_800F4538_t* actor = D_800F4538[index];
-    texMapOverlay_t* overlay;
+    TexMapOverlay* overlay;
     int srcX;
     int srcY;
     int dstX;
@@ -1505,7 +1506,7 @@ void func_800AB4F0(D_800F4538_t* actor)
     for (i = 0; i < 4; ++i) {
         D_800F4538_unk61C* bounds = &actor->unk61C[i];
         D_800F4538_unk181C* scroll;
-        texMapOverlay_t* overlay;
+        TexMapOverlay* overlay;
         RECT rect;
         DR_MOVE* packet;
         int x;
@@ -1735,7 +1736,7 @@ void func_800AB9A4(void* arg)
     int value;
     u_short* colors;
     u_int flags;
-    vs_battle_wepModels_t* weapon;
+    vs_WepModels* weapon;
 
     if (arg0->unk0.unk9_0 < 6) {
         if (arg0->unk0.unkA_0) {
@@ -1751,9 +1752,9 @@ void func_800AB9A4(void* arg)
                 if (arg0->unk0.unkF != 0) {
                     func_800AD494(arg0, 0xAB, &header);
                     if (header != NULL) {
-                        arg0->unk5AC_24 = 0;
-                        func_800A0204(arg0->unk0.unkF, 0x47, 0, 8);
-                        arg0->unk5AC_24 = 1;
+                        arg0->inactive = 0;
+                        vs_battle_setActorAnimation(arg0->unk0.unkF, 0x47, 0, 8);
+                        arg0->inactive = 1;
                     }
                 }
             }
@@ -2146,7 +2147,7 @@ void func_800AC440(D_800F4538_t* arg0, int arg1, int arg2)
 {
     int sp10;
     int i;
-    _armature_t* temp_s2 = &arg0->unk0.unk68->armatures[arg1];
+    Armature* temp_s2 = &arg0->unk0.unk68->armatures[arg1];
 
     for (i = 0; i < 2; ++i) {
         if (arg2 == 0) {
@@ -2184,9 +2185,9 @@ void func_800AC540(int arg0, D_800F4538_t* arg1)
         if (arg1->unk0.unk18 == 0) {
 
             if (arg1->unk0.unkA_5) {
-                func_800A0204(arg0, 0x1F, 0, 8);
+                vs_battle_setActorAnimation(arg0, 0x1F, 0, 8);
             } else {
-                func_800A0204(arg0, arg1->unk6E5, 0, 8);
+                vs_battle_setActorAnimation(arg0, arg1->unk6E5, 0, 8);
             }
 
             if (!(arg1->unk5AC_2)) {
@@ -2203,7 +2204,7 @@ void func_800AC540(int arg0, D_800F4538_t* arg1)
         if (arg1->unk0.unk1A == 0) {
             u_short facing;
 
-            func_800A0204(arg0, 1, 0, 8);
+            vs_battle_setActorAnimation(arg0, 1, 0, 8);
 
             facing = arg1->unk5EC.vec.pad;
 
@@ -2270,7 +2271,7 @@ void func_800AC690(int arg0, D_800F4538_t* actor)
             timer = actor->unk0.unk11 - vs_gametime_tickspeed / 2;
             actor->unk0.unk11 = timer;
             if (timer < 2) {
-                func_800A0204(arg0, D_800E92E8[profile], 0, 8);
+                vs_battle_setActorAnimation(arg0, D_800E92E8[profile], 0, 8);
                 actor->unk0.unk11 = 0;
             }
         } else {
@@ -2292,7 +2293,7 @@ void func_800AC690(int arg0, D_800F4538_t* actor)
             if (timer > 0) {
                 break;
             }
-            func_800A0204(actor->unk0.unkF, 0x2F, 0, 8);
+            vs_battle_setActorAnimation(actor->unk0.unkF, 0x2F, 0, 8);
             actor->unk0.unk11 = 0;
         }
         if (actor->unk0.unkA_6) {
@@ -2336,10 +2337,10 @@ void func_800AC690(int arg0, D_800F4538_t* actor)
         y = actor->unk0.unk34.vy;
         if (y <= limit) {
             if (y >= -limit) {
-                func_800A0204(arg0, D_800E92F0[profile], 0, 16);
+                vs_battle_setActorAnimation(arg0, D_800E92F0[profile], 0, 16);
             }
         } else {
-            func_800A0204(arg0, D_800E92F8[profile], 0, 8);
+            vs_battle_setActorAnimation(arg0, D_800E92F8[profile], 0, 8);
         }
         switch (actor->unk181A) {
         case 0:
@@ -2452,7 +2453,7 @@ void func_800AC690(int arg0, D_800F4538_t* actor)
         }
         actor->unk181A = 0;
         actor->unk5AC_26 = 0;
-        func_800A0204(arg0, D_800E9300[profile], 0, 8);
+        vs_battle_setActorAnimation(arg0, D_800E9300[profile], 0, 8);
         break;
     fall:
         func_800AA698(arg0, &actor->unk0.unk34, 0);
@@ -2474,7 +2475,7 @@ void func_800AC690(int arg0, D_800F4538_t* actor)
                     break;
                 }
                 if (profile != 3) {
-                    func_800A0204(arg0, 1, 0, 8);
+                    vs_battle_setActorAnimation(arg0, 1, 0, 8);
                 }
                 func_800E4C28(actor->unk0.currentTile.x, actor->unk0.currentTile.z);
                 func_800E6EB0(actor->unk0.unkF);

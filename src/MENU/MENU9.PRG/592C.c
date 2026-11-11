@@ -23,9 +23,9 @@ typedef struct {
     int commonSeqLen;
     u_long battleSeqOffset;
     int battleSeqLen;
-} _zudData_t;
+} ZudData;
 
-static int _zudLbas[] = { VS_Z003U00_ZUD_LBA, VS_Z003U00_ZUD_LBA, VS_Z003U00_ZUD_LBA,
+static int zudLbas[] = { VS_Z003U00_ZUD_LBA, VS_Z003U00_ZUD_LBA, VS_Z003U00_ZUD_LBA,
     VS_Z003U00_ZUD_LBA, VS_Z009U16_ZUD_LBA, VS_Z003U00_ZUD_LBA, VS_Z013U15_ZUD_LBA,
     VS_Z003U00_ZUD_LBA, VS_Z003U00_ZUD_LBA, VS_Z003U00_ZUD_LBA, VS_Z003U00_ZUD_LBA,
     VS_Z009U03_ZUD_LBA, VS_Z048U10_ZUD_LBA, VS_Z003U00_ZUD_LBA, VS_Z009U01_ZUD_LBA,
@@ -90,7 +90,7 @@ static int _zudLbas[] = { VS_Z003U00_ZUD_LBA, VS_Z003U00_ZUD_LBA, VS_Z003U00_ZUD
     VS_Z003U00_ZUD_LBA, VS_Z003U00_ZUD_LBA, VS_Z003U00_ZUD_LBA, VS_Z003U00_ZUD_LBA,
     VS_Z003U00_ZUD_LBA, VS_Z040U02_ZUD_LBA, VS_Z009U04_ZUD_LBA, VS_Z003U00_ZUD_LBA,
     VS_Z003U00_ZUD_LBA };
-static int _zudSizes[] = { VS_Z003U00_ZUD_SIZE, VS_Z003U00_ZUD_SIZE, VS_Z003U00_ZUD_SIZE,
+static int zudSizes[] = { VS_Z003U00_ZUD_SIZE, VS_Z003U00_ZUD_SIZE, VS_Z003U00_ZUD_SIZE,
     VS_Z003U00_ZUD_SIZE, VS_Z009U16_ZUD_SIZE, VS_Z003U00_ZUD_SIZE, VS_Z013U15_ZUD_SIZE,
     VS_Z003U00_ZUD_SIZE, VS_Z003U00_ZUD_SIZE, VS_Z003U00_ZUD_SIZE, VS_Z003U00_ZUD_SIZE,
     VS_Z009U03_ZUD_SIZE, VS_Z048U10_ZUD_SIZE, VS_Z003U00_ZUD_SIZE, VS_Z009U01_ZUD_SIZE,
@@ -155,123 +155,125 @@ static int _zudSizes[] = { VS_Z003U00_ZUD_SIZE, VS_Z003U00_ZUD_SIZE, VS_Z003U00_
     VS_Z003U00_ZUD_SIZE, VS_Z003U00_ZUD_SIZE, VS_Z003U00_ZUD_SIZE, VS_Z003U00_ZUD_SIZE,
     VS_Z003U00_ZUD_SIZE, VS_Z040U02_ZUD_SIZE, VS_Z009U04_ZUD_SIZE, VS_Z003U00_ZUD_SIZE,
     VS_Z003U00_ZUD_SIZE };
-static char _paletteFlags[256] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+static char paletteFlags[256] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 1, 1 };
-static char _modelVariants[] = { 30, 31, 32, 33, 172, 173 };
-static char _variantMap[] = { 27, 27, 72, 72, 80, 80, 72, 52 };
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 1, 1 };
+static char modelVariants[] = { 30, 31, 32, 33, 172, 173 };
+static char variantMap[] = { 27, 27, 72, 72, 80, 80, 72, 52 };
 
-static vs_main_CdQueueSlot* _zudCdSlot;
-static _zudData_t* _zudData;
-static void* _zudBuffer;
-static int _modelVariant;
-static int _paletteFlag;
+static vs_Main_CdQueueSlot* zudCdSlot;
+static ZudData* zudData;
+static void* zudBuffer;
+static int modelVariant;
+static int paletteFlag;
 
 void vs_menu9_loadZudFile(int id)
 {
     static int zudIndex;
 
-    vs_main_CdFile cdFile;
+    vs_Main_CdFile cdFile;
     int i;
 
-    cdFile.lba = _zudLbas[id];
+    cdFile.lba = zudLbas[id];
     zudIndex = id;
-    cdFile.size = _zudSizes[id];
-    _zudCdSlot = vs_main_allocateCdQueueSlot(&cdFile);
-    _zudData = vs_main_allocHeapR(cdFile.size);
+    cdFile.size = zudSizes[id];
+    zudCdSlot = vs_main_allocateCdQueueSlot(&cdFile);
+    zudData = vs_main_allocHeapR(cdFile.size);
 
-    vs_main_cdEnqueuePriority(_zudCdSlot, _zudData);
+    vs_main_cdEnqueuePriority(zudCdSlot, zudData);
 
-    _paletteFlag = _paletteFlags[id];
-    _modelVariant = 0;
+    paletteFlag = paletteFlags[id];
+    modelVariant = 0;
 
     for (i = 0; i < 6; ++i) {
-        if (id == _modelVariants[i]) {
-            _modelVariant = i;
+        if (id == modelVariants[i]) {
+            modelVariant = i;
             break;
         }
     }
 
-    if (_modelVariant != 0) {
-        _zudBuffer = vs_main_allocHeap(0x3200);
+    if (modelVariant != 0) {
+        zudBuffer = vs_main_allocHeap(0x3200);
     } else {
-        _zudBuffer = vs_main_allocHeap(0x24D0);
+        zudBuffer = vs_main_allocHeap(0x24D0);
     }
 }
 
+VS_HIDDEN(vs_menu9_loadZudFile);
+
 int vs_menu9_parseZudFile(void)
 {
-    vs_battle_objectData slot;
+    vs_ObjectData slot;
 
-    if (_zudCdSlot != NULL) {
-        if (_zudCdSlot->state != vs_main_CdQueueStateLoaded) {
+    if (zudCdSlot != NULL) {
+        if (zudCdSlot->state != vs_main_CdQueueStateLoaded) {
             return 1;
         }
 
-        vs_main_freeCdQueueSlot(_zudCdSlot);
-        _zudCdSlot = NULL;
+        vs_main_freeCdQueueSlot(zudCdSlot);
+        zudCdSlot = NULL;
 
         slot.dataType = 2;
         slot.index = 1;
-        slot.dataAddr = _zudData->shpOffset + (u_long)_zudData;
-        slot.modelId = _zudData->characterId;
-        slot.unk4 = _zudBuffer;
+        slot.dataAddr = zudData->shpOffset + (u_long)zudData;
+        slot.modelId = zudData->characterId;
+        slot.unk4 = zudBuffer;
         slot.actorId = 0xFF;
-        slot.variant = _paletteFlag & 1;
-        slot.material = _zudData->defaultMaterial;
+        slot.variant = paletteFlag & 1;
+        slot.material = zudData->defaultMaterial;
         vs_battle_populateDataSlot(&slot);
 
-        if (_modelVariant != 0) {
+        if (modelVariant != 0) {
             slot.dataType = 1;
             slot.index = 16;
-            slot.modelId = _variantMap[_modelVariant];
-            slot.unk4 = _zudBuffer + 0x1900;
+            slot.modelId = variantMap[modelVariant];
+            slot.unk4 = zudBuffer + 0x1900;
             slot.actorId = 1;
             slot.unk11 = 0xFC;
             slot.variant = 0;
             vs_battle_populateDataSlot(&slot);
         } else {
 
-            if (_zudData->weapon != 0) {
+            if (zudData->weapon != 0) {
                 slot.dataType = 4;
                 slot.index = 2;
-                slot.dataAddr = _zudData->weaponWepOffset + (u_long)_zudData;
-                slot.modelId = _zudData->weapon;
-                slot.unk4 = _zudBuffer + 0x1900;
+                slot.dataAddr = zudData->weaponWepOffset + (u_long)zudData;
+                slot.modelId = zudData->weapon;
+                slot.unk4 = zudBuffer + 0x1900;
                 slot.actorId = 1;
                 slot.unk11 = 0xF0;
-                slot.material = _zudData->weaponMaterial;
+                slot.material = zudData->weaponMaterial;
                 vs_battle_populateDataSlot(&slot);
             }
 
-            if (_zudData->shield != 0) {
+            if (zudData->shield != 0) {
                 slot.dataType = 4;
                 slot.index = 3;
-                slot.dataAddr = _zudData->shieldWepOffset + (u_long)_zudData;
-                slot.modelId = _zudData->shield;
-                slot.unk4 = _zudBuffer + 0x1EE8;
+                slot.dataAddr = zudData->shieldWepOffset + (u_long)zudData;
+                slot.modelId = zudData->shield;
+                slot.unk4 = zudBuffer + 0x1EE8;
                 slot.actorId = 1;
                 slot.unk11 = 0xF1;
-                slot.material = _zudData->shieldMaterial;
+                slot.material = zudData->shieldMaterial;
                 vs_battle_populateDataSlot(&slot);
             }
         }
 
-        if (_zudData->battleSeqLen != 0) {
+        if (zudData->battleSeqLen != 0) {
             slot.dataType = 8;
             slot.index = 1;
-            slot.dataAddr = _zudData->battleSeqOffset + (u_long)_zudData;
+            slot.dataAddr = zudData->battleSeqOffset + (u_long)zudData;
             slot.actorId = 0;
-            slot.modelId = _zudData->unk2;
+            slot.modelId = zudData->unk2;
             vs_battle_populateDataSlot(&slot);
         }
 
-        if (_zudData->commonSeqLen != 0) {
+        if (zudData->commonSeqLen != 0) {
             slot.dataType = 8;
             slot.index = 1;
-            slot.dataAddr = _zudData->commonSeqOffset + (u_long)_zudData;
+            slot.dataAddr = zudData->commonSeqOffset + (u_long)zudData;
             slot.actorId = 0;
             slot.modelId = 0;
             vs_battle_populateDataSlot(&slot);
@@ -279,25 +281,29 @@ int vs_menu9_parseZudFile(void)
         return 1;
     }
 
-    if (_zudData == NULL) {
+    if (zudData == NULL) {
         return 0;
     }
 
     vs_battle_processObjectDataQueue();
 
     if (vs_battle_getEmptyObjectDataSlot() == 0) {
-        vs_main_freeHeapR(_zudData);
-        _zudData = NULL;
+        vs_main_freeHeapR(zudData);
+        zudData = NULL;
     }
 
     return 1;
 }
 
+VS_HIDDEN(vs_menu9_parseZudFile);
+
 void vs_menu9_freeZudFile(void)
 {
-    vs_main_freeHeapR(_zudBuffer);
-    _zudBuffer = NULL;
+    vs_main_freeHeapR(zudBuffer);
+    zudBuffer = NULL;
 }
 
-static UNUSED void _nop(void);
-static void _nop(void) { }
+VS_HIDDEN(vs_menu9_freeZudFile);
+
+static UNUSED void noop(void);
+static void noop(void) { }

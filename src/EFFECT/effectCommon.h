@@ -11,12 +11,12 @@ typedef struct {
     int tag;
     POLY_GT4 poly;
     int drawMode;
-} vs_gt4Prim;
+} vs_Gt4Prim;
 
 typedef struct {
     u_char u;
     u_char v;
-} vs_uv;
+} vs_Uv;
 
 /* State of the ring-like effects, which grow a radius and a height every frame. */
 typedef struct {
@@ -30,7 +30,7 @@ typedef struct {
     int angle;
     int age;
     func_800D6CF_t texture;
-} vs_ringState;
+} vs_RingState;
 
 /* Defines the table of the eight standard effect colors. */
 #define VS_STANDARD_COLORS(name)                                                         \

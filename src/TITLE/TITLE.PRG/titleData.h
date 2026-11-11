@@ -1,10 +1,10 @@
 #pragma once
 #include <stddef.h>
 
-extern int _movieWidth;
-extern int _movieHeight;
-extern u_short _menuItemTextClut[][16];
-extern u_short _menuItemOutlineClut[][16];
+extern int movieWidth;
+extern int movieHeight;
+extern u_short menuItemTextClut[][16];
+extern u_short menuItemOutlineClut[][16];
 extern int textUvs[];
 extern int textTpages[];
 extern int outlineUvs[];

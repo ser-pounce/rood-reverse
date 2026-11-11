@@ -1,3 +1,3 @@
 #pragma once
 
-void _initScriptFunctionTable(void);
+void initScriptFunctionTable(void);

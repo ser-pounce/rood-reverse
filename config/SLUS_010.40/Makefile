@@ -1,14 +1,11 @@
-SLUS_010_LDLIBS := $(patsubst %,$(BUILD)/data/%.PRG.elf,BATTLE/INITBTL ENDING/ENDING TITLE/TITLE)
-$(BUILD)/data/SLUS_010.40: $(SLUS_010_LDLIBS)
-$(BUILD)/data/SLUS_010.40: private LDLIBS += $(SLUS_010_LDLIBS)
-$(BUILD)/data/SLUS_010.40: private LDFLAGS += \
+SLUS_010_LDLIBS := $(patsubst %,$(BUILD)/data/%.PRG.sym.elf,BATTLE/BATTLE BATTLE/INITBTL ENDING/ENDING TITLE/TITLE)
+$(BUILD)/data/SLUS_010.40.elf: $(SLUS_010_LDLIBS)
+$(BUILD)/data/SLUS_010.40.elf: private LDLIBS += $(SLUS_010_LDLIBS)
+$(BUILD)/data/SLUS_010.40.elf: private LDFLAGS += \
 	--defsym=.ctors=0x80010000 \
 	--defsym=__nCtors=0x00000000 \
 	--defsym=g_pActiveMusicConfig2=0x80037820\
 	--defsym=vs_scratch=0x1F800000
-
-$(BUILD)/data/SLUS_010.40.elf: LDFLAGS += \
-	--retain-symbols-file=config/SLUS_010.40/exports.txt
 
 $(BUILD)/src/SLUS_010.40/main.c.o: CC1FLAGS += -Wno-return-type
 $(BUILD)/src/SLUS_010.40/25AC.c.o: MASFLAGS += --expand-div

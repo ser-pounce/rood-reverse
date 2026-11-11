@@ -13,7 +13,7 @@
  *
  * @return 0 if no parent weapon exists.
  */
-static int _getParentWeaponIndex(int itemCategory, int index)
+static int getParentWeaponIndex(int itemCategory, int index)
 {
     int parentIndex = 0;
 
@@ -40,7 +40,7 @@ static int _getParentWeaponIndex(int itemCategory, int index)
  *
  * @return 0 if no parent shield exists.
  */
-static int _getParentShieldIndex(int itemCategory, int itemIndex)
+static int getParentShieldIndex(int itemCategory, int itemIndex)
 {
     u_short index = 0;
 
@@ -62,7 +62,7 @@ static int _getParentShieldIndex(int itemCategory, int itemIndex)
  *
  * @return Item count
  */
-static int _populateItemRows(
+static int populateItemRows(
     int itemCategory, char* menuText[], int rowTypes[], char* textBuf)
 {
     int i;
@@ -130,7 +130,7 @@ static int _populateItemRows(
             u_int actionId;
             vs_mainMenu_setMiscRow(&vs_main_inventory.misc[index], &menuText[count * 2],
                 &rowTypes[i], textBuf);
-#ifdef _ITEMMENU
+#ifdef ITEMMENU
             actionId =
                 vs_mainMenu_miscItemToActionMap[vs_main_inventory.misc[index].id - 323];
 
@@ -143,13 +143,13 @@ static int _populateItemRows(
                 }
             }
 
-            _miscActions[count] = actionId;
+            miscActions[count] = actionId;
 #endif
             break;
         }
         }
 
-        parentItem = _getParentWeaponIndex(itemCategory, index);
+        parentItem = getParentWeaponIndex(itemCategory, index);
 
         if (parentItem != 0) {
             rowType = 0xCA00;
@@ -158,7 +158,7 @@ static int _populateItemRows(
             }
         }
 
-        parentItem = _getParentShieldIndex(itemCategory, index);
+        parentItem = getParentShieldIndex(itemCategory, index);
 
         if (parentItem != 0) {
             rowType = 0xCA00;
@@ -177,7 +177,7 @@ static int _populateItemRows(
  * @brief Waits for MAINMENU handling and restores saved
  * cursor position.
  */
-static void _restoreItemMenu(int itemCategory)
+static void restoreItemMenu(int itemCategory)
 {
     int i;
 
@@ -186,7 +186,7 @@ static void _restoreItemMenu(int itemCategory)
     }
 
     for (i = 20; i < 40; ++i) {
-        vs_battle_menuItem_t* menuItem = vs_battle_getMenuItem(i);
+        vs_MenuItem* menuItem = vs_battle_getMenuItem(i);
 
         if (menuItem->state == 2) {
             menuItem->state = 1;
@@ -203,7 +203,7 @@ static void _restoreItemMenu(int itemCategory)
  *
  * @return int
  */
-static int _itemNavigation(int initialize)
+static int itemNavigation(int initialize)
 {
     enum state {
         none,
@@ -222,17 +222,17 @@ static int _itemNavigation(int initialize)
         searchItem,
         discardItem,
         discardAllItems,
-        sortItems,
+        sortItemsState,
     };
 
     static char availableActions[8];
     static char state;
     static char noItems;
-    static char _ignoreCursorMemory;
+    static char ignoreCursorMemory;
     static UNUSED char _;
     static int selectedRow;
 
-#ifdef _ITEMMENU
+#ifdef ITEMMENU
     char** menuText;
     int* rowTypes;
     char** sp310;
@@ -251,7 +251,7 @@ static int _itemNavigation(int initialize)
 
 loop_1:
     if (initialize != 0) {
-        vs_battle_menuItem_t* menuItem = vs_battle_getMenuItem(3);
+        vs_MenuItem* menuItem = vs_battle_getMenuItem(3);
 
         if (menuItem->x > 180) {
             if (menuItem->x > 204) {
@@ -261,12 +261,12 @@ loop_1:
             menuItem->targetPosition0 = 180;
         }
 
-        _toggleMenuUi(1);
+        toggleMenuUi(1);
 
-        _secondaryTitleAnimationStep = 0;
-        _ignoreCursorMemory = initialize & 1;
+        secondaryTitleAnimationStep = 0;
+        ignoreCursorMemory = initialize & 1;
 
-        if (_ignoreCursorMemory) {
+        if (ignoreCursorMemory) {
             if (vs_main_settings.cursorMemory == 0) {
                 memset(&D_800F4EE8.unk3A, 0, sizeof D_800F4EE8.unk3A);
             }
@@ -282,7 +282,7 @@ loop_1:
     switch (state) {
     case none:
     case init: {
-#ifdef _ITEMMENU
+#ifdef ITEMMENU
         void* textBuf = vs_main_allocHeapR(72 * 96);
         rowTypes = textBuf + 0x1800;
         menuText = textBuf + 0x1900;
@@ -297,31 +297,33 @@ loop_1:
         }
 
         if (itemCategory == itemCategoryManage) {
-#ifdef _ITEMMENU
+#ifdef ITEMMENU
             for (i = 0; i < 4; ++i) {
-                menuText[i] = (char*)&_menuText[_menuText[VS_menuText_INDEX_equip + i]];
+                menuText[i] =
+                    (char*)&menuTextTable[menuTextTable[VS_menuText_INDEX_equip + i]];
                 rowTypes[i] = vs_main_stateFlags.introState < 3;
             }
 
             if (vs_battle_characterState->stats->statuses & 0x80000) {
                 for (i = 0; i < 2; ++i) {
                     menuText[i * 2 + 1] =
-                        (char*)&_menuText[VS_menuText_OFFSET_equipmentTarnished];
+                        (char*)&menuTextTable[VS_menuText_OFFSET_equipmentTarnished];
                     rowTypes[i] = 1;
                 }
             }
 #else
             for (i = 0; i < 4; ++i) {
-                menuText[i] = (char*)&_menuText[_menuText[VS_menuText_INDEX_equip + i]];
+                menuText[i] =
+                    (char*)&menuTextTable[menuTextTable[VS_menuText_INDEX_equip + i]];
                 rowTypes[i] = 1;
             }
 #endif
             rowCount = 2;
         } else {
-            rowCount = _populateItemRows(itemCategory, menuText, rowTypes, textBuf);
+            rowCount = populateItemRows(itemCategory, menuText, rowTypes, textBuf);
         }
 
-#ifdef _ITEMMENU
+#ifdef ITEMMENU
         if (D_800F4EA0 & 7) {
             for (i = 0; i < 64; ++i) {
                 rowTypes[i] |= 1;
@@ -338,8 +340,8 @@ loop_1:
 
             i = vs_main_settings.cursorMemory;
 
-            if (_ignoreCursorMemory) {
-                _ignoreCursorMemory = 0;
+            if (ignoreCursorMemory) {
+                ignoreCursorMemory = 0;
             } else {
                 vs_main_settings.cursorMemory = 1;
             }
@@ -355,7 +357,7 @@ loop_1:
             vs_mainmenu_setMenuRows(rowCount, var_a1_2, menuText, rowTypes);
 
             if (state == none) {
-                _restoreItemMenu(itemCategory);
+                restoreItemMenu(itemCategory);
             }
 
             vs_main_settings.cursorMemory = i;
@@ -368,7 +370,7 @@ loop_1:
     }
 
     case 2:
-        _statusCommandState = 1;
+        statusCommandState = 1;
 
         if (noItems) {
             if (vs_main_buttonsPressed.all & PADRup) {
@@ -386,21 +388,21 @@ loop_1:
             }
         } else {
 
-#ifdef _ITEMMENU
+#ifdef ITEMMENU
             if (!(D_800F4EA0 & 7)) {
                 u_int rowCount = itemCategory;
                 rowCount = rowCount < itemCategoryMisc;
-                _statusCommandState = rowCount + 1;
+                statusCommandState = rowCount + 1;
             }
 #else
             int offset;
             rowCount = itemCategory < itemCategoryMisc;
-            _statusCommandState = rowCount + 1;
+            statusCommandState = rowCount + 1;
 #endif
 
             selectedRow = vs_mainmenu_getSelectedRow() + 1;
 
-#ifdef _ITEMMENU
+#ifdef ITEMMENU
 #define offset 1
 #else
             offset = 1;
@@ -408,8 +410,8 @@ loop_1:
 
             if (selectedRow == 0) {
                 if (vs_main_buttonsPressed.all & PADRleft) {
-#ifdef _ITEMMENU
-                    if ((_statusCommandState >= 2) && vs_mainmenu_ready()) {
+#ifdef ITEMMENU
+                    if ((statusCommandState >= 2) && vs_mainmenu_ready()) {
 #else
                     if ((rowCount != 0) && (vs_mainmenu_ready())) {
 #endif
@@ -419,9 +421,9 @@ loop_1:
                         row = vs_mainMenu_storeCursor();
 
                         vs_battle_getMenuItem(row >> 8)->outsetIcon = 0;
-                        _itemStatusDispatcher(itemCategory | ((row + offset) << 4));
+                        itemStatusDispatcher(itemCategory | ((row + offset) << 4));
 #undef offset
-                        _secondaryTitleEnabled = 0;
+                        secondaryTitleEnabled = 0;
                         state = 7;
                         break;
                     }
@@ -430,7 +432,7 @@ loop_1:
                 }
             } else {
                 void* textBuf;
-#ifdef _ITEMMENU
+#ifdef ITEMMENU
                 int* rowTypes;
 #else
                 int rowTypes[64];
@@ -441,7 +443,7 @@ loop_1:
                     return selectedRow;
                 }
 
-#ifdef _ITEMMENU
+#ifdef ITEMMENU
                 textBuf = vs_main_allocHeapR(72 * 96);
                 sp310 = textBuf + 0x1900;
                 rowTypes = textBuf + 0x1800;
@@ -449,7 +451,7 @@ loop_1:
                 textBuf = vs_main_allocHeapR(64 * 96);
 #endif
 
-                count = _populateItemRows(itemCategory, sp310, rowTypes, textBuf);
+                count = populateItemRows(itemCategory, sp310, rowTypes, textBuf);
 
                 rowTypes[selectedRow - 1] |= 8;
                 i = vs_main_settings.cursorMemory;
@@ -460,9 +462,9 @@ loop_1:
 
                 vs_main_settings.cursorMemory = i;
 
-                _restoreItemMenu(itemCategory);
+                restoreItemMenu(itemCategory);
 
-                _statusCommandState = 1;
+                statusCommandState = 1;
                 vs_mainMenu_freezeTabArrows = 0;
 
                 vs_main_freeHeapR(textBuf);
@@ -531,18 +533,18 @@ loop_1:
 
             state = init;
 
-#ifdef _ITEMMENU
+#ifdef ITEMMENU
             initialize = 0;
             goto loop_1;
 #else
-            return _itemNavigation(0);
+            return itemNavigation(0);
 #endif
         }
         break;
     }
 
     case 4: {
-        vs_battle_menuItem_t* menuItem = vs_battle_getMenuItem(3);
+        vs_MenuItem* menuItem = vs_battle_getMenuItem(3);
 
         if (menuItem->x > 180) {
             if (menuItem->x > 204) {
@@ -598,7 +600,7 @@ loop_1:
                         vs_main_inventory.misc[var_a1_2 - 1].count - 100;
                     vs_main_inventory.misc[var_a1_2 - 1].count = 100;
                 } else {
-#ifdef _ITEMMENU
+#ifdef ITEMMENU
                     vs_mainMenu_initItem(itemCategoryMisc, row);
 #else
                     vs_mainMenu_initItem(itemCategoryMisc, var_a1_2);
@@ -623,7 +625,7 @@ loop_1:
         break;
 
     case viewDetails:
-        i = _itemStatusDispatcher(0);
+        i = itemStatusDispatcher(0);
 
         if (i == 0) {
             break;
@@ -633,10 +635,10 @@ loop_1:
             return -2;
         }
 
-        _secondaryTitleEnabled = 1;
+        secondaryTitleEnabled = 1;
 
         {
-            vs_battle_menuItem_t* menuItem = vs_battle_getMenuItem(3);
+            vs_MenuItem* menuItem = vs_battle_getMenuItem(3);
 
             if (menuItem->x > 180) {
                 if (menuItem->x > 204) {
@@ -651,7 +653,7 @@ loop_1:
         break;
 
     case populateActions: {
-#ifdef _ITEMMENU
+#ifdef ITEMMENU
         char* sp310[12];
 #endif
         int rowType;
@@ -659,7 +661,7 @@ loop_1:
         rowCount = 0;
         index = indices[selectedRow - 1] - 1;
 
-#ifdef _ITEMMENU
+#ifdef ITEMMENU
         vs_battle_rMemzero(vs_battle_rowTypeBuf, sizeof(int) * 6);
 
         if (itemCategory == itemCategoryMisc) {
@@ -670,9 +672,9 @@ loop_1:
             if (vs_main_inventory.misc[index].id > 457) {
                 *vs_battle_rowTypeBuf = 1;
                 sp310[1] = (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_cannotUse];
-            } else if (vs_battle_getActionFlags(0, _miscActions[selectedRow - 1]) & 2) {
+            } else if (vs_battle_getActionFlags(0, miscActions[selectedRow - 1]) & 2) {
                 *vs_battle_rowTypeBuf = 1;
-                sp310[1] = (char*)&_menuText[VS_menuText_OFFSET_insufficientMp];
+                sp310[1] = (char*)&menuTextTable[VS_menuText_OFFSET_insufficientMp];
             }
 
             ++rowCount;
@@ -687,8 +689,8 @@ loop_1:
             sp310[rowCount * 2 + 1] =
                 (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_searchItemDesc];
 
-            if ((_getParentWeaponIndex(var_s2, index) == 0)
-                && (_getParentShieldIndex(var_s2, index) == 0)) {
+            if ((getParentWeaponIndex(var_s2, index) == 0)
+                && (getParentShieldIndex(var_s2, index) == 0)) {
                 sp310[rowCount * 2 + 1] =
                     (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_invalidSearch];
                 vs_battle_rowTypeBuf[rowCount] = 1;
@@ -703,7 +705,7 @@ loop_1:
         if (itemCategory == itemCategoryMisc) {
 
             sp310[0] = (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_useItem];
-            sp310[1] = (char*)&_menuText[VS_menuText_OFFSET_itemUseProhibited];
+            sp310[1] = (char*)&menuTextTable[VS_menuText_OFFSET_itemUseProhibited];
             *vs_battle_rowTypeBuf = 1;
             rowCount = 1;
             availableActions[1] = useItem;
@@ -715,8 +717,8 @@ loop_1:
                 (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_searchItem];
             sp310[rowCount * 2 + 1] =
                 (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_searchItemDesc];
-            if ((_getParentWeaponIndex(itemCategory, index) == 0)
-                && (_getParentShieldIndex(itemCategory, index) == 0)) {
+            if ((getParentWeaponIndex(itemCategory, index) == 0)
+                && (getParentShieldIndex(itemCategory, index) == 0)) {
                 sp310[rowCount * 2 + 1] =
                     (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_invalidSearch];
                 vs_battle_rowTypeBuf[rowCount] = 1;
@@ -749,7 +751,7 @@ loop_1:
             break;
         }
 
-        var_a1_2 = _getParentWeaponIndex(itemCategory, index);
+        var_a1_2 = getParentWeaponIndex(itemCategory, index);
 
         if (var_a1_2 != 0) {
             rowType = 1;
@@ -758,7 +760,7 @@ loop_1:
             }
         }
 
-        var_a1_2 = _getParentShieldIndex(itemCategory, index);
+        var_a1_2 = getParentShieldIndex(itemCategory, index);
 
         if (var_a1_2 != 0) {
             rowType = 1;
@@ -800,7 +802,7 @@ loop_1:
             (char*)&vs_mainMenu_itemHelp[VS_ITEMHELP_BIN_OFFSET_sortItemDesc];
 
         ++rowCount;
-        availableActions[rowCount] = sortItems;
+        availableActions[rowCount] = sortItemsState;
 
         vs_mainMenu_addMenuActions(
             rowCount, itemCategory + 38, sp310, vs_battle_rowTypeBuf);
@@ -810,7 +812,7 @@ loop_1:
     }
 
     case processAction:
-#ifdef _ITEMMENU
+#ifdef ITEMMENU
         vs_mainMenu_printInformation(
             vs_mainMenu_getSelectedAction(), vs_mainMenu_actionMenuState);
 #else
@@ -824,7 +826,7 @@ loop_1:
 
         if (index != 0) {
 
-#ifdef _ITEMMENU
+#ifdef ITEMMENU
             vs_mainMenu_flyoutLeftExcept(0x28);
 #endif
 
@@ -832,18 +834,18 @@ loop_1:
 
                 vs_battle_playMenuSelectSfx();
 
-#ifndef _ITEMMENU
+#ifndef ITEMMENU
                 vs_mainMenu_flyoutLeftExcept(0x28);
 #endif
 
                 switch (availableActions[index]) {
-#ifdef _ITEMMENU
+#ifdef ITEMMENU
                 case useItem:
                     vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
 
                     vs_battle_miscItemInvoked = indices[selectedRow - 1] - 1;
                     D_800F4E98.executeAbility.u16[0] =
-                        (short)_miscActions[selectedRow - 1];
+                        (short)miscActions[selectedRow - 1];
                     D_800F4E98.executeAbility.u16[1] =
                         (short)vs_main_inventory.misc[vs_battle_miscItemInvoked].id;
 
@@ -866,21 +868,20 @@ loop_1:
                         rowCount |= 0x10000;
                     }
 
-                    _discardMenu(rowCount);
+                    discardMenu(rowCount);
 
                     state = discard;
                     break;
 
                 case discardAllItems:
-                    _discardMenu(
-                        indices[selectedRow - 1] | (itemCategory << 8) | 0x20000);
+                    discardMenu(indices[selectedRow - 1] | (itemCategory << 8) | 0x20000);
 
                     state = discard;
                     break;
 
-                case sortItems:
+                case sortItemsState:
                     vs_mainMenu_initInformationBox();
-                    _sortItems(itemCategory + 1);
+                    sortItems(itemCategory + 1);
 
                     state = sort;
                     break;
@@ -889,7 +890,7 @@ loop_1:
 
                 vs_battle_playMenuLeaveSfx();
 
-#ifndef _ITEMMENU
+#ifndef ITEMMENU
                 vs_mainMenu_flyoutLeftExcept(0x28);
 #endif
 
@@ -914,10 +915,10 @@ loop_1:
             break;
         }
 
-        i = _getParentWeaponIndex(itemCategory, indices[selectedRow - 1] - 1);
+        i = getParentWeaponIndex(itemCategory, indices[selectedRow - 1] - 1);
 
         if (i == 0) {
-            i = _getParentShieldIndex(itemCategory, indices[selectedRow - 1] - 1);
+            i = getParentShieldIndex(itemCategory, indices[selectedRow - 1] - 1);
             itemCategory = 3;
         } else {
             itemCategory = 0;
@@ -931,7 +932,7 @@ loop_1:
         break;
 
     case discard:
-        i = _discardMenu(0);
+        i = discardMenu(0);
 
         if (i != 0) {
 
@@ -949,7 +950,7 @@ loop_1:
         break;
 
     case sort:
-        i = _sortItems(0);
+        i = sortItems(0);
 
         if (i != 0) {
 

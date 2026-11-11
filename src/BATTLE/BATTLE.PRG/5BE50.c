@@ -1,6 +1,7 @@
 #include "common.h"
 #include "146C.h"
 #include "30DB0.h"
+#include "30DB0Private.h"
 #include "58578.h"
 #include "573B8.h"
 #include "5BF94.h"

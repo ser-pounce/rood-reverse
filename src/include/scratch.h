@@ -8,7 +8,7 @@ typedef struct {
     /* 0x10 */ VECTOR lookAt;
     /* 0x20 */ VECTOR angles;
     /* 0x30 */ int farClip;
-} vs_camera_t;
+} vs_Camera;
 
 typedef struct {
     /* 0x00 */ void* unk0;
@@ -17,7 +17,7 @@ typedef struct {
     /* 0x0C */ void* unkC;
     /* 0x10 */ u_int firstPersonViewFacing;
     /* 0x14 */ MATRIX viewMatrix;
-    /* 0x34 */ vs_camera_t camera;
-} vs_scratch_t;
+    /* 0x34 */ vs_Camera camera;
+} vs_Scratch;
 
-extern vs_scratch_t vs_scratch;
+extern vs_Scratch vs_scratch;

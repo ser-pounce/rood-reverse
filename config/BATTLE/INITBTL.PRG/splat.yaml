@@ -2,7 +2,7 @@ sha1: d7ea16ef957179cad6e3b02727bb714713cfcc32
 options:
   basename: BATTLE/INITBTL.PRG
   target_path: data/BATTLE/INITBTL.PRG
-  elf_path: build/data/BATTLE/INITBTL.PRG.elf
+  elf_path: build/data/BATTLE/INITBTL.PRG.sym.elf
   asm_path: build/src/BATTLE/INITBTL.PRG
   src_path: src/BATTLE/INITBTL.PRG
   asset_path: build/assets/BATTLE/INITBTL.PRG

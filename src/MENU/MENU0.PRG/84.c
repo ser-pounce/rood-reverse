@@ -14,13 +14,13 @@
 #include "scratch.h"
 #include <libetc.h>
 
-static signed char _MPCostTextBuffer[16];
+static signed char MPCostTextBuffer[16];
 
 /**
  * Prints the MP cost of a spell using action data.
  * @param id Action ID. Value can be negated to indicate a variable cost spell.
  */
-static void _setMPCost(int id)
+static void setMPCost(int id)
 {
     int flags;
     int i;
@@ -36,37 +36,37 @@ static void _setMPCost(int id)
     vs_mainmenu_setActionCost(1, "MP", 8, (flags >> 1) & 1);
 
     cost = vs_main_actions[id].cost;
-    _MPCostTextBuffer[15] = NULL;
+    MPCostTextBuffer[15] = NULL;
 
     i = 15;
 
     if (variableCost != 0) {
         i = 13;
-        _MPCostTextBuffer[14] = '-';
-        _MPCostTextBuffer[13] = '[';
+        MPCostTextBuffer[14] = '-';
+        MPCostTextBuffer[13] = '[';
     }
 
     do {
         cost = vs_battle_toBCD(cost);
-        _MPCostTextBuffer[--i] = (cost & 0xF) + '0';
+        MPCostTextBuffer[--i] = (cost & 0xF) + '0';
         cost >>= 4;
         if (variableCost != 0) {
-            _MPCostTextBuffer[--i] = '[';
+            MPCostTextBuffer[--i] = '[';
         }
     } while (cost != 0);
 
-    _MPCostTextBuffer[--i] = '#';
+    MPCostTextBuffer[--i] = '#';
 
     vs_mainmenu_setActionCost(
-        0, &_MPCostTextBuffer[i], variableCost * 4 + 72, (flags >> 1) & 1);
+        0, &MPCostTextBuffer[i], variableCost * 4 + 72, (flags >> 1) & 1);
 }
 
-static char _MPCostDirectTextBuffer[16];
+static char MPCostDirectTextBuffer[16];
 
 /**
  * Prints the MP cost of a spell.
  */
-void _setMPCostDirect(int costDecimal, int disabled)
+void setMPCostDirect(int costDecimal, int disabled)
 {
     int cost;
     int i;
@@ -75,25 +75,30 @@ void _setMPCostDirect(int costDecimal, int disabled)
 
     cost = costDecimal;
     i = 15;
-    _MPCostDirectTextBuffer[15] = 0;
+    MPCostDirectTextBuffer[15] = 0;
 
     do {
         cost = vs_battle_toBCD(cost);
-        _MPCostDirectTextBuffer[--i] = (cost & 0xF) + '0';
+        MPCostDirectTextBuffer[--i] = (cost & 0xF) + '0';
         cost >>= 4;
     } while (cost != 0);
 
-    _MPCostDirectTextBuffer[--i] = '#';
+    MPCostDirectTextBuffer[--i] = '#';
 
-    vs_mainmenu_setActionCost(0, &_MPCostDirectTextBuffer[i], 72, disabled);
+    vs_mainmenu_setActionCost(0, &MPCostDirectTextBuffer[i], 72, disabled);
 }
 
-u_short _magicStrings[] = {
+VS_HIDDEN(setMPCostDirect);
+
+u_short magicStrings[] = {
 #include "build/assets/MENU/MENU0.PRG/magic.vsString"
 };
-u_short _teleportationStrings[] = {
+VS_HIDDEN(magicStrings);
+
+u_short teleportationStrings[] = {
 #include "build/assets/MENU/MENU0.PRG/teleportation.vsString"
 };
+VS_HIDDEN(teleportationStrings);
 
 /**
  * Encapsulates teleport target information.
@@ -104,7 +109,7 @@ u_short _teleportationStrings[] = {
  * Bits 24-29:
  * Bits 29-32: unused
  */
-int _savePointData[] = { 0x0305001B, 0x0801000E, 0x04030199, 0x0C0C001C, 0x070C0028,
+int savePointData[] = { 0x0305001B, 0x0801000E, 0x04030199, 0x0C0C001C, 0x070C0028,
     0x040200CD, 0x0F070035, 0x08060093, 0x060000CE, 0x09080106, 0x09080111, 0x0C030098,
     0x090800E0, 0x060900C8, 0x050800CA, 0x050F00CC, 0x0109009B, 0x0A07007C, 0x000400CF,
     0x080800EC, 0x020400F1, 0x0705011D, 0x06080120, 0x04080139, 0x04080147, 0x0904014F,
@@ -112,6 +117,7 @@ int _savePointData[] = { 0x0305001B, 0x0801000E, 0x04030199, 0x0C0C001C, 0x070C0
     0x07060063, 0x0A0400D2, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
     0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
     0x00000000 };
+VS_HIDDEN(savePointData);
 
 /**
  * Calculates MP cost of teleporting to a save point
@@ -119,7 +125,7 @@ int _savePointData[] = { 0x0305001B, 0x0801000E, 0x04030199, 0x0C0C001C, 0x070C0
  * @param targetSavePointId
  * @return cost
  */
-int _getTeleportCost(int targetSavePointId)
+int getTeleportCost(int targetSavePointId)
 {
     int i;
     int j;
@@ -129,7 +135,7 @@ int _getTeleportCost(int targetSavePointId)
 
     do {
         for (i = 0; i < 48; ++i) {
-            if ((_savePointData[i] & 0xFFFF) == roomId) {
+            if ((savePointData[i] & 0xFFFF) == roomId) {
                 break;
             }
         }
@@ -153,7 +159,9 @@ int _getTeleportCost(int targetSavePointId)
     return cost;
 }
 
-static char _availableWarlockSpells[18];
+VS_HIDDEN(getTeleportCost);
+
+static char availableWarlockSpells[18];
 static u_char D_8010694A;
 static UNUSED char _0[5];
 
@@ -166,7 +174,7 @@ static UNUSED char _0[5];
  * - 0 = Process menu
  * @return The selected row, negative if user cancelled, 0 otherwise.
  */
-int _warlockMagicMenu(u_int initShortcutInvoked)
+int warlockMagicMenu(u_int initShortcutInvoked)
 {
     enum state { init, handleInput, returnIfReady, levelledSpellInit, levelledSpell };
 
@@ -209,17 +217,16 @@ int _warlockMagicMenu(u_int initShortcutInvoked)
 
             if (vs_main_actions[actionId].unlocked) {
                 menuStrings[rowCount * 2] =
-                    (char*)&_magicStrings[_magicStrings[i
-                                                        + VS_magic_INDEX_warlockSpells]];
-                menuStrings[rowCount * 2 + 1] = (char*)&_magicStrings
-                    [_magicStrings[i + VS_magic_INDEX_warlockSpellDescs]];
+                    (char*)&magicStrings[magicStrings[i + VS_magic_INDEX_warlockSpells]];
+                menuStrings[rowCount * 2 + 1] = (char*)&magicStrings
+                    [magicStrings[i + VS_magic_INDEX_warlockSpellDescs]];
                 rowTypes[rowCount] = 0;
 
                 if (vs_battle_getActionFlags(0, actionId) != 0) {
                     rowTypes[rowCount] |= 1;
                 }
 
-                _availableWarlockSpells[rowCount] = actionId;
+                availableWarlockSpells[rowCount] = actionId;
                 ++rowCount;
             }
         }
@@ -263,7 +270,7 @@ int _warlockMagicMenu(u_int initShortcutInvoked)
 
             if (selectedRow > 0) {
 
-                selectedRow = _availableWarlockSpells[selectedRow - 1];
+                selectedRow = availableWarlockSpells[selectedRow - 1];
 
                 for (rowCount = 0; rowCount < 7; ++rowCount) {
                     if ((selectedRow == levelledSpells[rowCount])
@@ -290,7 +297,7 @@ int _warlockMagicMenu(u_int initShortcutInvoked)
 
         } else {
 
-            i = _availableWarlockSpells[vs_mainMenu_getConfirmedRow()];
+            i = availableWarlockSpells[vs_mainMenu_getConfirmedRow()];
 
             for (rowCount = 0; rowCount < 7; ++rowCount) {
                 if (i == levelledSpells[rowCount]) {
@@ -301,7 +308,7 @@ int _warlockMagicMenu(u_int initShortcutInvoked)
                 }
             }
 
-            _setMPCost(i);
+            setMPCost(i);
         }
 
         break;
@@ -409,7 +416,7 @@ int _warlockMagicMenu(u_int initShortcutInvoked)
             D_800F4EE8.cursorMemories[0xC] = i;
         }
 
-        _setMPCost(selectedRow + i);
+        setMPCost(selectedRow + i);
 
         temp_s6 = vs_scratch.unk4 - 4;
 
@@ -502,7 +509,9 @@ int _warlockMagicMenu(u_int initShortcutInvoked)
     return 0;
 }
 
-static char _availableShamanSpells[6];
+VS_HIDDEN(warlockMagicMenu);
+
+static char availableShamanSpells[6];
 static char _1[2];
 
 /**
@@ -514,7 +523,7 @@ static char _1[2];
  * - 0 = Process menu
  * @return The selected row, -1 if user cancelled, 0 otherwise
  */
-int _shamanMagicMenu(u_int initShortcutInvoked)
+int shamanMagicMenu(u_int initShortcutInvoked)
 {
     enum state { init, handleInput, returnIfReady };
 
@@ -549,12 +558,12 @@ int _shamanMagicMenu(u_int initShortcutInvoked)
             }
             menuStrings[rowCount * 2] = vs_main_actions[actionId].name;
             menuStrings[rowCount * 2 + 1] =
-                (char*)&_magicStrings[_magicStrings[i + VS_magic_INDEX_shamanSpellDescs]];
+                (char*)&magicStrings[magicStrings[i + VS_magic_INDEX_shamanSpellDescs]];
             rowTypes[rowCount] = 0;
             if (vs_battle_getActionFlags(0, actionId) != 0) {
                 rowTypes[rowCount] |= 1;
             }
-            _availableShamanSpells[rowCount] = actionId;
+            availableShamanSpells[rowCount] = actionId;
             ++rowCount;
         }
 
@@ -583,7 +592,7 @@ int _shamanMagicMenu(u_int initShortcutInvoked)
                 vs_mainMenu_clearMenuExcept(0);
             } else {
                 if (selectedRow > 0) {
-                    selectedRow = _availableShamanSpells[selectedRow - 1];
+                    selectedRow = availableShamanSpells[selectedRow - 1];
                 }
                 vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
                 vs_mainMenu_dismissInformationBox();
@@ -591,7 +600,7 @@ int _shamanMagicMenu(u_int initShortcutInvoked)
             }
             state = returnIfReady;
         } else {
-            _setMPCost(_availableShamanSpells[vs_mainMenu_getConfirmedRow()]);
+            setMPCost(availableShamanSpells[vs_mainMenu_getConfirmedRow()]);
         }
         break;
     case returnIfReady:
@@ -603,7 +612,9 @@ int _shamanMagicMenu(u_int initShortcutInvoked)
     return 0;
 }
 
-static char _availableSorcererSpells[18];
+VS_HIDDEN(shamanMagicMenu);
+
+static char availableSorcererSpells[18];
 static char _3[6];
 
 /**
@@ -615,7 +626,7 @@ static char _3[6];
  * - 0 = Process menu
  * @return The selected row, -1 if user cancelled, 0 otherwise
  */
-int _sorcererMagicMenu(u_int initShortcutInvoked)
+int sorcererMagicMenu(u_int initShortcutInvoked)
 {
     enum state { init, handleInput, returnIfready };
 
@@ -649,13 +660,12 @@ int _sorcererMagicMenu(u_int initShortcutInvoked)
             }
             menuStrings[rowCount * 2] = vs_main_actions[actionId].name;
             menuStrings[rowCount * 2 + 1] =
-                (char*)&_magicStrings[_magicStrings[i
-                                                    + VS_magic_INDEX_sorcererSpellDescs]];
+                (char*)&magicStrings[magicStrings[i + VS_magic_INDEX_sorcererSpellDescs]];
             rowTypes[rowCount] = 0;
             if (vs_battle_getActionFlags(0, actionId) != 0) {
                 rowTypes[rowCount] |= 1;
             }
-            _availableSorcererSpells[rowCount] = actionId;
+            availableSorcererSpells[rowCount] = actionId;
             ++rowCount;
         }
 
@@ -684,7 +694,7 @@ int _sorcererMagicMenu(u_int initShortcutInvoked)
                 vs_mainMenu_clearMenuExcept(0);
             } else {
                 if (selectedRow > 0) {
-                    selectedRow = _availableSorcererSpells[selectedRow - 1];
+                    selectedRow = availableSorcererSpells[selectedRow - 1];
                 }
                 vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
                 vs_mainMenu_dismissInformationBox();
@@ -692,7 +702,7 @@ int _sorcererMagicMenu(u_int initShortcutInvoked)
             }
             state = returnIfready;
         } else {
-            _setMPCost(_availableSorcererSpells[vs_mainMenu_getConfirmedRow()]);
+            setMPCost(availableSorcererSpells[vs_mainMenu_getConfirmedRow()]);
         }
         break;
     case returnIfready:
@@ -704,7 +714,9 @@ int _sorcererMagicMenu(u_int initShortcutInvoked)
     return 0;
 }
 
-static char _availableEnchanterSpells[8];
+VS_HIDDEN(sorcererMagicMenu);
+
+static char availableEnchanterSpells[8];
 
 /**
  * Displays and manages Enchanter magic menu.
@@ -715,7 +727,7 @@ static char _availableEnchanterSpells[8];
  * - 0 = Process menu
  * @return The selected row, -1 if user cancelled, 0 otherwise
  */
-int _enchanterMagicMenu(u_int initShortcutInvoked)
+int enchanterMagicMenu(u_int initShortcutInvoked)
 {
     enum state { init, handleInput, returnIfready };
     static int state;
@@ -747,13 +759,14 @@ int _enchanterMagicMenu(u_int initShortcutInvoked)
                 continue;
             }
             menuStrings[rowCount * 2] = vs_main_actions[actionId].name;
-            menuStrings[rowCount * 2 + 1] = (char*)&_magicStrings
-                [_magicStrings[i + VS_magic_INDEX_enchanterSpellDescs]];
+            menuStrings[rowCount * 2 + 1] =
+                (char*)&magicStrings[magicStrings[i
+                                                  + VS_magic_INDEX_enchanterSpellDescs]];
             rowTypes[rowCount] = 0;
             if (vs_battle_getActionFlags(0, actionId) != 0) {
                 rowTypes[rowCount] |= 1;
             }
-            _availableEnchanterSpells[rowCount] = actionId;
+            availableEnchanterSpells[rowCount] = actionId;
             ++rowCount;
         }
 
@@ -782,7 +795,7 @@ int _enchanterMagicMenu(u_int initShortcutInvoked)
                 vs_mainMenu_clearMenuExcept(0);
             } else {
                 if (selectedRow > 0) {
-                    selectedRow = _availableEnchanterSpells[selectedRow - 1];
+                    selectedRow = availableEnchanterSpells[selectedRow - 1];
                 }
                 vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
                 vs_mainMenu_dismissInformationBox();
@@ -790,7 +803,7 @@ int _enchanterMagicMenu(u_int initShortcutInvoked)
             }
             state = returnIfready;
         } else {
-            _setMPCost(_availableEnchanterSpells[vs_mainMenu_getConfirmedRow()]);
+            setMPCost(availableEnchanterSpells[vs_mainMenu_getConfirmedRow()]);
         }
         break;
     case returnIfready:
@@ -801,5 +814,7 @@ int _enchanterMagicMenu(u_int initShortcutInvoked)
     }
     return 0;
 }
+
+VS_HIDDEN(enchanterMagicMenu);
 
 static UNUSED const int _ = 0;

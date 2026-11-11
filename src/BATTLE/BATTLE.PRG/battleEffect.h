@@ -6,7 +6,7 @@
 typedef struct {
     u_short lba;
     u_short size;
-} _loadFileContext;
+} vs_LoadFileContext;
 
 typedef struct {
     u_short type;
@@ -20,17 +20,17 @@ typedef struct {
         } actor;
         SVECTOR position;
     } value;
-} actionEffectTarget;
+} ActionEffectTarget;
 
 typedef struct {
     u_short effectId;
     u_char count;
     u_char otherCount;
-    actionEffectTarget source;
-    actionEffectTarget targets[16];
+    ActionEffectTarget source;
+    ActionEffectTarget targets[16];
     u_char others[16];
     SVECTOR position;
-} actionEffectRequest;
+} ActionEffectRequest;
 
 typedef struct func_800D4910_t func_800D4910_t;
 
@@ -52,7 +52,7 @@ typedef struct {
     u_char unk14;
     u_char unk15;
     u_char unk16[4];
-} pFileBlock9;
+} PFileBlock9;
 
 typedef struct {
     u_short flags;
@@ -79,12 +79,12 @@ typedef struct {
     u_short count;
     u_short dataOffset;
     u_char curveSizes[0];
-} pFileCurveBlock;
+} PFileCurveBlock;
 
 typedef struct {
     u_short unk0;
     u_short dataIndex;
-} pFileTextureInfo;
+} PFileTextureInfo;
 
 typedef struct {
     int unk0;
@@ -100,7 +100,7 @@ typedef struct {
     u_char textureIndex;
     u_char unk17;
     u_char* unk18;
-    pFileTextureInfo* textureInfo;
+    PFileTextureInfo* textureInfo;
 } func_800D6CF_t;
 
 typedef struct {
@@ -196,12 +196,12 @@ typedef struct {
 typedef struct {
     int count;
     func_800FA098_arg0 unk4[0];
-} pFileBlock5;
+} PFileBlock5;
 
 typedef struct {
     int count;
     u_short offsets[0];
-} pFileBlock3;
+} PFileBlock3;
 
 typedef struct {
     short clut;
@@ -218,28 +218,28 @@ typedef struct {
     short y2;
     short x3;
     short y3;
-} pFileTexture;
+} vs_PFileTexture;
 
 typedef struct {
     int unk0;
     int unk4;
-    pFileBlock5* block5Data;
+    PFileBlock5* block5Data;
     u_char* curves[32];
-    pFileCurveBlock* curveBlock;
+    PFileCurveBlock* curveBlock;
     char* block8Data;
     int block1TableCount;
-    pFileTextureInfo* textureInfoTable[4];
-    pFileTexture* textures;
+    PFileTextureInfo* textureInfoTable[4];
+    vs_PFileTexture* textures;
     int block2Count;
     u_short* block2Data;
-    pFileBlock9* block9Data;
+    PFileBlock9* block9Data;
     func_800D0B30_t* block10Data;
-    pFileBlock3* block3Data;
+    PFileBlock3* block3Data;
     u_char* block11Data;
     void* block12Data;
     void* block13Data;
     int unkCC;
-    actionEffectRequest* unkD0;
+    ActionEffectRequest* unkD0;
 } D_800F569C_t;
 
 typedef struct {
@@ -326,10 +326,10 @@ typedef struct {
 } D_800F53B8_t4;
 
 typedef struct {
-    actionEffectTarget unk0;
-    actionEffectTarget unkC;
-    actionEffectTarget unk18;
-    actionEffectTarget unk24;
+    ActionEffectTarget unk0;
+    ActionEffectTarget unkC;
+    ActionEffectTarget unk18;
+    ActionEffectTarget unk24;
     D_800F53B8_t4* unk30;
     func_800D4910_t* unk34;
     short unk38;
@@ -420,5 +420,5 @@ void func_800D7FFC(int arg0);
 void vs_battle_setPlgLoadState(int);
 void vs_battle_configureEffectFbLoad(
     int lba, int size, int suffix, int isClut, int index);
-extern actionEffectRequest D_800F5230;
-extern _loadFileContext vs_battle_pFileLoadContext;
+extern ActionEffectRequest D_800F5230;
+extern vs_LoadFileContext vs_battle_pFileLoadContext;

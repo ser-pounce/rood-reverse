@@ -1,8 +1,8 @@
 // From
 // https://github.com/jdperos/chrono-cross-decomp/blob/ecef6eeac85fe573c08644041d7098beed1a9bf5/include/hw.h
 
-#ifndef _HW_H
-#define _HW_H
+#ifndef HW_H
+#define HW_H
 
 #define VOICE_00_LEFT_RIGHT ((u_short*)0x1F801C00)
 #define VOICE_00_ADPCM_SAMPLE_RATE ((u_short*)0x1F801C04)

@@ -14,7 +14,7 @@
 #include "build/src/include/lbas.h"
 #include "gpu.h"
 #include "scratch.h"
-#include "texture_t.h"
+#include "texture.h"
 #include <abs.h>
 #include <libetc.h>
 #include <memory.h>
@@ -26,7 +26,7 @@ enum { maximumBrightness = 128 };
  * Computes fixed-point sine.
  * Almost a byte-identical copy of rsin except for register differences
  */
-static int _sin(int angle)
+static int sine(int angle)
 {
     u_long value = (u_long)_trig_table;
     int quadrant = angle & 0x400;
@@ -71,8 +71,8 @@ enum creditsElementState {
     creditsElementStatePhase4,
 };
 
-typedef struct _creditsElement {
-    void (*renderer)(struct _creditsElement*);
+typedef struct CreditsElement {
+    void (*renderer)(struct CreditsElement*);
     u_char const* data;
     short state;
     u_short currentStep;
@@ -81,7 +81,7 @@ typedef struct _creditsElement {
     int x;
     int y;
     UNUSED int _[6];
-} _creditsElement;
+} CreditsElement;
 
 enum easeMode {
     easeModeLinear,
@@ -90,12 +90,12 @@ enum easeMode {
     easeModeEaseIn,
 };
 
-static int _ease(short mode, short currentStep, short totalSteps);
+static int ease(short mode, short currentStep, short totalSteps);
 
 /**
  * Renders "The Phantom Pain" with a ripple effect.
  */
-static void _renderPhantomPain(_creditsElement* element)
+static void renderPhantomPain(CreditsElement* element)
 {
     enum phaseDurations {
         fadeInDuration = 90,
@@ -117,7 +117,7 @@ static void _renderPhantomPain(_creditsElement* element)
     u_short amplitude;
     u_short i;
     u_short j;
-    POLY_FT4* poly = ((vs_scratch_t*)0x1F800000)->unk0;
+    POLY_FT4* poly = ((vs_Scratch*)0x1F800000)->unk0;
 
     memset(&rot, 0, sizeof rot);
 
@@ -172,7 +172,7 @@ static void _renderPhantomPain(_creditsElement* element)
     }
 
     wavePhase += 200;
-    amplitude = (_ease(easeModeEaseIn, 90 - rippleAge, 90) * 65) >> 10;
+    amplitude = (ease(easeModeEaseIn, 90 - rippleAge, 90) * 65) >> 10;
 
     RotMatrix_gte(&rot, &matrix);
     matrix.t[0] = matrix.t[1] = 0;
@@ -186,14 +186,14 @@ static void _renderPhantomPain(_creditsElement* element)
             vertices[1].vx = vertices[3].vx = (j + 1) * 9 - 72;
             vertices[0].vy = vertices[1].vy = i * 4 - 8;
             vertices[2].vy = vertices[3].vy = (i + 1) * 4 - 8;
-            vertices[0].vz = (_sin(wavePhase + rippleDist[i][j] * 400) * amplitude) >> 12;
+            vertices[0].vz = (sine(wavePhase + rippleDist[i][j] * 400) * amplitude) >> 12;
             // BUG: out of bounds read when i == 3 or j == 15
             vertices[1].vz =
-                (_sin(wavePhase + rippleDist[i][j + 1] * 400) * amplitude) >> 12;
+                (sine(wavePhase + rippleDist[i][j + 1] * 400) * amplitude) >> 12;
             vertices[2].vz =
-                (_sin(wavePhase + rippleDist[i + 1][j] * 400) * amplitude) >> 12;
+                (sine(wavePhase + rippleDist[i + 1][j] * 400) * amplitude) >> 12;
             vertices[3].vz =
-                (_sin(wavePhase + rippleDist[i + 1][j + 1] * 400) * amplitude) >> 12;
+                (sine(wavePhase + rippleDist[i + 1][j + 1] * 400) * amplitude) >> 12;
 
             SetPolyFT4(poly);
             setSemiTrans(poly, 1);
@@ -207,19 +207,19 @@ static void _renderPhantomPain(_creditsElement* element)
             poly->clut = getClut(896, 83);
             poly->tpage = getTPage(clut4Bit, semiTransparencyFull, 896, 0);
             poly->r0 = poly->g0 = poly->b0 = brightness;
-            AddPrim(((vs_scratch_t*)0x1F800000)->unk4 + 12, poly++);
+            AddPrim(((vs_Scratch*)0x1F800000)->unk4 + 12, poly++);
         }
     }
 
-    ((vs_scratch_t*)0x1F800000)->unk0 = poly;
+    ((vs_Scratch*)0x1F800000)->unk0 = poly;
 }
 
-static void* _insertTpage(int tPage, int otOffset);
+static void* insertTpage(int tPage, int otOffset);
 
 /**
  * Renders the final "Fin" texture ("終劇" for the JP version).
  */
-static void _renderFin(_creditsElement* element)
+static void renderFin(CreditsElement* element)
 {
     enum phaseDurations {
         fadeInDuration = 60,
@@ -286,26 +286,26 @@ static void _renderFin(_creditsElement* element)
 
     index = 0;
     p[index] = sprt;
-    p[index] = _insertTpage(getTPage(clut4Bit, semiTransparencyFull, 896, 0), 1);
+    p[index] = insertTpage(getTPage(clut4Bit, semiTransparencyFull, 896, 0), 1);
 }
 
-static _creditsElement _creditsElements[32];
-static u_char _creditsComplete;
-static u_char _isFadedOut;
-static u_char _skipInvoked;
+static CreditsElement creditsElements[32];
+static u_char creditsComplete;
+static u_char isFadedOut;
+static u_char skipInvoked;
 static UNUSED u_char _0;
-static int _currentCreditsFrame;
-static int _textStreamDelay;
-static u_char const* _creditsBytestreamHead;
-static short _scrollSpeed;
-static short _frameStartVsync;
-static u_short _masterBrightness;
+static int currentCreditsFrame;
+static int textStreamDelay;
+static u_char const* creditsBytestreamHead;
+static short scrollSpeed;
+static short frameStartVsync;
+static u_short masterBrightness;
 static UNUSED u_short _1;
 
 /**
  * Renders the game title.
  */
-static void _renderVagrantStory(_creditsElement* element)
+static void renderVagrantStory(CreditsElement* element)
 {
     enum phaseDurations {
         fadeInDuration = 60,
@@ -327,7 +327,7 @@ static void _renderVagrantStory(_creditsElement* element)
         /* fallthrough */
 
     case creditsElementStatePhase1:
-        brightness = (_masterBrightness * ++element->currentStep) / fadeInDuration;
+        brightness = (masterBrightness * ++element->currentStep) / fadeInDuration;
 
         if (element->currentStep == fadeInDuration) {
             element->state = creditsElementStatePhase2;
@@ -336,7 +336,7 @@ static void _renderVagrantStory(_creditsElement* element)
         break;
 
     case creditsElementStatePhase2:
-        brightness = _masterBrightness;
+        brightness = masterBrightness;
 
         if (++element->currentStep == holdDuration) {
             element->state = creditsElementStatePhase3;
@@ -344,8 +344,8 @@ static void _renderVagrantStory(_creditsElement* element)
         break;
 
     case creditsElementStatePhase3:
-        brightness = _masterBrightness;
-        element->y += _scrollSpeed;
+        brightness = masterBrightness;
+        element->y += scrollSpeed;
 
         if (element->y < -(scrollDuration << 8)) {
             element->state = creditsElementStateFinished;
@@ -369,7 +369,7 @@ static void _renderVagrantStory(_creditsElement* element)
     index = 0;
     p[index] = sprt;
 
-    sprt = _insertTpage(getTPage(clut4Bit, semiTransparencyFull, 896, 0), 3);
+    sprt = insertTpage(getTPage(clut4Bit, semiTransparencyFull, 896, 0), 3);
 
     SetSprt(sprt);
     setSemiTrans(sprt, 1);
@@ -383,7 +383,7 @@ static void _renderVagrantStory(_creditsElement* element)
     setaddr(p[1] + 12, sprt++);
 
     p[index] = sprt;
-    p[index] = _insertTpage(getTPage(clut4Bit, semiTransparencySubtract, 896, 0), 3);
+    p[index] = insertTpage(getTPage(clut4Bit, semiTransparencySubtract, 896, 0), 3);
     return;
 }
 
@@ -392,7 +392,7 @@ static void _renderVagrantStory(_creditsElement* element)
 /**
  * Calculates the distance from the screen center, assuming a 320x224 screen size.
  */
-static int _distanceFromScreencenter(int x, int y)
+static int distanceFromScreencenter(int x, int y)
 {
     x -= 160;
     y -= 112;
@@ -403,7 +403,7 @@ static int _distanceFromScreencenter(int x, int y)
 #define CLAMP_LO(v) ((v) >= 0 ? (v) : 0)
 
 #define RADIAL_TERM(i) \
-    (((200 - _distanceFromScreencenter(poly->x##i, poly->y##i)) * 128) / 400)
+    (((200 - distanceFromScreencenter(poly->x##i, poly->y##i)) * 128) / 400)
 
 #define FADE(i, expr, clamp)                                                   \
     level = (expr);                                                            \
@@ -416,7 +416,7 @@ static int _distanceFromScreencenter(int x, int y)
 /**
  * Performs a radial fade in/out of the provided poly.
  */
-static UNUSED void _updateRadialFadePoly(POLY_GT4* poly, short progress, short fadeOut)
+static UNUSED void updateRadialFadePoly(POLY_GT4* poly, short progress, short fadeOut)
 {
     short base;
     short level;
@@ -451,14 +451,14 @@ enum decompressionState {
     decompressionStateActive,
 };
 
-static u_char _compressionState = decompressionStateIdle;
+static u_char compressionState = decompressionStateIdle;
 
-static int _illustLbas[] = { VS_ILLUST06_BIN_LBA, VS_ILLUST07_BIN_LBA,
-    VS_ILLUST08_BIN_LBA, VS_ILLUST09_BIN_LBA, VS_ILLUST10_BIN_LBA, VS_ILLUST11_BIN_LBA,
-    VS_ILLUST12_BIN_LBA, VS_ILLUST13_BIN_LBA, VS_ILLUST14_BIN_LBA, VS_ILLUST15_BIN_LBA,
-    VS_ILLUST16_BIN_LBA, 0, 0, 0, 0, 0 };
+static int illustLbas[] = { VS_ILLUST06_BIN_LBA, VS_ILLUST07_BIN_LBA, VS_ILLUST08_BIN_LBA,
+    VS_ILLUST09_BIN_LBA, VS_ILLUST10_BIN_LBA, VS_ILLUST11_BIN_LBA, VS_ILLUST12_BIN_LBA,
+    VS_ILLUST13_BIN_LBA, VS_ILLUST14_BIN_LBA, VS_ILLUST15_BIN_LBA, VS_ILLUST16_BIN_LBA, 0,
+    0, 0, 0, 0 };
 
-static int _illustSizes[] = { VS_ILLUST06_BIN_SIZE, VS_ILLUST07_BIN_SIZE,
+static int illustSizes[] = { VS_ILLUST06_BIN_SIZE, VS_ILLUST07_BIN_SIZE,
     VS_ILLUST08_BIN_SIZE, VS_ILLUST09_BIN_SIZE, VS_ILLUST10_BIN_SIZE,
     VS_ILLUST11_BIN_SIZE, VS_ILLUST12_BIN_SIZE, VS_ILLUST13_BIN_SIZE,
     VS_ILLUST14_BIN_SIZE, VS_ILLUST15_BIN_SIZE, VS_ILLUST16_BIN_SIZE, 0, 0, 0, 0, 0 };
@@ -467,33 +467,35 @@ typedef struct {
     int size;
     RECT rect;
     u_char data[0];
-} _timChunk;
+} TimChunk;
 
 typedef struct {
     int magic;
     int flags;
-    _timChunk chunk;
-} _timData;
+    TimChunk chunk;
+} TimData;
 
-extern _timData _illustSydney;
-static _timData* _decompressedIllustData = &_illustSydney;
+extern TimData illustSydney;
+VS_HIDDEN(illustSydney);
 
-static u_short _illustrationTimers[] = { 1600, 1600, 1600, 1600, 1600, 1600, 1600, 1600,
+static TimData* decompressedIllustData = &illustSydney;
+
+static u_short illustrationTimers[] = { 1600, 1600, 1600, 1600, 1600, 1600, 1600, 1600,
     1600, 1600, 1600, 1600, 1600, 1600, 1600, 1600 };
 
-static void const* _currentCompressedIllust;
-static void* _currentDecompressedIllust;
-static void* _compressedIllustBufs[16];
+static void const* currentCompressedIllust;
+static void* currentDecompressedIllust;
+static void* compressedIllustBufs[16];
 
-static void _loadTim(_timData const*);
-static void _initTimDecompress(_timData*, void const*);
+static void loadTim(TimData const*);
+static void initTimDecompress(TimData*, void const*);
 
 /**
  * Renders a background illustration. Illustration IDs greater
  * than 4 are first decompressed. The illustrations are rendered by
  * subtractive blending with the background.
  */
-static void _renderllustration(_creditsElement* element)
+static void renderllustration(CreditsElement* element)
 {
     enum phaseDurations {
         fadeInDuration = 80,
@@ -511,8 +513,8 @@ static void _renderllustration(_creditsElement* element)
     switch (element->state) {
     case creditsElementStateStarting:
         if ((element->illustId > 3) && (element->illustId != 15)) {
-            _initTimDecompress(
-                _decompressedIllustData, _compressedIllustBufs[element->illustId + 1]);
+            initTimDecompress(
+                decompressedIllustData, compressedIllustBufs[element->illustId + 1]);
         }
 
         element->currentStep = 0;
@@ -522,7 +524,7 @@ static void _renderllustration(_creditsElement* element)
         /* fallthrough */
 
     case creditsElementStatePhase1:
-        brightness = (_masterBrightness * element->currentStep) / fadeInDuration;
+        brightness = (masterBrightness * element->currentStep) / fadeInDuration;
 
         if (++element->currentStep == fadeInDuration) {
             enum creditsElementState nextState = creditsElementStatePhase2;
@@ -537,7 +539,7 @@ static void _renderllustration(_creditsElement* element)
     case creditsElementStatePhase2:
         brightness = maximumBrightness;
 
-        if (++element->currentStep == _illustrationTimers[element->illustId]) {
+        if (++element->currentStep == illustrationTimers[element->illustId]) {
             element->currentStep = 0;
             element->state = creditsElementStatePhase3;
         }
@@ -545,12 +547,12 @@ static void _renderllustration(_creditsElement* element)
         break;
 
     case creditsElementStatePhase3:
-        brightness = (_masterBrightness * (fadeOutDuration - element->currentStep))
+        brightness = (masterBrightness * (fadeOutDuration - element->currentStep))
                    / fadeOutDuration;
 
         if (++element->currentStep == fadeOutDuration) {
             if (++element->illustId > 4) {
-                _loadTim(_decompressedIllustData);
+                loadTim(decompressedIllustData);
             }
             element->state = creditsElementStateStarting;
         }
@@ -575,7 +577,7 @@ static void _renderllustration(_creditsElement* element)
     AddPrim(p[1] + 0x10, sprt++);
 
     p[0] = sprt;
-    sprt = _insertTpage(getTPage(1, 2, tpageX, 256), 4);
+    sprt = insertTpage(getTPage(1, 2, tpageX, 256), 4);
 
     SetSprt(sprt);
     setXY0(sprt, 160, 0);
@@ -588,15 +590,16 @@ static void _renderllustration(_creditsElement* element)
     AddPrim(p[1] + 0x10, sprt++);
 
     p[0] = sprt;
-    p[0] = _insertTpage(getTPage(1, 2, tpageX + 64, 256), 4);
+    p[0] = insertTpage(getTPage(1, 2, tpageX + 64, 256), 4);
 }
 
-extern u_char _glyphWidths[];
+extern u_char glyphWidths[];
+VS_HIDDEN(glyphWidths);
 
 /**
  * Measures the rendered width of a string.
  */
-static int _creditsStrWidth(u_char const* str)
+static int creditsStrWidth(u_char const* str)
 {
     short len = *str++;
     short width = 0;
@@ -620,7 +623,7 @@ static int _creditsStrWidth(u_char const* str)
                 break;
             }
         } else {
-            width += _glyphWidths[(charTableOffset - (_ = 32)) + c] - 1;
+            width += glyphWidths[(charTableOffset - (_ = 32)) + c] - 1;
         }
     }
 
@@ -630,25 +633,25 @@ static int _creditsStrWidth(u_char const* str)
 /**
  * Renders a string from the credits script.
  */
-static void _renderText(_creditsElement* element)
+static void renderText(CreditsElement* element)
 {
     char const* str;
     short i;
     short len;
     short x;
     short y;
-    SPRT* sprt = ((vs_scratch_t*)0x1F800000)->unk0;
+    SPRT* sprt = ((vs_Scratch*)0x1F800000)->unk0;
     u_char charTableOffset = 0;
     short underline = 0;
 
     if (element->state == creditsElementStateStarting) {
-        u_short width = element->width = _creditsStrWidth(element->data);
+        u_short width = element->width = creditsStrWidth(element->data);
         element->x = ((320 - width) >> 1) << 8;
         element->y = 224 << 8;
         element->state = creditsElementStatePhase1;
     }
 
-    element->y += _scrollSpeed;
+    element->y += scrollSpeed;
 
     if (element->y < -(12 << 8)) {
         element->state = creditsElementStateFinished;
@@ -688,18 +691,18 @@ static void _renderText(_creditsElement* element)
             setSprt(sprt);
             setXY0(sprt, x, y);
             setUV0(sprt, (glyph & 0xF) * 16, (glyph >> 4) * 16);
-            glyphWidth = _glyphWidths[glyph];
+            glyphWidth = glyphWidths[glyph];
             setWH(sprt, glyphWidth, 16);
             setClut(sprt, 960, 480);
             x += glyphWidth - 1;
-            sprt->r0 = sprt->g0 = sprt->b0 = _masterBrightness;
-            addPrim(((vs_scratch_t*)0x1F800000)->unk4 + 12, sprt);
+            sprt->r0 = sprt->g0 = sprt->b0 = masterBrightness;
+            addPrim(((vs_Scratch*)0x1F800000)->unk4 + 12, sprt);
             ++sprt;
         }
     }
 
     if (underline != 0) {
-        vs_scratch_t const* scratch = (vs_scratch_t*)0x1F800000;
+        vs_Scratch const* scratch = (vs_Scratch*)0x1F800000;
         POLY_FT4* poly;
 
         x = 160 - ((element->width + 32) >> 1);
@@ -710,7 +713,7 @@ static void _renderText(_creditsElement* element)
         setUV0(sprt, 0, 208);
         setWH(sprt, 16, 3);
         setClut(sprt, 960, 480);
-        sprt->r0 = sprt->g0 = sprt->b0 = _masterBrightness;
+        sprt->r0 = sprt->g0 = sprt->b0 = masterBrightness;
         AddPrim(scratch->unk4 + 12, sprt++);
 
         poly = (POLY_FT4*)sprt;
@@ -727,7 +730,7 @@ static void _renderText(_creditsElement* element)
         poly->tpage = getTPage(clut4Bit, semiTransparencyHalf, 960, 256);
         poly->clut = getClut(960, 480);
         poly->x1 = poly->x3 = x;
-        poly->r0 = poly->g0 = poly->b0 = _masterBrightness;
+        poly->r0 = poly->g0 = poly->b0 = masterBrightness;
         AddPrim(scratch->unk4 + 12, poly++);
 
         sprt = (SPRT*)poly;
@@ -736,19 +739,19 @@ static void _renderText(_creditsElement* element)
         setXY0(sprt, x, y);
         setWH(sprt, 16, 3);
         setClut(sprt, 960, 480);
-        sprt->r0 = sprt->g0 = sprt->b0 = _masterBrightness;
+        sprt->r0 = sprt->g0 = sprt->b0 = masterBrightness;
         AddPrim(scratch->unk4 + 12, sprt++);
     }
 
-    ((vs_scratch_t*)0x1F800000)->unk0 = sprt;
-    ((vs_scratch_t*)0x1F800000)->unk0 =
-        _insertTpage(getTPage(clut4Bit, semiTransparencyHalf, 960, 256), 3);
+    ((vs_Scratch*)0x1F800000)->unk0 = sprt;
+    ((vs_Scratch*)0x1F800000)->unk0 =
+        insertTpage(getTPage(clut4Bit, semiTransparencyHalf, 960, 256), 3);
 }
 
 /**
  * Renders the copyright line.
  */
-static void _renderCopyright(_creditsElement* element)
+static void renderCopyright(CreditsElement* element)
 {
     int index;
     void** p = (void**)0x1F800000;
@@ -760,7 +763,7 @@ static void _renderCopyright(_creditsElement* element)
         element->state = creditsElementStatePhase1;
     }
 
-    element->y += _scrollSpeed;
+    element->y += scrollSpeed;
 
     if (element->y < -(12 << 8)) {
         element->state = creditsElementStateFinished;
@@ -772,21 +775,21 @@ static void _renderCopyright(_creditsElement* element)
     setUV0(sprt, 0, 48);
     setWH(sprt, 120, 16);
     setClut(sprt, 960, 64);
-    sprt->r0 = sprt->g0 = sprt->b0 = _masterBrightness;
+    sprt->r0 = sprt->g0 = sprt->b0 = masterBrightness;
 
     setaddr(sprt, ((u_long*)p[1])[3]);
     setaddr(p[1] + 12, sprt++);
 
     index = 0;
     p[index] = sprt;
-    p[index] = _insertTpage(getTPage(clut4Bit, semiTransparencyFull, 960, 0), 3);
+    p[index] = insertTpage(getTPage(clut4Bit, semiTransparencyFull, 960, 0), 3);
 }
 
 /**
  * Renders the credits background, including 10px letterboxing bars at the top
  * and bottom, along with a 20px fade.
  */
-static void _renderBackground(UNUSED _creditsElement* element)
+static void renderBackground(UNUSED CreditsElement* element)
 {
     TILE* tile;
     POLY_G4* poly;
@@ -799,23 +802,22 @@ static void _renderBackground(UNUSED _creditsElement* element)
     setUV0(sprt, 0, 10);
     setWH(sprt, 256, 204);
     setClut(sprt, 780, 255);
-    sprt->r0 = sprt->g0 = sprt->b0 = _masterBrightness;
+    sprt->r0 = sprt->g0 = sprt->b0 = masterBrightness;
     AddPrim(data[1] + 0x1FFC, sprt++);
     data[0] = sprt;
 
-    sprt = (SPRT*)_insertTpage(getTPage(clut4Bit, semiTransparencyFull, 768, 0), 0x7FF);
+    sprt = (SPRT*)insertTpage(getTPage(clut4Bit, semiTransparencyFull, 768, 0), 0x7FF);
     SetSprt(sprt);
     setUV0(sprt, 0, 10);
     setXY0(sprt, 256, 10);
     setWH(sprt, 64, 204);
     setClut(sprt, 780, 255);
-    sprt->r0 = sprt->g0 = sprt->b0 = _masterBrightness;
+    sprt->r0 = sprt->g0 = sprt->b0 = masterBrightness;
     AddPrim(data[1] + 0x1FFC, sprt++);
     data[0] = sprt;
 
     // Fade top & bottom
-    poly =
-        (POLY_G4*)_insertTpage(getTPage(clut4Bit, semiTransparencyFull, 832, 0), 0x7FF);
+    poly = (POLY_G4*)insertTpage(getTPage(clut4Bit, semiTransparencyFull, 832, 0), 0x7FF);
     SetPolyG4(poly);
     poly->x0 = poly->x2 = 0;
     poly->x1 = poly->x3 = 320;
@@ -858,13 +860,13 @@ static void _renderBackground(UNUSED _creditsElement* element)
     AddPrim(data[1] + 8, tile++);
     data[0] = tile;
 
-    data[0] = _insertTpage(getTPage(clut8Bit, semiTransparencySubtract, 0, 0), 2);
+    data[0] = insertTpage(getTPage(clut8Bit, semiTransparencySubtract, 0, 0), 2);
 }
 
 /**
  * Fades in over 128 steps, used for the start of the credits roll.
  */
-static void _screenFadeIn(_creditsElement* element)
+static void screenFadeIn(CreditsElement* element)
 {
     if (element->state == creditsElementStateStarting) {
         element->currentStep = 0;
@@ -872,43 +874,43 @@ static void _screenFadeIn(_creditsElement* element)
     }
 
     if (++element->currentStep == 128) {
-        _isFadedOut = 0;
+        isFadedOut = 0;
         element->state = creditsElementStateFinished;
     }
 
-    _masterBrightness = (u_int)_ease(easeModeLinear, element->currentStep, 128) / 32;
+    masterBrightness = (u_int)ease(easeModeLinear, element->currentStep, 128) / 32;
 }
 
 /**
  * Fades out over 128 steps, used for the end of the credits roll.
  */
-static void _screenFadeOut(_creditsElement* element)
+static void screenFadeOut(CreditsElement* element)
 {
     if (element->state == creditsElementStateStarting) {
         element->state = creditsElementStatePhase1;
         element->currentStep = 0;
-        _isFadedOut = 1;
+        isFadedOut = 1;
     }
 
     if (++element->currentStep == 128) {
         if (element->width != 0) {
-            _creditsComplete = 1;
+            creditsComplete = 1;
         }
         element->state = creditsElementStateFinished;
     }
 
-    _masterBrightness =
-        128 - ((_ease(easeModeLinear, element->currentStep, 128) << 7) >> 0xC);
+    masterBrightness =
+        128 - ((ease(easeModeLinear, element->currentStep, 128) << 7) >> 0xC);
 }
 
 /**
  * Fades out over 128 steps, with easing. Used when the player skips the credits,
- * unclear why _screenFadeOut couldn't just be used.
+ * unclear why screenFadeOut couldn't just be used.
  *
  * @param element The credits element being processed.
  * @return The computed result.
  */
-static void _renderFadeOut(_creditsElement* element)
+static void renderFadeOut(CreditsElement* element)
 {
     void** p = (void**)0x1F800000;
     TILE* tile = p[0];
@@ -919,82 +921,82 @@ static void _renderFadeOut(_creditsElement* element)
     }
 
     if (++element->currentStep == 128) {
-        _creditsComplete = 1;
+        creditsComplete = 1;
     }
 
     SetTile(tile);
     setSemiTrans(tile, 1);
     tile->r0 = tile->g0 = tile->b0 =
-        (_ease(easeModeEaseOut, element->currentStep, 128) * 255) >> 0xC;
+        (ease(easeModeEaseOut, element->currentStep, 128) * 255) >> 0xC;
     setWH(tile, 320, 240);
     setXY0(tile, 0, 0);
 
     AddPrim(p[1], tile++);
 
     p[0] = tile;
-    p[0] = _insertTpage(getTPage(clut4Bit, semiTransparencySubtract, 0, 0), 0);
+    p[0] = insertTpage(getTPage(clut4Bit, semiTransparencySubtract, 0, 0), 0);
 }
 
-static void _streamEndingXa(void);
-static void _setDrawEnv(DRAWENV*);
-static void _renderCredits(void);
-static void _resetElements(void);
-static _creditsElement* _addRenderer(void (*arg0)(_creditsElement*));
-static void _initEnvironment(void);
-static void _updateClearGameStats(void);
-static void _checkStreamXaEnd(void);
-static void _congratulationsScreen(void);
+static void streamEndingXa(void);
+static void setDrawEnv(DRAWENV*);
+static void renderCredits(void);
+static void resetElements(void);
+static CreditsElement* addRenderer(void (*arg0)(CreditsElement*));
+static void initEnvironment(void);
+static void updateClearGameStats(void);
+static void checkStreamXaEnd(void);
+static void congratulationsScreen(void);
 
 /**
  * Module entrypoint
  */
 void vs_ending_exec(void)
 {
-    extern u_char const _credits[];
-    extern _timData const _creditsFont;
-    extern _timData const _illustMerlose;
-    extern _timData const _illustDragon;
-    extern _timData const _illustSamantha;
-    extern _timData const _illustDuane;
-    extern _timData const _creditsBg;
-    extern _timData const _devCopyright;
-    extern _timData const _titleLogo;
-    extern _timData const _shugeki;
-    extern _timData const _fin;
-    extern _timData const _episodeLogo;
+    extern u_char const credits[];
+    extern TimData const creditsFont;
+    extern TimData const illustMerlose;
+    extern TimData const illustDragon;
+    extern TimData const illustSamantha;
+    extern TimData const illustDuane;
+    extern TimData const creditsBg;
+    extern TimData const devCopyright;
+    extern TimData const titleLogo;
+    extern TimData const shugeki;
+    extern TimData const fin;
+    extern TimData const episodeLogo;
 
-    vs_main_CdFile file;
+    vs_Main_CdFile file;
     short i;
-    vs_main_CdQueueSlot* slot;
+    vs_Main_CdQueueSlot* slot;
 
-    _initEnvironment();
+    initEnvironment();
     SetGeomOffset(160, 112);
     SetGeomScreen(512);
-    _setDrawEnv(vs_main_drawEnv);
-    _setDrawEnv(&vs_main_drawEnv[1]);
+    setDrawEnv(vs_main_drawEnv);
+    setDrawEnv(&vs_main_drawEnv[1]);
 
     vs_main_dispEnv[1].isinter = 0;
     vs_main_dispEnv[0].isinter = 0;
 
-    _loadTim(&_creditsFont);
-    _loadTim(&_creditsBg);
-    _loadTim(&_devCopyright);
-    _loadTim(&_shugeki);
-    _loadTim(&_titleLogo);
-    _loadTim(&_fin);
-    _loadTim(&_episodeLogo);
-    _loadTim(&_illustSydney);
-    _loadTim(&_illustMerlose);
-    _loadTim(&_illustDragon);
-    _loadTim(&_illustSamantha);
-    _loadTim(&_illustDuane);
+    loadTim(&creditsFont);
+    loadTim(&creditsBg);
+    loadTim(&devCopyright);
+    loadTim(&shugeki);
+    loadTim(&titleLogo);
+    loadTim(&fin);
+    loadTim(&episodeLogo);
+    loadTim(&illustSydney);
+    loadTim(&illustMerlose);
+    loadTim(&illustDragon);
+    loadTim(&illustSamantha);
+    loadTim(&illustDuane);
 
     for (i = 5; i < 16; ++i) {
-        file.lba = _illustLbas[i - 5];
-        file.size = _illustSizes[i - 5];
-        _compressedIllustBufs[i] = vs_main_allocHeapR(file.size);
+        file.lba = illustLbas[i - 5];
+        file.size = illustSizes[i - 5];
+        compressedIllustBufs[i] = vs_main_allocHeapR(file.size);
         slot = vs_main_allocateCdQueueSlot(&file);
-        vs_main_cdEnqueuePriority(slot, _compressedIllustBufs[i]);
+        vs_main_cdEnqueuePriority(slot, compressedIllustBufs[i]);
 
         do {
             vs_main_gametimeUpdate(0);
@@ -1003,39 +1005,39 @@ void vs_ending_exec(void)
         vs_main_freeCdQueueSlot(slot);
     }
 
-    _masterBrightness = 0;
-    _skipInvoked = 0;
+    masterBrightness = 0;
+    skipInvoked = 0;
 
-    _resetElements();
-    _addRenderer(_renderBackground);
+    resetElements();
+    addRenderer(renderBackground);
     DrawSync(0);
     SetDispMask(1);
 
-    _creditsBytestreamHead = _credits;
-    _scrollSpeed = -128;
-    _creditsComplete = 0;
-    _textStreamDelay = 0;
-    _currentCreditsFrame = 0;
-    _isFadedOut = 1;
+    creditsBytestreamHead = credits;
+    scrollSpeed = -128;
+    creditsComplete = 0;
+    textStreamDelay = 0;
+    currentCreditsFrame = 0;
+    isFadedOut = 1;
 
-    _streamEndingXa();
-    _renderCredits();
+    streamEndingXa();
+    renderCredits();
     vs_main_checkStreamXaEnd();
     SetDispMask(0);
 
     for (i = 5; i < 16; ++i) {
-        vs_main_freeHeapR(_compressedIllustBufs[i]);
+        vs_main_freeHeapR(compressedIllustBufs[i]);
     }
 
-    _checkStreamXaEnd();
-    _updateClearGameStats();
-    _congratulationsScreen();
+    checkStreamXaEnd();
+    updateClearGameStats();
+    congratulationsScreen();
 }
 
 /**
  * Initializes the DRAWENV struct.
  */
-static void _setDrawEnv(DRAWENV* drawenv)
+static void setDrawEnv(DRAWENV* drawenv)
 {
     drawenv->isbg = 1;
     drawenv->dtd = 0;
@@ -1046,41 +1048,41 @@ static void _setDrawEnv(DRAWENV* drawenv)
     drawenv->tpage = 0x20;
 }
 
-static int _renderElements(void);
-static void _parseCreditsScript(void);
-static int _decompressTim(void);
-static int _drawScreen(u_long*);
-static void _beginFrame(void);
+static int renderElements(void);
+static void parseCreditsScript(void);
+static int decompressTim(void);
+static int drawScreen(u_long*);
+static void beginFrame(void);
 
 /**
  * Runs the credits render loop until the credits end or the user skips.
  */
-static void _renderCredits(void)
+static void renderCredits(void)
 {
-    while (_creditsComplete == 0) {
+    while (creditsComplete == 0) {
 
-        _frameStartVsync = VSync(1);
+        frameStartVsync = VSync(1);
 
-        _beginFrame();
-        _parseCreditsScript();
-        _renderElements();
-        _decompressTim();
+        beginFrame();
+        parseCreditsScript();
+        renderElements();
+        decompressTim();
 
-        if ((vs_main_buttonsPressed.all & PADstart) && (_skipInvoked == 0)) {
-            _addRenderer(_renderFadeOut);
-            _skipInvoked = 1;
+        if ((vs_main_buttonsPressed.all & PADstart) && (skipInvoked == 0)) {
+            addRenderer(renderFadeOut);
+            skipInvoked = 1;
         }
 
-        _drawScreen(*(u_long**)0x1F800004 + 0x7FF);
+        drawScreen(*(u_long**)0x1F800004 + 0x7FF);
 
-        ++_currentCreditsFrame;
+        ++currentCreditsFrame;
     }
 }
 
 /**
  * Inserts a texture page into the ordering table at the requested offset.
  */
-static void* _insertTpage(int tPage, int otOffset)
+static void* insertTpage(int tPage, int otOffset)
 {
     void** scratch;
     DR_TPAGE* drTpage;
@@ -1097,10 +1099,10 @@ static void* _insertTpage(int tPage, int otOffset)
 /**
  * Loads a TIM texture into memory.
  */
-static void _loadTim(_timData const* tim)
+static void loadTim(TimData const* tim)
 {
     RECT rect;
-    _timChunk const* p = &tim->chunk;
+    TimChunk const* p = &tim->chunk;
 
     if (tim->flags & 8) {
         rect.x = p->rect.x;
@@ -1108,7 +1110,7 @@ static void _loadTim(_timData const* tim)
         rect.w = p->rect.w;
         rect.h = p->rect.h;
         LoadImage(&rect, (void*)p->data);
-        p = (_timChunk const*)((void*)tim + (p->size + 8));
+        p = (TimChunk const*)((void*)tim + (p->size + 8));
     }
 
     rect.x = p->rect.x;
@@ -1122,10 +1124,10 @@ static void _loadTim(_timData const* tim)
 /**
  * Initializes the credits element buffer.
  */
-static void _resetElements(void)
+static void resetElements(void)
 {
     short i;
-    _creditsElement* element = _creditsElements;
+    CreditsElement* element = creditsElements;
 
     for (i = 0; i < 32; ++i, ++element) {
         element->state = creditsElementStateInactive;
@@ -1136,11 +1138,11 @@ static void _resetElements(void)
  * Enumerates the credits element buffer and renders active elements
  * @return The count of elements rendered.
  */
-static int _renderElements(void)
+static int renderElements(void)
 {
     short i;
     short elementsRendered = 0;
-    _creditsElement* element = _creditsElements;
+    CreditsElement* element = creditsElements;
 
     for (i = 0; i < 32; ++i, ++element) {
         if (element->state < creditsElementStateInactive) {
@@ -1160,12 +1162,12 @@ static int _renderElements(void)
  * @param renderer The callback used to render the credits element.
  * @return The newly activated credits element.
  */
-static _creditsElement* _addRenderer(void (*renderer)(_creditsElement*))
+static CreditsElement* addRenderer(void (*renderer)(CreditsElement*))
 {
     extern NORETURN void SystemError(char, long);
 
     short i;
-    _creditsElement* element = &_creditsElements[1];
+    CreditsElement* element = &creditsElements[1];
 
     for (i = 1; i < 32; ++i, ++element) {
         if (element->state == creditsElementStateInactive) {
@@ -1185,13 +1187,13 @@ static _creditsElement* _addRenderer(void (*renderer)(_creditsElement*))
  *
  * @return The active first credits element, or NULL if the slot is still active.
  */
-static _creditsElement* _replaceMainRenderer(void (*renderer)(_creditsElement*))
+static CreditsElement* replaceMainRenderer(void (*renderer)(CreditsElement*))
 {
-    if (_creditsElements[0].state == creditsElementStateInactive) {
-        _creditsElements[0].renderer = renderer;
-        _creditsElements[0].state = creditsElementStateStarting;
-        _creditsElements[0].currentStep = 0;
-        return &_creditsElements[0];
+    if (creditsElements[0].state == creditsElementStateInactive) {
+        creditsElements[0].renderer = renderer;
+        creditsElements[0].state = creditsElementStateStarting;
+        creditsElements[0].currentStep = 0;
+        return &creditsElements[0];
     }
 
     return NULL;
@@ -1202,7 +1204,7 @@ static _creditsElement* _replaceMainRenderer(void (*renderer)(_creditsElement*))
  * less those currently active. Wait ops serve a dual purpose of allowing
  * the function to yield to the parent, so the queue can be processed.
  */
-static void _parseCreditsScript(void)
+static void parseCreditsScript(void)
 {
     enum opcodes {
         waitOp = 1,
@@ -1220,92 +1222,92 @@ static void _parseCreditsScript(void)
         endStreamOp = 0xFF,
     };
 
-    if (_textStreamDelay != 0) {
-        --_textStreamDelay;
+    if (textStreamDelay != 0) {
+        --textStreamDelay;
         return;
     }
 
     while (1) {
         int op;
         int delay;
-        u_char const* bytestream = _creditsBytestreamHead;
+        u_char const* bytestream = creditsBytestreamHead;
 
         switch (bytestream[0]) {
 
         // Wait: u8 duration
         case waitOp:
-            _creditsBytestreamHead = bytestream + 1;
+            creditsBytestreamHead = bytestream + 1;
             delay = bytestream[1] * 2;
-            _creditsBytestreamHead = bytestream + 2;
-            _textStreamDelay = delay;
+            creditsBytestreamHead = bytestream + 2;
+            textStreamDelay = delay;
             return;
 
         // Render text: u8 len
         case textOp:
-            _creditsBytestreamHead = bytestream + 1;
-            _addRenderer(_renderText)->data = _creditsBytestreamHead;
-            _creditsBytestreamHead += _creditsBytestreamHead[0] + 1;
+            creditsBytestreamHead = bytestream + 1;
+            addRenderer(renderText)->data = creditsBytestreamHead;
+            creditsBytestreamHead += creditsBytestreamHead[0] + 1;
             break;
 
         // Enable background illustrations
         case enableBgOp:
-            _creditsBytestreamHead = bytestream + 1;
-            _addRenderer(_renderllustration)->illustId = 0;
+            creditsBytestreamHead = bytestream + 1;
+            addRenderer(renderllustration)->illustId = 0;
             break;
 
         // Render special: u8 secondary op
         case specialOp:
-            _creditsBytestreamHead = bytestream + 1;
+            creditsBytestreamHead = bytestream + 1;
             op = bytestream[1];
-            _creditsBytestreamHead = bytestream + 2;
+            creditsBytestreamHead = bytestream + 2;
 
             switch (op) {
             case copyrightSpecialOp:
-                _addRenderer(_renderCopyright);
+                addRenderer(renderCopyright);
                 break;
 
             case titleSpecialOp:
-                _addRenderer(_renderVagrantStory);
+                addRenderer(renderVagrantStory);
                 break;
 
             case finSpecialOp:
-                _addRenderer(_renderFin);
+                addRenderer(renderFin);
                 break;
 
             case episodeSpecialOp:
-                _addRenderer(_renderPhantomPain);
+                addRenderer(renderPhantomPain);
                 break;
             }
             break;
 
         // Fade in
         case fadeInOp:
-            _creditsBytestreamHead = bytestream + 1;
-            _replaceMainRenderer(_screenFadeIn);
+            creditsBytestreamHead = bytestream + 1;
+            replaceMainRenderer(screenFadeIn);
             break;
 
         // Fade out
         case fadeOutOp:
-            _creditsBytestreamHead = bytestream + 1;
-            _replaceMainRenderer(_screenFadeOut)->width = 0;
+            creditsBytestreamHead = bytestream + 1;
+            replaceMainRenderer(screenFadeOut)->width = 0;
             break;
 
         // Freeze scrolling
         case freezeOp:
-            _creditsBytestreamHead = bytestream + 1;
-            _scrollSpeed = 0;
+            creditsBytestreamHead = bytestream + 1;
+            scrollSpeed = 0;
             break;
 
         // Set illustration timer: u8 illustration id, u16 duration
         case setTimerOp:
-            *(_illustrationTimers + bytestream[1]) =
+            *(illustrationTimers + bytestream[1]) =
                 (bytestream[2] + (bytestream[3] << 8)) - 160;
-            _creditsBytestreamHead = bytestream + 4;
+            creditsBytestreamHead = bytestream + 4;
             break;
 
         // End of stream
         case endStreamOp:
-            _creditsComplete = 1;
+            creditsComplete = 1;
             return;
 
         default:
@@ -1317,7 +1319,7 @@ static void _parseCreditsScript(void)
 /**
  * Applies the selected easing curve.
  */
-static int _ease(short mode, short currentStep, short totalSteps)
+static int ease(short mode, short currentStep, short totalSteps)
 {
     switch (mode) {
     case easeModeLinear:
@@ -1334,11 +1336,11 @@ static int _ease(short mode, short currentStep, short totalSteps)
 /**
  * Initializes the TIM decompression work buffer for the active illustration.
  */
-static void _initTimDecompress(_timData* targetBuf, void const* compressedData)
+static void initTimDecompress(TimData* targetBuf, void const* compressedData)
 {
-    _compressionState = decompressionStateReady;
-    _currentCompressedIllust = compressedData;
-    _currentDecompressedIllust = targetBuf;
+    compressionState = decompressionStateReady;
+    currentCompressedIllust = compressedData;
+    currentDecompressedIllust = targetBuf;
 }
 
 /**
@@ -1347,7 +1349,7 @@ static void _initTimDecompress(_timData* targetBuf, void const* compressedData)
  * since the render loop started. 1 if the content has just finished
  * decompression.
  */
-static int _decompressTim(void)
+static int decompressTim(void)
 {
     enum opcodes { singleByteRle = 0x7D, doubleByteRle, endOfStream, backReferenceFlag };
 
@@ -1362,20 +1364,20 @@ static int _decompressTim(void)
 
     short i;
 
-    if (_compressionState == decompressionStateIdle) {
+    if (compressionState == decompressionStateIdle) {
         return 0;
     }
 
-    if (_compressionState == decompressionStateReady) {
-        _compressionState = decompressionStateActive;
-        compressedStream = _currentCompressedIllust;
-        decompressedStream = _currentDecompressedIllust;
+    if (compressionState == decompressionStateReady) {
+        compressionState = decompressionStateActive;
+        compressedStream = currentCompressedIllust;
+        decompressedStream = currentDecompressedIllust;
     }
 
     while (1) {
         u_char op;
 
-        if (VSync(1) - _frameStartVsync > 200) {
+        if (VSync(1) - frameStartVsync > 200) {
             return 0;
         }
 
@@ -1383,7 +1385,7 @@ static int _decompressTim(void)
 
         if (!(op & backReferenceFlag)) {
             if (op == endOfStream) {
-                _compressionState = decompressionStateIdle;
+                compressionState = decompressionStateIdle;
                 return 1;
             }
 
@@ -1439,7 +1441,7 @@ static int _decompressTim(void)
 /**
  * Renders a string using the loaded debug font.
  */
-static UNUSED void _renderDebugString(short x, short y, int clut, char const* string)
+static UNUSED void renderDebugString(short x, short y, int clut, char const* string)
 {
     int c;
     SPRT_8* sprt = *(void**)0x1F800000;
@@ -1474,7 +1476,7 @@ static UNUSED void _renderDebugString(short x, short y, int clut, char const* st
     }
 
     *(void**)0x1F800000 = sprt;
-    *(void**)0x1F800000 = _insertTpage(getTPage(0, 0, 960, 0), 0);
+    *(void**)0x1F800000 = insertTpage(getTPage(0, 0, 960, 0), 0);
 }
 
 #pragma endregion
@@ -1482,7 +1484,7 @@ static UNUSED void _renderDebugString(short x, short y, int clut, char const* st
 /**
  * Initializes the video mode and projection parameters for the credits.
  */
-static void _initVideo(int w, int h, int projectionDistance, int r, int g, int b)
+static void initVideo(int w, int h, int projectionDistance, int r, int g, int b)
 {
     RECT rect;
     int fbHeight;
@@ -1530,7 +1532,7 @@ static void _initVideo(int w, int h, int projectionDistance, int r, int g, int b
  * @param ot The ordering table used by the draw pass.
  * @return Result of VSync(0).
  */
-static int _drawScreen(u_long* ot)
+static int drawScreen(u_long* ot)
 {
     UNUSED int _[2];
     int vSync;
@@ -1550,12 +1552,12 @@ static int _drawScreen(u_long* ot)
     return vSync;
 }
 
-static void _updateTitles(void);
+static void updateTitles(void);
 
 /**
  * Refreshes stats relevant for the completion screen.
  */
-static void _do_updateClearGameStats(void)
+static void do_updateClearGameStats(void)
 {
     int i;
 
@@ -1571,7 +1573,7 @@ static void _do_updateClearGameStats(void)
         }
     }
 
-    _updateTitles();
+    updateTitles();
     vs_main_bzero(&vs_main_mapStatus, sizeof vs_main_mapStatus);
 
     for (i = 16; i < 1088; ++i) {
@@ -1595,9 +1597,9 @@ static void _do_updateClearGameStats(void)
 /**
  * Initializes the credits environment and allocates OTs.
  */
-static void _initEnvironment(void)
+static void initEnvironment(void)
 {
-    _initVideo(320, 240, 512, 0, 0, 0);
+    initVideo(320, 240, 512, 0, 0, 0);
     vs_main_initHeap((void*)0x8010C000, 0xF2000);
     vs_main_prims[0] = vs_main_allocHeap(0x20000);
     vs_main_prims[1] = vs_main_allocHeap(0x20000);
@@ -1606,15 +1608,15 @@ static void _initEnvironment(void)
 }
 
 /**
- * Just calls _do_updateClearGameStats
+ * Just calls do_updateClearGameStats
  */
-static void _updateClearGameStats(void) { _do_updateClearGameStats(); }
+static void updateClearGameStats(void) { do_updateClearGameStats(); }
 
 /**
  * Sets the scratch OTs and draw state.
  * @return The computed result.
  */
-static void _beginFrame(void)
+static void beginFrame(void)
 {
     void* temp_a0;
 
@@ -1629,21 +1631,21 @@ static void _beginFrame(void)
 /**
  * Starts streaming the ending music track.
  */
-static void _streamEndingXa(void) { vs_main_streamXa(VS_ENDING_XA_LBA, 0x7FFF); }
+static void streamEndingXa(void) { vs_main_streamXa(VS_ENDING_XA_LBA, 0x7FFF); }
 
 /**
  * Checks whether the ending music stream has finished.
  */
-static void _checkStreamXaEnd(void) { vs_main_checkStreamXaEnd(); }
+static void checkStreamXaEnd(void) { vs_main_checkStreamXaEnd(); }
 
-static int _countableRooms[] = { 0xFF3FFE00, 0xBEBFDFF7, 0xFFFFFDE8, 0xDFFFFE6F,
+static int countableRooms[] = { 0xFF3FFE00, 0xBEBFDFF7, 0xFFFFFDE8, 0xDFFFFE6F,
     0xFFFFF807, 0xFFFBE87D, 0xF007FFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFDFFFFF,
     0xFFFFFFFF, 0x0EFFFFFF, 0x00000000, 0x00000000, 0x00000000 };
 
 /**
  * Refreshes the titles earned by the player.
  */
-static void _updateTitles(void)
+static void updateTitles(void)
 {
     int i;
     int j;
@@ -1695,7 +1697,7 @@ static void _updateTitles(void)
     for (i = 0; i < 16; ++i) {
         int t1 = 1;
         for (j = 0; j < 32; ++j) {
-            if (vs_main_mapStatus.roomFlags[i] & _countableRooms[i] & (t1 << j)) {
+            if (vs_main_mapStatus.roomFlags[i] & countableRooms[i] & (t1 << j)) {
                 ++count;
             }
         }
@@ -1750,57 +1752,57 @@ static void _updateTitles(void)
     }
 }
 
-static vs_main_CdQueueSlot* cdSlot;
+static vs_Main_CdQueueSlot* cdSlot;
 static void* timData;
-static u_int _rank;
-static int _clearCount;
-static u_int _score;
-static u_int _mapCompletion;
-static u_int _onScreenMapCompletion;
-static u_int _onScreenScore;
-static int _submenuState;
-static int _screenTimer;
-static int _congratulationsAnimSkip;
+static u_int rank;
+static int clearCount;
+static u_int score;
+static u_int mapCompletionPercent;
+static u_int onScreenMapCompletion;
+static u_int onScreenScore;
+static int submenuState;
+static int screenTimer;
+static int congratulationsAnimSkip;
 
-static int _initCongratulationsScreen(void);
-static int _renderCongratulationsScreen(void);
-static void _renderCongratulations(int arg0, int arg1, int arg2);
+static int initCongratulationsScreen(void);
+static int renderCongratulationsScreen(void);
+static void renderCongratulations(int arg0, int arg1, int arg2);
 
 /**
  * Sets up and runs the congratulations screen.
  */
-static void _congratulationsScreen(void)
+static void congratulationsScreen(void)
 {
     int done;
 
-    _submenuState = 0;
+    submenuState = 0;
     SetDispMask(1);
 
     do {
-        _beginFrame();
-        done = _initCongratulationsScreen();
-        _drawScreen(*(u_long**)0x1F800004 + 0x7FF);
+        beginFrame();
+        done = initCongratulationsScreen();
+        drawScreen(*(u_long**)0x1F800004 + 0x7FF);
     } while (done == 0);
 
     do {
-        _beginFrame();
-        done = _renderCongratulationsScreen();
+        beginFrame();
+        done = renderCongratulationsScreen();
         VSync(0);
-        _drawScreen(*(u_long**)0x1F800004 + 0x7FF);
+        drawScreen(*(u_long**)0x1F800004 + 0x7FF);
     } while (done == 0);
 }
 
-static void _parseTim(u_int* arg0, TIM_IMAGE* arg1);
-static void _determineRank(void);
-static void _updateScore(void);
+static void parseTim(u_int* arg0, TIM_IMAGE* arg1);
+static void determineRank(void);
+static void updateScore(void);
 
 /**
  * Initializes the congratulations screen and score data.
  * @return 1 when complete, 0 otherwise.
  */
-static int _initCongratulationsScreen(void)
+static int initCongratulationsScreen(void)
 {
-    static const vs_main_CdFile endScrDisFiles[] = {
+    static const vs_Main_CdFile endScrDisFiles[] = {
         { VS_END_DIS_LBA, VS_END_DIS_SIZE },
         { VS_ENDSCR00_DIS_LBA, VS_ENDSCR00_DIS_SIZE },
         { VS_ENDSCR01_DIS_LBA, VS_ENDSCR01_DIS_SIZE },
@@ -1823,16 +1825,16 @@ static int _initCongratulationsScreen(void)
     TIM_IMAGE tim;
     int i;
 
-    if (_submenuState == 0) {
+    if (submenuState == 0) {
 
         timData = vs_main_allocHeapR(endScrDisFiles[0].size);
         cdSlot = vs_main_allocateCdQueueSlot(&endScrDisFiles[0]);
 
         vs_main_cdEnqueue(cdSlot, timData);
 
-        ++_submenuState;
+        ++submenuState;
 
-    } else if (_submenuState == 1) {
+    } else if (submenuState == 1) {
 
         if (cdSlot->state != vs_main_CdQueueStateLoaded) {
             return 0;
@@ -1840,7 +1842,7 @@ static int _initCongratulationsScreen(void)
 
         for (i = 0; i < 3; ++i) {
 
-            _parseTim(timData + i * 0x8220, &tim);
+            parseTim(timData + i * 0x8220, &tim);
 
             if (tim.paddr != NULL) {
                 tim.prect->x = 832 + i * 64;
@@ -1862,26 +1864,26 @@ static int _initCongratulationsScreen(void)
         }
 
         vs_main_freeCdQueueSlot(cdSlot);
-        ++_submenuState;
+        ++submenuState;
 
-    } else if (_submenuState == 2) {
+    } else if (submenuState == 2) {
         u_int mapCompletion;
         u_int chestsOpened;
 
         vs_main_freeHeapR(timData);
 
         mapCompletion = 0;
-        _onScreenMapCompletion = 0;
-        _onScreenScore = 0;
-        _screenTimer = 0;
-        _congratulationsAnimSkip = 0;
-        _clearCount = vs_main_stateFlags.clearCount;
+        onScreenMapCompletion = 0;
+        onScreenScore = 0;
+        screenTimer = 0;
+        congratulationsAnimSkip = 0;
+        clearCount = vs_main_stateFlags.clearCount;
 
         for (i = 0; i < 16; ++i) {
             int flag;
             for (flag = 0; flag < 32; ++flag) {
                 int v = 1;
-                if (vs_main_mapStatus.roomFlags[i] & _countableRooms[i] & (v << flag)) {
+                if (vs_main_mapStatus.roomFlags[i] & countableRooms[i] & (v << flag)) {
                     ++mapCompletion;
                 }
             }
@@ -1903,23 +1905,23 @@ static int _initCongratulationsScreen(void)
             vs_main_scoredata.openedChestCount = chestsOpened;
         }
 
-        _mapCompletion = (vs_main_scoredata.mapCompletion * 100) / 361;
+        mapCompletionPercent = (vs_main_scoredata.mapCompletion * 100) / 361;
 
-        _updateScore();
-        _determineRank();
+        updateScore();
+        determineRank();
 
-        timData = vs_main_allocHeapR(endScrDisFiles[_rank + 1].size);
-        cdSlot = vs_main_allocateCdQueueSlot(&endScrDisFiles[_rank + 1]);
+        timData = vs_main_allocHeapR(endScrDisFiles[rank + 1].size);
+        cdSlot = vs_main_allocateCdQueueSlot(&endScrDisFiles[rank + 1]);
         vs_main_cdEnqueue(cdSlot, timData);
-        ++_submenuState;
+        ++submenuState;
 
-    } else if (_submenuState == 3) {
+    } else if (submenuState == 3) {
 
         if (cdSlot->state != 4) {
             return 0;
         }
 
-        _parseTim(timData, &tim);
+        parseTim(timData, &tim);
 
         if (tim.paddr != NULL) {
             tim.prect->x = 0;
@@ -1929,10 +1931,10 @@ static int _initCongratulationsScreen(void)
 
         vs_main_freeCdQueueSlot(cdSlot);
 
-        ++_submenuState;
+        ++submenuState;
 
     } else {
-        _submenuState = 0;
+        submenuState = 0;
         vs_main_freeHeapR(timData);
 
         return 1;
@@ -1941,59 +1943,59 @@ static int _initCongratulationsScreen(void)
     return 0;
 }
 
-static void _fadeIn(int);
-static void _renderScore(int, int, int, int);
-static void _renderIncrementalScore(int, int, int, int);
-static void _renderMapCompletion(int arg0, int arg1, int arg2, int colors);
-static void _renderIncrementalMapCompletion(int, int, int, int);
-static void _renderRiskbreakerRankHeader(int arg0, int arg1, int arg2);
-static void _renderRiskbreakerRank(int, int, int);
+static void fadeIn(int);
+static void renderScore(int, int, int, int);
+static void renderIncrementalScore(int, int, int, int);
+static void renderMapCompletion(int arg0, int arg1, int arg2, int colors);
+static void renderIncrementalMapCompletion(int, int, int, int);
+static void renderRiskbreakerRankHeader(int arg0, int arg1, int arg2);
+static void renderRiskbreakerRank(int, int, int);
 
 /**
  * Renders the congratulations screen.
  * @return 1 when all animations are complete, 0 otherwise.
  */
-static int _renderCongratulationsScreen(void)
+static int renderCongratulationsScreen(void)
 {
-    if (_congratulationsAnimSkip == 0) {
+    if (congratulationsAnimSkip == 0) {
 
-        if (_screenTimer == 208) {
+        if (screenTimer == 208) {
             vs_main_playSfxDefault(126, 119);
             vs_main_playSfxDefault(126, 120);
         }
 
-        _fadeIn(_screenTimer);
-        _renderCongratulations(160, 40, _screenTimer);
-        _renderIncrementalScore(160, 80, _screenTimer - 32, _congratulationsAnimSkip);
-        _renderIncrementalMapCompletion(
-            160, 102, _screenTimer - 112, _congratulationsAnimSkip);
-        _renderRiskbreakerRankHeader(160, 138, _screenTimer - 192);
-        _renderRiskbreakerRank(160, 154, _screenTimer - 208);
+        fadeIn(screenTimer);
+        renderCongratulations(160, 40, screenTimer);
+        renderIncrementalScore(160, 80, screenTimer - 32, congratulationsAnimSkip);
+        renderIncrementalMapCompletion(
+            160, 102, screenTimer - 112, congratulationsAnimSkip);
+        renderRiskbreakerRankHeader(160, 138, screenTimer - 192);
+        renderRiskbreakerRank(160, 154, screenTimer - 208);
 
-        if (_screenTimer > 4096) {
-            _screenTimer = 4096;
+        if (screenTimer > 4096) {
+            screenTimer = 4096;
         }
 
         if (vs_main_buttonsPressed.all != 0) {
-            _congratulationsAnimSkip = 1;
-            _screenTimer = 0;
+            congratulationsAnimSkip = 1;
+            screenTimer = 0;
         }
 
     } else {
 
-        _fadeIn(8 - _screenTimer);
-        _renderCongratulations(160, 40, 8 - _screenTimer);
-        _renderScore(160, 80, 8 - _screenTimer, 3);
-        _renderMapCompletion(160, 102, 8 - _screenTimer, 3);
-        _renderRiskbreakerRankHeader(160, 138, 8 - _screenTimer);
-        _renderRiskbreakerRank(160, 154, 8 - _screenTimer);
+        fadeIn(8 - screenTimer);
+        renderCongratulations(160, 40, 8 - screenTimer);
+        renderScore(160, 80, 8 - screenTimer, 3);
+        renderMapCompletion(160, 102, 8 - screenTimer, 3);
+        renderRiskbreakerRankHeader(160, 138, 8 - screenTimer);
+        renderRiskbreakerRank(160, 154, 8 - screenTimer);
 
-        if (_screenTimer >= 8) {
+        if (screenTimer >= 8) {
             return 1;
         }
     }
 
-    ++_screenTimer;
+    ++screenTimer;
     return 0;
 }
 
@@ -2008,7 +2010,7 @@ static int _renderCongratulationsScreen(void)
 /**
  * Fades the background in.
  */
-static void _fadeIn(int timer)
+static void fadeIn(int timer)
 {
     int i;
     int brightness;
@@ -2077,7 +2079,7 @@ enum disIndices {
     disIndexRank2Cartographer
 };
 
-static _texture_t _disMap[] = {
+static vs_Texture disMap[] = {
     { 0, 0, 14, 20, getTPage(0, 0, 832, 256), vs_getUV(240, 127) },
     { 14, 0, 14, 20, getTPage(0, 0, 832, 256), vs_getUV(240, 127) },
     { 28, 0, 14, 20, getTPage(0, 0, 832, 256), vs_getUV(240, 127) },
@@ -2149,8 +2151,8 @@ static _texture_t _disMap[] = {
     { 106, 228, 140, 24, getTPage(0, 0, 960, 256), vs_getUV(240, 127) },
 };
 
-static u_char _riskbreakerRanks[][4] = { { 3, disIndexRank1Grand, disIndexRank1Master,
-                                             disIndexRank1Breaker },
+static u_char riskbreakerRanks[][4] = { { 3, disIndexRank1Grand, disIndexRank1Master,
+                                            disIndexRank1Breaker },
     { 2, disIndexRank1Grand, disIndexRank1Paladin },
     { 2, disIndexRank1Radiant, disIndexRank1Knight },
     { 2, disIndexRank1Raging, disIndexRank1Berserker },
@@ -2166,7 +2168,7 @@ static u_char _riskbreakerRanks[][4] = { { 3, disIndexRank1Grand, disIndexRank1M
 /**
  * Renders the "Mission Complete!" text.
  */
-static void _renderCongratulations(int x, int y, int timer)
+static void renderCongratulations(int x, int y, int timer)
 {
     static CVECTOR colors[] = {
         { 128, 96, 64 },
@@ -2180,11 +2182,11 @@ static void _renderCongratulations(int x, int y, int timer)
         colors[0].cd = timer;
         colors[1].cd = timer;
         x = x
-          - ((_disMap[disIndexRank0Congratulations].w
-                 + _disMap[disIndexRank0Congratulations + 1].w)
+          - ((disMap[disIndexRank0Congratulations].w
+                 + disMap[disIndexRank0Congratulations + 1].w)
               >> 1);
-        _renderTexturePopIn(x, y, disIndexRank0Congratulations, colors);
-        _renderTexturePopIn(x + _disMap[disIndexRank0Congratulations].w, y,
+        renderTexturePopIn(x, y, disIndexRank0Congratulations, colors);
+        renderTexturePopIn(x + disMap[disIndexRank0Congratulations].w, y,
             disIndexRank0Congratulations + 1, &colors[1]);
     }
 }
@@ -2192,7 +2194,7 @@ static void _renderCongratulations(int x, int y, int timer)
 /**
  * Renders the final score display without counting up.
  */
-static void _renderScore(int x, int y, int timer, UNUSED int _)
+static void renderScore(int x, int y, int timer, UNUSED int _)
 {
     static CVECTOR colors[] = {
         { 100, 180, 220 },
@@ -2211,38 +2213,38 @@ static void _renderScore(int x, int y, int timer, UNUSED int _)
 
     colors[0].cd = timer;
 
-    sprintf(buf, "%09d", _score);
+    sprintf(buf, "%09d", score);
 
-    textW = _disMap[disIndexRank0Score].w + _disMap[disIndexRank0Colon].w
-          + _disMap[disIndexRank0Pts].w;
-    x -= (_disMap[disIndexRank0Comma].w * 2 + textW + 116) >> 1;
+    textW = disMap[disIndexRank0Score].w + disMap[disIndexRank0Colon].w
+          + disMap[disIndexRank0Pts].w;
+    x -= (disMap[disIndexRank0Comma].w * 2 + textW + 116) >> 1;
 
-    _renderTextureFadeInTint(x, y, disIndexRank0Score, colors);
+    renderTextureFadeInTint(x, y, disIndexRank0Score, colors);
 
-    x += _disMap[disIndexRank0Score].w;
+    x += disMap[disIndexRank0Score].w;
 
-    _renderTextureFadeInTint(x, y + 7, disIndexRank0Colon, colors);
+    renderTextureFadeInTint(x, y + 7, disIndexRank0Colon, colors);
 
-    x += _disMap[disIndexRank0Colon].w + 2;
+    x += disMap[disIndexRank0Colon].w + 2;
 
     for (i = 0; i < 9; ++i) {
-        _renderTextureFadeInTint(x, y + 3, buf[i] - '0', colors);
+        renderTextureFadeInTint(x, y + 3, buf[i] - '0', colors);
         x += 12;
         if ((i == 2) || (i == 5)) {
-            _renderTextureFadeInTint(x, y + 14, disIndexRank0Comma, colors);
-            x += _disMap[disIndexRank0Comma].w + 3;
+            renderTextureFadeInTint(x, y + 14, disIndexRank0Comma, colors);
+            x += disMap[disIndexRank0Comma].w + 3;
         }
     }
 
-    _renderTextureFadeInTint(x, y + 8, disIndexRank0Pts, colors);
+    renderTextureFadeInTint(x, y + 8, disIndexRank0Pts, colors);
 }
 
-static int _incrementingScore;
+static int incrementingScore;
 
 /**
  * Renders the final score, animating up from 0.
  */
-static void _renderIncrementalScore(int x, int y, int timer, UNUSED int _)
+static void renderIncrementalScore(int x, int y, int timer, UNUSED int _)
 {
     static CVECTOR colors[] = {
         { 100, 180, 220 },
@@ -2262,59 +2264,59 @@ static void _renderIncrementalScore(int x, int y, int timer, UNUSED int _)
 
     maxX = x + (timer * 8);
 
-    if (_score != 0 && timer >= 32) {
+    if (score != 0 && timer >= 32) {
 
-        if (_onScreenScore == 0) {
-            _incrementingScore = 1;
+        if (onScreenScore == 0) {
+            incrementingScore = 1;
             vs_main_playSfxDefault(126, 114);
         }
 
-        if ((_onScreenScore == _score) && (_incrementingScore != 0)) {
-            _incrementingScore = 0;
+        if ((onScreenScore == score) && (incrementingScore != 0)) {
+            incrementingScore = 0;
             vs_main_evictSfx(126, 114);
             vs_main_playSfxDefault(126, 115);
         }
     }
 
     if (timer >= 32) {
-        _onScreenScore = (_score >> 5) * (timer - 32);
+        onScreenScore = (score >> 5) * (timer - 32);
     }
 
     if (timer == 64) {
-        _onScreenScore = _score;
+        onScreenScore = score;
     }
 
-    sprintf(buf, "%09d", _onScreenScore);
+    sprintf(buf, "%09d", onScreenScore);
 
-    textW = _disMap[disIndexRank0Score].w + _disMap[disIndexRank0Colon].w
-          + _disMap[disIndexRank0Pts].w;
-    x -= (_disMap[disIndexRank0Comma].w * 2 + textW + 116) >> 1;
+    textW = disMap[disIndexRank0Score].w + disMap[disIndexRank0Colon].w
+          + disMap[disIndexRank0Pts].w;
+    x -= (disMap[disIndexRank0Comma].w * 2 + textW + 116) >> 1;
 
-    _renderTextureWipe(x, y, disIndexRank0Score, colors, maxX);
+    renderTextureWipe(x, y, disIndexRank0Score, colors, maxX);
 
-    x += _disMap[disIndexRank0Score].w;
+    x += disMap[disIndexRank0Score].w;
 
-    _renderTextureWipe(x, y + 7, disIndexRank0Colon, colors, maxX);
+    renderTextureWipe(x, y + 7, disIndexRank0Colon, colors, maxX);
 
-    x += _disMap[disIndexRank0Colon].w + 2;
+    x += disMap[disIndexRank0Colon].w + 2;
 
     for (i = 0; i < 9; ++i) {
-        _renderTextureWipe(x, y + 3, buf[i] - '0', colors, maxX);
+        renderTextureWipe(x, y + 3, buf[i] - '0', colors, maxX);
         x += 12;
 
         if ((i == 2) || (i == 5)) {
-            _renderTextureWipe(x, y + 14, disIndexRank0Comma, colors, maxX);
-            x += 3 + _disMap[disIndexRank0Comma].w;
+            renderTextureWipe(x, y + 14, disIndexRank0Comma, colors, maxX);
+            x += 3 + disMap[disIndexRank0Comma].w;
         }
     }
 
-    _renderTextureWipe(x, y + 8, disIndexRank0Pts, colors, maxX);
+    renderTextureWipe(x, y + 8, disIndexRank0Pts, colors, maxX);
 }
 
 /**
  * Renders the final map completion percentage.
  */
-static void _renderMapCompletion(int x, int y, int timer, UNUSED int _)
+static void renderMapCompletion(int x, int y, int timer, UNUSED int _)
 {
     static CVECTOR colors[] = {
         { 100, 180, 220 },
@@ -2330,35 +2332,35 @@ static void _renderMapCompletion(int x, int y, int timer, UNUSED int _)
 
         colors[0].cd = timer;
 
-        sprintf(buf, "%03d", _mapCompletion);
+        sprintf(buf, "%03d", mapCompletionPercent);
 
-        x -= ((_disMap[disIndexRank0MapCompleted].w + _disMap[disIndexRank0Colon].w
-                  + _disMap[disIndexRank0Percent].w + 38)
+        x -= ((disMap[disIndexRank0MapCompleted].w + disMap[disIndexRank0Colon].w
+                  + disMap[disIndexRank0Percent].w + 38)
               >> 1);
 
-        _renderTextureFadeInTint(x, y, disIndexRank0MapCompleted, colors);
+        renderTextureFadeInTint(x, y, disIndexRank0MapCompleted, colors);
 
-        x += _disMap[disIndexRank0MapCompleted].w;
+        x += disMap[disIndexRank0MapCompleted].w;
 
-        _renderTextureFadeInTint(x, y + 7, disIndexRank0Colon, colors);
+        renderTextureFadeInTint(x, y + 7, disIndexRank0Colon, colors);
 
-        x += _disMap[disIndexRank0Colon].w + 2;
+        x += disMap[disIndexRank0Colon].w + 2;
 
         for (i = 0; i < 3; ++i) {
-            _renderTextureFadeInTint(x, y + 3, buf[i] - '0', colors);
+            renderTextureFadeInTint(x, y + 3, buf[i] - '0', colors);
             x += 12;
         }
 
-        _renderTextureFadeInTint(x, y + 8, disIndexRank0Percent, colors);
+        renderTextureFadeInTint(x, y + 8, disIndexRank0Percent, colors);
     }
 }
 
-static int _incrementingMapCompletion;
+static int incrementingMapCompletion;
 
 /**
  * Renders the final map completion percentage, animating up from 0.
  */
-static void _renderIncrementalMapCompletion(int x, int y, int timer, UNUSED int _)
+static void renderIncrementalMapCompletion(int x, int y, int timer, UNUSED int _)
 {
     static CVECTOR colors[] = {
         { 100, 180, 220 },
@@ -2377,55 +2379,55 @@ static void _renderIncrementalMapCompletion(int x, int y, int timer, UNUSED int 
 
     temp_s4 = x + timer * 8;
 
-    if (_mapCompletion != 0 && timer >= 32) {
+    if (mapCompletionPercent != 0 && timer >= 32) {
 
-        if (_onScreenMapCompletion == 0) {
-            _incrementingMapCompletion = 1;
+        if (onScreenMapCompletion == 0) {
+            incrementingMapCompletion = 1;
             vs_main_playSfxDefault(126, 114);
         }
 
-        if ((_onScreenMapCompletion == _mapCompletion)
-            && (_incrementingMapCompletion != 0)) {
-            _incrementingMapCompletion = 0;
+        if ((onScreenMapCompletion == mapCompletionPercent)
+            && (incrementingMapCompletion != 0)) {
+            incrementingMapCompletion = 0;
             vs_main_evictSfx(126, 114);
             vs_main_playSfxDefault(126, 115);
         }
     }
 
     if (timer >= 32) {
-        if (_mapCompletion >= 32u) {
-            _onScreenMapCompletion = (u_int)(_mapCompletion * (timer - 32)) >> 5;
-        } else if (_onScreenMapCompletion < _mapCompletion) {
-            _onScreenMapCompletion += 1;
+        if (mapCompletionPercent >= 32u) {
+            onScreenMapCompletion = (u_int)(mapCompletionPercent * (timer - 32)) >> 5;
+        } else if (onScreenMapCompletion < mapCompletionPercent) {
+            onScreenMapCompletion += 1;
         }
     }
 
-    sprintf(buf, "%03d", _onScreenMapCompletion);
+    sprintf(buf, "%03d", onScreenMapCompletion);
 
-    x -= ((_disMap[disIndexRank0MapCompleted].w + _disMap[disIndexRank0Colon].w
-              + _disMap[disIndexRank0Percent].w + 38)
+    x -= ((disMap[disIndexRank0MapCompleted].w + disMap[disIndexRank0Colon].w
+              + disMap[disIndexRank0Percent].w + 38)
           >> 1);
 
-    _renderTextureWipe(x, y, disIndexRank0MapCompleted, colors, temp_s4);
+    renderTextureWipe(x, y, disIndexRank0MapCompleted, colors, temp_s4);
 
-    x += _disMap[disIndexRank0MapCompleted].w;
+    x += disMap[disIndexRank0MapCompleted].w;
 
-    _renderTextureWipe(x, y + 7, disIndexRank0Colon, colors, temp_s4);
+    renderTextureWipe(x, y + 7, disIndexRank0Colon, colors, temp_s4);
 
-    x += _disMap[disIndexRank0Colon].w + 2;
+    x += disMap[disIndexRank0Colon].w + 2;
 
     for (i = 0; i < 3; ++i) {
-        _renderTextureWipe(x, y + 3, buf[i] - '0', colors, temp_s4);
+        renderTextureWipe(x, y + 3, buf[i] - '0', colors, temp_s4);
         x += 12;
     }
 
-    _renderTextureWipe(x, y + 8, disIndexRank0Percent, colors, temp_s4);
+    renderTextureWipe(x, y + 8, disIndexRank0Percent, colors, temp_s4);
 }
 
 /**
  * Renders the "Riskbreaker Rank" text.
  */
-static void _renderRiskbreakerRankHeader(int x, int y, int timer)
+static void renderRiskbreakerRankHeader(int x, int y, int timer)
 {
     static CVECTOR colors[] = {
         { 200, 80, 20 },
@@ -2436,7 +2438,7 @@ static void _renderRiskbreakerRankHeader(int x, int y, int timer)
 
     if (timer > 0) {
         colors[0].cd = timer;
-        _renderTextureFadeInTint(x - (_disMap[disIndexRank0RiskbreakerRank].w >> 1), y,
+        renderTextureFadeInTint(x - (disMap[disIndexRank0RiskbreakerRank].w >> 1), y,
             disIndexRank0RiskbreakerRank, colors);
     }
 }
@@ -2444,7 +2446,7 @@ static void _renderRiskbreakerRankHeader(int x, int y, int timer)
 /**
  * Renders the player's final rank.
  */
-static void _renderRiskbreakerRank(int x, int y, int timer)
+static void renderRiskbreakerRank(int x, int y, int timer)
 {
     static CVECTOR colors[] = {
         { 128, 128, 128 },
@@ -2462,17 +2464,17 @@ static void _renderRiskbreakerRank(int x, int y, int timer)
 
         colors[0].cd = timer;
 
-        for (i = 0; i < _riskbreakerRanks[_rank][0]; ++i) {
-            xInset += _disMap[_riskbreakerRanks[_rank][i + 1]].w;
+        for (i = 0; i < riskbreakerRanks[rank][0]; ++i) {
+            xInset += disMap[riskbreakerRanks[rank][i + 1]].w;
         }
 
         xInset /= 2;
         x -= xInset;
 
-        for (i = 0; i < _riskbreakerRanks[_rank][0]; ++i) {
-            _renderTexturePopIn(x, y, _riskbreakerRanks[_rank][i + 1], colors);
+        for (i = 0; i < riskbreakerRanks[rank][0]; ++i) {
+            renderTexturePopIn(x, y, riskbreakerRanks[rank][i + 1], colors);
 
-            x += _disMap[_riskbreakerRanks[_rank][i + 1]].w;
+            x += disMap[riskbreakerRanks[rank][i + 1]].w;
         }
     }
 }
@@ -2487,7 +2489,7 @@ static void _renderRiskbreakerRank(int x, int y, int timer)
  * @param data Pointer to the raw TIM data block.
  * @param tim Destination TIM image structure that receives the parsed metadata.
  */
-static void _parseTim(u_int* data, TIM_IMAGE* tim)
+static void parseTim(u_int* data, TIM_IMAGE* tim)
 {
     ++data;
     tim->mode = *data;
@@ -2509,7 +2511,7 @@ static void _parseTim(u_int* data, TIM_IMAGE* tim)
 /**
  * Determines the final rank based on the player's data.
  */
-static void _determineRank(void)
+static void determineRank(void)
 {
     static short titleThresholds[16] = { 16, 12, 8 };
     static u_int rankScores[] = { 100000000, 75000000, 60000000, 40000000, 32000000,
@@ -2528,8 +2530,8 @@ static void _determineRank(void)
 
     for (i = 0; i < 16; ++i) {
         if (unlockedTitles >= titleThresholds[i]) {
-            if (_score >= rankScores[i]) {
-                _rank = i;
+            if (score >= rankScores[i]) {
+                rank = i;
                 return;
             }
         }
@@ -2539,62 +2541,62 @@ static void _determineRank(void)
 /**
  * Refreshes the players score.
  */
-static void _updateScore(void)
+static void updateScore(void)
 {
     short enemyKillPoints[] = { 20, 20, 40, 80, 100, 60 };
     short weaponAttackPoints[] = { 20, 40, 20, 100, 60, 100, 60, 100, 80, 60 };
     int i;
 
-    _score = 0;
+    score = 0;
 
     for (i = 0; i < 6; ++i) {
-        _score += vs_main_scoredata.enemyKills[i] * enemyKillPoints[i];
+        score += vs_main_scoredata.enemyKills[i] * enemyKillPoints[i];
     }
 
     for (i = 0; i < 10; ++i) {
-        _score += vs_main_scoredata.weaponAttacks[i] * weaponAttackPoints[i];
+        score += vs_main_scoredata.weaponAttacks[i] * weaponAttackPoints[i];
     }
 
     for (i = 0; i < 8; ++i) {
         if (vs_main_scoredata.bossTimeTrialScores[i][0].time != 0x800000) {
-            _score += 20000;
+            score += 20000;
         }
     }
 
     if (vs_main_scoredata.maxChain < 6) {
-        _score += vs_main_scoredata.maxChain * 10;
+        score += vs_main_scoredata.maxChain * 10;
     } else if (vs_main_scoredata.maxChain < 11) {
-        _score += vs_main_scoredata.maxChain * 20;
+        score += vs_main_scoredata.maxChain * 20;
     } else if (vs_main_scoredata.maxChain < 16) {
-        _score += vs_main_scoredata.maxChain * 40;
+        score += vs_main_scoredata.maxChain * 40;
     } else if (vs_main_scoredata.maxChain < 21) {
-        _score += vs_main_scoredata.maxChain * 80;
+        score += vs_main_scoredata.maxChain * 80;
     } else if (vs_main_scoredata.maxChain < 26) {
-        _score += vs_main_scoredata.maxChain * 160;
+        score += vs_main_scoredata.maxChain * 160;
     } else if (vs_main_scoredata.maxChain < 31) {
-        _score += vs_main_scoredata.maxChain * 320;
+        score += vs_main_scoredata.maxChain * 320;
     } else if (vs_main_scoredata.maxChain < 51) {
-        _score += vs_main_scoredata.maxChain * 640;
+        score += vs_main_scoredata.maxChain * 640;
     } else {
-        _score += vs_main_scoredata.maxChain * 1280;
+        score += vs_main_scoredata.maxChain * 1280;
     }
 
-    _score += _clearCount * 100000;
+    score += clearCount * 100000;
 
-    if ((_clearCount != 0) && (vs_main_scoredata.completionTimeMinutes < 600)) {
+    if ((clearCount != 0) && (vs_main_scoredata.completionTimeMinutes < 600)) {
         if (vs_main_scoredata.completionTimeMinutes >= 540) {
-            _score += _score / 4;
+            score += score / 4;
         } else if (vs_main_scoredata.completionTimeMinutes >= 300) {
-            _score += _score / 2;
+            score += score / 2;
         } else {
-            _score *= 2;
+            score *= 2;
         }
     }
 
-    _score += vs_main_scoredata.streakScore;
-    _score += vs_main_scoredata.miscScore;
+    score += vs_main_scoredata.streakScore;
+    score += vs_main_scoredata.miscScore;
 
-    if (_score > 999999999) {
-        _score = 999999999;
+    if (score > 999999999) {
+        score = 999999999;
     }
 }

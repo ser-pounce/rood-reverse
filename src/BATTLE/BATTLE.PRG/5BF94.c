@@ -1,20 +1,20 @@
 #include "common.h"
-#include "5BF94.h"
-#include "146C.h"
-#include "30DB0.h"
+#include "5BF94Private.h"
+#include "146CPrivate.h"
+#include "30DB0Private.h"
 #include "38C1C.h"
-#include "40564.h"
-#include "44F14.h"
-#include "4DEA8.h"
+#include "40564Private.h"
+#include "44F14Private.h"
+#include "4DEA8Private.h"
 #include "573B8.h"
 #include "579C0.h"
 #include "57B1C.h"
 #include "58578.h"
-#include "6E4CC.h"
+#include "6E4CCPrivate.h"
 #include "6E4CCShared.h"
 #include "battleEffect.h"
 #include "battleUnk.h"
-#include "camera.h"
+#include "cameraPrivate.h"
 #include "src/SLUS_010.40/main.h"
 #include "src/SLUS_010.40/31724.h"
 #include "src/SLUS_010.40/32154.h"
@@ -90,35 +90,35 @@ typedef struct {
 } func_800D6894_t;
 
 typedef struct {
-    u_int unk0_0 : 1;
-    u_int unk0_1 : 1;
+    u_int visible : 1;
+    u_int loading : 1;
     u_int unk0_2 : 1;
-    u_int unk0_3 : 3;
-    u_int unk0_6 : 3;
-    u_int unk0_9 : 3;
+    u_int drawMode : 3;
+    u_int loadState : 3;
+    u_int pageCount : 3;
     u_int unk0_12 : 1;
     u_int unk0_13 : 3;
-    char unk2;
-    char unk3;
+    char vramSlot;
+    char brightness;
     u_char columns;
     u_char rows;
     short id;
-    short unk8;
-    short unkA;
-    short unkC;
+    short x;
+    short y;
+    short scale;
     u_short unkE;
     u_short* data;
-    vs_main_CdQueueSlot* cdQueueSlot;
-    u_short unk18[240];
+    vs_Main_CdQueueSlot* cdQueueSlot;
+    u_short widths[240];
     u_short imageTable[254];
     int unk3F4;
-} gim_t;
+} Gim;
 
 typedef struct {
-    actionEffectTarget* unk0;
-    actionEffectTarget* unk4;
-    actionEffectTarget* unk8;
-    actionEffectTarget* unkC;
+    ActionEffectTarget* unk0;
+    ActionEffectTarget* unk4;
+    ActionEffectTarget* unk8;
+    ActionEffectTarget* unkC;
     int unk10;
     char* unk14;
     int unk18;
@@ -144,10 +144,10 @@ typedef struct {
     u_int color : 4;
     u_int texture : 4;
     u_int life : 8;
-} effectTrailConfig;
+} EffectTrailConfig;
 
 typedef struct {
-    effectTrailConfig config;
+    EffectTrailConfig config;
     int index;
     int age;
     SVECTOR first[8];
@@ -158,7 +158,7 @@ typedef struct {
     SVECTOR currentSecond;
     long projectionDepth;
     long projectionFlags;
-} effectTrailState;
+} EffectTrailState;
 
 typedef struct {
     u_long tag;
@@ -201,7 +201,7 @@ typedef struct {
     u_char selectedIndex;
     u_char count;
     u_char unkC;
-} _textBoxSelector_t;
+} TextBoxSelector;
 
 typedef struct {
     int unk0;
@@ -263,7 +263,7 @@ typedef struct {
 typedef struct {
     int count;
     short offsets[0];
-} pFileBlock11;
+} PFileBlock11;
 
 typedef struct {
     u_char actors[6];
@@ -282,16 +282,16 @@ typedef struct {
     short index;
 } func_800D5A98_t2;
 
-void _renderDigit(int, int, int, u_long*);
+void renderDigit(int, int, int, u_long*);
 void func_800C51B4(int);
 void func_800C7EBC(u_short*, u_int, int, u_int);
 void func_800CA97C(void);
 int func_800CABE0(int);
 void func_800CCA90(int);
-void func_800CBBCC(gim_t* arg0, int arg1, u_long* arg2);
+void func_800CBBCC(Gim* arg0, int arg1, u_long* arg2);
 void func_800CD158(int);
 void func_800CD3E4(int);
-int _breakArtsUnlocked(void);
+int breakArtsUnlocked(void);
 typedef struct {
     u_int unk60_0 : 8;
     u_int unk60_8 : 4;
@@ -303,7 +303,7 @@ extern int func_800CE174(func_800D4910_t*, u_int, int);
 void func_800CE67C(void);
 D_800F53B8_t* func_800CE83C(D_800F53B8_t2*);
 int func_800CE9B0(void);
-char func_800CF218(actionEffectRequest* arg0, int arg1, int arg2);
+char func_800CF218(ActionEffectRequest* arg0, int arg1, int arg2);
 void func_800CF478(int arg0);
 void func_800CF484(int arg0, D_800F53B8_t* arg1);
 int func_800CF49C();
@@ -369,12 +369,12 @@ extern int D_800EC328;
 extern u_char D_800EB7B4[];
 extern u_char D_800EB7D4[];
 extern u_short D_800EB98C[16];
-extern signed char _loadedSubMenu;
+extern signed char loadedSubMenu;
 extern char D_800EB9CC;
 extern char D_800EB9CD;
 extern char D_800EB9CE;
 extern u_char D_800EB9D0[];
-extern u_int* _menuBgUnpackedBuf;
+extern u_int* menuBgUnpackedBuf;
 extern int* D_800EB9D8;
 extern char D_800EBA78[];
 extern u_int D_800EBBB8[];
@@ -397,15 +397,15 @@ extern int D_800EBCEC[];
 extern int D_800EBD14[];
 extern int D_800EBD3C[];
 extern u_short D_800EBD64;
-extern u_char _spellClassCounts[];
-extern u_char* _spellIds[];
+extern u_char spellClassCounts[];
+extern u_char* spellIds[];
 extern char D_800EBD68[];
 extern u_short D_800EBDDC[];
-extern u_int _keystreamState;
+extern u_int randState;
 extern char D_800EBF58[][12];
 extern char* D_800EC258;
-extern void (*D_800EC25C[])(gim_t*, int, u_long*);
-extern textOffset D_800EC284[][2];
+extern void (*D_800EC25C[])(Gim*, int, u_long*);
+extern TextOffset D_800EC284[][2];
 extern int D_800EC2CC[];
 extern int D_800EC2D8[];
 extern u_char D_800EC2E4;
@@ -428,18 +428,18 @@ extern u_char D_800F4CA8[8];
 extern u_char D_800F4CB2;
 extern u_char D_800F4CB3;
 extern char D_800F4CB8;
-extern char _fontTable;
-extern int _fontBrightness;
+extern char fontTable;
+extern int fontBrightness;
 extern int D_800F4CC0;
 extern u_long D_800F4CD0;
 extern char D_800F4E68;
 extern char D_800F4E69;
-extern _textBoxSelector_t textBoxSelector;
+extern TextBoxSelector textBoxSelector;
 extern int D_800F4ED4;
 extern short D_800F4ED8[8];
 extern u_long* D_800F51B8;
 extern char D_800F51C8;
-extern vs_main_CdQueueSlot* D_800F5218;
+extern vs_Main_CdQueueSlot* D_800F5218;
 extern u_int D_800F521C;
 extern int D_800F5224;
 extern int D_800F5228;
@@ -466,7 +466,8 @@ extern int D_800F5618;
 extern VECTOR D_800F5620;
 extern func_800D2904_t* D_800F55FC;
 
-extern gim_t* D_800EB9BC;
+extern Gim* gims;
+VS_HIDDEN(gims);
 
 int func_800C4794(SVECTOR* arg0)
 {
@@ -644,7 +645,7 @@ int func_800C4794(SVECTOR* arg0)
     arg0->vx += (stickX * m->m[0][0] + stickY * m->m[2][0] + ONE / 2) >> 12;
     arg0->vz += (stickX * m->m[0][2] + stickY * m->m[2][2] + ONE / 2) >> 12;
 
-    value = _getCollisionMapDimensions(0);
+    value = getCollisionMapDimensions(0);
 
     if (((u_int)arg0->vx >= (value & 0xFFFF) * 8)
         || ((u_int)arg0->vz >= (value >> 16) * 8)) {
@@ -873,7 +874,7 @@ D_800EB9B8_unk990* func_800C5798(int arg0, int arg1, int arg2)
     return item;
 }
 
-char* _getStatusString(uint arg0)
+char* getStatusString(uint arg0)
 {
     int i;
     arg0 >>= 5;
@@ -945,7 +946,7 @@ int func_800C58F8(u_char* target)
     } else {
         switch (D_800EABAA) {
         case 16:
-            vs_battle_textBoxes[7].unk0.unk0_8 = 1;
+            vs_battle_textBoxes[7].unk0.shape = 1;
             vs_battle_setTextBox(7, (char*)&D_800EBDDC[D_800EBDDC[0]]);
             if (vs_main_buttonsPressed.all & 0x60) {
                 vs_battle_playMenuLeaveSfx();
@@ -1093,21 +1094,21 @@ int func_800C58F8(u_char* target)
             i = entry->unk9;
             type = entry->unk8;
             if (i >> 4) {
-                vs_battle_stringContext.strings[0] = (char*)&vs_battle_statusStrings
+                vs_battle_printfArgs.strings[0] = (char*)&vs_battle_statusStrings
                     [vs_battle_statusStrings[(i >> 5) + VS_statusStrings_INDEX_blocker]];
             } else if (type == 16) {
-                vs_battle_stringContext.strings[0] = vs_battle_actors[i]->stats->name;
+                vs_battle_printfArgs.strings[0] = vs_battle_actors[i]->stats->name;
             } else {
-                vs_battle_stringContext.strings[0] =
+                vs_battle_printfArgs.strings[0] =
                     (char*)&vs_battle_statusStrings[vs_battle_statusStrings[type]];
             }
             for (value = 1; value < 6; ++value) {
-                vs_battle_stringContext.strings[value] = D_800EAA54;
+                vs_battle_printfArgs.strings[value] = D_800EAA54;
             }
             value = entry->effect;
             if ((type == 16) && !(i >> 4) && (vs_battle_actors[i]->unk1C & 0x10)) {
                 value = 5;
-                vs_battle_stringContext
+                vs_battle_printfArgs
                     .strings[1] = (char*)&vs_battle_statusStrings[vs_battle_statusStrings
                         [(u_short)entry->unkE == 0 ? VS_statusStrings_INDEX_indestructable
                                                    : VS_statusStrings_INDEX__3]];
@@ -1120,31 +1121,31 @@ int func_800C58F8(u_char* target)
             } else if (value == 0x3F) {
                 value = 4;
             } else {
-                vs_battle_stringContext.strings[1] = D_800EA9B6;
-                vs_battle_stringContext.strings[6] = _getStatusString(entry->unk10);
+                vs_battle_printfArgs.strings[1] = D_800EA9B6;
+                vs_battle_printfArgs.strings[6] = getStatusString(entry->unk10);
                 value = 0;
             }
-            vs_battle_stringContext.strings[2] =
+            vs_battle_printfArgs.strings[2] =
                 (char*)&vs_battle_statusStrings[vs_battle_statusStrings
                         [entry->unk14 + VS_statusStrings_INDEX_indestructable]];
             if (value != 0) {
                 if (value < 5) {
-                    vs_battle_stringContext.strings[1] =
+                    vs_battle_printfArgs.strings[1] =
                         (char*)&vs_battle_statusStrings[vs_battle_statusStrings
                                 [VS_statusStrings_INDEX_mpTemplate - (value & 1)]];
-                    vs_battle_stringContext.strings[5] =
+                    vs_battle_printfArgs.strings[5] =
                         (char*)&vs_battle_statusStrings[vs_battle_statusStrings
                                 [entry->enemyClass + VS_statusStrings_INDEX_human]];
                 }
-                vs_battle_stringContext.strings[3] =
+                vs_battle_printfArgs.strings[3] =
                     (char*)&vs_battle_statusStrings[vs_battle_statusStrings
                             [entry->unk15 + VS_statusStrings_INDEX_empty]];
-                vs_battle_stringContext.strings[4] =
+                vs_battle_printfArgs.strings[4] =
                     (char*)&vs_battle_statusStrings[vs_battle_statusStrings
                             [entry->unk16 + VS_statusStrings_INDEX_physical]];
             }
-            vs_battle_stringContext.integers[0] = *(u_short*)&entry->unkC;
-            vs_battle_stringContext.integers[1] = (u_short)entry->unkE;
+            vs_battle_printfArgs.integers[0] = *(u_short*)&entry->unkC;
+            vs_battle_printfArgs.integers[1] = (u_short)entry->unkE;
             vs_battle_printf(D_800EB9B8->textBuffer, D_800EA984);
             vs_battle_setTextBox(7, D_800EB9B8->textBuffer);
             break;
@@ -1271,7 +1272,7 @@ void vs_battle_renderTextRaw(char const* text, int xy, void* nextPrim)
 
 #pragma vsstring(start)
 
-void _writeStringTerminator(char* str) { *str = '\0'; }
+void writeStringTerminator(char* str) { *str = '\0'; }
 
 char* vs_battle_printf(char* dest, char* src)
 {
@@ -1286,7 +1287,7 @@ char* vs_battle_printf(char* dest, char* src)
             switch (c) {
             case vs_char_printHex:
                 c = *src++;
-                integer = vs_battle_stringContext.integers[c % 10];
+                integer = vs_battle_printfArgs.integers[c % 10];
                 if (integer < 0) {
                     integer = -integer;
                     *dest++ = '-';
@@ -1318,7 +1319,7 @@ char* vs_battle_printf(char* dest, char* src)
                 break;
             case vs_char_printDecimal:
                 c = *src++;
-                integer = vs_battle_stringContext.integers[c % 10];
+                integer = vs_battle_printfArgs.integers[c % 10];
                 if (integer < 0) {
                     integer = -integer;
                     *dest++ = '-';
@@ -1347,8 +1348,8 @@ char* vs_battle_printf(char* dest, char* src)
                 }
                 break;
             case vs_char_printString:
-                dest = vs_battle_printf(
-                    dest, vs_battle_stringContext.strings[(u_char)*src++]);
+                dest =
+                    vs_battle_printf(dest, vs_battle_printfArgs.strings[(u_char)*src++]);
                 break;
             default:
                 *dest++ = c;
@@ -1366,15 +1367,15 @@ char* vs_battle_printf(char* dest, char* src)
 
 int vs_battle_setTextBox(int boxId, char* str)
 {
-    vs_battle_textBox* box = &vs_battle_textBoxes[boxId];
+    vs_TextBox* box = &vs_battle_textBoxes[boxId];
 
     if (str != NULL) {
         box->string = str;
         box->speed = 1;
         box->unk4 = 0;
         box->prevChunksPrinted = 0;
-        if (!(box->unk0.unk0_24 & 0x20)) {
-            func_800AAD4C(box->unk0.unk0_24, 0, box->unk2E + 1, 1);
+        if (!(box->unk0.speakerActor & 0x20)) {
+            func_800AAD4C(box->unk0.speakerActor, 0, box->speakerAnimation + 1, 1);
             box->unk2C = 1;
         }
         return 0;
@@ -1387,9 +1388,9 @@ int vs_battle_setTextBox(int boxId, char* str)
     return 0;
 }
 
-int vs_battle_selectTextBox(u_char boxMask)
+int selectTextBox(u_char boxMask)
 {
-    vs_battle_textBox tempBox;
+    vs_TextBox tempBox;
     short yPositions[8];
     int i;
     int j;
@@ -1418,7 +1419,8 @@ int vs_battle_selectTextBox(u_char boxMask)
             yPositions[sortedIndex] = 0x7FFF;
         }
 
-        selectedIndex = vs_main_stateFlags.unk11 - 1;
+        // The second scratch flag is the script's preselected choice (1-based)
+        selectedIndex = vs_main_stateFlags.scriptScratch[1] - 1;
 
         if (selectedIndex >= count) {
             selectedIndex = 0;
@@ -1516,9 +1518,9 @@ int vs_battle_printVariableWidthFontChar(u_int glyphId, int x, int y, u_long* ot
         return x + 6;
     }
 
-    glyphId += _fontTable * 0xBD;
+    glyphId += fontTable * 0xBD;
     sprite =
-        vs_battle_setSprite(_fontBrightness, (x & 0xFFFF) | (y << 0x10), 0xC000C, ot + 3);
+        vs_battle_setSprite(fontBrightness, (x & 0xFFFF) | (y << 0x10), 0xC000C, ot + 3);
     sprite[1] = 0xE100002D;
     glyphRow = glyphId / 21;
     glyphCol = glyphId % 21;
@@ -1529,12 +1531,12 @@ int vs_battle_printVariableWidthFontChar(u_int glyphId, int x, int y, u_long* ot
 
 void vs_battle_setFontStyle(int arg0)
 {
-    _fontTable = 0;
-    _fontBrightness = 384;
+    fontTable = 0;
+    fontBrightness = 384;
     D_800F4CB8 = arg0;
 }
 
-void _printVariableWidthFont(vs_battle_textBox* arg0)
+void printVariableWidthFont(vs_TextBox* arg0)
 {
     char intBuf[16];
     u_long* sp20 = D_800F51B8 + D_800F4E80 * 4;
@@ -1563,12 +1565,12 @@ void _printVariableWidthFont(vs_battle_textBox* arg0)
 
     if (charsRemaining != 0) {
 
-        _fontTable = arg0->unk0.unk0_0 != 4;
-        _fontBrightness = arg0->brightness;
+        fontTable = arg0->unk0.unk0_0 != 4;
+        fontBrightness = arg0->brightness;
         D_800F4CB8 = (1 - (*((char*)arg0) & 1)) * 4;
 
         if (arg0->unk0.unk0_0 == 2) {
-            _fontTable = 0;
+            fontTable = 0;
             D_800F4CB8 = 0;
         }
         currentString = arg0->string;
@@ -1670,9 +1672,9 @@ void _printVariableWidthFont(vs_battle_textBox* arg0)
                         printY += opcodeParam >> 3;
                     } else {
                         if (opcodeParam == 6) { // Font table 0
-                            _fontTable = 0;
+                            fontTable = 0;
                         } else if (opcodeParam == 5) { // Font table 1
-                            _fontTable = 1;
+                            fontTable = 1;
                         } else if (opcodeParam == 4) { // Justify
                             justify ^= 1;
                             if (justify != 0) {
@@ -1694,7 +1696,7 @@ void _printVariableWidthFont(vs_battle_textBox* arg0)
                     break;
                 case 0xFD: // Print hex
                     hexBufPos = 0;
-                    var_a2 = vs_battle_stringContext.integers[opcodeParam % 10];
+                    var_a2 = vs_battle_printfArgs.integers[opcodeParam % 10];
                     var_a0 = 0x10000000;
                     if (var_a2 < 0) {
                         var_a2 = -var_a2;
@@ -1734,7 +1736,7 @@ void _printVariableWidthFont(vs_battle_textBox* arg0)
                     break;
                 case 0xFE: // Print decimal
                     decBufPos = 0;
-                    decInt = vs_battle_stringContext.integers[opcodeParam % 10];
+                    decInt = vs_battle_printfArgs.integers[opcodeParam % 10];
                     var_a2 = 1000000000;
                     if (decInt < 0) {
                         decInt = -decInt;
@@ -1775,7 +1777,7 @@ void _printVariableWidthFont(vs_battle_textBox* arg0)
                     break;
                 case 0xFF: // Print string reference
                     savedString = currentString;
-                    currentString = (char*)vs_battle_stringContext.strings[opcodeParam];
+                    currentString = (char*)vs_battle_printfArgs.strings[opcodeParam];
                     inInlineString = 1;
                     break;
                 }
@@ -1790,11 +1792,11 @@ void _printVariableWidthFont(vs_battle_textBox* arg0)
             vs_main_playSfxDefault(0x7E, sfx);
         }
 
-        if (!(arg0->unk0.unk0_24 & 0x20)) {
+        if (!(arg0->unk0.speakerActor & 0x20)) {
             if (arg0->unk2C != 0) {
                 ++arg0->unk2C;
             } else {
-                func_800AAD4C(arg0->unk0.unk0_24, 0, 0, 0);
+                func_800AAD4C(arg0->unk0.speakerActor, 0, 0, 0);
             }
         }
         arg0->prevChunksPrinted = chunksPrinted;
@@ -1804,8 +1806,8 @@ void _printVariableWidthFont(vs_battle_textBox* arg0)
 #pragma vsstring(end)
 
 // Looks like some unholy union of hasm and compiled code, leaving as raw asm
-int _printFixedWidthFontChar(int charId, int x, int y, int width, int height, int scale);
-__asm__("glabel _printFixedWidthFontChar;"
+int printFixedWidthFontChar(int charId, int x, int y, int width, int height, int scale);
+__asm__("glabel printFixedWidthFontChar;"
         "addu       $sp, -8;"
         "addu       $t7, $a0, $zero;"
         "addu       $t3, $a1, $zero;"
@@ -1826,11 +1828,11 @@ __asm__("glabel _printFixedWidthFontChar;"
         "sra        $v0, $t6, 16;"
         "sll        $t6, $v0, 16;"
         "lui        $a1, 0xFF;"
-        "lui        $v0, %hi(_fontTable);"
+        "lui        $v0, %hi(fontTable);"
         "or         $a1, 0xFFFF;"
         "lui        $t2, %hi(D_800F51B8);"
         "lui        $a0, %hi(D_800F4CB8);"
-        "lbu        $v0, %lo(_fontTable)($v0);"
+        "lbu        $v0, %lo(fontTable)($v0);"
         "lbu        $a2, %lo(D_800F4CB8)($a0);"
         "sll        $v1, $v0, 1;"
         "addu       $v1, $v0;"
@@ -1861,10 +1863,10 @@ __asm__("glabel _printFixedWidthFontChar;"
         "li         $a1, 0x86186187;"
         "mflo       $t1;"
         "or         $v1, $v0;"
-        "lui        $v0, %hi(_fontBrightness);"
+        "lui        $v0, %hi(fontBrightness);"
         "multu      $t7, $a1;"
         "sw         $v1, 0x0($t4);"
-        "lw         $v1, %lo(_fontBrightness)($v0);"
+        "lw         $v1, %lo(fontBrightness)($v0);"
         "or         $v0, $t5, $t6;"
         "sw         $v0, 0x20($t4);"
         "sw         $v1, 0x4($t4);"
@@ -1921,10 +1923,10 @@ __asm__("glabel _printFixedWidthFontChar;"
         "lw         $s0, 0x0($sp);"
         "j          $ra;"
         "addiu      $sp, 0x8;"
-        "endlabel _printFixedWidthFontChar;");
+        "endlabel printFixedWidthFontChar;");
 
 #pragma vsstring(start)
-void _printFixedWidthFont(vs_battle_textBox* ctx, int scale)
+void printFixedWidthFont(vs_TextBox* ctx, int scale)
 {
     int justify = 0;
     char* str = ctx->string;
@@ -1939,18 +1941,18 @@ void _printFixedWidthFont(vs_battle_textBox* ctx, int scale)
         int printY = (ctx->unk26 << 0x10) + ((ctx->yIndent - ctx->y) * scale);
 
         D_800F4CB8 = (1 - (*((char*)ctx) & 1)) * 4;
-        _fontTable = ctx->unk0.unk0_0 != 4;
-        _fontBrightness = ctx->brightness;
+        fontTable = ctx->unk0.unk0_0 != 4;
+        fontBrightness = ctx->brightness;
 
         temp_s6 = printX;
 
         if (ctx->unk0.unk0_0 == 2) {
-            _fontTable = 0;
+            fontTable = 0;
             D_800F4CB8 = 0;
         }
 
         done = ctx->brightness;
-        _fontBrightness = done | (done << 8) | (done << 0x10) | 0x2C000000;
+        fontBrightness = done | (done << 8) | (done << 0x10) | 0x2C000000;
         done = 0;
 
         while (1) {
@@ -1958,7 +1960,7 @@ void _printFixedWidthFont(vs_battle_textBox* ctx, int scale)
 
             if (currentChar < 0xEC) {
                 if (currentChar < '\f') {
-                    printX = _printFixedWidthFontChar(
+                    printX = printFixedWidthFontChar(
                         currentChar, printX, printY, charWidth, charHeight, scale);
                     continue;
                 }
@@ -1997,9 +1999,9 @@ void _printFixedWidthFont(vs_battle_textBox* ctx, int scale)
                         printY += (opcodeParam >> 3) * scale;
                     } else {
                         if (opcodeParam == 6) { // Font table 0
-                            _fontTable = 0;
+                            fontTable = 0;
                         } else if (opcodeParam == 5) { // Font table 1
-                            _fontTable = 1;
+                            fontTable = 1;
                         } else if (opcodeParam == 4) { // Justify
                             justify ^= 1;
                             if (justify != 0) {
@@ -2064,7 +2066,7 @@ void func_800C7EBC(u_short* destination, u_int glyph, int stride, u_int alpha)
 }
 
 #pragma vsstring(start)
-void _renderTextImmediate(vs_battle_textBox* arg0, int arg1)
+void renderTextImmediate(vs_TextBox* arg0, int arg1)
 {
     RECT rect;
     int height;
@@ -2097,7 +2099,7 @@ void _renderTextImmediate(vs_battle_textBox* arg0, int arg1)
     setRECT(&rect, x + vs_main_frameBuf * 320, y, width, height);
     StoreImage(&rect, (void*)buf);
 
-    _fontTable = 1;
+    fontTable = 1;
 
     while (1) {
         u_int currentChar = *str++;
@@ -2105,7 +2107,7 @@ void _renderTextImmediate(vs_battle_textBox* arg0, int arg1)
         if (currentChar < 0xEC) {
             if (currentChar < '\f') {
                 if (currentChar != ' ') {
-                    currentChar += _fontTable * 21 * 9;
+                    currentChar += fontTable * 21 * 9;
                     if (((width - 12) >= printX) && ((height - 12) >= printY)) {
                         func_800C7EBC(buf + ((printX + (printY * width))), currentChar,
                             width, arg1);
@@ -2150,9 +2152,9 @@ void _renderTextImmediate(vs_battle_textBox* arg0, int arg1)
                     printY += opcodeParam >> 3;
                 } else {
                     if (opcodeParam == 6) {
-                        _fontTable = 0;
+                        fontTable = 0;
                     } else if (opcodeParam == 5) {
-                        _fontTable = 1;
+                        fontTable = 1;
                     } else if (opcodeParam == 4) {
                         justify ^= 1;
                         if (justify != 0) {
@@ -2175,54 +2177,54 @@ void _renderTextImmediate(vs_battle_textBox* arg0, int arg1)
 }
 #pragma vsstring(end)
 
-void vs_battle_loadGim(int id, int arg1)
+void loadGim(int id, int vramSlot)
 {
-    vs_main_CdFile file;
-    gim_t* var_s0;
+    vs_Main_CdFile file;
+    Gim* var_s0;
     int i;
 
-    if (D_800EB9BC == NULL) {
+    if (gims == NULL) {
         var_s0 = vs_main_allocHeapR(sizeof *var_s0 * 3);
-        D_800EB9BC = var_s0;
-        var_s0->data = vs_main_allocHeapR((char)_gimLbas[id] << 0xB);
+        gims = var_s0;
+        var_s0->data = vs_main_allocHeapR((char)gimLbas[id] << 0xB);
 
         for (i = 0; i < 3; ++i) {
             *(u_short*)var_s0 = 0;
-            var_s0->unk0_1 = 1;
-            var_s0->unk0_6 = 1;
-            var_s0->unk2 = arg1;
-            var_s0->unk3 = 0x80;
+            var_s0->loading = 1;
+            var_s0->loadState = 1;
+            var_s0->vramSlot = vramSlot;
+            var_s0->brightness = 0x80;
             var_s0->id = id;
-            var_s0->unk8 = 0;
-            var_s0->unkA = 0;
-            var_s0->unkC = 0x1000;
+            var_s0->x = 0;
+            var_s0->y = 0;
+            var_s0->scale = 0x1000;
             ++var_s0;
         }
-        file.lba = _gimLbas[id] >> 8;
-        file.size = (u_char)_gimLbas[id] << 0xB;
-        D_800EB9BC->cdQueueSlot = vs_main_allocateCdQueueSlot(&file);
-        vs_main_cdEnqueue(D_800EB9BC->cdQueueSlot, D_800EB9BC->data);
+        file.lba = gimLbas[id] >> 8;
+        file.size = (u_char)gimLbas[id] << 0xB;
+        gims->cdQueueSlot = vs_main_allocateCdQueueSlot(&file);
+        vs_main_cdEnqueue(gims->cdQueueSlot, gims->data);
     }
 }
 
-void func_800C8550(u_int arg0, void* arg1, u_char* arg2)
+void activateGimImage(u_int image, UNUSED void* arg1, UNUSED u_char* arg2)
 {
-    gim_t* gim = &D_800EB9BC[arg0];
+    Gim* gim = &gims[image];
     int step;
     int next;
     int i;
 
-    gim->unk0_0 = 1;
+    gim->visible = 1;
 
-    if (gim->unk0_3 == 2) {
-        u_short* p = gim->unk18;
-        int angle = vs_battle_keystreamBits(9);
-        int target = vs_battle_keystreamBits(10);
+    if (gim->drawMode == 2) {
+        u_short* p = gim->widths;
+        int angle = vs_battle_getRandBits(9);
+        int target = vs_battle_getRandBits(10);
 
         for (i = 0; i < 240; ++i) {
             p[i] = (rsin(angle) >> 3) + 320;
-            step = vs_battle_keystreamBits(8) - 64;
-            next = vs_battle_keystreamBits(10);
+            step = vs_battle_getRandBits(8) - 64;
+            next = vs_battle_getRandBits(10);
 
             if (target < angle) {
                 angle -= step;
@@ -2240,39 +2242,43 @@ void func_800C8550(u_int arg0, void* arg1, u_char* arg2)
 
             if (angle < 0) {
                 angle = 128;
-                target = vs_battle_keystreamBits(10);
+                target = vs_battle_getRandBits(10);
             }
         }
     }
 
-    if (gim->unk0_3 == 3) {
-        func_8007DFF0(D_800EB9BC->unk2 + D_800EB9BC->unk0_9, 1, 6);
+    if (gim->drawMode == 3) {
+        func_8007DFF0(gims->vramSlot + gims->pageCount, 1, 6);
     }
 }
 
-void func_800C86AC(void)
+void unloadGim(void)
 {
-    gim_t* var_s0 = D_800EB9BC;
-    int i;
+    Gim* var_s0 = gims;
 
-    if ((var_s0 != NULL) && (var_s0->unk0_6 == 3)) {
-        func_8007E0A8(var_s0->unk2, var_s0->unk0_9, 6);
+    if ((var_s0 != NULL) && (var_s0->loadState == 3)) {
+        int i;
+
+        func_8007E0A8(var_s0->vramSlot, var_s0->pageCount, 6);
+
         for (i = 0; i < 3; ++i) {
-            if (var_s0->unk0_3 == 3) {
-                func_8007E0A8(D_800EB9BC->unk2 + D_800EB9BC->unk0_9, 1, 6);
+            if (var_s0->drawMode == 3) {
+                func_8007E0A8(gims->vramSlot + gims->pageCount, 1, 6);
             }
             ++var_s0;
         }
-        vs_main_freeHeapR(D_800EB9BC);
-        D_800EB9BC = NULL;
+
+        vs_main_freeHeapR(gims);
+
+        gims = NULL;
     }
 }
 
 void func_800C8778(void)
 {
-    gim_t* gim = D_800EB9BC;
-    gim_t* second = gim + 1;
-    gim_t* third = gim + 2;
+    Gim* gim = gims;
+    Gim* second = gim + 1;
+    Gim* third = gim + 2;
     int i;
     int j;
     int count;
@@ -2284,7 +2290,7 @@ void func_800C8778(void)
         return;
     }
 
-    switch (gim->unk0_6) {
+    switch (gim->loadState) {
     case 0:
         break;
     case 1:
@@ -2336,11 +2342,11 @@ void func_800C8778(void)
         }
 
         count = (count + 1) & 0xFFFE;
-        width = (gim->unk2 - 24) * 64;
+        width = (gim->vramSlot - 24) * 64;
         vs_battle_renderImage((width + 512) | 0x1FF0000, gim->data + count, 0x10040);
 
         for (j = 0; j < 3; ++j) {
-            gim_t* current = &gim[j];
+            Gim* current = &gim[j];
 
             switch (current->imageTable[2]) {
             case 0:
@@ -2367,12 +2373,12 @@ void func_800C8778(void)
         height = i >> 8;
         i &= 0xFF;
         j = (i + 16) / 17;
-        gim->unk0_9 = j;
-        second->unk0_9 = j;
-        third->unk0_9 = j;
+        gim->pageCount = j;
+        second->pageCount = j;
+        third->pageCount = j;
         height *= 16;
         count += height;
-        func_8007DFF0(gim->unk2, gim->unk0_9, 6);
+        func_8007DFF0(gim->vramSlot, gim->pageCount, 6);
 
         while (i > 0) {
             vs_battle_renderImage((width + 512) | 0x1000000, gim->data + count,
@@ -2382,20 +2388,20 @@ void func_800C8778(void)
             width += 64;
         }
 
-        gim->unk0_6 = 2;
+        gim->loadState = 2;
         break;
     case 2:
         vs_main_freeHeapR(gim->data);
 
         for (j = 0; j < 3; ++j) {
-            gim[j].unk0_1 = 0;
+            gim[j].loading = 0;
         }
 
-        gim->unk0_6 = 3;
+        gim->loadState = 3;
         break;
     case 3:
         for (j = 0; j < 3; ++j) {
-            if (gim[j].unk0_0) {
+            if (gim[j].visible) {
                 func_800CCA90(j);
             }
         }
@@ -2406,27 +2412,27 @@ void func_800C8778(void)
 
 int vs_battle_loadMenuPrg(int arg0)
 {
-    vs_battle_menuState_t* state = &vs_battle_menuState;
+    vs_MenuState* state = &vs_battle_menuState;
     int subMenu = arg0 & 0x1F;
 
     if (subMenu == 31) {
         return 1;
     }
 
-    if (subMenu == 0 && _loadedSubMenu > 0) {
+    if (subMenu == 0 && loadedSubMenu > 0) {
         return 1;
     }
 
-    if (_loadedSubMenu != subMenu) {
+    if (loadedSubMenu != subMenu) {
         void* overlaySlot;
-        vs_main_CdFile file;
+        vs_Main_CdFile file;
         u_int fileData;
 
-        _loadedSubMenu = subMenu;
+        loadedSubMenu = subMenu;
         state->loading = 1;
 
         if (vs_battle_shortcutInvoked != 5) {
-            fileData = _menuLbas[subMenu];
+            fileData = menuLbas[subMenu];
         } else {
             fileData = VS_MAINMENU_PRG_LBA << 8 | VS_MAINMENU_PRG_SIZE >> 11;
         }
@@ -2445,11 +2451,11 @@ int vs_battle_loadMenuPrg(int arg0)
     }
 
     if (state->loading == 0) {
-        if (_menuBgUnpackedBuf != NULL) {
+        if (menuBgUnpackedBuf != NULL) {
 
-            vs_main_freeHeapR(_menuBgUnpackedBuf);
+            vs_main_freeHeapR(menuBgUnpackedBuf);
 
-            _menuBgUnpackedBuf = NULL;
+            menuBgUnpackedBuf = NULL;
 
             vs_mainMenu_initInventory();
         }
@@ -2473,8 +2479,8 @@ int vs_battle_loadMenuPrg(int arg0)
         }
 
         if (subMenu == 0) {
-            _menuBgUnpackedBuf = (u_int*)vs_main_allocHeapR(0xB400);
-            vs_mainMenu_unpackMenubg(_menuBgUnpackedBuf);
+            menuBgUnpackedBuf = (u_int*)vs_main_allocHeapR(0xB400);
+            vs_mainMenu_unpackMenubg(menuBgUnpackedBuf);
         }
     }
 
@@ -2486,13 +2492,13 @@ void vs_battle_initInformationTextBox(enum vs_battle_informationTextBoxHeader he
     vs_battle_initTextBox(7, (header << 8) | 4, 0, 1, 0, 4, 0, 0);
 }
 
-vs_battle_menuItem_t* vs_battle_getMenuItem(int id) { return vs_battle_menuItems + id; }
+vs_MenuItem* vs_battle_getMenuItem(int id) { return vs_battle_menuItems + id; }
 
-vs_battle_menuItem_t* vs_battle_setMenuItem(
+vs_MenuItem* vs_battle_setMenuItem(
     int row, int x, int y, int w, int backgroundWidth, char* text)
 {
-    vs_battle_menuItem_t* menuItem;
-    vs_battle_menuItem_t* var_a0;
+    vs_MenuItem* menuItem;
+    vs_MenuItem* var_a0;
     int i;
     u_int c;
 
@@ -2532,7 +2538,7 @@ vs_battle_menuItem_t* vs_battle_setMenuItem(
  * @param brightness Color multiplier
  * @param blendFactor Proportion of color0 to color1
  */
-u_int _lerpColor(u_int color0, u_int color1, int brightness, int blendFactor)
+u_int lerpColor(u_int color0, u_int color1, int brightness, int blendFactor)
 {
     u_int i;
     u_int ret = 0;
@@ -2555,17 +2561,17 @@ int vs_battle_uiGradientStop(u_int gradient, u_int colorIndex, int brightness)
     u_int color1;
 
     if (colorIndex < 9) {
-        color0 = _lerpColor(0x6B4100, 0x6C8219, 0x80, colorIndex);
-        color1 = _lerpColor(0x330500, 0x262801, 0x80, colorIndex);
+        color0 = lerpColor(0x6B4100, 0x6C8219, 0x80, colorIndex);
+        color1 = lerpColor(0x330500, 0x262801, 0x80, colorIndex);
     } else {
         color0 = D_800EBBB8[((colorIndex >> 3) - 2)];
         color1 = D_800EBBC0[((colorIndex >> 3) - 2)];
     }
 
-    return _lerpColor(color0, color1, brightness, gradient);
+    return lerpColor(color0, color1, brightness, gradient);
 }
 
-void vs_battle_renderMenuItem(vs_battle_menuItem_t* menuItem)
+void vs_battle_renderMenuItem(vs_MenuItem* menuItem)
 {
 
     int y = menuItem->gradientState;
@@ -2660,7 +2666,7 @@ void vs_battle_renderMenuItem(vs_battle_menuItem_t* menuItem)
 int func_800C930C(int mode)
 {
     u_int selected = vs_battle_submenuStates[0];
-    vs_battle_menuItem_t* items = vs_battle_menuItems;
+    vs_MenuItem* items = vs_battle_menuItems;
     u_int enabled = vs_main_settings.menuFlags;
     u_int mask;
 
@@ -2785,7 +2791,7 @@ int func_800C930C(int mode)
             }
         }
 
-        vs_battle_stringContext.strings[0] =
+        vs_battle_printfArgs.strings[0] =
             (char*)&vs_battle_menuStrings[vs_battle_menuStrings[mode + 12]];
     } else {
         vs_battle_textBoxes[7].state = 0;
@@ -2796,7 +2802,7 @@ int func_800C930C(int mode)
 
 void func_800C97BC(void)
 {
-    vs_battle_menuItem_t* var_s2;
+    vs_MenuItem* var_s2;
     int temp_s1;
     int miscIndex;
     int i;
@@ -2849,7 +2855,7 @@ void func_800C97BC(void)
     }
 }
 
-void _renderDigit(int font, int xy, int digit, u_long* before)
+void renderDigit(int font, int xy, int digit, u_long* before)
 {
     u_long* prim = vs_battle_setSpriteDefaultTexPage(
         128, xy + ((font & 2) << 0x10), (0x05CA0576 >> (font * 4)) & 0xF000F, before);
@@ -2872,7 +2878,7 @@ int vs_battle_renderValue(int font, int xy, int value, u_long* before)
     do {
         value = vs_battle_toBCD(value);
 
-        _renderDigit(font, xy, value & 0xF, before);
+        renderDigit(font, xy, value & 0xF, before);
 
         new_var = xy - 5;
         xy = new_var - font;
@@ -2916,7 +2922,7 @@ void vs_battle_renderStatBar(int colorIndex, int w, u_long* before, int xy)
     vs_scratch.unk0 = primBuf + 14;
 }
 
-void _renderStatBar(int colorIndex, int current, int max)
+void renderStatBar(int colorIndex, int current, int max)
 {
     u_long* prim = vs_scratch.unk4 - 0xC;
     int xy = D_800EBBDC[colorIndex] - D_800EB9B0;
@@ -2930,7 +2936,7 @@ void _renderStatBar(int colorIndex, int current, int max)
             }
         } else {
             xy = vs_battle_renderValue(0, xy + (56 | ((u_short)-8 << 0x10)), max, NULL);
-            _renderDigit(2, xy, 0, prim);
+            renderDigit(2, xy, 0, prim);
             xy += (u_short)-7 | ((u_short)-2 << 0x10);
         }
         vs_battle_renderValue(1, xy, current, NULL);
@@ -2986,7 +2992,7 @@ void func_800C9CB4(int arg0, int arg1, int arg2)
     }
 }
 
-int vs_battle_getStatusFlags(vs_battle_actorStats* stats)
+int vs_battle_getStatusFlags(vs_ActorStats* stats)
 {
     int i;
     int temp_v1 = (u_int)stats->statuses >> 5;
@@ -3002,7 +3008,7 @@ int vs_battle_getStatusFlags(vs_battle_actorStats* stats)
     return var_a2;
 }
 
-int vs_battle_getLimbStatus(vs_battle_uiEquipment_limb* limb)
+int vs_battle_getLimbStatus(vs_UiEquipment_limb* limb)
 {
     int maxHp = limb->maxHp;
 
@@ -3054,7 +3060,7 @@ int func_800C9EB8(int arg0)
         }
         break;
     case 7:
-        if (_breakArtsUnlocked() == 0) {
+        if (breakArtsUnlocked() == 0) {
             return 0;
         }
         if (temp_s0 & 0x15F) {
@@ -3145,7 +3151,7 @@ void func_800CA2DC(void)
     u_int flags;
     u_char icon;
     u_long* prim;
-    vs_battle_actorStats* stats = vs_battle_characterState->stats;
+    vs_ActorStats* stats = vs_battle_characterState->stats;
     void* nextPrim = vs_scratch.unk4 - 4;
 
     func_800C9FE8();
@@ -3178,7 +3184,7 @@ void func_800CA2DC(void)
     } else {
         k = vs_battle_textBoxes[7].state;
         if (!(vs_battle_lowerScreenUiState & 2)
-            && ((k == 0) || (k != (vs_battle_textBoxes[7].unk22 + 1)))) {
+            && ((k == 0) || (k != (vs_battle_textBoxes[7].animationDuration + 1)))) {
             k = 0xB80008;
 
             for (i = 0; i < 5; ++i) {
@@ -3196,14 +3202,14 @@ void func_800CA2DC(void)
         }
     }
 
-    _renderStatBar(0, stats->currentHP, stats->maxHP);
-    _renderStatBar(1, stats->currentMP, stats->maxMP);
+    renderStatBar(0, stats->currentHP, stats->maxHP);
+    renderStatBar(1, stats->currentMP, stats->maxMP);
 
     risk = stats->risk;
     k = risk;
 
     if (k != 0) {
-        _renderStatBar(2, k, 100);
+        renderStatBar(2, k, 100);
     }
 
     if (risk == 0) {
@@ -3330,13 +3336,13 @@ void func_800CA97C(void)
 void vs_battle_initUi(void* fontData)
 {
     D_800EB9AC = 0;
-    _loadedSubMenu = 0;
+    loadedSubMenu = 0;
     D_800EB9AE = 0;
     D_800EB9B0 = 0;
     D_800F4ED4 = 0;
     D_800EB9B4 = NULL;
     D_800EB9B8 = NULL;
-    D_800EB9BC = NULL;
+    gims = NULL;
     vs_battle_menuItems = 0;
     D_800EB9CE = 0;
     vs_battle_lowerScreenUiState = 0;
@@ -3344,7 +3350,7 @@ void vs_battle_initUi(void* fontData)
     D_800EB9CC = 0;
     D_800EB9CD = 0;
     *(int*)D_800EB9D0 = 0xFFFFFF;
-    _menuBgUnpackedBuf = NULL;
+    menuBgUnpackedBuf = NULL;
     D_800EB9D8 = 0;
     func_800CA97C();
     vs_battle_rMemzero(&vs_battle_menuState, 8);
@@ -3381,8 +3387,8 @@ void func_800CAB40(void)
 int func_800CABE0(int arg0)
 {
     int ret;
-    vs_battle_actorStats* stats = vs_battle_characterState->stats;
-    int temp_v0 = func_800A0BE0(0);
+    vs_ActorStats* stats = vs_battle_characterState->stats;
+    int temp_v0 = vs_battle_getActorFlags(0);
     int var_a0 = ((temp_v0 & 0x80000) != 0) * 2;
 
     if ((temp_v0 & 0x40100000) == 0x100000) {
@@ -3438,7 +3444,7 @@ int func_800CACD0(int menuState, int arg1)
         }
 
         if (vs_battle_menuItems == 0) {
-            _loadedSubMenu = -1;
+            loadedSubMenu = -1;
 
             func_8007E180(6);
 
@@ -3478,15 +3484,15 @@ int vs_battle_isSpellClassUnlocked(int spellClass)
 {
     int i;
 
-    for (i = 0; i < _spellClassCounts[spellClass]; ++i) {
-        if (vs_main_actions[_spellIds[spellClass][i]].unlocked) {
+    for (i = 0; i < spellClassCounts[spellClass]; ++i) {
+        if (vs_main_actions[spellIds[spellClass][i]].unlocked) {
             return 1;
         }
     }
     return 0;
 }
 
-int _breakArtsUnlocked(void)
+int breakArtsUnlocked(void)
 {
     int i;
     for (i = 0; i < 4; ++i) {
@@ -3503,7 +3509,7 @@ int _breakArtsUnlocked(void)
 int vs_battle_chainAbilitiesUnlocked(int defense)
 {
     int i;
-    vs_action_t* v0;
+    vs_Action* v0;
 
     for (i = 0; i < 14; ++i) {
         v0 = vs_main_actions;
@@ -3516,7 +3522,7 @@ int vs_battle_chainAbilitiesUnlocked(int defense)
     return 0;
 }
 
-int vs_battle_validateShortcutSelection(int shortcut)
+int validateShortcutSelection(int shortcut)
 {
     int noneUnlocked = 0;
     int menuState = 0;
@@ -3533,7 +3539,7 @@ int vs_battle_validateShortcutSelection(int shortcut)
         menuState = 4;
         break;
     case 6:
-        noneUnlocked = _breakArtsUnlocked() == 0;
+        noneUnlocked = breakArtsUnlocked() == 0;
         menuState = 2;
         break;
     case 7:
@@ -3566,14 +3572,14 @@ void func_800CB114(void)
     }
 }
 
-void func_800CB158(vs_battle_lootListNode* arg0)
+void func_800CB158(vs_LootListNode* arg0)
 {
     D_800EB9C4 = arg0;
     D_800EB9C8 = NULL;
     func_800CACD0(0xC, 2);
 }
 
-void func_800CB18C(vs_battle_loot* arg0)
+void func_800CB18C(vs_Loot* arg0)
 {
     D_800EB9C8 = arg0;
     D_800EB9C4 = NULL;
@@ -3587,7 +3593,7 @@ void func_800CB1C0(int arg0)
     D_800F4EA0 |= 0x400;
 }
 
-void _setArtAndAbilityToUnlock(int art, int battleAbility)
+void setArtAndAbilityToUnlock(int art, int battleAbility)
 {
     vs_battle_unlockedBreakArt = art;
     vs_battle_unlockedBattleAbility = battleAbility;
@@ -3600,7 +3606,7 @@ void func_800CB23C(void)
     D_800F4FDB = 1;
 }
 
-int _dismissAllTextBoxes(void)
+int dismissAllTextBoxes(void)
 {
     int i;
     int var_s1 = 1;
@@ -3614,7 +3620,7 @@ int _dismissAllTextBoxes(void)
     return var_s1;
 }
 
-void vs_battle_displaySceneMessage(int arg0, int arg1, int arg2)
+void displaySceneMessage(int arg0, int arg1, int arg2)
 {
     D_800EB9D8 = vs_main_allocHeapR(112);
     D_800F4E69 = arg2;
@@ -3625,19 +3631,19 @@ void vs_battle_displaySceneMessage(int arg0, int arg1, int arg2)
     vs_battle_initTextBox(7, 0x304, 0, 1, 0, 3, 0, 0);
 
     D_800EB9D8[0] = 0x00F8 | (0x04FB << 16);
-    vs_battle_stringContext.strings[0] = vs_main_actions[arg1].name;
+    vs_battle_printfArgs.strings[0] = vs_main_actions[arg1].name;
 
     if (arg0 == 12) {
         vs_battle_printf((char*)&D_800EB9D8[1],
             (char*)&vs_battle_menuStrings[VS_menuStrings_OFFSET_spellMastered]);
     } else if (arg0 == 11) {
-        vs_battle_textBoxes[7].unk0.unk0_8 = 0;
+        vs_battle_textBoxes[7].unk0.shape = 0;
         vs_battle_printf((char*)&D_800EB9D8[1],
             (char*)&vs_battle_menuStrings[vs_battle_menuStrings[vs_main_actions[arg1].type
                                                                 + 22]]);
     } else {
         if (arg1 != 0) {
-            vs_battle_stringContext.strings[0] = D_800EBF58[(arg1 - 0x1CA) * 2];
+            vs_battle_printfArgs.strings[0] = D_800EBF58[(arg1 - 458) * 2];
         }
         vs_battle_printf((char*)D_800EB9D8, (char*)&D_800EBDDC[D_800EBDDC[arg0]]);
     }
@@ -3687,7 +3693,7 @@ void func_800CB560(void) { vs_battle_lowerScreenUiState = 0; }
 
 char const D_80069998[] = "00:00:00";
 
-void _renderTimer(vs_Gametime_t* value)
+void renderTimer(vs_Gametime* value)
 {
     char sp10[4];
     int i;
@@ -3716,9 +3722,9 @@ void func_800CB660(int arg0) { D_800EB9CC = arg0; }
 
 D_800F18EC_t* func_800CB66C(void) { return &D_800F4E98; }
 
-void _loadScreff2(int arg0)
+void loadScreff2(int arg0)
 {
-    vs_main_CdFile file;
+    vs_Main_CdFile file;
     D_800EB9B4_t* p = D_800EB9B4;
     void* const* new_var;
 
@@ -3744,7 +3750,7 @@ void func_800CB708(void)
     D_800EB9B4_t* temp_s0 = D_800EB9B4;
     if (temp_s0 != NULL) {
         if (temp_s0->unk0 != 0) {
-            _loadScreff2(0);
+            loadScreff2(0);
             return;
         }
         if (*(int*)&temp_s0->unk4 != 0x1000) {
@@ -3764,7 +3770,7 @@ void func_800CB79C(void)
     if (D_800EB9B4 == NULL) {
         D_800EB9B4 = (D_800EB9B4_t*)D_800F4ED8;
         func_8007E180(6);
-        _loadScreff2(1);
+        loadScreff2(1);
     }
 }
 
@@ -3784,7 +3790,7 @@ void func_800CB83C(void)
     int id;
 
     for (id = 7; id != -1; --id) {
-        vs_battle_textBox* box = &vs_battle_textBoxes[id];
+        vs_TextBox* box = &vs_battle_textBoxes[id];
         int state = box->state;
         int duration;
         int scale;
@@ -3799,7 +3805,7 @@ void func_800CB83C(void)
             continue;
         }
 
-        duration = box->unk22;
+        duration = box->animationDuration;
         scale = vs_gametime_tickspeed >> 1;
 
         if (state < 0) {
@@ -3853,7 +3859,7 @@ void func_800CB83C(void)
         switch (box->unk0.unk0_0) {
         case 0:
             if (state < 0) {
-                _renderTextImmediate(box, scale);
+                renderTextImmediate(box, scale);
                 break;
             }
 
@@ -3867,7 +3873,7 @@ void func_800CB83C(void)
 
             goto text;
         case 6:
-            _renderTextImmediate(box, scale);
+            renderTextImmediate(box, scale);
             break;
         case 2:
         case 7:
@@ -3876,9 +3882,9 @@ void func_800CB83C(void)
         default:
         text:
             if (state == duration + 1) {
-                _printVariableWidthFont(box);
+                printVariableWidthFont(box);
             } else if (state < 0) {
-                _printFixedWidthFont(box, scale);
+                printFixedWidthFont(box, scale);
             }
             break;
         case 3:
@@ -3892,33 +3898,33 @@ void func_800CB83C(void)
     ClearOTag(D_800F51B8, 34);
 
     if (vs_battle_lowerScreenUiState == 1) {
-        _renderTimer(&vs_main_battleTimer.time);
+        renderTimer(&vs_main_battleTimer.time);
     }
 
     func_800CB708();
-    vs_battle_keystreamBits(0);
+    vs_battle_getRandBits(0);
 }
 
-void func_800CBBCC(gim_t* image, int clut, u_long* ot)
+void func_800CBBCC(Gim* image, int clut, u_long* ot)
 {
-    int alpha = image->unk3;
+    int alpha = image->brightness;
     int background;
     int quadColor;
     u_short* tiles = &image->imageTable[4];
-    int scale = image->unkC & 0x3FFF;
+    int scale = image->scale & 0x3FFF;
     int columns = image->columns;
     int rows = image->rows;
     int color;
     short* columnX = (short*)(0x1F800400 - (columns + 1) * 2);
     short* rowY = columnX - (rows + 1);
     int i;
-    int j = image->unk8 + 160;
+    int j = image->x + 160;
 
     for (i = 0; i <= columns; ++i) {
         columnX[i] = (((i * 2 - columns) * scale) >> 7) + j;
     }
 
-    j = image->unkA + 120;
+    j = image->y + 120;
 
     for (i = 0; i <= rows; ++i) {
         rowY[i] = (((i * 2 - rows) * scale * 15) >> 13) + j;
@@ -4001,7 +4007,7 @@ void func_800CBBCC(gim_t* image, int clut, u_long* ot)
 
                 v = (v & 0x1F00) * 15;
                 tpage = getTPage(image->unk0_2, 1,
-                    ((image->unk2 - 18) * 64) + ((tile >> 2) & 0x1C0), 256);
+                    ((image->vramSlot - 18) * 64) + ((tile >> 2) & 0x1C0), 256);
 
                 if (scale == ONE) {
                     prim = vs_battle_setSprite(
@@ -4035,12 +4041,12 @@ void func_800CBBCC(gim_t* image, int clut, u_long* ot)
     }
 }
 
-void func_800CC128(gim_t* arg0, int arg1, u_long* arg2)
+void func_800CC128(Gim* arg0, int arg1, u_long* arg2)
 {
     int var_s1;
     int new_var;
 
-    int temp_s0 = arg0->unk3;
+    int temp_s0 = arg0->brightness;
 
     if (temp_s0 == 0x80) {
         func_800CBBCC(arg0, arg1, arg2);
@@ -4063,24 +4069,24 @@ void func_800CC128(gim_t* arg0, int arg1, u_long* arg2)
         ((var_s1 + 0x100) >> 6) | new_var | 0xE1000000;
 }
 
-void func_800CC204(gim_t* image, int clut, u_long* ot)
+void func_800CC204(Gim* image, int clut, u_long* ot)
 {
     short left[240];
     short right[240];
     u_short* tiles = &image->imageTable[4];
     int mode = image->unk0_2;
-    u_short* widths = image->unk18;
-    int page = image->unk2 - 18;
+    u_short* widths = image->widths;
+    int page = image->vramSlot - 18;
     int color = image->unkE;
     int y;
     int column;
-    int end = image->unk3;
-    int x = image->unkC & 0x3FFF;
+    int end = image->brightness;
+    int x = image->scale & 0x3FFF;
 
     if (x == ONE) {
-        image->unk3 = 128;
+        image->brightness = 128;
         func_800CBBCC(image, clut, ot);
-        image->unk3 = end;
+        image->brightness = end;
         return;
     }
 
@@ -4174,7 +4180,7 @@ void func_800CC5C0(u_long* arg0, int arg1)
         arg0, arg1 | 0xE3000000, (arg1 + 0x13F) | 0xE403BC00, arg1 | 0xE5000000);
 }
 
-void func_800CC600(gim_t* image, int clut, u_long* ot)
+void func_800CC600(Gim* image, int clut, u_long* ot)
 {
     int alpha;
     int inverse;
@@ -4193,8 +4199,8 @@ void func_800CC600(gim_t* image, int clut, u_long* ot)
         fb = 320;
     }
 
-    alpha = image->unk3;
-    page = (image->unk2 + image->unk0_9 - 16) * 64;
+    alpha = image->brightness;
+    page = (image->vramSlot + image->pageCount - 16) * 64;
 
     if (alpha == 128) {
         func_800CBBCC(image, clut, ot);
@@ -4207,7 +4213,7 @@ void func_800CC600(gim_t* image, int clut, u_long* ot)
     alpha += 7;
     columns = image->columns;
     height = image->rows * 15;
-    top = image->unkA + 120 - (height >> 1);
+    top = image->y + 120 - (height >> 1);
 
     for (column = 0; column < columns; ++column) {
         u_long* prim = vs_battle_setSprite(
@@ -4230,7 +4236,7 @@ void func_800CC600(gim_t* image, int clut, u_long* ot)
             }
         }
 
-        x = image->unkA + 120;
+        x = image->y + 120;
 
         for (y = 0; y < image->rows; ++y) {
             int tile = tiles[y * columns + column];
@@ -4246,7 +4252,7 @@ void func_800CC600(gim_t* image, int clut, u_long* ot)
             prim = vs_battle_setSprite(
                 128, (((y * 30 - height) >> 1) + x - top) << 16, vs_getWH(64, 15), ot);
             uv = ((tile * 64) & 192) | ((atlas & 31) * 15 << 8) | clut;
-            tx = ((image->unk2 - 18) * 64) + (atlas & 448);
+            tx = ((image->vramSlot - 18) * 64) + (atlas & 448);
             prim[4] = uv;
             prim[1] = _get_mode(0, 0, getTPage(mode, 0, tx, 256));
         }
@@ -4274,10 +4280,10 @@ void func_800CC600(gim_t* image, int clut, u_long* ot)
 
 void func_800CCA90(int arg0)
 {
-    gim_t* gim = &D_800EB9BC[arg0];
-    int clut = (gim->unk2 - 16) << 6;
+    Gim* gim = &gims[arg0];
+    int clut = (gim->vramSlot - 16) << 6;
 
-    if ((gim->unk3 == 0) && (gim->unk0_3 != 2)) {
+    if ((gim->brightness == 0) && (gim->drawMode != 2)) {
         return;
     }
 
@@ -4292,12 +4298,12 @@ void func_800CCA90(int arg0)
     }
 
     D_800F51C8 = 0;
-    D_800EC25C[gim->unk0_3](gim, clut << 16,
-        gim->unkC & 0x4000 ? vs_scratch.unk4 + 0x1FF8 - arg0 * 4
-                           : vs_scratch.unk8 + 0x18 - arg0 * 8);
+    D_800EC25C[gim->drawMode](gim, clut << 16,
+        gim->scale & 0x4000 ? vs_scratch.unk4 + 0x1FF8 - arg0 * 4
+                            : vs_scratch.unk8 + 0x18 - arg0 * 8);
 }
 
-int vs_battle_decreaseMiscCount(int miscId)
+int decreaseMiscCount(int miscId)
 {
     int i;
 
@@ -4339,10 +4345,10 @@ void vs_battle_rMemcpy(void* dest, void const* src, int size)
 
 int vs_battle_toBCD(int value) { return (value % 10) | ((value / 10) * 16); }
 
-u_int vs_battle_keystreamBits(int value)
+u_int vs_battle_getRandBits(int value)
 {
-    u_int temp_a1 = _keystreamState;
-    _keystreamState = temp_a1 * 0x19660D;
+    u_int temp_a1 = randState;
+    randState = temp_a1 * 0x19660D;
     return temp_a1 >> (32 - value);
 }
 
@@ -4387,35 +4393,35 @@ void vs_battle_renderImage(int xy, void* buffer, int wh)
     LoadImage(rect, buffer);
 }
 
-vs_battle_textBox* vs_battle_getTextBox(int id) { return &vs_battle_textBoxes[id]; }
+vs_TextBox* vs_battle_getTextBox(int id) { return &vs_battle_textBoxes[id]; }
 
-textOffset func_800CCE10(int arg0, int arg1, int arg2, int arg3)
+TextOffset func_800CCE10(int arg0, int arg1, int arg2, int arg3)
 {
-    textOffset ret;
-    textOffset* p = &D_800EC284[arg0][((arg1 >> 2) & 3) == 1 || ((arg1 >> 2) & 3) == 2];
+    TextOffset ret;
+    TextOffset* p = &D_800EC284[arg0][((arg1 >> 2) & 3) == 1 || ((arg1 >> 2) & 3) == 2];
     int offsetX = p->x;
     int offsetY = p->y;
-    int alignment = p->alignment;
+    int flip = p->flip;
 
     if ((arg1 >> 2) & 1) {
         offsetX = -offsetX;
-        alignment ^= 2;
+        flip ^= 2;
     }
 
     ret.x = offsetX - ((arg2 * 12 + 10) >> 1);
     ret.y = offsetY - ((arg3 * 13 + 4) >> 1);
-    ret.alignment = alignment;
-    ret.flags = p->flags;
+    ret.flip = flip;
+    ret.tail = p->tail;
     return ret;
 }
 
 void vs_battle_initTextBox(
     int id, int flags, int x, int y, int charsPerLine, int h, int centerX, int centerY)
 {
-    vs_battle_textBox* box = &vs_battle_textBoxes[id];
+    vs_TextBox* box = &vs_battle_textBoxes[id];
 
     *(int*)&box->unk0 = flags & 0xFFFF;
-    box->unk0.unk0_24 = 32;
+    box->unk0.speakerActor = 32;
     box->x = x;
     box->y = y;
     box->unk4 = 0;
@@ -4423,14 +4429,14 @@ void vs_battle_initTextBox(
     box->speed = 0;
     box->xIndent = x + 5;
     box->yIndent = y + 3;
-    box->unk2E = 0;
+    box->speakerAnimation = 0;
     box->brightness = 0x80;
     box->charsPerLine = charsPerLine;
     box->lineCount = h;
     box->centerX = centerX;
     box->centerY = centerY;
     // looks up { 10, 20, 10, 8 };
-    box->unk22 = ((0x45A5 >> ((box->unk0.unk0_4 * 4))) & 0xF) * 2;
+    box->animationDuration = ((0x45A5 >> ((box->unk0.unk0_4 * 4))) & 0xF) * 2;
 
     if (box->state <= 0) {
         box->state = 1;
@@ -4439,7 +4445,7 @@ void vs_battle_initTextBox(
     switch (box->unk0.unk0_0) {
     case 1:
         box->unk0.unk0_0 = 7;
-        box->unk0.unk0_8 = 0;
+        box->unk0.shape = 0;
         return;
     case 4:
         box->charsPerLine = 0x18;
@@ -4450,22 +4456,22 @@ void vs_battle_initTextBox(
         return;
     case 5:
         box->unk0.unk0_0 = 7;
-        box->unk0.unk0_8 = 2;
+        box->unk0.shape = 2;
         return;
     }
 }
 
 int vs_battle_dismissTextBox(int id)
 {
-    vs_battle_textBox* box = &vs_battle_textBoxes[id];
+    vs_TextBox* box = &vs_battle_textBoxes[id];
 
-    if (!(box->unk0.unk0_24 & 0x20)) {
-        func_800AAD4C(box->unk0.unk0_24, 0, 0, 0);
+    if (!(box->unk0.speakerActor & 0x20)) {
+        func_800AAD4C(box->unk0.speakerActor, 0, 0, 0);
     }
 
     if (box->state != 0) {
         if (box->state > 0) {
-            box->unk22 = 8;
+            box->animationDuration = 8;
             box->state = -1;
             box->unk0.unk0_4 = 0;
         }
@@ -4486,7 +4492,7 @@ void func_800CD0FC(int arg0, u_int arg1)
 // https://decomp.me/scratch/qBmPY
 void func_800CD158(int id)
 {
-    vs_battle_textBox* box = &vs_battle_textBoxes[id];
+    vs_TextBox* box = &vs_battle_textBoxes[id];
     int y = box->y;
     u_long* ot = D_800F51B8 + id * 4 + 1;
     int edge = box->unk2A;
@@ -4534,8 +4540,8 @@ void func_800CD158(int id)
         vs_battle_addTile(ot, vs_getRGB0(primTile, 0, 0, 0), vs_getXY(0, y),
             (0xF00000 - (y << 16)) | 320);
     }
-    if (box->state == box->unk22 + 1) {
-        func_800CD0FC(y - 7, box->unk0.unk0_8 - 1);
+    if (box->state == box->animationDuration + 1) {
+        func_800CD0FC(y - 7, box->unk0.shape - 1);
     }
 }
 
@@ -4561,8 +4567,8 @@ void func_800CD3E4(int index)
 {
     u_long* ot = D_800F51B8 + index * 4;
     u_int part;
-    vs_battle_textBox* box = &vs_battle_textBoxes[index];
-    u_short* verts = (u_short*)D_800EB588[box->unk0.unk0_8];
+    vs_TextBox* box = &vs_battle_textBoxes[index];
+    u_short* verts = (u_short*)D_800EB588[box->unk0.shape];
     u_char* shape;
     int header;
     int* points = (int*)0x1F800088;
@@ -4584,9 +4590,9 @@ void func_800CD3E4(int index)
     }
 
     out = (short*)0x1F800088;
-    flip = box->unk0.unk0_6;
+    flip = box->unk0.flip;
     shape = (u_char*)verts;
-    part = ((int*)shape)[box->unk0.unk0_12];
+    part = ((int*)shape)[box->unk0.tail];
     verts = (u_short*)(shape + (shape[1] + 1) * 4);
     count = shape[2];
     header = *(int*)shape;
@@ -4596,7 +4602,7 @@ void func_800CD3E4(int index)
         *out++ = x + (((v & 0xFF) * w) >> 8);
         *out++ = y + (((v >> 8) * h) >> 8);
     }
-    if ((u_int)(box->unk0.unk0_12 - 1) < ((header >> 8) & 0xFF)) {
+    if ((u_int)(box->unk0.tail - 1) < ((header >> 8) & 0xFF)) {
         v = func_800CD3A0(verts[part & 0xFF], flip);
 
         for (; i < (header & 0xFF); ++i) {
@@ -4626,10 +4632,10 @@ void func_800CD3E4(int index)
         if (n == (part & 0xFF)) {
             v = 0;
 
-            for (k = 0; k < box->unk0.unk0_12; ++k) {
+            for (k = 0; k < box->unk0.tail; ++k) {
                 v += shape[k * 4 + 2];
             }
-            for (k = 0; k < shape[box->unk0.unk0_12 * 4 + 2]; ++k) {
+            for (k = 0; k < shape[box->unk0.tail * 4 + 2]; ++k) {
                 vs_battle_addTile(
                     ot + 2, vs_getRGB0(primLineF2, 48, 48, 48), points[n], points[v + k]);
                 n = v + k;
@@ -4656,7 +4662,7 @@ void func_800CD3E4(int index)
         for (k = 0; k < shape[n * 4 + 3]; ++k) {
             int quad;
 
-            if ((n != 0) && (n != box->unk0.unk0_12)) {
+            if ((n != 0) && (n != box->unk0.tail)) {
                 verts += 2;
                 continue;
             }
@@ -4740,7 +4746,7 @@ void func_800CD3E4(int index)
 #undef POINT_X
 #undef POINT_Y
 
-void func_800CDCBC(effectTrailState* t, int head, int tail)
+void func_800CDCBC(EffectTrailState* t, int head, int tail)
 {
     long xy[4];
 
@@ -4802,7 +4808,7 @@ void func_800CDCBC(effectTrailState* t, int head, int tail)
 
 int func_800CE174(func_800D4910_t* node, u_int mode, int config)
 {
-    effectTrailState* t = node->unk8;
+    EffectTrailState* t = node->unk8;
     int result = 1;
 
     switch (mode) {
@@ -5015,7 +5021,7 @@ void func_800CE8F4(D_800F53B8_t* arg0)
 int func_800CE9B0(void)
 {
     UNUSED int _[10];
-    vs_main_CdFile sp38;
+    vs_Main_CdFile sp38;
     D_800F53B8_t* temp_s1;
     D_800F53B8_t* var_s0;
     int i;
@@ -5030,7 +5036,7 @@ int func_800CE9B0(void)
         break;
 
     case 6:
-        if (vs_battle_loadEffPurge() == 0) {
+        if (loadEffPurge() == 0) {
             vs_main_wait();
             vs_effpurge_exec();
             if ((D_800F5230.effectId != 0) && (vs_battle_pFileLoadContext.lba == 0)) {
@@ -5062,7 +5068,7 @@ int func_800CE9B0(void)
 
     case 3:
         if (func_800D7BF8() == 0) {
-            func_800D8060(vs_battle_pfileBuf);
+            func_800D8060(pfileBuf);
             func_800CF478(5);
 
             D_800F5224 = D_800F569C->block9Data->unk14;
@@ -5073,7 +5079,7 @@ int func_800CE9B0(void)
             }
 
             D_800F54A8 = 1;
-            sp38.lba = vs_battle_getMainMenuLba();
+            sp38.lba = getMainMenuLba();
             sp38.size = 0;
             D_800F5218 = vs_main_allocateCdQueueSlot(&sp38);
             vs_main_cdEnqueue(D_800F5218, NULL);
@@ -5286,7 +5292,7 @@ int func_800CF060(void)
     return temp_s1 | temp_s0;
 }
 
-int func_800CF0E8(actionEffectRequest* arg0, int arg1, int arg2)
+int func_800CF0E8(ActionEffectRequest* arg0, int arg1, int arg2)
 {
     D_800F5230 = *arg0;
 
@@ -5321,7 +5327,7 @@ void func_800CF1A8(void)
     }
 }
 
-char func_800CF218(actionEffectRequest* arg0, int arg1, int arg2)
+char func_800CF218(ActionEffectRequest* arg0, int arg1, int arg2)
 {
     D_800F53B8_t2 spawn;
     UNUSED int _[4];
@@ -5374,7 +5380,7 @@ char func_800CF218(actionEffectRequest* arg0, int arg1, int arg2)
     return token;
 }
 
-int func_800CF3F8(actionEffectRequest* arg0, int arg1)
+int func_800CF3F8(ActionEffectRequest* arg0, int arg1)
 {
     UNUSED int _[4];
     func_800D7890(0);
@@ -5383,7 +5389,7 @@ int func_800CF3F8(actionEffectRequest* arg0, int arg1)
     return func_800CF218(arg0, 0, arg1);
 }
 
-int func_800CF458(actionEffectRequest* arg0, int arg1, int arg2)
+int func_800CF458(ActionEffectRequest* arg0, int arg1, int arg2)
 {
     return func_800CF218(arg0, arg1, arg2);
 }
@@ -5510,7 +5516,7 @@ void func_800CF70C(D_800F53B8_t* arg0, func_800D4910_t* arg1)
 
 void func_800CF7A8(int arg0, int arg1, int arg2, int arg3)
 {
-    actionEffectRequest request;
+    ActionEffectRequest request;
 
     request.effectId = 54;
     request.count = 1;
@@ -5541,7 +5547,7 @@ void func_800CF830(int arg0, int arg1)
 
 void func_800CF8BC(void)
 {
-    actionEffectRequest request;
+    ActionEffectRequest request;
 
     request.effectId = 56;
     request.count = 1;
@@ -5669,8 +5675,8 @@ int vs_battle_randUniformInt(int arg0, int arg1)
     return arg0;
 }
 
-UNUSED int _absMax3(int arg0, int arg1, int arg2);
-int _absMax3(int arg0, int arg1, int arg2)
+UNUSED int absMax3(int arg0, int arg1, int arg2);
+int absMax3(int arg0, int arg1, int arg2)
 {
     int var_v0;
     int new_var = 0;
@@ -5690,8 +5696,8 @@ int _absMax3(int arg0, int arg1, int arg2)
     return arg0;
 }
 
-UNUSED int _absMax2(int arg0, int arg1);
-int _absMax2(int arg0, int arg1)
+UNUSED int absMax2(int arg0, int arg1);
+int absMax2(int arg0, int arg1)
 {
     int abs0 = arg0 >= 0 ? arg0 : -arg0;
 
@@ -5753,8 +5759,8 @@ int func_800CFE1C(short* arg0, int arg1)
     return (((arg0[1] - new_var) * arg1) >> 7) + new_var;
 }
 
-UNUSED void _addSVectorToVector(SVECTOR* svec, VECTOR* vec, VECTOR* out);
-void _addSVectorToVector(SVECTOR* svec, VECTOR* vec, VECTOR* out)
+UNUSED void addSVectorToVector(SVECTOR* svec, VECTOR* vec, VECTOR* out);
+void addSVectorToVector(SVECTOR* svec, VECTOR* vec, VECTOR* out)
 {
     int v = svec->vy;
     out->vx = vec->vx + svec->vx;
@@ -6053,12 +6059,12 @@ void func_800D0B30(func_800D0B30_t* arg0, SVECTOR* arg1, func_800D0B30_t2* arg2)
 
 void func_800D0C60(D_800F53B8_t* arg0, func_800D0548_arg1* arg1)
 {
-    vs_battle_actorPosition sp10;
+    vs_ActorPosition sp10;
     int sp20[2];
 
     if (arg1->actor < 0x10U) {
         func_800A1720(arg1->actor, arg1->bone, &arg1->attachment, sp20);
-        func_800A1108(arg1->actor, &sp10);
+        vs_battle_getActorPosition(arg1->actor, &sp10);
         arg1->saved.pad = sp10.unk0.unk4.pad;
         return;
     }
@@ -6164,7 +6170,7 @@ void func_800D0D08(D_800F53B8_t* arg0)
 void func_800D1104(int arg0)
 {
     int i;
-    pFileCurveBlock* temp_a2 = D_800F569C->curveBlock;
+    PFileCurveBlock* temp_a2 = D_800F569C->curveBlock;
 
     for (i = 0; i < temp_a2->count; ++i) {
         D_800F5330[i + 1] = D_800F569C->curves[i][arg0 % temp_a2->curveSizes[i]];
@@ -6173,7 +6179,7 @@ void func_800D1104(int arg0)
 
 int vs_battle_sampleCurve(int curveId, int distance)
 {
-    pFileCurveBlock* block = D_800F569C->curveBlock;
+    PFileCurveBlock* block = D_800F569C->curveBlock;
 
     if ((curveId != 0) && (block->count >= curveId)) {
         return D_800F569C->curves[curveId - 1][distance % block->curveSizes[curveId - 1]];
@@ -6185,7 +6191,7 @@ int vs_battle_sampleCurve(int curveId, int distance)
 int func_800D11F4(int arg0, int arg1)
 {
     u_char* buf = D_800F569C->block11Data;
-    pFileBlock11* table = (pFileBlock11*)buf;
+    PFileBlock11* table = (PFileBlock11*)buf;
     int offset;
     int v;
 
@@ -6229,7 +6235,7 @@ int func_800D12D8(int arg0)
     return sum;
 }
 
-int vs_battle_lerpRatio(int arg0, int arg1, int arg2, int arg3)
+static int lerpRatio(int arg0, int arg1, int arg2, int arg3)
 {
     int var_v0 = (arg1 - arg0) * ((arg2 * ONE) / arg3);
     return arg0 + var_v0 / ONE;
@@ -6271,7 +6277,7 @@ void func_800D155C(int arg0, int arg1, int arg2, int arg3, int arg4, int* arg5)
          >> 12;
 }
 
-int vs_battle_lerp(int arg0, int arg1, int arg2)
+static int lerp(int arg0, int arg1, int arg2)
 {
     int var_v0 = (arg1 - arg0) * arg2;
     return arg0 + (var_v0 / (ONE * 2));
@@ -6279,9 +6285,9 @@ int vs_battle_lerp(int arg0, int arg1, int arg2)
 
 void func_800D169C(SVECTOR* arg0, SVECTOR* arg1, int arg2, SVECTOR* arg3)
 {
-    arg3->vx = vs_battle_lerp(arg0->vx, arg1->vx, arg2);
-    arg3->vy = vs_battle_lerp(arg0->vy, arg1->vy, arg2);
-    arg3->vz = vs_battle_lerp(arg0->vz, arg1->vz, arg2);
+    arg3->vx = lerp(arg0->vx, arg1->vx, arg2);
+    arg3->vy = lerp(arg0->vy, arg1->vy, arg2);
+    arg3->vz = lerp(arg0->vz, arg1->vz, arg2);
 }
 
 void func_800D1718(SVECTOR* arg0, SVECTOR* arg1, int arg2, int arg3, SVECTOR* arg4)
@@ -6296,9 +6302,9 @@ void func_800D1778(SVECTOR* arg0, SVECTOR* arg1, int arg2, int arg3, SVECTOR* ar
 
 void func_800D17A8(VECTOR* arg0, VECTOR* arg1, int arg2, VECTOR* arg3)
 {
-    arg3->vx = vs_battle_lerp(arg0->vx, arg1->vx, arg2);
-    arg3->vy = vs_battle_lerp(arg0->vy, arg1->vy, arg2);
-    arg3->vz = vs_battle_lerp(arg0->vz, arg1->vz, arg2);
+    arg3->vx = lerp(arg0->vx, arg1->vx, arg2);
+    arg3->vy = lerp(arg0->vy, arg1->vy, arg2);
+    arg3->vz = lerp(arg0->vz, arg1->vz, arg2);
 }
 
 void func_800D1824(VECTOR* arg0, VECTOR* arg1, int arg2, int arg3, VECTOR* arg4)
@@ -6313,12 +6319,12 @@ void func_800D1884(VECTOR* arg0, VECTOR* arg1, int arg2, int arg3, VECTOR* arg4)
 
 int func_800D18B4(int arg0, int arg1, int arg2, int arg3)
 {
-    return vs_battle_lerp(arg0, arg1, ONE - rcos((arg3 * ONE / 2) / arg2));
+    return lerp(arg0, arg1, ONE - rcos((arg3 * ONE / 2) / arg2));
 }
 
 int func_800D1904(int arg0, int arg1, int arg2, int arg3)
 {
-    return vs_battle_lerp(arg0, arg1, (arg3 * (ONE * 2)) / arg2);
+    return lerp(arg0, arg1, (arg3 * (ONE * 2)) / arg2);
 }
 
 void func_800D1930(void)
@@ -6365,9 +6371,9 @@ void func_800D197C(VECTOR* position, VECTOR* target, MATRIX* view)
 
 void func_800D1B18(D_800F54D8_t* arg0)
 {
-    vs_battle_getCameraPosition(&arg0->position);
-    vs_battle_getCameraLookAt(&arg0->lookAt);
-    arg0->roll = vs_battle_getCameraRoll() + ONE * 8;
+    getCameraPosition(&arg0->position);
+    getCameraLookAt(&arg0->lookAt);
+    arg0->roll = getCameraRoll() + ONE * 8;
     arg0->nearClip = vs_main_nearClip;
     arg0->projectionDistance = vs_main_projectionDistance;
     arg0->farClip = vs_scratch.camera.farClip;
@@ -6396,16 +6402,16 @@ void func_800D1B80(D_800F54D8_t* camera)
     offset.vz += rcos(yaw) * (horizontal >> 12);
     setVector(&position, camera->position.vx + offset.vx, camera->position.vy + offset.vy,
         camera->position.vz + offset.vz);
-    vs_battle_setCameraPosition(&position);
+    setCameraPosition(&position);
     setVector(&position, camera->lookAt.vx + offset.vx, camera->lookAt.vy + offset.vy,
         camera->lookAt.vz + offset.vz);
-    vs_battle_setCameraLookAt(&position);
-    vs_battle_setCameraRoll(camera->roll - 32768 + camera->unk2C);
-    vs_battle_setNearClip(camera->nearClip);
+    setCameraLookAt(&position);
+    setCameraRoll(camera->roll - 32768 + camera->unk2C);
+    setNearClip(camera->nearClip);
     vs_battle_setProjectionDistance(camera->projectionDistance);
     // BUG: arg1 is not passed, so it holds whatever $a1 was left with by the previous
     // call and whether the far clip reaches func_80098194 is unpredictable
-    ((void (*)(int))vs_battle_setFarClip)(camera->farClip);
+    ((void (*)(int))setFarClip)(camera->farClip);
     func_8007ACB0();
 }
 
@@ -6732,7 +6738,7 @@ void func_800D2904(D_800F53B8_t* arg0)
     arg0->unk8 = 0;
 }
 
-void vs_battle_addVector(VECTOR* arg0, VECTOR* arg1, VECTOR* arg2)
+static void addVectors(VECTOR* arg0, VECTOR* arg1, VECTOR* arg2)
 {
     arg2->vx = arg0->vx + arg1->vx;
     arg2->vy = arg0->vy + arg1->vy;
@@ -7728,20 +7734,20 @@ void func_800D52A4(func_800D2904_t* node)
     }
 }
 
-void* _getPFileBlock3section(pFileBlock3* arg0, int arg1)
+void* getPFileBlock3section(PFileBlock3* arg0, int arg1)
 {
     return (char*)arg0 + arg0->offsets[arg1];
 }
 
-void* func_800D5564(pFileBlock3* arg0, int arg1, int arg2)
+void* func_800D5564(PFileBlock3* arg0, int arg1, int arg2)
 {
-    func_800D55A4_t* entry = _getPFileBlock3section(arg0, arg1);
+    func_800D55A4_t* entry = getPFileBlock3section(arg0, arg1);
     return (char*)arg0 + entry->unk4[arg2].unk2;
 }
 
 void func_800D55A4(D_800F53B8_t* arg0, int arg1, int arg2)
 {
-    func_800D55A4_t* entry = _getPFileBlock3section(D_800F569C->block3Data, arg1);
+    func_800D55A4_t* entry = getPFileBlock3section(D_800F569C->block3Data, arg1);
     D_800F53B8_t4* p;
     int count = 0;
     int i;
@@ -7928,7 +7934,7 @@ int func_800D5D74(D_800F53B8_t* arg0, func_800D5780_t* arg1)
     func_800D5D74_t* temp_a3 = (func_800D5D74_t*)(arg1->unk6 * 8 + (u_int)arg1->unk0);
 
     if (temp_a3->unk0_0 == arg0->unkD1C.unk30->unk2) {
-        func_800CF694(arg0, vs_battle_effectRenderers[temp_a3->effectRenderer],
+        func_800CF694(arg0, effectRenderers[temp_a3->effectRenderer],
             (temp_a3->unk0_9 + temp_a3->unk0_21 * 256) | (temp_a3->unk4 << 0x10));
         return func_800D5780(arg1);
     }
@@ -7974,7 +7980,7 @@ int func_800D5E00(D_800F53B8_t* actor, func_800D5780_t* event)
     if (play) {
         u_char* sound = D_800F569C->block11Data;
         vs_main_setVibrationBank(
-            sound + *(((data[event->unk6] >> 9) & 31) + ((pFileBlock11*)sound)->offsets),
+            sound + *(((data[event->unk6] >> 9) & 31) + ((PFileBlock11*)sound)->offsets),
             255, 1);
     }
 
@@ -7988,7 +7994,7 @@ int func_800D5F8C(D_800F53B8_t* arg0, func_800D5780_t* arg1)
 
     if (temp_s0->unk0 == arg0->unkD1C.unk30->unk2) {
         if ((arg0->unkD1C.unkC.type == 4)
-            && (func_800A0BE0(arg0->unkD1C.unkC.value.actor.actor) & 2)) {
+            && (vs_battle_getActorFlags(arg0->unkD1C.unkC.value.actor.actor) & 2)) {
             func_8007B29C(temp_s0->unk7, temp_s0->unk2,
                 arg0->unkD1C.unkC.value.actor.actor, temp_s0->unk4 - 0x80,
                 temp_s0->unk5 - 0x80, temp_s0->unk6 - 0x80);
@@ -8008,18 +8014,18 @@ int func_800D6048(D_800F53B8_t* arg0, func_800D5780_t* arg1, int arg2)
     }
 
     if (arg2 != 0) {
-        actionEffectRequest* effect = &D_800F5230;
+        ActionEffectRequest* effect = &D_800F5230;
 
         for (i = 0; i < D_800F5230.count; ++i) {
             if ((effect->targets[i].type == 4)
-                && (func_800A0BE0(effect->targets[i].value.actor.actor) & 2)) {
+                && (vs_battle_getActorFlags(effect->targets[i].value.actor.actor) & 2)) {
                 func_8007B29C(entry->unk7, entry->unk2,
                     effect->targets[i].value.actor.actor, entry->unk4 - 128,
                     entry->unk5 - 128, entry->unk6 - 128);
             }
         }
     } else if ((arg0->unkD1C.unk24.type == 4)
-               && (func_800A0BE0(arg0->unkD1C.unk24.value.actor.actor) & 2)) {
+               && (vs_battle_getActorFlags(arg0->unkD1C.unk24.value.actor.actor) & 2)) {
         func_8007B29C(entry->unk7, entry->unk2, arg0->unkD1C.unk24.value.actor.actor,
             entry->unk4 - 128, entry->unk5 - 128, entry->unk6 - 128);
     }
@@ -8033,7 +8039,7 @@ int func_800D61AC(D_800F53B8_t* arg0, func_800D5780_t* arg1)
 
     if (temp_s2->unk0 == arg0->unkD1C.unk30->unk2) {
         for (i = 0; i < D_800F5230.otherCount; ++i) {
-            if (func_800A0BE0(D_800F5230.others[i]) & 2) {
+            if (vs_battle_getActorFlags(D_800F5230.others[i]) & 2) {
                 func_8007B29C(temp_s2->unk7, temp_s2->unk2, D_800F5230.others[i],
                     temp_s2->unk4 - 0x80, (temp_s2->unk5 - 0x80), (temp_s2->unk6 - 0x80));
             }

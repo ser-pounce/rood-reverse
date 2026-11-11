@@ -1,9 +1,9 @@
 #include "common.h"
 #include "38C1C.h"
-#include "30DB0.h"
+#include "30DB0Private.h"
 #include "3A1A0.h"
-#include "40564.h"
-#include "44F14.h"
+#include "40564Private.h"
+#include "44F14Private.h"
 #include "actor.h"
 #include "entity.h"
 #include "src/SLUS_010.40/31724.h"
@@ -188,7 +188,7 @@ int func_800A17BC(int arg0, int arg1, void* arg2, int* arg3)
 {
     D_800F4538_t* actor;
     D_800F4538_t* obj;
-    vs_battle_wepModels_t* model;
+    vs_WepModels* model;
     UNUSED int _[22];
 
     *(MATRIX*)arg2 = *func_800A1DE8(arg0, arg1, &D_800F49B8);
@@ -342,7 +342,7 @@ int func_800A1C10(int actorId, int bone, SVECTOR* result, int endpoint)
     local.vz = 0;
 
     if ((bone & 0xF0) == 0x40) {
-        vs_battle_wepModels_t* weapon = vs_battle_wepModels[actorId * 2];
+        vs_WepModels* weapon = vs_battle_wepModels[actorId * 2];
 
         bone -= 0x3F;
 
@@ -384,7 +384,7 @@ MATRIX* func_800A1DE8(int actorId, int bone, MATRIX* unused)
 
         scratch->matrix = object->bones[bone];
     } else if ((bone & 0xF0) == 0x40) {
-        vs_battle_wepModels_t* weapon = vs_battle_wepModels[actorId * 2];
+        vs_WepModels* weapon = vs_battle_wepModels[actorId * 2];
 
         if (weapon == NULL) {
             return NULL;
@@ -560,7 +560,7 @@ void func_800A208C(
 
     actor->unk1816 = frames;
     actor->unk181A = 2;
-    func_800A0204(actor->unk0.unkF, animation, 0, 4);
+    vs_battle_setActorAnimation(actor->unk0.unkF, animation, 0, 4);
     actor->unk0.unkA_0 = 2;
     func_800A9EB4(actor->unk0.unkF, facing, 8);
 }
@@ -609,7 +609,7 @@ void func_800A249C(int arg0, int arg1)
         }
     }
 
-    func_800A0204(arg0, var_a2, 0, 0xA);
+    vs_battle_setActorAnimation(arg0, var_a2, 0, 0xA);
 }
 
 void func_800A2574(int arg0, short arg1)
@@ -649,7 +649,7 @@ void func_800A25EC(D_800F4538_t* actor)
 
         if (height > actor->unk0.position.vy && height - actor->unk0.position.vy >= 64) {
             setVector(&actor->unk0.unk34, 0, 0, 0);
-            func_800A0204(actor->unk0.unkF, 47, 0, 4);
+            vs_battle_setActorAnimation(actor->unk0.unkF, 47, 0, 4);
             actor->unk181A = 0;
             actor->unk0.unkA_3 = 0;
             actor->unk0.unk9_6 = 0;
@@ -695,7 +695,7 @@ void func_800A2790(D_800F4538_t* actor)
     }
 
     if (actor->animationId != animation) {
-        func_800A0204(actor->unk0.unkF, animation, 0, 4);
+        vs_battle_setActorAnimation(actor->unk0.unkF, animation, 0, 4);
     }
 }
 

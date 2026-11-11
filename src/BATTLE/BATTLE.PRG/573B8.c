@@ -1,7 +1,8 @@
 #include "common.h"
-#include "573B8.h"
-#include "146C.h"
-#include "4DEA8.h"
+#include "actorPrivate.h"
+#include "573B8Private.h"
+#include "146CPrivate.h"
+#include "4DEA8Private.h"
 #include "battleUi.h"
 #include "src/SLUS_010.40/cd.h"
 #include "src/SLUS_010.40/pad.h"
@@ -14,8 +15,8 @@ typedef struct {
     signed char power;
 } D_800F4B28_t;
 
-extern int (*_opcodeFunctionTable[])(u_char*, short);
-extern vs_main_CdFile D_800F4BF0;
+extern int (*normalOpcodeTable[])(u_char*, short);
+extern vs_Main_CdFile D_800F4BF0;
 
 int func_800BFE34(u_char*);
 void func_800C0150(void);
@@ -28,19 +29,19 @@ short func_800BFBB8(u_char** arg0, short arg1)
     int ret;
     u_char* script = *arg0;
 
-    if ((arg1 == 0) && (D_800F4C2C == 1)
-        && ((vs_main_buttonsPressed.all & PADstart) || (D_800F4C68 != 0))) {
-        D_800F4C68 = 0;
+    if ((arg1 == 0) && (scriptSkipMode == vs_battle_scriptSkippable)
+        && ((vs_main_buttonsPressed.all & PADstart) || (skipRequested != 0))) {
+        skipRequested = 0;
         D_800F4C58[3] = 0;
         D_800F4C58[2] = 0;
         D_800F4C58[1] = 0;
         D_800F4C58[0] = 0;
-        vs_battle_textBoxStatuses[3] = 0;
-        vs_battle_textBoxStatuses[2] = 0;
-        vs_battle_textBoxStatuses[1] = 0;
-        vs_battle_textBoxStatuses[0] = 0;
+        textBoxStatuses[3] = 0;
+        textBoxStatuses[2] = 0;
+        textBoxStatuses[1] = 0;
+        textBoxStatuses[0] = 0;
 
-        if (D_800F4C20 != 0) {
+        if (stopMusicOnSkip != 0) {
             vs_main_stopMusicSlot(0);
         }
 
@@ -50,14 +51,14 @@ short func_800BFBB8(u_char** arg0, short arg1)
         func_8007C46C(0, 0xFF, 0);
         vs_battle_disableDispMask();
         vs_battle_setStateFlag(0xA8, 1);
-        D_800F4C2C = 2;
+        scriptSkipMode = vs_battle_scriptSkipping;
     }
 
     while (1) {
-        if (D_800F4C2C != 2) {
-            ret = _opcodeFunctionTable[*script](script, arg1);
+        if (scriptSkipMode != vs_battle_scriptSkipping) {
+            ret = normalOpcodeTable[*script](script, arg1);
         } else {
-            ret = D_800F4C28[*script](script, arg1);
+            ret = vs_battle_skipOpcodeTable[*script](script, arg1);
         }
 
         switch (ret) {
@@ -102,7 +103,7 @@ void func_800BFD9C(void)
     func_800BBDDC();
 }
 
-short vs_battle_getShort(u_char* arg0)
+short getShort(u_char* arg0)
 {
     if (!((long)arg0 & 1)) {
         return *(short*)arg0;
@@ -112,7 +113,7 @@ short vs_battle_getShort(u_char* arg0)
 
 int func_800BFE34(u_char* arg0) { return D_800E9C30[arg0[0]]; }
 
-int func_800BFE50(u_short arg0)
+int resolveActorId(u_short arg0)
 {
     switch (arg0 >> 12) {
     case 0:
@@ -182,9 +183,9 @@ int func_800BFEBC(short mode, short frame, short duration)
 void func_800C00E8(int arg0, void* arg1)
 {
     D_800F4BF0.size = VS_0000_EVT_SIZE;
-    D_800F4BF0.lba = (_evtFile * 3) + VS_0000_EVT_LBA; // .EVT files must be sequential
-    D_800F4BBC = vs_main_allocateCdQueueSlot(&D_800F4BF0);
-    vs_main_cdEnqueue(D_800F4BBC, arg1);
+    D_800F4BF0.lba = (evtFile * 3) + VS_0000_EVT_LBA; // .EVT files must be sequential
+    evtCdSlot = vs_main_allocateCdQueueSlot(&D_800F4BF0);
+    vs_main_cdEnqueue(evtCdSlot, arg1);
 }
 
 void func_800C0150(void)
@@ -192,8 +193,8 @@ void func_800C0150(void)
     short i;
 
     for (i = 0; i < 17; ++i) {
-        if (vs_battle_getActor(i) != NULL) {
-            func_800A0204(i, 1, 0, 0);
+        if (getActor(i) != NULL) {
+            vs_battle_setActorAnimation(i, 1, 0, 0);
         }
     }
 }

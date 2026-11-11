@@ -11,7 +11,7 @@ typedef struct {
     u_short unk20;
     char unk22;
     char unk23;
-} vs_battle_manualDisplayState_t;
+} vs_ManualDisplayState;
 
 typedef struct {
     u_char titlePage;
@@ -22,21 +22,21 @@ typedef struct {
     u_char recordTimeRow;
     u_char gazettePage;
     u_char gazetteRow;
-} vs_battle_menu9CursorMemory_t;
+} vs_Menu9CursorMemory;
 
-typedef struct vs_battle_lootListNode {
-    struct vs_battle_lootListNode* next;
+typedef struct vs_LootListNode {
+    struct vs_LootListNode* next;
     int actorId;
-    vs_battle_loot loot;
-} vs_battle_lootListNode;
+    vs_Loot loot;
+} vs_LootListNode;
 
 void func_8008A4DC(int arg0);
 int func_8008A4FC(void);
 void func_8008A6FC(void);
 void vs_battle_parseTim(u_long*, TIM_IMAGE*);
-extern vs_battle_lootListNode* _lootListHead;
-extern vs_battle_manualDisplayState_t vs_battle_manualDisplayState;
-extern vs_battle_menu9CursorMemory_t vs_battle_menu9CursorMemory;
+extern vs_LootListNode* lootListHead;
+extern vs_ManualDisplayState vs_battle_manualDisplayState;
+extern vs_Menu9CursorMemory vs_battle_menu9CursorMemory;
 extern int vs_battle_submenuState;
 
 void vs_battle_setStateFlag(short id, char value);

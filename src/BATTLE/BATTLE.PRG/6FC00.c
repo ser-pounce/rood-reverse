@@ -1,5 +1,5 @@
 #include "common.h"
-#include "6E4CC.h"
+#include "6E4CCPrivate.h"
 #include "6E4CCShared.h"
 #include "146C.h"
 #include "4DEA8.h"
@@ -15,15 +15,15 @@ extern int D_800F16F4;
 extern int D_800F58C4;
 extern int D_800F58D4;
 
-static inline int _historyRepeats(func_800E78F4_t* state)
+static inline int historyRepeats(func_800E78F4_t* state)
 {
     return *(int*)&state->unk70[0] == *(int*)&state->unk70[4]
         && *(int*)&state->unk78[0] == *(int*)&state->unk78[4];
 }
 
-static inline int _historyStalled(func_800E78F4_t* state)
+static inline int historyStalled(func_800E78F4_t* state)
 {
-    return state->unk81 == 255 ? _historyRepeats(state) : 0;
+    return state->unk81 == 255 ? historyRepeats(state) : 0;
 }
 
 u_int func_800D8400(func_800E78F4_t* arg0, int arg1, int arg2, int arg3)
@@ -43,7 +43,7 @@ u_int func_800D8400(func_800E78F4_t* arg0, int arg1, int arg2, int arg3)
     }
 
     source = arg0->unk34;
-    pos.fields.status = 1;
+    pos.fields.extra = 1;
 
     if (arg1 == arg2) {
         directions = arg3;
@@ -74,11 +74,11 @@ u_int func_800D8400(func_800E78F4_t* arg0, int arg1, int arg2, int arg3)
             }
         } else if (result >= 0) {
             pos.value = func_800DB93C(arg0, pos.fields, arg3, source);
-            if (pos.fields.status == 1) {
+            if (pos.fields.extra == 1) {
                 pos.fields.surface = 0;
                 return pos.value;
             }
-            if (pos.fields.status == 0) {
+            if (pos.fields.extra == 0) {
                 continue;
             }
         }
@@ -88,7 +88,7 @@ u_int func_800D8400(func_800E78F4_t* arg0, int arg1, int arg2, int arg3)
     return 0;
 
 fail:
-    pos.fields.status = 2;
+    pos.fields.extra = 2;
     pos.fields.surface = 0;
     return pos.value;
 }
@@ -98,7 +98,7 @@ int func_800D85D8(func_800E78F4_t* arg0)
     int i;
     int changed = 0;
     u_char status;
-    vs_battle_actor* actor;
+    vs_Actor* actor;
 
     for (i = 0; i < arg0->unk470; ++i) {
         func_800DCAA0_t* entry = arg0->unk430[i];
@@ -143,7 +143,7 @@ done:
     return changed;
 }
 
-static inline int _checkExtent(SVECTOR* from, SVECTOR* to, func_800E78F4_t* state, int id)
+static inline int checkExtent(SVECTOR* from, SVECTOR* to, func_800E78F4_t* state, int id)
 {
     func_800E78F4_t* other = ((func_800E78F4_t**)0x1F80037C)[id];
     int extent = other != NULL ? other->unkB8 : 128;
@@ -151,7 +151,7 @@ static inline int _checkExtent(SVECTOR* from, SVECTOR* to, func_800E78F4_t* stat
     return func_800E44E8(from, to, extent, state->unkB8);
 }
 
-static inline int _checkHeight(SVECTOR* from, SVECTOR* to, func_800E78F4_t* state, int id)
+static inline int checkHeight(SVECTOR* from, SVECTOR* to, func_800E78F4_t* state, int id)
 {
     func_800E78F4_t* other = ((func_800E78F4_t**)0x1F80037C)[id];
     int height = other != NULL ? ABS(other->unk82) : 64;
@@ -166,7 +166,7 @@ void func_800D87E8(func_800E78F4_t* arg0, int id)
     func_800DA1D4_t final;
     D_800F4538_t* object;
     func_800E78F4_t* other;
-    vs_battle_actor* actor;
+    vs_Actor* actor;
     int owner;
     int blocked;
     int heading;
@@ -202,10 +202,10 @@ void func_800D87E8(func_800E78F4_t* arg0, int id)
     } else {
         if (++arg0->unk12B & 1) {
             arg0->unk1A4[id].unk0_30 =
-                !_checkExtent(&object->unk0.position, &arg0->unk4C, arg0, id);
+                !checkExtent(&object->unk0.position, &arg0->unk4C, arg0, id);
         } else {
             arg0->unk1A4[id].unk0_2 =
-                !_checkHeight(&object->unk0.position, &arg0->unk4C, arg0, id);
+                !checkHeight(&object->unk0.position, &arg0->unk4C, arg0, id);
         }
 
         if (arg0->unk1A4[id].unk0_2) {
@@ -323,7 +323,7 @@ void func_800D87E8(func_800E78F4_t* arg0, int id)
 
 void func_800D8EF4(void)
 {
-    vs_battle_actor* actor;
+    vs_Actor* actor;
 
     D_800F58E0 = 0;
     D_800F58BC->unk24 = 0;
@@ -336,7 +336,7 @@ void func_800D8EF4(void)
         int flags = actor->unk8;
         func_800E78F4_t* state;
         D_800F4538_t* object;
-        vs_battle_actor* other;
+        vs_Actor* other;
         int id;
         int i;
         int arg;
@@ -464,7 +464,7 @@ void func_800D8EF4(void)
         state->unk120 = (((z & 0xFFFF) >> 6) << 16) | ((x & 0xFFFF) >> 6);
 
         if ((0x12600 >> state->unk124) & 1) {
-            if (_historyStalled(state)) {
+            if (historyStalled(state)) {
                 state->unk81 = 0;
                 state->unk19A = 30;
                 goto idle;
@@ -534,7 +534,7 @@ void func_800D8EF4(void)
         }
 
         if ((state->unk1C == 0) && VS_TILE_IS_SET(state->unk38)) {
-            int targetId = state->unk38.status;
+            int targetId = state->unk38.extra;
 
             if ((state->unk40 == 0) || (--state->unk40 == 0)
                 || (D_800F4538[targetId] == NULL)

@@ -1,7 +1,7 @@
 #include "common.h"
 #include "6E4CC.h"
 #include "6E4CCShared.h"
-#include "4DEA8.h"
+#include "4DEA8Private.h"
 #include "src/SLUS_010.40/32154.h"
 #include <abs.h>
 #include <rand.h>
@@ -267,7 +267,7 @@ int func_800E7F8C(func_800E78F4_t* arg0)
         func_800D836C(arg0);
     }
 
-    state = vs_battle_getStateFlag(0xA6);
+    state = getStateFlag(0xA6);
     temp_s0 = D_800F5920;
 
     if (temp_s0->unkC > 0) {
@@ -301,7 +301,7 @@ int func_800E7F8C(func_800E78F4_t* arg0)
 
         if (func_800E7698(arg0) != 0) {
             if (temp_s0->unkA != 0) {
-                vs_battle_actor* temp_a1 = arg0->unk54;
+                vs_Actor* temp_a1 = arg0->unk54;
 
                 if (temp_a1->stats->limbs[4].hp >= 2) {
                     temp_a1->commandArgs.u16[0] = 4;

@@ -38,7 +38,7 @@ typedef struct {
     int age;
     int factors[5];
     func_800D6CF_t texture;
-} vs_rotatingSurfaceState;
+} vs_RotatingSurfaceState;
 
 int VS_ROTATING_SURFACE_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
 {
@@ -48,7 +48,7 @@ int VS_ROTATING_SURFACE_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
     CVECTOR colors[5];
     u_char u[VS_ROTATING_SURFACE_TEXTURE_COLUMNS + 1];
     u_char v[5];
-    vs_rotatingSurfaceState* state = arg0->unk8;
+    vs_RotatingSurfaceState* state = arg0->unk8;
     func_800FA098_arg1* scratch = (func_800FA098_arg1*)0x1F8001D0;
     func_800FA098_arg0* effect;
     D_800F53B8_t* battle = D_800F53BC;
@@ -69,7 +69,7 @@ int VS_ROTATING_SURFACE_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
     int speed;
     int oldAngle;
     MATRIX* actorMatrix;
-    pFileTexture* texture;
+    vs_PFileTexture* texture;
 
     switch (arg1) {
     case 1:
@@ -247,7 +247,7 @@ int VS_ROTATING_SURFACE_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
 
         for (row = 0; row < 4; ++row) {
             int depth;
-            vs_gt4Prim* prim;
+            vs_Gt4Prim* prim;
 
             for (column = 0; column < 15; ++column) {
                 depth = (depths[row][column] + depths[row][column + 1]

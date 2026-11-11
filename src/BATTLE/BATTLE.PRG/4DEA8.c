@@ -1,16 +1,17 @@
 #include "common.h"
-#include "4DEA8.h"
-#include "146C.h"
-#include "2842C.h"
-#include "2EA3C.h"
-#include "30DB0.h"
+#include "actorPrivate.h"
+#include "4DEA8Private.h"
+#include "146CPrivate.h"
+#include "2842CPrivate.h"
+#include "2EA3CPrivate.h"
+#include "30DB0Private.h"
 #include "38C1C.h"
-#include "40564.h"
+#include "40564Private.h"
 #include "44F14.h"
-#include "573B8.h"
-#include "5BF94.h"
+#include "573B8Private.h"
+#include "5BF94Private.h"
 #include "battleUnk.h"
-#include "camera.h"
+#include "cameraPrivate.h"
 #include "entity.h"
 #include "src/SLUS_010.40/main.h"
 #include "src/SLUS_010.40/32154.h"
@@ -133,7 +134,7 @@ typedef struct {
     short unk1C8;
     short unk1CA;
     int unk1CC;
-    vs_battle_actorPosition unk1D0;
+    vs_ActorPosition unk1D0;
     int unk1E0[2];
     u_short unk1E8;
     u_short unk1EA;
@@ -146,33 +147,33 @@ typedef struct {
 } D_800F4BA4_t;
 
 typedef struct {
-    u_int unk0_0 : 1;
-    u_int unk0_1 : 1;
+    u_int visible : 1;
+    u_int loading : 1;
     u_int unk0_2 : 1;
-    u_int unk0_3 : 3;
+    u_int drawMode : 3;
     u_int unk0_6 : 18;
-    u_int unk0_24 : 8;
+    u_int brightness : 8;
     int unk4;
-    short unk8;
-    short unkA;
-    short unkC;
+    short x;
+    short y;
+    short scale;
     int unk10[0xFA];
-} D_800EB9BC_t;
+} Gim;
 
 typedef struct {
     char unk0;
-    char unk1;
-    char unk2;
-    char unk3;
-    short unk4;
-    short unk6;
-    short unk8;
-    short unkA;
-    short unkC;
-    short unkE;
-    short unk10;
-    short unk12;
-} D_800F4B30_t;
+    char curve;
+    char elapsed;
+    char duration;
+    short startX;
+    short startY;
+    short deltaX;
+    short deltaY;
+    short startScale;
+    short deltaScale;
+    short startBrightness;
+    short deltaBrightness;
+} GimTween;
 
 typedef struct {
     char unk0;
@@ -195,17 +196,17 @@ typedef struct {
 } func_800BDBB4_t2;
 
 typedef struct {
-    char unk0;
-    char unk1;
-    char unk2[22];
-} func_800BB68C_t;
+    char remaining;
+    char next;
+    char actors[17];
+} ActorList;
 
 typedef struct {
-    textOffset offset;
+    TextOffset offset;
     short x;
     short y;
     int distance;
-} textPlacement;
+} TextPlacement;
 
 typedef struct {
     int value;
@@ -219,7 +220,7 @@ typedef struct {
     SVECTOR rotation2;
     char unk60[16];
     MATRIX matrix;
-} cameraScratch;
+} CameraScratch;
 
 typedef struct {
     int distance;
@@ -230,25 +231,25 @@ typedef struct {
     VECTOR direction;
     char unk40[0x30];
     MATRIX matrix;
-} cameraMotionScratch;
+} CameraMotionScratch;
 
 typedef struct {
     char unk0[0x50];
     SVECTOR a;
     SVECTOR b;
     SVECTOR c;
-} cameraShakeScratch;
+} CameraShakeScratch;
 
 typedef struct {
     u_char low;
     u_char high;
-} scriptBytePair;
+} ScriptBytePair;
 
-int func_800B6B98(
-    SVECTOR* origin, u_char* script, textPlacement* result, u_char direction);
-void func_800BB68C(u_short, func_800BB68C_t*);
-u_short func_800BB788(func_800BB68C_t* arg0);
-int func_800BB7C4(int arg0, SVECTOR* arg1);
+static int tryTextBoxPlacement(
+    SVECTOR* origin, u_char* script, TextPlacement* result, u_char direction);
+void expandActorSelector(u_short, ActorList*);
+u_short nextActor(ActorList* arg0);
+int getActorScreenPosition(int arg0, SVECTOR* arg1);
 void func_800BBE10(u_short);
 void func_800BBE04(int arg0);
 void func_800BBE94(void);
@@ -265,24 +266,26 @@ void func_800BE36C(int, int);
 void func_800BE3A0(void);
 void func_800BE3D0(char arg0);
 void func_800BE5A4(short arg0);
-VECTOR* _vectorAdd(VECTOR* arg0, VECTOR* arg1, VECTOR* arg2);
-VECTOR* _vectorSubtract(VECTOR* arg0, VECTOR* arg1, VECTOR* arg2);
-VECTOR* _setVectorImm(VECTOR*, u_char*);
-VECTOR* _vectorFixedPointMult(VECTOR*, VECTOR*, int);
-void _vecToRotMatrix(VECTOR*, MATRIX*);
-int _atan2FixedPoint(int arg0, int arg1);
-static int _fixedPointMult(int a, int b);
-int vs_main_getcurrentMusicSlot(void);
-static int _vectorMagnitude(VECTOR*);
-static VECTOR* _copyVector(VECTOR* arg0, VECTOR* arg1);
-static VECTOR* _sVectorToFixedPointVector(VECTOR* arg0, SVECTOR* arg1);
-static void _toNormalIntegerVector(VECTOR*, VECTOR*);
+VECTOR* vectorAdd(VECTOR* arg0, VECTOR* arg1, VECTOR* arg2);
+VECTOR* vectorSubtract(VECTOR* arg0, VECTOR* arg1, VECTOR* arg2);
+VECTOR* setVectorImm(VECTOR*, u_char*);
+VECTOR* vectorFixedPointMult(VECTOR*, VECTOR*, int);
+void vecToRotMatrix(VECTOR*, MATRIX*);
+int atan2FixedPoint(int arg0, int arg1);
+static int fixedPointMult(int a, int b);
+static int vectorMagnitude(VECTOR*);
+static VECTOR* vectorCopy(VECTOR* arg0, VECTOR* arg1);
+static VECTOR* sVectorToFixedPointVector(VECTOR* arg0, SVECTOR* arg1);
+static void toNormalIntegerVector(VECTOR*, VECTOR*);
 
 extern int D_800E9B34[];
 extern int D_800E9B4C[];
-extern char D_800E9B58[];
-extern char D_800E9BE0[];
-extern char D_800E9BE8[];
+extern char animationBankBase[];
+VS_HIDDEN(animationBankBase);
+extern char skipResetPaletteOp[];
+VS_HIDDEN(skipResetPaletteOp);
+extern char skipTailMarkerOp[];
+VS_HIDDEN(skipTailMarkerOp);
 extern u_char D_800E9BEC[];
 extern u_char D_800E9BF0[];
 extern short D_800E9BF4[];
@@ -294,14 +297,15 @@ extern short D_800E9C24[];
 extern u_char D_800E9C28;
 extern u_char D_800E9C2C;
 extern u_short D_800F4B20;
-extern D_800F4B30_t D_800F4B30[];
+extern GimTween gimTweens[];
+VS_HIDDEN(gimTweens);
 extern D_800F4B88_t D_800F4B88;
 extern char D_800F4B8B;
 extern char D_800F4BA0;
 extern D_800F4BA4_t* D_800F4BA4;
 extern char D_800F4BA8;
-extern void* _mpdClearedSection;
-extern u_short* _scriptStrings;
+extern void* mpdClearedSection;
+extern u_short* scriptStrings;
 extern char D_800F4BB4;
 extern short D_800F4BB6;
 extern char D_800F4BB8;
@@ -309,7 +313,7 @@ extern u_char D_800F4BB9;
 extern char* D_800F4BC0[];
 extern short D_800F4BE0;
 extern char D_800F4BE4;
-extern void* _mpdRoomDoorSection;
+extern void* mpdRoomDoorSection;
 extern char D_800F4BF8;
 extern char D_800F4C10[];
 extern short D_800F4C22;
@@ -318,105 +322,135 @@ extern char D_800F4C34;
 extern u_char* D_800F4C38[];
 extern short D_800F4C4C;
 extern char D_800F4C4E;
-extern short _mpdScriptSection;
+extern short mpdScriptSection;
 extern short D_800F4C54;
-extern char _textBoxSelectionPending;
+extern char textBoxSelectionPending;
 extern int D_800F4C64;
 extern char D_800F4C69;
 extern char D_800F4C6A;
 
 extern char D_800F4B70[];
 extern u_short D_800F4B28[];
-extern D_800EB9BC_t* D_800EB9BC;
+extern Gim* gims;
+VS_HIDDEN(gims);
 
-int vs_battle_invalidOpcode(u_char* arg0, short arg1)
+int vs_battle_script_invalidOpcode(u_char* arg0, short arg1)
 {
     char buf[64];
 
     sprintf(buf, "unknown code detected:%d,$%08x,$%02x", arg1, (u_int)arg0, *arg0);
     // Debug printing presumably ifdef'd out
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int func_800B66E4(u_char* arg0, short arg1) { return 0; }
-
-int func_800B66EC(u_char* arg0, short arg1) { return 4; }
-
-int func_800B66F4(u_char* arg0, short arg1)
+int vs_battle_script_nop(UNUSED u_char* arg0, UNUSED short arg1)
 {
-    if ((D_800F4BBC != 0) && (D_800F4BBC->state != 4)) {
-        return 1;
+    return vs_battle_scriptNext;
+}
+
+int vs_battle_script_yield(UNUSED u_char* arg0, UNUSED short arg1)
+{
+    return vs_battle_scriptYield;
+}
+
+int vs_battle_script_0A_waitEvtLoad(UNUSED u_char* arg0, UNUSED short arg1)
+{
+    if ((evtCdSlot != 0) && (evtCdSlot->state != vs_main_CdQueueStateLoaded)) {
+        return vs_battle_scriptRepeat;
     }
-    return 0;
+
+    return vs_battle_scriptNext;
 }
 
-int func_800B6724(u_char* arg0, short arg1) { return D_800EB9BC->unk0_1; }
-
-int func_800B6744(u_char* arg0, short arg1)
+int vs_battle_script_0C_waitGimLoad(UNUSED u_char* arg0, UNUSED short arg1)
 {
-    D_800F4C2C = 1;
-    D_800F4C20 = !(arg0[1] & 1);
-    return (D_800F4C68 != 0) * 4;
+    return gims->loading;
 }
 
-void func_800B6778(u_char* arg0)
+/**
+ * @param script Opcode bytes:
+ *   - [1] bit 0 = keep the music playing if the section is skipped
+ */
+int vs_battle_script_0D_beginSkippable(u_char* script, UNUSED short arg1)
+{
+    scriptSkipMode = vs_battle_scriptSkippable;
+    stopMusicOnSkip = !(script[1] & 1);
+    return (skipRequested != 0) ? vs_battle_scriptYield : vs_battle_scriptNext;
+}
+
+static void endScriptSkip(u_char* script)
 {
     short i;
+    short endOpcode;
 
     for (i = 0; i < 3; ++i) {
-        D_800E9BE0[1] = (i << 4) | 8;
-        func_800B9C58(D_800E9BE0, 0);
+        skipResetPaletteOp[1] = (i << 4) | 8;
+        vs_battle_script_70(skipResetPaletteOp, 0);
     }
 
     func_800AACDC();
 
-    i = 0xF;
-    while (*arg0 != i) {
-        if (memcmp(arg0, D_800E9BE8, 4) == 0) {
+    endOpcode = 0xF;
+
+    while (*script != endOpcode) {
+        if (memcmp(script, skipTailMarkerOp, 4) == 0) {
             vs_battle_setStateFlag(0xA8, 0);
             return;
         }
-        arg0 = &arg0[D_800E9C30[*arg0]];
+        script = &script[D_800E9C30[*script]];
     }
 
     func_80093A70();
     vs_battle_setStateFlag(0xA8, 0);
 }
 
-int func_800B6868(u_char* arg0, short arg1)
+/**
+ * @param script Opcode bytes:
+ *   - [1-2] offset from this opcode to jump to if the section was not skipped
+ * @return vs_battle_scriptYield if the section was skipped, otherwise the address to
+ * jump to.
+ */
+int vs_battle_script_0E_endSkippableBody(u_char* script, UNUSED short arg1)
 {
-    char temp_v1 = D_800F4C2C;
-    D_800F4C2C = 0;
-    if (temp_v1 == 2) {
-        func_800B6778(arg0);
-        return 4;
+    char prevMode = scriptSkipMode;
+    scriptSkipMode = vs_battle_scriptSkipOff;
+
+    if (prevMode == vs_battle_scriptSkipping) {
+        endScriptSkip(script);
+        return vs_battle_scriptYield;
     }
-    return (int)&arg0[vs_battle_getShort(arg0 + 1)];
+
+    return (int)&script[getShort(script + 1)];
 }
 
-int func_800B68C4(u_char* arg0, short arg1)
+int vs_battle_script_0F_endSkipHandler(u_char* arg0, UNUSED short arg1)
 {
-    char temp_v1 = D_800F4C2C;
-    D_800F4C2C = 0;
-    if (temp_v1 == 2) {
-        func_800B6778(arg0);
-        return 4;
+    char prevMode = scriptSkipMode;
+    scriptSkipMode = vs_battle_scriptSkipOff;
+
+    if (prevMode == vs_battle_scriptSkipping) {
+        endScriptSkip(arg0);
+        return vs_battle_scriptYield;
     }
-    return 0;
+
+    return vs_battle_scriptNext;
 }
 
-// script[1]    = (parentBoxId << 4) | boxId
-// script[2-3]  = flags/type (passed to arg1 of initTextBox)
-// script[4]    = x (in some unit, scaled *2 - 0x20)
-// script[5]    = y (scaled - 0x20)
-// script[6]    = width in characters
-// script[7]    = height in lines
-// script[8-9]  = possibly texture
-// script[10]   = ?
-int vs_battle_script_initTextBox(u_char* script, UNUSED short arg1)
+/**
+ * @param script Opcode bytes:
+ *   - [1] = (parentBoxId << 4) | boxId
+ *   - [2-3] = flags/type (passed to arg1 of initTextBox)
+ *   - [4] = x (in some unit, scaled *2 - 0x20)
+ *   - [5] = y (scaled - 0x20)
+ *   - [6] = width in characters
+ *   - [7] = height in lines
+ *   - [8-9] = speaker actor (>= 0x2000: none)
+ *   - [10] = speaker animation
+ */
+int vs_battle_script_10_initTextBox(u_char* script, UNUSED short arg1)
 {
-    vs_battle_textBox* box;
-    short temp_v0_4;
+    vs_TextBox* box;
+    short speakerSelector;
     short centerY;
     short centerX;
 
@@ -431,58 +465,73 @@ int vs_battle_script_initTextBox(u_char* script, UNUSED short arg1)
         centerY = box->y + (((box->lineCount * 13) + 4) >> 1);
     }
 
-    vs_battle_initTextBox(script[1] & 0xF, vs_battle_getShort(script + 2),
-        (script[4] * 2) - 32, script[5] - 32, script[6], script[7], centerX, centerY);
+    vs_battle_initTextBox(script[1] & 0xF, getShort(script + 2), (script[4] * 2) - 32,
+        script[5] - 32, script[6], script[7], centerX, centerY);
 
     box = vs_battle_getTextBox(script[1] & 0xF);
-    box->unk2E = script[10];
+    box->speakerAnimation = script[10];
 
-    temp_v0_4 = vs_battle_getShort(&script[8]);
-    if (temp_v0_4 < 0x2000) {
-        box->unk0.unk0_24 = func_800BFE50(temp_v0_4);
+    speakerSelector = getShort(&script[8]);
+
+    if (speakerSelector < 0x2000) {
+        box->unk0.speakerActor = resolveActorId(speakerSelector);
     }
 
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-// script[1] = boxId
-// script[2] = string index
-// script[3] = box can be overwritten
-int vs_battle_script_showTextBox(u_char* script, UNUSED short arg1)
+/**
+ * @param script Opcode bytes:
+ *   - [1] = boxId
+ *   - [2] = string index
+ *   - [3] = nonzero: do not wait for the player to advance the text
+ */
+int vs_battle_script_11_showTextBox(u_char* script, UNUSED short arg1)
 {
-    int temp_v0;
+    int printStatus;
 
-    if (vs_battle_textBoxStatuses[script[1]] == 0) {
-        vs_battle_setTextBox(
-            script[1], (char*)&_scriptStrings[_scriptStrings[script[2]]]);
+    if (textBoxStatuses[script[1]] == 0) {
+
+        vs_battle_setTextBox(script[1], (char*)&scriptStrings[scriptStrings[script[2]]]);
+
         if (script[3] == 0) {
-            vs_battle_textBoxStatuses[script[1]] = 1;
-            return 1;
+            textBoxStatuses[script[1]] = 1;
+            return vs_battle_scriptRepeat;
         }
-        return 0;
+
+        return vs_battle_scriptNext;
     }
 
-    temp_v0 = vs_battle_setTextBox(script[1], 0);
+    printStatus = vs_battle_setTextBox(script[1], NULL);
 
-    if (temp_v0 >= 0) {
-        if (temp_v0 > 0) {
-            vs_main_stateFlags.textBoxSelection = temp_v0;
+    if (printStatus >= 0) {
+
+        // Dead code: vs_battle_setTextBox only returns 0 or -1
+        if (printStatus > 0) {
+            vs_main_stateFlags.scriptScratch[0] = printStatus;
         }
-        vs_battle_textBoxStatuses[script[1]] = 0;
-        return 0;
+
+        textBoxStatuses[script[1]] = 0;
+
+        return vs_battle_scriptNext;
     }
-    return 1;
+
+    return vs_battle_scriptRepeat;
 }
 
-// script[1] = boxId
-int vs_battle_script_dismissTextBox(u_char* arg0, UNUSED short arg1)
+/**
+ * @param script Opcode bytes:
+ *   - [1] = boxId
+ */
+int vs_battle_script_12_dismissTextBox(u_char* script, UNUSED short arg1)
 {
-    vs_battle_dismissTextBox(arg0[1]);
-    return 0;
+    vs_battle_dismissTextBox(script[1]);
+
+    return vs_battle_scriptNext;
 }
 
-int func_800B6B98(
-    SVECTOR* origin, u_char* script, textPlacement* result, u_char direction)
+static int tryTextBoxPlacement(
+    SVECTOR* origin, u_char* script, TextPlacement* result, u_char direction)
 {
     short dx = 0;
     short dy = 0;
@@ -522,31 +571,37 @@ int func_800B6B98(
     }
 
     result->distance = vs_gte_rsqrt(dx * dx + dy * dy);
+
     return 0;
 }
 
-// script[1]   = boxId
-// script[2-3] = anchor id (resolved by func_800BFE50)
-// script[4-5] = flags/type (passed to arg1 of initTextBox)
-// script[6]   = width in characters
-// script[7]   = height in lines
-// script[8]   = ?
-int func_800B6D48(u_char* script, UNUSED short arg1)
+/**
+ * @param script Opcode bytes:
+ *   - [1] = boxId
+ *   - [2-3] = actor to place the box next to (resolved by resolveActorId)
+ *   - [4-5] = flags (passed to initTextBox); [5] & 0xF is the box shape, which also
+ *     selects the placement preset
+ *   - [6] = width in characters
+ *   - [7] = height in lines
+ *   - [8] = speaker animation
+ */
+int vs_battle_script_13_initTextBoxNearActor(u_char* script, UNUSED short arg1)
 {
-    textPlacement placements[4];
+    TextPlacement placements[4];
     SVECTOR origin;
-    vs_battle_textBox* box;
-    textPlacement* best = NULL;
+    vs_TextBox* box;
+    TextPlacement* best = NULL;
     u_int width;
     u_int height;
-    int texture;
+    int speakerActor;
     short i;
 
-    func_800BB7C4(func_800BFE50(vs_battle_getShort(script + 2)), &origin);
+    getActorScreenPosition(resolveActorId(getShort(script + 2)), &origin);
+
     origin.vz = ((origin.vz - ONE / 4) & 0xC00) >> 10;
 
     for (i = 0; i < 4; ++i) {
-        if (func_800B6B98(&origin, script, &placements[i], D_800E9BEC[i])) {
+        if (tryTextBoxPlacement(&origin, script, &placements[i], D_800E9BEC[i])) {
             best = &placements[i];
             break;
         }
@@ -563,260 +618,393 @@ int func_800B6D48(u_char* script, UNUSED short arg1)
 
     width = script[6] * 12 + 8;
     height = script[7] * 13 + 4;
-    vs_battle_initTextBox(script[1], vs_battle_getShort(script + 4), best->x, best->y,
-        script[6], script[7], best->x + (width >> 1), best->y + (height >> 1));
+
+    vs_battle_initTextBox(script[1], getShort(script + 4), best->x, best->y, script[6],
+        script[7], best->x + (width >> 1), best->y + (height >> 1));
 
     box = vs_battle_getTextBox(script[1]);
-    // BUG: texture is never initialized
-    box->unk0.unk0_24 = texture;
-    box->unk0.unk0_6 = best->offset.alignment;
-    box->unk0.unk0_12 = best->offset.flags;
-    box->unk2E = script[8];
-    return 0;
+    // BUG: speakerActor is never initialized, this overwrites the "none" (32) default
+    // that vs_battle_initTextBox just set
+    box->unk0.speakerActor = speakerActor;
+    box->unk0.flip = best->offset.flip;
+    box->unk0.tail = best->offset.tail;
+    box->speakerAnimation = script[8];
+
+    return vs_battle_scriptNext;
 }
 
-int func_800B6F8C(u_char* arg0, short arg1)
+/**
+ * @param script Opcode bytes:
+ *   - [1] = boxId
+ */
+int vs_battle_script_14_dismissTextBoxAndWait(u_char* script, UNUSED short arg1)
 {
-    return vs_battle_dismissTextBox(arg0[1]) != 0;
+    return vs_battle_dismissTextBox(script[1]) != 0 ? vs_battle_scriptRepeat
+                                                    : vs_battle_scriptNext;
 }
 
-int vs_battle_script_buttonPressed(u_char* arg0, UNUSED short arg1)
+/**
+ * @param script Opcode bytes:
+ *   - [1] = mask of pad buttons, only the low byte (L2, R2, L1, R1 and the face buttons)
+ */
+int vs_battle_script_15_waitButtonPressed(u_char* script, UNUSED short arg1)
 {
-    if (vs_main_buttonsPressed.all & arg0[1]) {
-        return 4;
-    }
-    return 1;
-}
-
-int vs_battle_script_loadGim(u_char* arg0, UNUSED short arg1)
-{
-    vs_battle_loadGim(vs_battle_getShort(arg0 + 1), arg0[3]);
-    return 0;
-}
-
-int func_800B7014(u_char* arg0, short arg1)
-{
-    D_800F4B30_t* new_var;
-
-    D_800EB9BC_t* temp_a1 = D_800EB9BC;
-
-    if (temp_a1 == NULL) {
-        return 0;
+    if (vs_main_buttonsPressed.all & script[1]) {
+        return vs_battle_scriptYield;
     }
 
-    new_var = &D_800F4B30[arg0[1] >> 6];
-    new_var->unk3 = 0;
-    temp_a1 = temp_a1 + ((arg0[1] >> 6));
-    temp_a1->unk0_3 = arg0[1] & 3;
-    temp_a1->unk8 = (signed char)arg0[2] * 2;
-    temp_a1->unkA = (signed char)arg0[3] * 2;
-    temp_a1->unkC = arg0[4] << 7;
-    temp_a1->unk0_24 = arg0[5];
-    func_800C8550(arg0[1] >> 6, temp_a1, arg0);
-    return 0;
+    return vs_battle_scriptRepeat;
 }
 
-int func_800B70E8(u_char* arg0, short arg1)
+/**
+ * @param script Opcode bytes:
+ *   - [1-2] = GIM index
+ *   - [3] = first VRAM page slot
+ */
+int vs_battle_script_16_loadGim(u_char* script, UNUSED short arg1)
 {
-    D_800EB9BC_t* temp_a3 = D_800EB9BC;
-    int temp_a2 = arg0[5] >> 6;
-    D_800F4B30_t* temp_a1 = &D_800F4B30[temp_a2];
+    loadGim(getShort(script + 1), script[3]);
 
-    if (temp_a3 == NULL) {
-        return 0;
+    return vs_battle_scriptNext;
+}
+
+/**
+ * @param script Opcode bytes:
+ *   - [1] = (image << 6) | mode, image is 0-2 within the GIM and mode selects the draw
+ *     function
+ *   - [2] = x offset from the screen centre, signed, in units of 2 pixels
+ *   - [3] = y offset from the screen centre, signed, in units of 2 pixels
+ *   - [4] = scale, 0x20 is full size
+ *   - [5] = brightness, 0x80 is normal
+ */
+int vs_battle_script_17_showGimImage(u_char* script, UNUSED short arg1)
+{
+    GimTween* tween;
+
+    Gim* gim = gims;
+
+    if (gim == NULL) {
+        return vs_battle_scriptNext;
     }
 
-    temp_a3 += temp_a2;
+    tween = &gimTweens[script[1] >> 6];
+    tween->duration = 0;
 
-    if (temp_a1->unk3 != 0) {
-        return 1;
+    gim += script[1] >> 6;
+
+    gim->drawMode = script[1] & 3;
+    gim->x = (signed char)script[2] * 2;
+    gim->y = (signed char)script[3] * 2;
+    gim->scale = script[4] << 7;
+    gim->brightness = script[5];
+
+    activateGimImage(script[1] >> 6, gim, script);
+
+    return vs_battle_scriptNext;
+}
+
+/**
+ * @param script Opcode bytes:
+ *   - [1] = x offset from the screen centre, signed, in units of 2 pixels
+ *   - [2] = y offset from the screen centre, signed, in units of 2 pixels
+ *   - [3] = target scale, 0x20 is full size
+ *   - [4] = target brightness
+ *   - [5] = (image << 6) | curve, curve 0-3 are built in and 4-7 are set up by script
+ *   - [6] = duration
+ */
+int vs_battle_script_18_tweenGimImage(u_char* script, UNUSED short arg1)
+{
+    Gim* gim = gims;
+    GimTween* tween = &gimTweens[script[5] >> 6];
+
+    if (gim == NULL) {
+        return vs_battle_scriptNext;
     }
 
-    temp_a1->unk8 = (((signed char)arg0[1] * 2) - (temp_a1->unk4 = temp_a3->unk8));
-    temp_a1->unkA = (((signed char)arg0[2] * 2) - (temp_a1->unk6 = temp_a3->unkA));
-    temp_a1->unkE = ((arg0[3] << 7) - (temp_a1->unkC = temp_a3->unkC));
-    temp_a1->unk12 = arg0[4] - (temp_a1->unk10 = ((char*)temp_a3)[3]);
-    temp_a1->unk1 = arg0[5] & 7;
-    temp_a1->unk3 = arg0[6];
-    temp_a1->unk2 = 0;
-    return 0;
+    gim += script[5] >> 6;
+
+    if (tween->duration != 0) {
+        return vs_battle_scriptRepeat;
+    }
+
+    tween->deltaX = (((signed char)script[1] * 2) - (tween->startX = gim->x));
+    tween->deltaY = (((signed char)script[2] * 2) - (tween->startY = gim->y));
+    tween->deltaScale = ((script[3] << 7) - (tween->startScale = gim->scale));
+    tween->deltaBrightness = script[4] - (tween->startBrightness = gim->brightness);
+    tween->curve = script[5] & 7;
+    tween->duration = script[6];
+    tween->elapsed = 0;
+
+    return vs_battle_scriptNext;
 }
 
-int func_800B71C4(u_char* arg0, short arg1)
+int vs_battle_script_19_unloadGim(UNUSED u_char* arg0, UNUSED short arg1)
 {
-    func_800C86AC();
-    return (D_800F4C2C == 2) * 4;
+    unloadGim();
+
+    return (scriptSkipMode == vs_battle_scriptSkipping) ? vs_battle_scriptYield
+                                                        : vs_battle_scriptNext;
 }
 
-int func_800B71F4(u_char* arg0, short arg1)
+int vs_battle_script_1A_waitGimTweens(UNUSED u_char* arg0, UNUSED short arg1)
 {
-    return (D_800F4B30[2].unk3 | (D_800F4B30[0].unk3 | D_800F4B30[1].unk3)) != 0;
+    return (gimTweens[0].duration | gimTweens[1].duration | gimTweens[2].duration) != 0
+             ? vs_battle_scriptRepeat
+             : vs_battle_scriptNext;
 }
 
-int vs_battle_script_setStringContextInt(u_char* arg0, UNUSED short arg1)
+/**
+ * @param script Opcode bytes:
+ *   - [1] = printf argument integer to set (0-9)
+ *   - [2-3] = state flag id in bits 0-9, type in bits 14-15: 0 = unsigned byte,
+ *     1 = signed byte, 2 = unsigned 16 bits, 3 = signed 16 bits. 2 and 3 read
+ *     two sequential state flags.
+ */
+int vs_battle_script_1B_setPrintfArgInt(u_char* script, UNUSED short arg1)
 {
-    int temp_s0 = vs_battle_getShort(arg0 + 2) & 0x3FF;
-    switch (arg0[3] >> 6) {
+    int flag = getShort(script + 2) & 0x3FF;
+
+    switch (script[3] >> 6) {
     case 0:
-        vs_battle_stringContext.integers[arg0[1]] = vs_battle_getStateFlag(temp_s0);
+        vs_battle_printfArgs.integers[script[1]] = getStateFlag(flag);
         break;
+
     case 1:
-        vs_battle_stringContext.integers[arg0[1]] =
-            (signed char)vs_battle_getStateFlag(temp_s0);
+        vs_battle_printfArgs.integers[script[1]] = (signed char)getStateFlag(flag);
         break;
+
     case 2:
-        vs_battle_stringContext.integers[arg0[1]] =
-            vs_battle_getStateFlag(temp_s0)
-            | ((vs_battle_getStateFlag(temp_s0 + 1)) << 8);
+        vs_battle_printfArgs.integers[script[1]] =
+            getStateFlag(flag) | ((getStateFlag(flag + 1)) << 8);
         break;
+
     case 3:
-        vs_battle_stringContext.integers[arg0[1]] =
-            (short)(vs_battle_getStateFlag(temp_s0)
-                    | ((vs_battle_getStateFlag(temp_s0 + 1)) << 8));
+        vs_battle_printfArgs.integers[script[1]] =
+            (short)(getStateFlag(flag) | ((getStateFlag(flag + 1)) << 8));
         break;
     }
-    return 0;
+
+    return vs_battle_scriptNext;
 }
 
-int func_800B7358(u_char* arg0, short arg1)
+/**
+ * @param script Opcode bytes:
+ *   - [1] = (boxId << 5) | animation duration (0-31)
+ */
+int vs_battle_script_1D_setTextBoxAnimationDuration(u_char* script, UNUSED short arg1)
 {
-    vs_battle_getTextBox(arg0[1] >> 5)->unk22 = arg0[1] & 0x1F;
-    return 0;
+    vs_battle_getTextBox(script[1] >> 5)->animationDuration = script[1] & 0x1F;
+
+    return vs_battle_scriptNext;
 }
 
-int vs_battle_script_selectTextBox(u_char* script, UNUSED short arg1)
+/**
+ * @param script Opcode bytes:
+ *   - [1] = mask of the text boxes to choose between, bit n is box n
+ */
+int vs_battle_script_1C_selectTextBox(u_char* script, UNUSED short arg1)
 {
-    if (D_800F4C2C == 2) {
-        return 0;
+    if (scriptSkipMode == vs_battle_scriptSkipping) {
+        return vs_battle_scriptNext;
     }
 
-    if (_textBoxSelectionPending != 0) {
-        short temp_v0 = vs_battle_selectTextBox(script[1]);
-        if ((temp_v0 << 0x10) != 0) {
-            vs_battle_setStateFlag(0x10, temp_v0);
-            _textBoxSelectionPending = 0;
-            return 0;
+    if (textBoxSelectionPending != 0) {
+
+        short selection = selectTextBox(script[1]);
+
+        if ((selection << 0x10) != 0) {
+            // The first scratch flag returns the choice (1-based) to the script
+            vs_battle_setStateFlag(scriptScratch, selection);
+
+            textBoxSelectionPending = 0;
+
+            return vs_battle_scriptNext;
         }
     } else {
-        vs_battle_selectTextBox(script[1]);
-        _textBoxSelectionPending = 1;
+        selectTextBox(script[1]);
+        textBoxSelectionPending = 1;
     }
-    return 1;
+
+    return vs_battle_scriptRepeat;
 }
 
-int func_800B7428(u_char* arg0, short arg1)
+/**
+ * @param script Opcode bytes:
+ *   - [1-2] = actor selector, a single actor or a group
+ *   - [3] = nonzero: play the death animation first, 0: start the fade-out directly
+ */
+int vs_battle_script_1E_actorDeath(u_char* script, UNUSED short arg1)
 {
-    func_800BB68C_t sp10;
+    ActorList actors;
 
-    func_800BB68C(vs_battle_getShort(arg0 + 1), &sp10);
+    expandActorSelector(getShort(script + 1), &actors);
+
     while (1) {
-        int temp_a0 = func_800BB788(&sp10);
-        if (temp_a0 == 1) {
+        int actorId = nextActor(&actors);
+
+        if (actorId == 1) {
             break;
         }
-        func_8007C348(temp_a0, arg0[3]);
+
+        triggerActorDeath(actorId, script[3]);
     }
-    return 0;
+
+    return vs_battle_scriptNext;
 }
 
-int func_800B7490(u_char* arg0, short arg1)
+/**
+ * @param script Opcode bytes:
+ *   - [1-2] = actor selector
+ *   - [3-4] = first of three consecutive state flags that receive the actor's tile
+ *     x, surface and z. The first flag is set to 0xFF if the actor does not exist.
+ */
+int vs_battle_script_1F_getActorTile(u_char* script, UNUSED short arg1)
 {
-    vs_battle_actorPosition position;
-    u_short actor = vs_battle_getShort(arg0 + 1);
-    u_short flag = vs_battle_getShort(arg0 + 3);
+    vs_ActorPosition position;
+    u_short actor = getShort(script + 1);
+    u_short flag = getShort(script + 3);
 
     if (actor & 0x1000) {
+
         actor &= 0x1F;
-        if (vs_battle_getActor(actor) == NULL) {
+
+        if (getActor(actor) == NULL) {
             vs_battle_setStateFlag(flag, 0xFF);
-            return 0;
+            return vs_battle_scriptNext;
         }
     } else {
+
         actor = func_8007CF18(actor);
+
         if (actor == 1) {
             vs_battle_setStateFlag(flag, 0xFF);
-            return 0;
+            return vs_battle_scriptNext;
         }
     }
-    func_800A1108(actor, &position);
+
+    vs_battle_getActorPosition(actor, &position);
     vs_battle_setStateFlag(flag, position.unk0.unk0.x);
     vs_battle_setStateFlag(flag + 1, position.unk0.unk0.surface);
     vs_battle_setStateFlag(flag + 2, position.unk0.unk0.z);
-    return 0;
+
+    return vs_battle_scriptNext;
 }
 
-int func_800B7574(u_char* arg0, short arg1)
+/**
+ * @param script Opcode bytes:
+ *   - [1-2] = actor selector for the empty slot to create the actor in
+ *   - [3-4] = model index (OBJ/xx.SHP), doubles as the id the actor is looked up by
+ *   - [5-8] = tile to spawn on and facing: x, surface, z and facing (1/256 turn)
+ */
+int vs_battle_script_20_spawnActor(u_char* script, UNUSED short arg1)
 {
-    u_char sp10[12];
+    vs_battle_tilePosition tile[3];
 
-    sp10[0] = arg0[5];
-    sp10[1] = arg0[6];
-    sp10[2] = arg0[7];
-    sp10[3] = arg0[8];
-    func_8007C928(func_800BFE50(vs_battle_getShort(arg0 + 1)),
-        vs_battle_getShort(arg0 + 3), (vs_battle_objectData_flags*)(sp10));
-    return 0;
+    tile[0].x = script[5];
+    tile[0].surface = script[6];
+    tile[0].z = script[7];
+    tile[0].extra = script[8];
+
+    spawnModelActor(resolveActorId(getShort(script + 1)), getShort(script + 3), tile);
+
+    return vs_battle_scriptNext;
 }
 
-int func_800B75F4(u_char* arg0, short arg1)
+/**
+ * @param script Opcode bytes:
+ *   - [1-2] = actor selector
+ *   - [3] = tile x
+ *   - [4] = unused
+ *   - [5] = tile z
+ */
+int vs_battle_script_21_walkToTile(u_char* script, UNUSED short arg1)
 {
-    SVECTOR sp10;
-    u_short temp_v0 = func_800BFE50(vs_battle_getShort(arg0 + 1));
-    sp10.vx = (arg0[3] << 7) + 0x40;
-    sp10.vy = 0;
-    sp10.vz = (arg0[5] << 7) + 0x40;
-    if (D_800F4C2C == 2) {
-        sp10.pad = -0x8000;
-        func_800A9D90(temp_v0, &sp10, 0);
+    SVECTOR destination;
+    u_short actor = resolveActorId(getShort(script + 1));
+
+    destination.vx = (script[3] << 7) + 0x40;
+    destination.vy = 0;
+    destination.vz = (script[5] << 7) + 0x40;
+
+    if (scriptSkipMode == vs_battle_scriptSkipping) {
+        destination.pad = -0x8000;
+        func_800A9D90(actor, &destination, 0);
     } else {
-        func_8007CFF8(temp_v0, &sp10);
+        func_8007CFF8(actor, &destination);
     }
-    func_8009DC8C(temp_v0);
-    D_800F4B70[temp_v0] = 1;
-    return 0;
+
+    func_8009DC8C(actor);
+
+    D_800F4B70[actor] = 1;
+
+    return vs_battle_scriptNext;
 }
 
-int func_800B76A8(u_char* arg0)
+/**
+ * @param script Opcode bytes:
+ *   - [1-2] = actor selector
+ *   - [3] = animation index within the bank
+ *   - [4] = unused
+ *   - [5] = (bank << 6) | blend frames, the bank selects the base id in animationBankBase
+ */
+int vs_battle_script_22_playAnimation(u_char* script, UNUSED short arg1)
 {
-    func_800A0204(func_800BFE50(vs_battle_getShort(arg0 + 1)),
-        D_800E9B58[arg0[5] >> 6] + arg0[3], arg0[4], arg0[5] & 0x3F);
-    return 0;
+    vs_battle_setActorAnimation(resolveActorId(getShort(script + 1)),
+        animationBankBase[script[5] >> 6] + script[3], script[4], script[5] & 0x3F);
+
+    return vs_battle_scriptNext;
 }
 
-int func_800B770C(u_char* arg0, short arg1)
+/**
+ * @param script Opcode bytes:
+ *   - [1-2] = actor selector
+ *   - [3] = actor flags: bit 0 enabled, bit 1 visible, bit 2 frozen, bit 6 unknown
+ *   - [4] = flags for the weapon models and the actor list:
+ *     - bit 0: new flag value for the blade model
+ *     - bit 1: leave the blade model's flag unchanged (ignores bit 0)
+ *     - bit 2: new flag value for the shield model
+ *     - bit 3: leave the shield model's flag unchanged (ignores bit 2)
+ *     - bit 5: toggle actor deactivation
+ */
+int vs_battle_script_23_setActorFlags(u_char* script, UNUSED short arg1)
 {
-    func_800BB68C_t sp10;
-    int temp_s0;
-    int var_s1;
-    int var_s2;
-    int temp_v0;
-    u_int a1;
+    ActorList actors;
 
-    func_800BB68C(vs_battle_getShort(arg0 + 1), &sp10);
+    expandActorSelector(getShort(script + 1), &actors);
 
     while (1) {
-        temp_s0 = func_800BB788(&sp10);
-        if (temp_s0 == 1) {
+        int shieldFlag;
+        int bladeFlag;
+        int flags;
+        u_int options;
+        int actor = nextActor(&actors);
+
+        if (actor == 1) {
             break;
         }
-        temp_v0 = func_800A0BE0(temp_s0);
-        var_s2 = temp_v0 & 0x800;
-        var_s1 = temp_v0 & 0x1000;
-        a1 = arg0[4];
-        if (!(a1 & 2)) {
-            var_s2 = (a1 & 1) << 0xB;
+
+        flags = vs_battle_getActorFlags(actor);
+        bladeFlag = flags & 0x800;
+        shieldFlag = flags & 0x1000;
+        options = script[4];
+
+        if (!(options & 2)) {
+            bladeFlag = (options & 1) << 0xB;
         }
-        if (!(a1 & 8)) {
-            var_s1 = (a1 << 0xA) & 0x1000;
+
+        if (!(options & 8)) {
+            shieldFlag = (options << 0xA) & 0x1000;
         }
-        func_8007D1A8(temp_s0, (a1 >> 5) & 1);
-        func_800A087C(temp_s0, var_s2 | var_s1 | arg0[3]);
-        func_8009D88C(temp_s0);
+
+        setActorInactive(actor, (options >> 5) & 1);
+        vs_battle_setActorFlags(actor, bladeFlag | shieldFlag | script[3]);
+        func_8009D88C(actor);
     }
-    return 0;
+
+    return vs_battle_scriptNext;
 }
 
-int func_800B77DC(u_char* arg0, short arg1)
+int vs_battle_script_24(u_char* arg0, UNUSED short arg1)
 {
     D_800F4538_unk64 sp10;
     int var_a0;
@@ -825,23 +1013,23 @@ int func_800B77DC(u_char* arg0, short arg1)
     sp10.unk1 = arg0[4];
     sp10.unk2 = arg0[5];
     sp10.unk3 = arg0[6];
-    var_a0 = func_800BFE50(vs_battle_getShort(arg0 + 1));
+    var_a0 = resolveActorId(getShort(arg0 + 1));
     if (var_a0 == 0x2001) {
         var_a0 = -1;
     }
     func_8009F990(var_a0, &sp10);
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int func_800B784C(u_char* arg0, short arg1)
+int vs_battle_script_25(u_char* arg0, UNUSED short arg1)
 {
     vs_battle_tilePosition sp10[3];
-    u_short temp_v0 = func_800BFE50(vs_battle_getShort(arg0 + 1));
+    u_short temp_v0 = resolveActorId(getShort(arg0 + 1));
     sp10[0].x = arg0[3];
     sp10[0].surface = arg0[4];
     sp10[0].z = arg0[5];
-    sp10[0].status = arg0[6];
-    if (D_800F4C2C == 2) {
+    sp10[0].extra = arg0[6];
+    if (scriptSkipMode == vs_battle_scriptSkipping) {
         func_800A97EC(temp_v0, sp10, 0, 0);
     } else {
         func_800A97EC(temp_v0, sp10, arg0[7] != 0xFF ? arg0[7] : -1,
@@ -849,20 +1037,20 @@ int func_800B784C(u_char* arg0, short arg1)
     }
     func_8009DC8C(temp_v0);
     D_800F4B70[temp_v0] = 1;
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int func_800B792C(u_char* arg0, short arg1)
+int vs_battle_script_26(u_char* arg0, UNUSED short arg1)
 {
-    vs_battle_actorPosition sp10;
+    vs_ActorPosition sp10;
 
-    u_short temp_s4 = func_800BFE50(vs_battle_getShort(arg0 + 1));
-    int temp_s1 = vs_battle_getShort(arg0 + 3) >> 1;
-    short temp_s2 = vs_battle_getShort(arg0 + 5);
-    short temp_s3 = vs_battle_getShort(arg0 + 7);
+    u_short temp_s4 = resolveActorId(getShort(arg0 + 1));
+    int temp_s1 = getShort(arg0 + 3) >> 1;
+    short temp_s2 = getShort(arg0 + 5);
+    short temp_s3 = getShort(arg0 + 7);
 
     if (arg0[3] & 1) {
-        func_800A1108(temp_s4, &sp10);
+        vs_battle_getActorPosition(temp_s4, &sp10);
         applyVector(&sp10.unk0.unk4, temp_s1, temp_s2, temp_s3, +=);
     } else {
         setVector(&sp10.unk0.unk4, temp_s1, temp_s2, temp_s3);
@@ -873,7 +1061,7 @@ int func_800B792C(u_char* arg0, short arg1)
     } else {
         sp10.unk0.unk4.pad = -0x8000;
     }
-    if (D_800F4C2C == 2) {
+    if (scriptSkipMode == vs_battle_scriptSkipping) {
         func_800A9988(temp_s4, &sp10.unk0.unk4, 0, 0);
     } else {
         func_800A9988(temp_s4, &sp10.unk0.unk4, arg0[10] != 0xFF ? arg0[10] : -1,
@@ -881,42 +1069,42 @@ int func_800B792C(u_char* arg0, short arg1)
     }
     func_8009DC8C(temp_s4);
     D_800F4B70[temp_s4] = 1;
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int func_800B7A98(u_char* arg0, short arg1)
+int vs_battle_script_27(u_char* arg0, UNUSED short arg1)
 {
     vs_battle_tilePosition sp10[4];
-    u_short temp_s0 = func_800BFE50(vs_battle_getShort(arg0 + 1));
+    u_short temp_s0 = resolveActorId(getShort(arg0 + 1));
     sp10[0].x = arg0[3];
     sp10[0].surface = arg0[4];
     sp10[0].z = arg0[5];
-    sp10[0].status = 0xFF;
-    if (D_800F4C2C == 2) {
+    sp10[0].extra = 0xFF;
+    if (scriptSkipMode == vs_battle_scriptSkipping) {
         func_800A9C54(temp_s0, sp10, 0);
     } else {
         func_800A9C54(temp_s0, sp10, arg0[6] != 0xFF ? arg0[6] : -1);
     }
     func_8009DC8C(temp_s0);
     D_800F4B70[temp_s0] = 1;
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int func_800B7B58(u_char* arg0, short arg1)
+int vs_battle_script_28(u_char* arg0, UNUSED short arg1)
 {
-    vs_battle_actorPosition sp10;
+    vs_ActorPosition sp10;
     short temp_s3;
     short temp_s4;
     int temp_s1;
     u_short temp_s2;
 
-    temp_s2 = func_800BFE50(vs_battle_getShort(arg0 + 1));
-    temp_s1 = vs_battle_getShort(arg0 + 3) >> 1;
-    temp_s3 = vs_battle_getShort(arg0 + 5);
-    temp_s4 = vs_battle_getShort(arg0 + 7);
+    temp_s2 = resolveActorId(getShort(arg0 + 1));
+    temp_s1 = getShort(arg0 + 3) >> 1;
+    temp_s3 = getShort(arg0 + 5);
+    temp_s4 = getShort(arg0 + 7);
 
     if (arg0[3] & 1) {
-        func_800A1108(temp_s2, &sp10);
+        vs_battle_getActorPosition(temp_s2, &sp10);
         applyVector(&sp10.unk0.unk4, temp_s1, temp_s3, temp_s4, +=);
     } else {
         setVector(&sp10.unk0.unk4, temp_s1, temp_s3, temp_s4);
@@ -924,7 +1112,7 @@ int func_800B7B58(u_char* arg0, short arg1)
 
     sp10.unk0.unk4.pad = -0x8000;
 
-    if (D_800F4C2C == 2) {
+    if (scriptSkipMode == vs_battle_scriptSkipping) {
         func_800A9D90(temp_s2, &sp10.unk0.unk4, 0);
     } else {
         func_800A9D90(temp_s2, &sp10.unk0.unk4, arg0[9] != 0xFF ? arg0[9] : -1);
@@ -932,29 +1120,29 @@ int func_800B7B58(u_char* arg0, short arg1)
 
     func_8009DC8C(temp_s2);
     D_800F4B70[temp_s2] = 1;
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int func_800B7C90(u_char* arg0, short arg1)
+int vs_battle_script_29(u_char* arg0, UNUSED short arg1)
 {
-    u_short temp_s1 = func_800BFE50(vs_battle_getShort(arg0 + 1));
-    u_int temp_a1 = func_800BFE50(vs_battle_getShort(arg0 + 3)) & 0xFFFF;
+    u_short temp_s1 = resolveActorId(getShort(arg0 + 1));
+    u_int temp_a1 = resolveActorId(getShort(arg0 + 3)) & 0xFFFF;
     if (temp_a1 >= 0x2000) {
         func_8009FFA8(temp_s1, temp_a1);
     } else {
         func_8009FF08(temp_s1, temp_a1, arg0[5], arg0[6]);
     }
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int func_800B7D10(u_char* arg0, short arg1)
+int vs_battle_script_2A(u_char* arg0, UNUSED short arg1)
 {
     SVECTOR sp10;
-    u_short temp_s1 = func_800BFE50(vs_battle_getShort(arg0 + 1) & 0xFFFF);
-    sp10.vx = vs_battle_getShort(arg0 + 3);
+    u_short temp_s1 = resolveActorId(getShort(arg0 + 1) & 0xFFFF);
+    sp10.vx = getShort(arg0 + 3);
     sp10.vy = 0;
-    sp10.vz = vs_battle_getShort(arg0 + 5);
-    if (D_800F4C2C == 2) {
+    sp10.vz = getShort(arg0 + 5);
+    if (scriptSkipMode == vs_battle_scriptSkipping) {
         sp10.pad = -0x8000;
         func_800A9D90(temp_s1, &sp10, 0);
     } else {
@@ -962,18 +1150,18 @@ int func_800B7D10(u_char* arg0, short arg1)
     }
     func_8009DC8C(temp_s1);
     D_800F4B70[temp_s1] = 1;
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int func_800B7DC4(u_char* arg0, short arg1)
+int vs_battle_script_2B(u_char* arg0, UNUSED short arg1)
 {
-    vs_battle_actorPosition sp10;
-    u_short temp_s1 = func_800BFE50(vs_battle_getShort(arg0 + 1));
+    vs_ActorPosition sp10;
+    u_short temp_s1 = resolveActorId(getShort(arg0 + 1));
     short var_s2 = arg0[5] != 0xFF ? arg0[5] : -1;
     int var_a1;
 
     if (arg0[4] != 0) {
-        func_800A1108(temp_s1, &sp10);
+        vs_battle_getActorPosition(temp_s1, &sp10);
         var_a1 = (arg0[3] << 4) - sp10.unk0.unk4.pad;
         if (var_a1 < -ONE / 2) {
             var_a1 += ONE;
@@ -998,18 +1186,18 @@ int func_800B7DC4(u_char* arg0, short arg1)
         func_800A9EB4(temp_s1, arg0[3] << 4, var_s2);
     }
     D_800F4B70[temp_s1] = 1;
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int func_800B7EF0(u_char* arg0, short arg1)
+int vs_battle_script_2C(u_char* arg0, UNUSED short arg1)
 {
-    vs_battle_actorPosition sp10;
+    vs_ActorPosition sp10;
     int temp_s0;
     int temp_s0_2;
     int var_a2;
 
-    temp_s0 = func_800BFE50(vs_battle_getShort(arg0 + 1));
-    func_800A1108(func_800BFE50(vs_battle_getShort(arg0 + 3)), &sp10);
+    temp_s0 = resolveActorId(getShort(arg0 + 1));
+    vs_battle_getActorPosition(resolveActorId(getShort(arg0 + 3)), &sp10);
     var_a2 = -1;
     temp_s0_2 = temp_s0 & 0xFFFF;
     if (arg0[5] != 0xFF) {
@@ -1017,13 +1205,13 @@ int func_800B7EF0(u_char* arg0, short arg1)
     }
     func_800A9CDC(temp_s0_2, &sp10.unk0.unk0, var_a2);
     D_800F4B70[temp_s0_2] = 1;
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int func_800B7F84(u_char* arg0, short arg1)
+int vs_battle_script_2D(u_char* arg0, UNUSED short arg1)
 {
     vs_battle_tilePosition sp10;
-    int temp_s0 = func_800BFE50(vs_battle_getShort(arg0 + 1)) & 0xFFFF;
+    int temp_s0 = resolveActorId(getShort(arg0 + 1)) & 0xFFFF;
 
     sp10.x = arg0[3];
     sp10.surface = arg0[4];
@@ -1031,44 +1219,43 @@ int func_800B7F84(u_char* arg0, short arg1)
 
     func_800A9CDC(temp_s0, &sp10, arg0[6] != 0xFF ? arg0[6] : -1);
     D_800F4B70[temp_s0] = 1;
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int func_800B804C(u_char* arg0, short arg1)
+int vs_battle_script_2E(u_char* arg0, UNUSED short arg1)
 {
     SVECTOR sp10;
 
-    setVector(&sp10, vs_battle_getShort(arg0 + 3), vs_battle_getShort(arg0 + 5),
-        vs_battle_getShort(arg0 + 7));
-    func_800AABD0(func_800BFE50(vs_battle_getShort(arg0 + 1)), &sp10, arg0[9]);
-    return 0;
+    setVector(&sp10, getShort(arg0 + 3), getShort(arg0 + 5), getShort(arg0 + 7));
+    func_800AABD0(resolveActorId(getShort(arg0 + 1)), &sp10, arg0[9]);
+    return vs_battle_scriptNext;
 }
 
-int func_800B80B4(u_char* arg0, short arg1)
+int vs_battle_script_2F(u_char* arg0, UNUSED short arg1)
 {
-    func_800BB68C_t sp10;
+    ActorList sp10;
 
-    func_800BB68C(vs_battle_getShort(arg0 + 1), &sp10);
+    expandActorSelector(getShort(arg0 + 1), &sp10);
     while (1) {
-        int temp_a0 = func_800BB788(&sp10);
+        int temp_a0 = nextActor(&sp10);
         if (temp_a0 == 1) {
             break;
         }
         func_8007D340(temp_a0);
     }
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int func_800B810C(u_char* arg0)
+int vs_battle_script_30(u_char* arg0, UNUSED short arg1)
 {
     short temp_v0;
     u_short temp_s3;
     int temp_s2;
     u_short var_v0;
 
-    temp_s2 = func_800BFE50(vs_battle_getShort(arg0 + 1)) & 0xFFFF;
-    temp_s3 = func_800A0BE0(temp_s2) ^ 0x81;
-    temp_v0 = vs_battle_getShort(arg0 + 3);
+    temp_s2 = resolveActorId(getShort(arg0 + 1)) & 0xFFFF;
+    temp_s3 = vs_battle_getActorFlags(temp_s2) ^ 0x81;
+    temp_v0 = getShort(arg0 + 3);
 
     if (temp_v0 & 1) {
         if (func_8007D03C(temp_s2) == 0) {
@@ -1076,10 +1263,10 @@ int func_800B810C(u_char* arg0)
         }
     }
     var_v0 = (temp_s3 & temp_v0);
-    return var_v0 != 0;
+    return var_v0 != 0 ? vs_battle_scriptRepeat : vs_battle_scriptNext;
 }
 
-int func_800B81A0(u_char* arg0, short arg1)
+int vs_battle_script_31(u_char* arg0, UNUSED short arg1)
 {
     CVECTOR sp10;
 
@@ -1088,93 +1275,93 @@ int func_800B81A0(u_char* arg0, short arg1)
     sp10.b = arg0[5];
 
     if (sp10.r | sp10.g | sp10.b) {
-        func_800A07FC(func_800BFE50(vs_battle_getShort(arg0 + 1)), &sp10);
+        func_800A07FC(resolveActorId(getShort(arg0 + 1)), &sp10);
     } else {
-        func_800A07FC(func_800BFE50(vs_battle_getShort(arg0 + 1)), 0);
+        func_800A07FC(resolveActorId(getShort(arg0 + 1)), NULL);
     }
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int func_800B822C(u_char* arg0)
+int vs_battle_script_32(u_char* arg0, UNUSED short arg1)
 {
-    func_800A01C8(func_800BFE50(vs_battle_getShort(arg0 + 1)),
-        D_800E9B58[arg0[5] >> 6] + arg0[3], arg0[5] & 0x3F, 0);
-    return 0;
+    func_800A01C8(resolveActorId(getShort(arg0 + 1)),
+        animationBankBase[arg0[5] >> 6] + arg0[3], arg0[5] & 0x3F, 0);
+    return vs_battle_scriptNext;
 }
 
-int func_800B8290(u_char* arg0, short arg1)
+int vs_battle_script_33(u_char* arg0, UNUSED short arg1)
 {
     SVECTOR sp10;
     u_short temp_s2;
     short var_s1;
 
-    temp_s2 = func_800BFE50(vs_battle_getShort(arg0 + 1));
+    temp_s2 = resolveActorId(getShort(arg0 + 1));
     var_s1 = -1;
     if (arg0[10] != 0xFF) {
         var_s1 = arg0[10];
     }
-    sp10.vx = vs_battle_getShort(arg0 + 4);
-    sp10.vy = vs_battle_getShort(arg0 + 6);
-    sp10.vz = vs_battle_getShort(arg0 + 8);
+    sp10.vx = getShort(arg0 + 4);
+    sp10.vy = getShort(arg0 + 6);
+    sp10.vz = getShort(arg0 + 8);
     if (arg0[3] != 0) {
         func_800A9F64(temp_s2, &sp10, var_s1);
     } else {
         func_800A9FD0(temp_s2, &sp10, var_s1);
     }
     D_800F4B70[temp_s2] = 1;
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int func_800B8360(u_char* arg0, short arg1)
+int vs_battle_script_34(u_char* arg0, UNUSED short arg1)
 {
     SVECTOR sp10;
     int temp_v0;
     int var_a3;
 
-    sp10.vx = vs_battle_getShort(arg0 + 3);
-    sp10.vy = vs_battle_getShort(arg0 + 5);
+    sp10.vx = getShort(arg0 + 3);
+    sp10.vy = getShort(arg0 + 5);
     sp10.vz = 0;
-    temp_v0 = func_800BFE50(vs_battle_getShort(arg0 + 1));
+    temp_v0 = resolveActorId(getShort(arg0 + 1));
     var_a3 = 0x1000;
     if (arg0[7] != 0) {
         var_a3 = arg0[7];
     }
     func_8009FC60(temp_v0, -4, &sp10, var_a3);
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int func_800B83D4(u_char* arg0)
+int vs_battle_script_35(u_char* arg0, UNUSED short arg1)
 {
-    func_800A0618(func_800BFE50(vs_battle_getShort(arg0 + 1)),
-        D_800E9B58[arg0[6] >> 6] + arg0[3], arg0[6] & 0x3F, arg0[4]);
-    return 0;
+    func_800A0618(resolveActorId(getShort(arg0 + 1)),
+        animationBankBase[arg0[6] >> 6] + arg0[3], arg0[6] & 0x3F, arg0[4]);
+    return vs_battle_scriptNext;
 }
 
-int func_800B8438(u_char* arg0)
+int vs_battle_script_36(u_char* arg0, UNUSED short arg1)
 {
-    func_800A01C8(func_800BFE50(vs_battle_getShort(arg0 + 1)),
-        D_800E9B58[arg0[6] >> 6] + arg0[3], arg0[6] & 0x3F, arg0[4]);
-    return 0;
+    func_800A01C8(resolveActorId(getShort(arg0 + 1)),
+        animationBankBase[arg0[6] >> 6] + arg0[3], arg0[6] & 0x3F, arg0[4]);
+    return vs_battle_scriptNext;
 }
 
-int func_800B849C(u_char* arg0, short arg1)
+int vs_battle_script_37(u_char* arg0, UNUSED short arg1)
 {
-    int temp_a0 = func_800BFE50(vs_battle_getShort(arg0 + 1));
+    int temp_a0 = resolveActorId(getShort(arg0 + 1));
 
     if (arg0[4] == 0xFF) {
         func_8009FBD8(temp_a0, -1);
     } else {
-        func_8009FBD8(temp_a0, D_800E9B58[arg0[3]] + arg0[4]);
+        func_8009FBD8(temp_a0, animationBankBase[arg0[3]] + arg0[4]);
     }
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int func_800B8510(u_char* arg0, short arg1)
+int vs_battle_script_38(u_char* arg0, UNUSED short arg1)
 {
     int var_a3;
 
-    int temp_s0 = func_800BFE50(vs_battle_getShort(arg0 + 3));
-    int temp_a0 = func_800BFE50(vs_battle_getShort(arg0 + 1));
+    int temp_s0 = resolveActorId(getShort(arg0 + 3));
+    int temp_a0 = resolveActorId(getShort(arg0 + 1));
 
     int var_a1 = -2;
     if (temp_s0 != 0x2000) {
@@ -1186,65 +1373,64 @@ int func_800B8510(u_char* arg0, short arg1)
         var_a3 = arg0[5];
     }
     func_8009FC60(temp_a0, var_a1, 0, var_a3);
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int func_800B8590(u_char* arg0, short arg1)
+int vs_battle_script_39(u_char* arg0, UNUSED short arg1)
 {
     SVECTOR sp10;
     int temp_v0;
     int var_a3;
 
-    setVector(&sp10, vs_battle_getShort(arg0 + 3), vs_battle_getShort(arg0 + 5),
-        vs_battle_getShort(arg0 + 7));
-    temp_v0 = func_800BFE50(vs_battle_getShort(arg0 + 1));
+    setVector(&sp10, getShort(arg0 + 3), getShort(arg0 + 5), getShort(arg0 + 7));
+    temp_v0 = resolveActorId(getShort(arg0 + 1));
     var_a3 = 0x1000;
     if (arg0[9] != 0) {
         var_a3 = arg0[9];
     }
     func_8009FC60(temp_v0, -1, &sp10, var_a3);
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int func_800B860C(u_char* arg0, short arg1)
+int vs_battle_script_3A(u_char* arg0, UNUSED short arg1)
 {
     switch ((arg0[3] >> 2) & 3) {
     case 0:
-        func_8007CB84(arg0[3] & 3, vs_battle_getShort(arg0 + 1));
+        func_8007CB84(arg0[3] & 3, getShort(arg0 + 1));
         break;
     case 1:
-        func_8007CBDC(arg0[3] & 3, vs_battle_getShort(arg0 + 1), (arg0[3] >> 4) + 0x1A);
+        func_8007CBDC(arg0[3] & 3, getShort(arg0 + 1), (arg0[3] >> 4) + 0x1A);
         break;
     case 2:
-        vs_battle_loadEtm(
-            arg0[3] & 3, vs_battle_getShort(arg0 + 1), (arg0[3] >> 4) + 0x1A);
+        vs_battle_loadEtm(arg0[3] & 3, getShort(arg0 + 1), (arg0[3] >> 4) + 0x1A);
         break;
     }
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int func_800B86E8(u_char* arg0, short arg1)
+int vs_battle_script_3B(UNUSED u_char* arg0, UNUSED short arg1)
 {
-    return vs_battle_getEmptyObjectDataSlot2() > 0;
+    return getEmptyObjectDataSlot2() > 0 ? vs_battle_scriptRepeat : vs_battle_scriptNext;
 }
 
-int func_800B8708(u_char* arg0, short arg1)
+int vs_battle_script_3C(u_char* arg0, UNUSED short arg1)
 {
     if (arg0[1] & 4) {
         func_8007CC4C(arg0[1] & 3);
     } else {
         func_8007CBBC(arg0[1]);
     }
-    return (D_800F4C2C == 2) * 4;
+    return (scriptSkipMode == vs_battle_scriptSkipping) ? vs_battle_scriptYield
+                                                        : vs_battle_scriptNext;
 }
 
-int func_800B8764(u_char* arg0, short arg1)
+int vs_battle_script_3D(u_char* arg0, UNUSED short arg1)
 {
     func_8007CC6C(arg0[1]);
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int func_800B8788(u_char* arg0, short arg1)
+int vs_battle_script_3E(u_char* arg0, UNUSED short arg1)
 {
     CVECTOR sp10[6];
 
@@ -1257,173 +1443,171 @@ int func_800B8788(u_char* arg0, short arg1)
         sp10[2].g = arg0[4];
         sp10[2].b = arg0[5];
         sp10[2].cd = arg0[6];
-        func_8009F940(func_800BFE50(vs_battle_getShort(arg0 + 1)), 1, &sp10[2], &sp10[0]);
+        func_8009F940(resolveActorId(getShort(arg0 + 1)), 1, &sp10[2], &sp10[0]);
     } else {
-        func_8009F940(func_800BFE50(vs_battle_getShort(arg0 + 1)), 0, 0, 0);
+        func_8009F940(resolveActorId(getShort(arg0 + 1)), 0, NULL, NULL);
     }
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int func_800B884C(u_char* arg0, short arg1)
+int vs_battle_script_3F(u_char* arg0, UNUSED short arg1)
 {
-    func_800BB68C_t sp10;
+    ActorList sp10;
     int temp_a0;
 
-    func_800BB68C(vs_battle_getShort(arg0 + 1), &sp10);
+    expandActorSelector(getShort(arg0 + 1), &sp10);
 
     while (1) {
-        temp_a0 = func_800BB788(&sp10);
+        temp_a0 = nextActor(&sp10);
         if (temp_a0 == 1) {
             break;
         }
         func_8007C0AC(temp_a0, D_800E9B4C[arg0[3]]);
     }
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int vs_battle_script_jumpFwdIfFlag(u_char* arg0, UNUSED short arg1)
+int vs_battle_script_40_jumpFwdIfFlag(u_char* arg0, UNUSED short arg1)
 {
-    char temp_a0 =
-        vs_battle_getStateFlag(((u_char)arg0[2] >> 2) | ((arg0[1] & 0xF) << 6));
+    char temp_a0 = getStateFlag(((u_char)arg0[2] >> 2) | ((arg0[1] & 0xF) << 6));
     char temp_a1 = arg0[3];
 
     switch (arg0[1] & 0xF0) {
     case 0:
         if (temp_a1 >= temp_a0) {
-            return (int)NULL;
+            return vs_battle_scriptNext;
         }
         break;
     case 16:
         if (temp_a0 >= temp_a1) {
-            return (int)NULL;
+            return vs_battle_scriptNext;
         }
         break;
     case 32:
         if (temp_a0 == temp_a1) {
-            return (int)NULL;
+            return vs_battle_scriptNext;
         }
         break;
     case 48:
         if (temp_a0 != temp_a1) {
-            return (int)NULL;
+            return vs_battle_scriptNext;
         }
         break;
     case 64:
         if (temp_a0 < temp_a1) {
-            return (int)NULL;
+            return vs_battle_scriptNext;
         }
         break;
     case 80:
         if (temp_a1 < temp_a0) {
-            return (int)NULL;
+            return vs_battle_scriptNext;
         }
         break;
     case 96:
         if (temp_a0 & temp_a1) {
-            return (int)NULL;
+            return vs_battle_scriptNext;
         }
         break;
     }
-    return (long)&arg0[vs_battle_getShort(arg0 + 4)];
+    return (long)&arg0[getShort(arg0 + 4)];
 }
 
-int vs_battle_script_jumpFwdIfFlags(u_char* arg0, UNUSED short arg1)
+int vs_battle_script_41_jumpFwdIfFlags(u_char* arg0, UNUSED short arg1)
 {
-    char temp_s0 =
-        vs_battle_getStateFlag(((u_char)arg0[2] >> 2) | ((arg0[1] & 0xF) << 6));
-    char temp_a0 = vs_battle_getStateFlag(arg0[3] | ((arg0[2] & 3) << 8));
+    char temp_s0 = getStateFlag(((u_char)arg0[2] >> 2) | ((arg0[1] & 0xF) << 6));
+    char temp_a0 = getStateFlag(arg0[3] | ((arg0[2] & 3) << 8));
 
     switch (arg0[1] & 0xF0) {
     case 0:
         if (temp_s0 <= temp_a0) {
-            return (int)NULL;
+            return vs_battle_scriptNext;
         }
         break;
     case 16:
         if (temp_s0 >= temp_a0) {
-            return (int)NULL;
+            return vs_battle_scriptNext;
         }
         break;
     case 32:
         if (temp_s0 == temp_a0) {
-            return (int)NULL;
+            return vs_battle_scriptNext;
         }
         break;
     case 48:
         if (temp_s0 != temp_a0) {
-            return (int)NULL;
+            return vs_battle_scriptNext;
         }
         break;
     case 64:
         if (temp_s0 < temp_a0) {
-            return (int)NULL;
+            return vs_battle_scriptNext;
         }
         break;
     case 80:
         if (temp_s0 > temp_a0) {
-            return (int)NULL;
+            return vs_battle_scriptNext;
         }
         break;
     }
-    return (long)&arg0[vs_battle_getShort(arg0 + 4)];
+    return (long)&arg0[getShort(arg0 + 4)];
 }
 
-int vs_battle_script_jumpFwd(u_char* arg0, UNUSED short arg1)
+int vs_battle_script_42_jumpFwd(u_char* arg0, UNUSED short arg1)
 {
-    return (long)&arg0[vs_battle_getShort(arg0 + 1)];
+    return (long)&arg0[getShort(arg0 + 1)];
 }
 
-int vs_battle_script_jumpFwd2(u_char* arg0, UNUSED short arg1)
+int vs_battle_script_45_jumpFwd2(u_char* arg0, UNUSED short arg1)
 {
-    return (long)&arg0[vs_battle_getShort(arg0 + 1)];
+    return (long)&arg0[getShort(arg0 + 1)];
 }
 
-int vs_battle_script_setFlagImmContext(u_char* arg0, UNUSED short arg1)
+int vs_battle_script_46_setFlagImmContext(u_char* arg0, UNUSED short arg1)
 {
-    D_800F4BB4 = vs_battle_getStateFlag(vs_battle_getShort(arg0 + 1));
-    return 0;
+    D_800F4BB4 = getStateFlag(getShort(arg0 + 1));
+    return vs_battle_scriptNext;
 }
 
-int vs_battle_script_jumpFwdIfFlagContext(u_char* arg0, UNUSED short arg1)
+int vs_battle_script_47_jumpFwdIfFlagContext(u_char* arg0, UNUSED short arg1)
 {
     if (D_800F4BB4 == arg0[1]) {
-        return (long)&arg0[vs_battle_getShort(arg0 + 2)];
+        return (long)&arg0[getShort(arg0 + 2)];
     }
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int func_800B8C44(u_char* arg0, short arg1) { return D_800F4C64; }
+int vs_battle_script_48(UNUSED u_char* arg0, UNUSED short arg1) { return D_800F4C64; }
 
-int func_800B8C54(u_char* arg0, short arg1)
+int vs_battle_script_49(u_char* arg0, UNUSED short arg1)
 {
     if (arg0[1] != 0xFF) {
         D_800F4C10[arg0[1]] = arg0[2];
     }
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int vs_battle_script_jumpBackIf(u_char* arg0, UNUSED short arg1)
+int vs_battle_script_4A_jumpBackIf(u_char* arg0, UNUSED short arg1)
 {
     if (arg0[1] == 0xFF) {
-        return (long)&arg0[-vs_battle_getShort(arg0 + 2)];
+        return (long)&arg0[-getShort(arg0 + 2)];
     }
     if (--D_800F4C10[arg0[1]] != 0) {
-        return (long)&arg0[-vs_battle_getShort(arg0 + 2)];
+        return (long)&arg0[-getShort(arg0 + 2)];
     }
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int vs_battle_script_jumpFwd3(u_char* arg0, UNUSED short arg1)
+int vs_battle_script_4C_jumpFwd3(u_char* arg0, UNUSED short arg1)
 {
-    return (long)&arg0[vs_battle_getShort(arg0 + 1)];
+    return (long)&arg0[getShort(arg0 + 1)];
 }
 
-int vs_battle_script_jumpFwd4(u_char* arg0, UNUSED short arg1)
+int vs_battle_script_4B_jumpFwd4(u_char* arg0, UNUSED short arg1)
 {
-    return (long)&arg0[vs_battle_getShort(arg0 + 1)];
+    return (long)&arg0[getShort(arg0 + 1)];
 }
 
-int vs_battle_script_setFlagImm(u_char* arg0, UNUSED short arg1)
+int vs_battle_script_50_setFlagImm(u_char* arg0, UNUSED short arg1)
 {
     int temp_a1 = arg0[1];
     short temp_s1 = arg0[3];
@@ -1431,34 +1615,34 @@ int vs_battle_script_setFlagImm(u_char* arg0, UNUSED short arg1)
 
     switch (temp_a1 & 0xF0) {
     case 0x0:
-        vs_battle_setStateFlag(temp_s0, vs_battle_getStateFlag(temp_s0) + temp_s1);
+        vs_battle_setStateFlag(temp_s0, getStateFlag(temp_s0) + temp_s1);
         break;
     case 0x10:
-        vs_battle_setStateFlag(temp_s0, vs_battle_getStateFlag(temp_s0) - temp_s1);
+        vs_battle_setStateFlag(temp_s0, getStateFlag(temp_s0) - temp_s1);
         break;
     case 0x20:
-        vs_battle_setStateFlag(temp_s0, vs_battle_getStateFlag(temp_s0) * temp_s1);
+        vs_battle_setStateFlag(temp_s0, getStateFlag(temp_s0) * temp_s1);
         break;
     case 0x30:
-        vs_battle_setStateFlag(temp_s0, vs_battle_getStateFlag(temp_s0) / temp_s1);
+        vs_battle_setStateFlag(temp_s0, getStateFlag(temp_s0) / temp_s1);
         break;
     case 0x40:
-        vs_battle_setStateFlag(temp_s0, vs_battle_getStateFlag(temp_s0) % temp_s1);
+        vs_battle_setStateFlag(temp_s0, getStateFlag(temp_s0) % temp_s1);
         break;
     case 0x50:
-        vs_battle_setStateFlag(temp_s0, vs_battle_getStateFlag(temp_s0) & temp_s1);
+        vs_battle_setStateFlag(temp_s0, getStateFlag(temp_s0) & temp_s1);
         break;
     case 0x60:
-        vs_battle_setStateFlag(temp_s0, vs_battle_getStateFlag(temp_s0) | temp_s1);
+        vs_battle_setStateFlag(temp_s0, getStateFlag(temp_s0) | temp_s1);
         break;
     case 0x70:
         vs_battle_setStateFlag(temp_s0, temp_s1);
         break;
     }
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int vs_battle_script_setFlag(u_char* arg0, UNUSED short arg1)
+int vs_battle_script_51_setFlag(u_char* arg0, UNUSED short arg1)
 {
     int tmp;
     char prev;
@@ -1468,96 +1652,89 @@ int vs_battle_script_setFlag(u_char* arg0, UNUSED short arg1)
 
     switch (arg0[1] & 0xF0) {
     case 0x0:
-        vs_battle_setStateFlag(
-            flag0, vs_battle_getStateFlag(flag0) + vs_battle_getStateFlag(flag1));
+        vs_battle_setStateFlag(flag0, getStateFlag(flag0) + getStateFlag(flag1));
         break;
     case 0x10:
-        vs_battle_setStateFlag(
-            flag0, vs_battle_getStateFlag(flag0) - vs_battle_getStateFlag(flag1));
+        vs_battle_setStateFlag(flag0, getStateFlag(flag0) - getStateFlag(flag1));
         break;
     case 0x20:
-        vs_battle_setStateFlag(
-            flag0, vs_battle_getStateFlag(flag0) * vs_battle_getStateFlag(flag1));
+        vs_battle_setStateFlag(flag0, getStateFlag(flag0) * getStateFlag(flag1));
         break;
     case 0x30:
-        vs_battle_setStateFlag(
-            flag0, vs_battle_getStateFlag(flag0) / vs_battle_getStateFlag(flag1));
+        vs_battle_setStateFlag(flag0, getStateFlag(flag0) / getStateFlag(flag1));
         break;
     case 0x40:
-        vs_battle_setStateFlag(
-            flag0, vs_battle_getStateFlag(flag0) % vs_battle_getStateFlag(flag1));
+        vs_battle_setStateFlag(flag0, getStateFlag(flag0) % getStateFlag(flag1));
         break;
     case 0x50:
-        vs_battle_setStateFlag(
-            flag0, vs_battle_getStateFlag(flag0) & vs_battle_getStateFlag(flag1));
+        vs_battle_setStateFlag(flag0, getStateFlag(flag0) & getStateFlag(flag1));
         break;
     case 0x60:
-        vs_battle_setStateFlag(
-            flag0, vs_battle_getStateFlag(flag0) | vs_battle_getStateFlag(flag1));
+        vs_battle_setStateFlag(flag0, getStateFlag(flag0) | getStateFlag(flag1));
         break;
     case 0x70:
-        vs_battle_setStateFlag(flag0, vs_battle_getStateFlag(flag1));
+        vs_battle_setStateFlag(flag0, getStateFlag(flag1));
         break;
     case 0x80:
-        tmp = vs_battle_getStateFlag(flag0) - vs_battle_getStateFlag(flag1);
+        tmp = getStateFlag(flag0) - getStateFlag(flag1);
         vs_battle_setStateFlag(flag0, ABS(tmp));
         break;
     case 0x90:
-        prev = vs_battle_getStateFlag(flag0);
-        vs_battle_setStateFlag(flag0, vs_battle_getStateFlag(flag1));
+        prev = getStateFlag(flag0);
+        vs_battle_setStateFlag(flag0, getStateFlag(flag1));
         vs_battle_setStateFlag(flag1, prev);
         break;
     }
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int vs_battle_script_setFlagIfItemInInventory(u_char* arg0, UNUSED short arg1)
+int vs_battle_script_52_setFlagIfItemInInventory(u_char* arg0, UNUSED short arg1)
 {
-    vs_battle_setStateFlag(vs_battle_getShort(arg0 + 3),
-        vs_battle_itemIdIsInInventory(vs_battle_getShort(arg0 + 1)));
-    return 0;
+    vs_battle_setStateFlag(
+        getShort(arg0 + 3), vs_battle_itemIdIsInInventory(getShort(arg0 + 1)));
+    return vs_battle_scriptNext;
 }
 
-int vs_battle_script_resetZoneEnemies(u_char* arg0, UNUSED short arg1)
+int vs_battle_script_53_resetZoneEnemies(u_char* arg0, UNUSED short arg1)
 {
     vs_battle_forgetZoneEnemies(arg0[2], arg0[1]);
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int func_800B91F0(u_char* arg0, short arg1)
+int vs_battle_script_54(u_char* arg0, UNUSED short arg1)
 {
-    func_8009DBDC(func_800BFE50(vs_battle_getShort(arg0 + 1)), arg0[3]);
-    return 0;
+    func_8009DBDC(resolveActorId(getShort(arg0 + 1)), arg0[3]);
+    return vs_battle_scriptNext;
 }
 
-int func_800B9230(u_char* arg0, short arg1)
+int vs_battle_script_55(u_char* arg0, UNUSED short arg1)
 {
     func_8007D15C(arg0[1]);
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int vs_battle_script_setFlagIfButton(u_char* arg0, UNUSED short arg1)
+int vs_battle_script_56_setFlagIfButton(u_char* arg0, UNUSED short arg1)
 {
-    short temp_v0 = vs_battle_getShort(arg0 + 1);
+    short temp_v0 = getShort(arg0 + 1);
     vs_battle_setStateFlag(temp_v0 & 0x3FF, temp_v0 & 0x8000
                                                 ? vs_main_buttonsPressed.pad[0].low
                                                 : vs_main_buttonsPreviousState);
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int func_800B92A0(u_char* arg0, short arg1)
+int vs_battle_script_57(u_char* arg0, UNUSED short arg1)
 {
-    func_8007C28C(func_800BFE50(vs_battle_getShort(arg0 + 1)));
-    return 0;
+    func_8007C28C(resolveActorId(getShort(arg0 + 1)));
+    return vs_battle_scriptNext;
 }
 
-int func_800B92D0(u_char* arg0, short arg1)
+int vs_battle_script_58(u_char* arg0, UNUSED short arg1)
 {
     func_8007BD8C(arg0[1] ^ 1);
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int func_800B92F4(u_char* script, UNUSED short arg1)
+int vs_battle_script_59(u_char* script, UNUSED short arg1)
 {
     switch (script[1]) {
     case 10:
@@ -1567,38 +1744,38 @@ int func_800B92F4(u_char* script, UNUSED short arg1)
             vs_battle_setStateFlag(0xB6, D_800E9BF0[script[1] - 10]);
             func_8007B9A0();
             D_800F4BF8 = 1;
-            return 1;
+            return vs_battle_scriptRepeat;
         }
 
         goto finishState;
 
     case 14:
         if (D_800F4BF8 == 0) {
-            if (vs_battle_getStateFlag(0xB6) == 1) {
+            if (getStateFlag(0xB6) == 1) {
                 vs_battle_setStateFlag(0xB6, 2);
             }
 
             func_8007B9A0();
             D_800F4C69 = 2;
             D_800F4BF8 = 1;
-            return 1;
+            return vs_battle_scriptRepeat;
         }
 
     finishState:
         if (func_8007B9FC() != 0) {
-            return 1;
+            return vs_battle_scriptRepeat;
         }
 
         vs_battle_setStateFlag(0xB6, 0);
         D_800F4BF8 = 0;
-        return 4;
+        return vs_battle_scriptYield;
 
     case 13:
         if (D_800F4BF8 == 0) {
             vs_battle_setStateFlag(0xB6, 1);
             func_8007B9A0();
             D_800F4BF8 = 1;
-            return 1;
+            return vs_battle_scriptRepeat;
         }
 
         goto finishTransition;
@@ -1607,22 +1784,22 @@ int func_800B92F4(u_char* script, UNUSED short arg1)
         if (D_800F4BF8 == 0) {
             func_8007B9CC();
             D_800F4BF8 = 1;
-            return 1;
+            return vs_battle_scriptRepeat;
         }
 
     finishTransition:
         if (func_8007B9FC() == 0) {
             D_800F4BF8 = 0;
-            return 4;
+            return vs_battle_scriptYield;
         }
 
-        return 1;
+        return vs_battle_scriptRepeat;
 
     default:
         if (D_800F4BF8 == 0) {
             func_800CACD0(script[1], 2);
             D_800F4BF8 = 1;
-            return 1;
+            return vs_battle_scriptRepeat;
         }
 
         func_800C97BC();
@@ -1633,13 +1810,13 @@ int func_800B92F4(u_char* script, UNUSED short arg1)
             break;
         }
 
-        return 1;
+        return vs_battle_scriptRepeat;
     }
 
-    return 4;
+    return vs_battle_scriptYield;
 }
 
-int func_800B94D8(u_char* arg0, short arg1)
+int vs_battle_script_5A(u_char* arg0, UNUSED short arg1)
 {
     if (arg0[1] != 0) {
         func_8007BBD8(D_800E9BF4[arg0[3]], D_800E9BF8[arg0[2]],
@@ -1647,61 +1824,61 @@ int func_800B94D8(u_char* arg0, short arg1)
     } else {
         func_8007BCCC();
     }
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int func_800B9564(u_char* arg0, short arg1)
+int vs_battle_script_5B_setTextBoxSpeaker(u_char* arg0, UNUSED short arg1)
 {
-    vs_battle_textBox* temp_s1;
+    vs_TextBox* temp_s1;
     u_short temp_s0;
     int var_a0;
 
-    temp_s0 = vs_battle_getShort(arg0 + 2);
+    temp_s0 = getShort(arg0 + 2);
     temp_s1 = vs_battle_getTextBox(arg0[1] & 0xF);
 
     if (temp_s0 < 0x2000) {
-        var_a0 = func_800BFE50(temp_s0);
+        var_a0 = resolveActorId(temp_s0);
     } else {
         var_a0 = 0x20;
     }
-    temp_s1->unk0.unk0_24 = var_a0;
-    temp_s1->unk2E = arg0[1] >> 4;
-    return 0;
+    temp_s1->unk0.speakerActor = var_a0;
+    temp_s1->speakerAnimation = arg0[1] >> 4;
+    return vs_battle_scriptNext;
 }
 
-int func_800B9608(u_char* arg0, short arg1)
+int vs_battle_script_5C(u_char* arg0, UNUSED short arg1)
 {
-    u_short temp_a0 = func_800BFE50(vs_battle_getShort(arg0 + 1));
+    u_short temp_a0 = resolveActorId(getShort(arg0 + 1));
 
     if (arg0[3] == 0xFE) {
         func_8007CAA4(temp_a0);
     } else {
         func_8007CA20(temp_a0, arg0[3], arg0[5]);
     }
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int func_800B9670(u_char* arg0, short arg1)
+int vs_battle_script_5D(u_char* arg0, UNUSED short arg1)
 {
-    func_8009D7E8(func_800BFE50(vs_battle_getShort(arg0 + 1)), arg0[3]);
-    return 0;
+    func_8009D7E8(resolveActorId(getShort(arg0 + 1)), arg0[3]);
+    return vs_battle_scriptNext;
 }
 
-int func_800B96B0(u_char* arg0, short arg1)
+int vs_battle_script_5E(u_char* arg0, short arg1)
 {
     if (D_800F4C58[arg1] == 0) {
         D_800F4C58[arg1] = arg0[2];
-        return 1;
+        return vs_battle_scriptRepeat;
     }
     if ((vs_main_buttonsPressed.all & arg0[1]) || (--D_800F4C58[arg1] <= 0)) {
         D_800F4C58[arg1] = 0;
         vs_main_buttonsPressed.all = 0;
-        return 0;
+        return vs_battle_scriptNext;
     }
-    return 1;
+    return vs_battle_scriptRepeat;
 }
 
-int func_800B9724(u_char* arg0, short arg1)
+int vs_battle_script_5F(u_char* arg0, UNUSED short arg1)
 {
     int var_v1;
     u_char* temp_a1;
@@ -1716,64 +1893,64 @@ int func_800B9724(u_char* arg0, short arg1)
         var_v1 |= 0xF8;
     }
     temp_a1[1] = var_v1;
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int func_800B9770(u_char* arg0, short arg1)
+int vs_battle_script_60(u_char* arg0, UNUSED short arg1)
 {
     func_8008E224(arg0[1], arg0[2]);
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int func_800B979C(u_char* arg0, short arg1)
+int vs_battle_script_61(u_char* arg0, UNUSED short arg1)
 {
-    short temp_v0 = vs_battle_getShort(arg0 + 1);
+    short temp_v0 = getShort(arg0 + 1);
     D_800F4C6A = (temp_v0 << 0x10) >> 0x1F;
     if (D_800F4C6A) {
         func_80098194(temp_v0 & 0x7FF);
     }
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int func_800B97E4(u_char* arg0, short arg1)
+int vs_battle_script_62(u_char* arg0, UNUSED short arg1)
 {
     D_800F19C8 = arg0[1];
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int func_800B97F8(u_char* arg0, short arg1)
+int vs_battle_script_63(UNUSED u_char* arg0, UNUSED short arg1)
 {
     func_8007C31C();
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int func_800B9818(u_char* arg0, short arg1)
+int vs_battle_script_64(u_char* arg0, UNUSED short arg1)
 {
     func_80091998(arg0[1]);
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int func_800B983C(u_char* arg0, short arg1)
+int vs_battle_script_65(u_char* arg0, UNUSED short arg1)
 {
     func_800919D8(arg0[1]);
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int func_800B9860(u_char* arg0, short arg1)
+int vs_battle_script_66(u_char* arg0, UNUSED short arg1)
 {
     func_80091A1C(arg0[1], arg0[2]);
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int func_800B988C(u_char* arg0, short arg1)
+int vs_battle_script_67(u_char* arg0, UNUSED short arg1)
 {
     func_8008B808(arg0[1], arg0[3], arg0[2], arg0[4]);
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int func_800B98C0(u_char* arg0, short arg1)
+int vs_battle_script_68(u_char* arg0, UNUSED short arg1)
 {
-    vs_main_warp_t sp10;
+    vs_Warp sp10;
 
     if (D_800F4BE2 == 0) {
 
@@ -1797,42 +1974,42 @@ int func_800B98C0(u_char* arg0, short arg1)
 
     if (D_800F4BE2 == 2) {
         D_800F4BE2 = 0;
-        return 0;
+        return vs_battle_scriptNext;
     }
-    return 1;
+    return vs_battle_scriptRepeat;
 }
 
-int func_800B9A40(u_char* arg0, short arg1)
+int vs_battle_script_69(u_char* arg0, UNUSED short arg1)
 {
     int temp_v0 = func_8007C398();
     if (temp_v0 != 5) {
         if (temp_v0 == 0) {
             func_8007C46C(arg0[1], arg0[2], arg0[3] * 0x10);
         }
-        return 1;
+        return vs_battle_scriptRepeat;
     }
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int func_800B9A94(u_char* arg0)
+int vs_battle_script_6A(u_char* arg0, UNUSED short arg1)
 {
     func_8007C4AC(arg0[1], arg0[2], arg0[3] * 0x10);
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int func_800B9AC4(u_char* arg0, short arg1)
+int vs_battle_script_6B(u_char* arg0, UNUSED short arg1)
 {
-    vs_battle_setScreenTransitionWipeAngle(arg0[1] * 0x10);
-    return 0;
+    setScreenTransitionWipeAngle(arg0[1] * 0x10);
+    return vs_battle_scriptNext;
 }
 
-int func_800B9AE8(u_char* arg0, short arg1)
+int vs_battle_script_6C(u_char* arg0, UNUSED short arg1)
 {
-    vs_battle_setScreenTransition(arg0[1], arg0[2], arg0[3] * 0x10);
-    return 0;
+    setScreenTransition(arg0[1], arg0[2], arg0[3] * 0x10);
+    return vs_battle_scriptNext;
 }
 
-int func_800B9B18(u_char* arg0, short arg1)
+int vs_battle_script_6D(u_char* arg0, UNUSED short arg1)
 {
     switch (arg0[1] & 3) {
     case 0:
@@ -1860,31 +2037,34 @@ int func_800B9B18(u_char* arg0, short arg1)
         func_8007BFC0();
         break;
     }
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int func_800B9BF8(void) { return func_8007C398() != 0; }
+int vs_battle_script_6E(UNUSED u_char* arg0, UNUSED short arg1)
+{
+    return func_8007C398() != 0 ? vs_battle_scriptRepeat : vs_battle_scriptNext;
+}
 
-int func_800B9C18(u_char* arg0, short arg1)
+int vs_battle_script_6F(u_char* arg0, UNUSED short arg1)
 {
     if (arg0[1] != 0) {
         func_8007B104();
     } else {
         func_8007B0FC();
     }
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int func_800B9C58(u_char* arg0, short arg1)
+int vs_battle_script_70(u_char* arg0, UNUSED short arg1)
 {
-    func_800BB68C_t sp18;
+    ActorList sp18;
     int temp_a2;
 
     switch (arg0[1] >> 4) {
     case 0:
-        func_800BB68C(vs_battle_getShort(arg0 + 2), &sp18);
+        expandActorSelector(getShort(arg0 + 2), &sp18);
         while (1) {
-            temp_a2 = func_800BB788(&sp18);
+            temp_a2 = nextActor(&sp18);
             if (temp_a2 == 1) {
                 break;
             }
@@ -1901,16 +2081,16 @@ int func_800B9C58(u_char* arg0, short arg1)
             (signed char)arg0[6], (signed char)arg0[7]);
         break;
     }
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int func_800B9D74(u_char* arg0, short arg1)
+int vs_battle_script_71(u_char* arg0, UNUSED short arg1)
 {
-    func_800AC37C(func_800BFE50(vs_battle_getShort(arg0 + 1)), arg0[3]);
-    return 0;
+    func_800AC37C(resolveActorId(getShort(arg0 + 1)), arg0[3]);
+    return vs_battle_scriptNext;
 }
 
-int func_800B9DB4(u_char* arg0, short arg1)
+int vs_battle_script_72(u_char* arg0, UNUSED short arg1)
 {
     u_int flags;
     int mask;
@@ -1920,15 +2100,15 @@ int func_800B9DB4(u_char* arg0, short arg1)
     int ret;
 
     if (D_800F4C4E == 0) {
-        if (!vs_battle_getStateFlag(0xAC)) {
-            return 0;
+        if (!getStateFlag(0xAC)) {
+            return vs_battle_scriptNext;
         }
 
         func_8007C0AC(0, D_800E9B4C[arg0[1]]);
 
-        if (D_800F4C2C == 2 || arg0[2] == 0) {
+        if (scriptSkipMode == vs_battle_scriptSkipping || arg0[2] == 0) {
         block_5:
-            flags = func_800A0BE0(0);
+            flags = vs_battle_getActorFlags(0);
             c = arg0[1];
             mask = flags;
 
@@ -1939,56 +2119,60 @@ int func_800B9DB4(u_char* arg0, short arg1)
                 mask &= 0xE7FF;
             }
 
-            func_800A087C(0, mask);
+            vs_battle_setActorFlags(0, mask);
 
             func_8009D88C(0);
-            return 0;
+            return vs_battle_scriptNext;
         }
 
         t = arg0[2] - 1;
         t *= 2;
         u = (arg0[1] ^ 1) + 0x6D;
-        func_800A0204(0, t + u, 0, 0xA);
+        vs_battle_setActorAnimation(0, t + u, 0, 0xA);
         func_8009DBDC(0, arg0[1] ^ 1);
         ret = 1;
         D_800F4C4E = ret;
     } else {
-        if (D_800F4C2C == 2) {
+        if (scriptSkipMode == vs_battle_scriptSkipping) {
             D_800F4C4E = 0;
             goto block_5;
         }
 
-        if (func_800A0BE0(0) & 0x80) {
-            func_800A0204(0, arg0[1] != 0 ? 0x65 : 6, 0, 0xA);
+        if (vs_battle_getActorFlags(0) & 0x80) {
+            vs_battle_setActorAnimation(0, arg0[1] != 0 ? 0x65 : 6, 0, 0xA);
             D_800F4C4E = 0;
-            return 0;
+            return vs_battle_scriptNext;
         }
     }
 
-    return 1;
+    return vs_battle_scriptRepeat;
 }
 
-int func_800B9F28(u_char* arg0, short arg1)
+int vs_battle_script_73(u_char* arg0, UNUSED short arg1)
 {
     func_8008EAF8(arg0[1]);
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int func_800B9F4C(u_char* arg0, short arg1)
+int vs_battle_script_74(u_char* arg0, UNUSED short arg1)
 {
     func_8008EFCC(arg0[1]);
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int func_800B9F70(u_char* arg0, short arg1) { return func_8008F0FC() == 0; }
+int vs_battle_script_75(UNUSED u_char* arg0, UNUSED short arg1)
+{
+    return func_8008F0FC() == 0 ? vs_battle_scriptRepeat : vs_battle_scriptNext;
+}
 
-int func_800B9F90(u_char* arg0, short arg1)
+int vs_battle_script_76(UNUSED u_char* arg0, UNUSED short arg1)
 {
     func_8008F234();
-    return (D_800F4C2C == 2) * 4;
+    return (scriptSkipMode == vs_battle_scriptSkipping) ? vs_battle_scriptYield
+                                                        : vs_battle_scriptNext;
 }
 
-int func_800B9FC0(u_char* arg0, short arg1)
+int vs_battle_script_77(u_char* arg0, UNUSED short arg1)
 {
     func_80090C2C(arg0[1] >> 4);
     if (arg0[4] == 0) {
@@ -2016,20 +2200,20 @@ int func_800B9FC0(u_char* arg0, short arg1)
         D_800F4B88.unk3 = arg0[4];
         D_800F4B88.unk2 = 0;
     }
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int func_800BA0E4(u_char* arg0, short arg1)
+int vs_battle_script_78(u_char* arg0, UNUSED short arg1)
 {
     func_80091314(arg0[1] ^ 1);
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int func_800BA108(u_char* arg0, short arg1)
+int vs_battle_script_7A(u_char* arg0, UNUSED short arg1)
 {
     if (arg0[1] != 0) {
         if (D_800F4C08 != 0) {
-            return 0;
+            return vs_battle_scriptNext;
         }
 
         D_800F4C08 = func_8008E470();
@@ -2043,16 +2227,17 @@ int func_800BA108(u_char* arg0, short arg1)
         D_800F4C08 = 0;
     }
 
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int func_800BA194(u_char* arg0, short arg1)
+int vs_battle_script_79(u_char* arg0, UNUSED short arg1)
 {
     int temp_s0 = arg0[2];
 
     switch (arg0[1]) {
     case 0:
-        if ((D_800F4C2C == 2) && (func_80093764(temp_s0) != 0)) {
+        if ((scriptSkipMode == vs_battle_scriptSkipping)
+            && (func_80093764(temp_s0) != 0)) {
             func_80093788(temp_s0);
         }
         func_8009291C(temp_s0);
@@ -2061,273 +2246,282 @@ int func_800BA194(u_char* arg0, short arg1)
         func_800936F8(temp_s0);
         break;
     }
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int func_800BA218(u_char* arg0, short arg1)
+int vs_battle_script_7B(u_char* arg0, UNUSED short arg1)
 {
-    func_80091468(vs_battle_getShort(arg0 + 1), vs_battle_getShort(arg0 + 3));
-    return 0;
+    func_80091468(getShort(arg0 + 1), getShort(arg0 + 3));
+    return vs_battle_scriptNext;
 }
 
-int func_800BA264(u_char* arg0, short arg1)
+int vs_battle_script_7C(u_char* arg0, UNUSED short arg1)
 {
     func_8007BDD8(arg0[1] != 0);
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int func_800BA288(u_char* arg0, short arg1)
+int vs_battle_script_7D(u_char* arg0, UNUSED short arg1)
 {
     func_80091A78(arg0[1], (signed char)arg0[2]);
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int func_800BA2B4(u_char* arg0, short arg1)
+int vs_battle_script_7E(u_char* arg0, UNUSED short arg1)
 {
     func_8008EAE4((signed char)arg0[1] << 7, (signed char)arg0[2] << 7);
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int vs_battle_script_playSfx(u_char* arg0, UNUSED short arg1)
+int vs_battle_script_80_playSfx(u_char* arg0, UNUSED short arg1)
 {
     if (arg0[1] == 2 && D_800F4C08 == 0) {
-        return 0;
+        return vs_battle_scriptNext;
     }
     if (arg0[1] == 2) {
         D_800F4C4C = arg0[2];
     }
     vs_main_playSfx(D_800E9B34[arg0[1]], arg0[2], arg0[3], arg0[4]);
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int func_800BA35C(u_char* arg0, short arg1)
+int vs_battle_script_81(u_char* arg0, UNUSED short arg1)
 {
-    func_8007C8A4(func_800BFE50(vs_battle_getShort(arg0 + 1)), arg0[3]);
-    return 0;
+    func_8007C8A4(resolveActorId(getShort(arg0 + 1)), arg0[3]);
+    return vs_battle_scriptNext;
 }
 
-int vs_battle_script_fadeSfxVolume(u_char* arg0, UNUSED short arg1)
+int vs_battle_script_82_fadeSfxVolume(u_char* arg0, UNUSED short arg1)
 {
     vs_main_fadeSfxVolume(D_800E9B34[arg0[1]], arg0[2], arg0[3], arg0[4]);
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int vs_battle_script_stopAllSfx(UNUSED u_char* arg0, UNUSED short arg1)
+int vs_battle_script_83_stopAllSfx(UNUSED u_char* arg0, UNUSED short arg1)
 {
     vs_main_stopAllSfx();
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int vs_battle_script_evictSfx(u_char* arg0, UNUSED short arg1)
+int vs_battle_script_84_evictSfx(u_char* arg0, UNUSED short arg1)
 {
     vs_main_evictSfx(D_800E9B34[arg0[1]], arg0[2]);
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int vs_battle_script_loadSfxSlot(u_char* arg0, UNUSED short arg1)
+int vs_battle_script_85_loadSfxSlot(u_char* arg0, UNUSED short arg1)
 {
     vs_main_loadSfxSlot(arg0[1], arg0[2]);
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int vs_battle_script_freeSfxSlot(u_char* arg0, UNUSED short arg1)
+int vs_battle_script_86_freeSfxSlot(u_char* arg0, UNUSED short arg1)
 {
-    return vs_main_freeSfxQueueSlot(arg0[1]) != 0;
+    return vs_main_freeSfxQueueSlot(arg0[1]) != 0 ? vs_battle_scriptRepeat
+                                                  : vs_battle_scriptNext;
 }
 
-int vs_battle_script_freeSfx(u_char* arg0, UNUSED short arg1)
+int vs_battle_script_87_freeSfx(u_char* arg0, UNUSED short arg1)
 {
     vs_main_freeSfx(arg0[1]);
-    return (D_800F4C2C == 2) * 4;
+    return (scriptSkipMode == vs_battle_scriptSkipping) ? vs_battle_scriptYield
+                                                        : vs_battle_scriptNext;
 }
 
-int vs_battle_script_setCurrentSfx(u_char* arg0, UNUSED short arg1)
+int vs_battle_script_88_setCurrentSfx(u_char* arg0, UNUSED short arg1)
 {
     vs_main_setCurrentSfx(arg0[1]);
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int vs_battle_script_loadSoundFile(UNUSED u_char* arg0, UNUSED short arg1)
+int vs_battle_script_89_loadSoundFile(UNUSED u_char* arg0, UNUSED short arg1)
 {
     short temp_v0 = func_80089104();
     vs_main_loadMusicSlot(temp_v0, 3);
     vs_main_loadSoundFile(temp_v0);
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int vs_battle_script_crossfadeMusic(u_char* arg0, UNUSED short arg1)
+int vs_battle_script_8F_crossfadeMusic(u_char* arg0, UNUSED short arg1)
 {
     vs_main_fadeMusicVolume(D_800F4C69, 0, arg0[4]);
     vs_main_playMusicSlotFadeIn(D_800F4C69 = arg0[1], arg0[2], arg0[3]);
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int vs_battle_script_loadMusicSlot(u_char* arg0, UNUSED short arg1)
+int vs_battle_script_90_loadMusicSlot(u_char* arg0, UNUSED short arg1)
 {
     vs_main_loadMusicSlot(arg0[1], arg0[2]);
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int vs_battle_script_freeMusic(u_char* arg0, UNUSED short arg1)
+int vs_battle_script_91_freeMusic(u_char* arg0, UNUSED short arg1)
 {
     vs_main_freeMusic(arg0[1]);
-    return (D_800F4C2C == 2) * 4;
+    return (scriptSkipMode == vs_battle_scriptSkipping) ? vs_battle_scriptYield
+                                                        : vs_battle_scriptNext;
 }
 
-int vs_battle_script_playMusic(u_char* arg0, UNUSED short arg1)
+int vs_battle_script_92_playMusic(u_char* arg0, UNUSED short arg1)
 {
     vs_main_playMusicSlot(D_800F4C69 = arg0[1], arg0[2], arg0[3]);
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int vs_battle_script_fadeMusicVolume(u_char* arg0, UNUSED short arg1)
+int vs_battle_script_93_fadeMusicVolume(u_char* arg0, UNUSED short arg1)
 {
     vs_main_fadeMusicVolume(D_800F4C69, arg0[1], arg0[2]);
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int vs_battle_script_fadeMusicTempo(u_char* arg0, UNUSED short arg1)
+int vs_battle_script_94_fadeMusicTempo(u_char* arg0, UNUSED short arg1)
 {
     vs_main_fadeMusicTempo(D_800F4C69, (signed char)arg0[1], arg0[2]);
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int vs_battle_script_fadeMusicPitch(u_char* arg0, UNUSED short arg1)
+int vs_battle_script_95_fadeMusicPitch(u_char* arg0, UNUSED short arg1)
 {
     vs_main_fadeMusicPitch(D_800F4C69, (signed char)arg0[1], arg0[2]);
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int vs_battle_script_stopMusic(UNUSED u_char* arg0, UNUSED short arg1)
+int vs_battle_script_96_stopMusic(UNUSED u_char* arg0, UNUSED short arg1)
 {
     vs_main_stopMusicSlot(D_800F4C69);
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int vs_battle_script_waitMusicSilent(u_char* arg0, short arg1)
+int vs_battle_script_97_waitMusicSilent(u_char* arg0, UNUSED short arg1)
 {
     int temp_s0 = arg0[1];
     if (vs_main_getMusicSlotVolume2(temp_s0) != 0) {
         if (vs_main_getMusicSlotVolume(temp_s0) != 0) {
-            return 1;
+            return vs_battle_scriptRepeat;
         }
         vs_main_stopMusicSlot(temp_s0);
     }
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int vs_battle_script_pushMusicState(UNUSED u_char* arg0, UNUSED short arg1)
+int vs_battle_script_98_pushMusicState(UNUSED u_char* arg0, UNUSED short arg1)
 {
     vs_main_pushMusicState();
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int vs_battle_script_clearMusicLoadSlot(u_char* arg0, UNUSED short arg1)
+int vs_battle_script_99_clearMusicLoadSlot(u_char* arg0, UNUSED short arg1)
 {
-    return vs_main_clearMusicLoadSlot(arg0[1]) == 1;
+    return vs_main_clearMusicLoadSlot(arg0[1]) == 1 ? vs_battle_scriptRepeat
+                                                    : vs_battle_scriptNext;
 }
 
-int vs_battle_script_loadSoundFile2(u_char* arg0, UNUSED short arg1)
+int vs_battle_script_9D_loadSoundFile2(u_char* arg0, UNUSED short arg1)
 {
     vs_main_loadSoundFile(arg0[1]);
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int vs_battle_script_processSoundQueue(UNUSED u_char* arg0, UNUSED short arg1)
+int vs_battle_script_9E_processSoundQueue(UNUSED u_char* arg0, UNUSED short arg1)
 {
-    return vs_main_processSoundQueue() == 1;
+    return vs_main_processSoundQueue() == 1 ? vs_battle_scriptRepeat
+                                            : vs_battle_scriptNext;
 }
 
-int vs_battle_script_waitMusicBar(u_char* arg0, short arg1)
+int vs_battle_script_9A_waitMusicBar(u_char* arg0, UNUSED short arg1)
 {
     int temp_s1 = vs_main_getMusicPosition() >> 0x10;
-    return temp_s1 < vs_battle_getShort(arg0 + 1);
+    return temp_s1 < getShort(arg0 + 1) ? vs_battle_scriptRepeat : vs_battle_scriptNext;
 }
 
-int vs_battle_script_fadeSfxPitch(u_char* arg0, UNUSED short arg1)
+int vs_battle_script_9B_fadeSfxPitch(u_char* arg0, UNUSED short arg1)
 {
     vs_main_fadeSfxPitch(D_800E9B34[arg0[1]], arg0[2], (signed char)arg0[3], arg0[4]);
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int vs_battle_script_fadeSfxPan(u_char* arg0, UNUSED short arg1)
+int vs_battle_script_9C_fadeSfxPan(u_char* arg0, UNUSED short arg1)
 {
     vs_main_fadeSfxPan(D_800E9B34[arg0[1]], arg0[2], arg0[3], arg0[4]);
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int vs_battle_script_queueMusic(u_char* arg0, short arg1)
+int vs_battle_script_9F_queueMusic(u_char* arg0, UNUSED short arg1)
 {
     vs_main_queueMusicSlot(D_800F4C69 = arg0[1]);
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int func_800BA8BC(u_char* arg0, short arg1)
+int vs_battle_script_A0(u_char* arg0, UNUSED short arg1)
 {
-    func_8007BE20(
-        vs_battle_getShort(arg0 + 1), func_800BFE50(vs_battle_getShort(arg0 + 3)));
-    return 0;
+    func_8007BE20(getShort(arg0 + 1), resolveActorId(getShort(arg0 + 3)));
+    return vs_battle_scriptNext;
 }
 
-int func_800BA90C(u_char* arg0, short arg1)
+int vs_battle_script_A1(u_char* arg0, UNUSED short arg1)
 {
     func_8007BEC4(arg0[1]);
-    if (D_800F4C2C == 2) {
+    if (scriptSkipMode == vs_battle_scriptSkipping) {
         func_800CF1A8();
     }
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int func_800BA94C(u_char* arg0, short arg1)
+int vs_battle_script_A2(u_char* arg0, UNUSED short arg1)
 {
-    if ((D_800F4C2C == 2) && ((arg0[1] == 0) || (arg0[1] == 5))) {
+    if ((scriptSkipMode == vs_battle_scriptSkipping)
+        && ((arg0[1] == 0) || (arg0[1] == 5))) {
         if (D_800F4BB9 != 0) {
             if (func_8007BEE4() == arg0[1]) {
                 D_800F4BB9 = 0;
-                return 0;
+                return vs_battle_scriptNext;
             }
         } else {
             func_800CF1A8();
             D_800F4BB9 = 1;
         }
-        return 1;
+        return vs_battle_scriptRepeat;
     }
-    return func_8007BEE4() != arg0[1];
+    return func_8007BEE4() != arg0[1] ? vs_battle_scriptRepeat : vs_battle_scriptNext;
 }
 
-int func_800BAA04(u_char* arg0, short arg1)
+int vs_battle_script_A3(UNUSED u_char* arg0, UNUSED short arg1)
 {
     func_8007BF04();
-    return (D_800F4C2C == 2) * 4;
+    return (scriptSkipMode == vs_battle_scriptSkipping) ? vs_battle_scriptYield
+                                                        : vs_battle_scriptNext;
 }
 
-int func_800BAA34(u_char* arg0, short arg1) { return func_8007BF0C() != 1; }
+int vs_battle_script_A4(UNUSED u_char* arg0, UNUSED short arg1)
+{
+    return func_8007BF0C() != 1 ? vs_battle_scriptRepeat : vs_battle_scriptNext;
+}
 
-int func_800BAA58(u_char* arg0, short arg1)
+int vs_battle_script_A5(UNUSED u_char* arg0, UNUSED short arg1)
 {
     if (D_800F4BB9 == 0) {
         func_800CF1A8();
         D_800F4BB9 = 1;
     } else if ((func_8007BEE4() == 0) || (func_8007BEE4() == 5)) {
         D_800F4BB9 = 0;
-        return 0;
+        return vs_battle_scriptNext;
     }
-    return 1;
+    return vs_battle_scriptRepeat;
 }
 
-int func_800BAACC(u_char* arg0, short arg1)
+int vs_battle_script_A6(u_char* arg0, UNUSED short arg1)
 {
     func_800CEF38(arg0[1]);
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int vs_battle_script_setMusicJumpThreshold(u_char* arg0, UNUSED short arg1)
+int vs_battle_script_A8_setMusicJumpThreshold(u_char* arg0, UNUSED short arg1)
 {
     vs_main_setMusicJumpThreshold(arg0[1]);
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int func_800BAB14(u_char* arg0)
+int vs_battle_script_A9(u_char* arg0, UNUSED short arg1)
 {
     short a0 = arg0[1];
     if (a0 == 0xFF) {
@@ -2342,104 +2536,103 @@ int func_800BAB14(u_char* arg0)
             }
         }
     }
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int func_800BABCC(u_char* arg0, short arg1)
+int vs_battle_script_AA(u_char* arg0, UNUSED short arg1)
 {
-    short temp_v0 = func_800BFE50(vs_battle_getShort(arg0 + 2));
+    short temp_v0 = resolveActorId(getShort(arg0 + 2));
 
     if (arg0[1] != 0) {
         func_8006C480(temp_v0, arg0[4]);
     } else {
         func_8006C4A4(temp_v0, arg0[4]);
     }
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int func_800BAC38(u_char* arg0, short arg1)
+int vs_battle_script_B1(u_char* arg0, UNUSED short arg1)
 {
-    vs_battle_setDoorEntered2(arg0[1]);
-    return 0;
+    setDoorEntered2(arg0[1]);
+    return vs_battle_scriptNext;
 }
 
-int func_800BAC5C(u_char* arg0, short arg1)
+int vs_battle_script_B2(u_char* arg0, UNUSED short arg1)
 {
-    vs_battle_actorPosition sp10;
-    vs_battle_actorPosition sp20;
+    vs_ActorPosition sp10;
+    vs_ActorPosition sp20;
     short temp_s3;
     short temp_v0;
     short temp_v0_2;
     int temp_lo;
 
-    temp_s3 = vs_battle_getShort(arg0 + 6);
-    func_800A1108(func_800BFE50(vs_battle_getShort(arg0 + 1)), &sp10);
-    func_800A1108(func_800BFE50(vs_battle_getShort(arg0 + 3)), &sp20);
+    temp_s3 = getShort(arg0 + 6);
+    vs_battle_getActorPosition(resolveActorId(getShort(arg0 + 1)), &sp10);
+    vs_battle_getActorPosition(resolveActorId(getShort(arg0 + 3)), &sp20);
     temp_v0 = sp10.unk0.unk4.vx - sp20.unk0.unk4.vx;
     temp_v0_2 = sp10.unk0.unk4.vz - sp20.unk0.unk4.vz;
     temp_lo = vs_gte_rsqrt((temp_v0 * temp_v0) + (temp_v0_2 * temp_v0_2)) / arg0[5];
     vs_battle_setStateFlag(temp_s3, temp_lo < 0x100 ? temp_lo & 0xFF : -1);
     vs_battle_setStateFlag(temp_s3 + 1, (ratan2(temp_v0, temp_v0_2) >> 4) & 0xFF);
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int func_800BAD78(u_char* arg0, short arg1)
+int vs_battle_script_B3(u_char* arg0, UNUSED short arg1)
 {
-    func_800BB68C_t sp10;
+    ActorList sp10;
 
-    func_800BB68C(vs_battle_getShort(arg0 + 1), &sp10);
+    expandActorSelector(getShort(arg0 + 1), &sp10);
     while (1) {
-        int temp_a0 = func_800BB788(&sp10);
+        int temp_a0 = nextActor(&sp10);
         if (temp_a0 == 1) {
             break;
         }
         func_8007D08C(temp_a0, arg0[3]);
     }
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int func_800BADE0(u_char* arg0)
+int vs_battle_script_B4(u_char* arg0, UNUSED short arg1)
 {
     if (D_800F4BF8 == 0) {
-        func_8007BA98(
-            vs_battle_getShort(arg0 + 1), arg0[3], vs_battle_getShort(arg0 + 4), arg0[6]);
+        func_8007BA98(getShort(arg0 + 1), arg0[3], getShort(arg0 + 4), arg0[6]);
         D_800F4BF8 = 1;
-        return 1;
+        return vs_battle_scriptRepeat;
     }
 
     if (func_8007B9FC() == 0) {
         D_800F4BF8 = 0;
-        return 4;
+        return vs_battle_scriptYield;
     }
-    return 1;
+    return vs_battle_scriptRepeat;
 }
 
-int func_800BAE74(u_char* arg0, short arg1)
+int vs_battle_script_B5(u_char* arg0, UNUSED short arg1)
 {
-    vs_battle_decreaseMiscCount(vs_battle_getShort(arg0 + 1));
-    return 0;
+    decreaseMiscCount(getShort(arg0 + 1));
+    return vs_battle_scriptNext;
 }
 
-int func_800BAEA0(u_char* arg0, short arg1)
+int vs_battle_script_B6(u_char* arg0, UNUSED short arg1)
 {
-    vs_battle_actorPosition sp10;
-    vs_battle_actorPosition sp20;
+    vs_ActorPosition sp10;
+    vs_ActorPosition sp20;
     short temp_s0;
     int temp_s0_2;
     short temp_s1;
     int var_v0;
 
-    func_800A1108(func_800BFE50(vs_battle_getShort(arg0 + 1)), &sp10);
-    func_800A1108(func_800BFE50(vs_battle_getShort(arg0 + 3)), &sp20);
+    vs_battle_getActorPosition(resolveActorId(getShort(arg0 + 1)), &sp10);
+    vs_battle_getActorPosition(resolveActorId(getShort(arg0 + 3)), &sp20);
     temp_s0 = sp10.unk0.unk4.vx - sp20.unk0.unk4.vx;
     temp_s1 = sp10.unk0.unk4.vz - sp20.unk0.unk4.vz;
-    temp_s0_2 = vs_battle_getShort(arg0 + 5);
+    temp_s0_2 = getShort(arg0 + 5);
     var_v0 = vs_gte_rsqrt((temp_s0 * temp_s0) + (temp_s1 * temp_s1));
     if (var_v0 < 0) {
         var_v0 += 0x7F;
     }
     vs_battle_setStateFlag(temp_s0_2, (var_v0 >> 7) & 0xFF);
-    return 0;
+    return vs_battle_scriptNext;
 }
 
 void func_800BAF6C(short arg0)
@@ -2447,11 +2640,11 @@ void func_800BAF6C(short arg0)
     short actorId;
 
     for (actorId = 1; actorId < 17; ++actorId) {
-        if (vs_battle_getActor(actorId) != NULL) {
+        if (getActor(actorId) != NULL) {
             if (arg0 != 0) {
-                func_800A087C(actorId, func_800A0BE0(actorId) | 1);
+                vs_battle_setActorFlags(actorId, vs_battle_getActorFlags(actorId) | 1);
             } else {
-                func_800A087C(actorId, func_800A0BE0(actorId) & ~1);
+                vs_battle_setActorFlags(actorId, vs_battle_getActorFlags(actorId) & ~1);
             }
         }
     }
@@ -2459,7 +2652,7 @@ void func_800BAF6C(short arg0)
     func_8007D15C(arg0);
 }
 
-int vs_battle_script_specialOp(u_char* arg0, UNUSED short arg1)
+int vs_battle_script_B7_specialOp(u_char* arg0, UNUSED short arg1)
 {
     char sp10[32];
 
@@ -2470,7 +2663,7 @@ int vs_battle_script_specialOp(u_char* arg0, UNUSED short arg1)
     case 1:
         if (D_800F4BF8 != 0) {
             if (func_8007B9FC() != 0) {
-                return 1;
+                return vs_battle_scriptRepeat;
             }
             vs_battle_setStateFlag(0xB6, 0);
             D_800F4BF8 = 0;
@@ -2480,15 +2673,15 @@ int vs_battle_script_specialOp(u_char* arg0, UNUSED short arg1)
         vs_battle_setStateFlag(0xB6, 3);
         func_8007B9A0();
         D_800F4BF8 = 1;
-        return 1;
+        return vs_battle_scriptRepeat;
     case 2:
-        D_800F4C68 = 1;
+        skipRequested = 1;
         break;
     case 3:
-        if (vs_battle_isActionUnlocked(arg0[2]) != 0) {
+        if (isActionUnlocked(arg0[2]) != 0) {
             vs_battle_setStateFlag(0xB1, 0);
         } else {
-            vs_battle_setActionUnlocked(arg0[2]);
+            setActionUnlocked(arg0[2]);
             vs_battle_setStateFlag(0xB1, 1);
         }
         break;
@@ -2538,131 +2731,139 @@ int vs_battle_script_specialOp(u_char* arg0, UNUSED short arg1)
         sprintf(sp10, "<SPECIAL=%d> IS UNDEFINED!", arg0[1]);
         break;
     }
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int func_800BB288(u_char* arg0, short arg1)
+int vs_battle_script_B8(UNUSED u_char* arg0, UNUSED short arg1)
 {
     if ((D_800EB9B4 != NULL) && (D_800EB9B4->unk0 != 0)) {
-        return 1;
+        return vs_battle_scriptRepeat;
     }
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int func_800BB2B8(u_char* arg0, short arg1)
+int vs_battle_script_BB(u_char* arg0, UNUSED short arg1)
 {
-    func_800F9800(vs_battle_getShort(arg0 + 1));
-    return 0;
+    func_800F9800(getShort(arg0 + 1));
+    return vs_battle_scriptNext;
 }
 
-int func_800BB2E4(u_char* arg0, short arg1)
+int vs_battle_script_BC(UNUSED u_char* arg0, UNUSED short arg1)
 {
     func_800CB79C();
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int func_800BB304(u_char* arg0, short arg1) { return 0; }
+int vs_battle_script_BD(UNUSED u_char* arg0, UNUSED short arg1)
+{
+    return vs_battle_scriptNext;
+}
 
-int func_800BB30C(u_char* arg0, short arg1)
+int vs_battle_script_BE(UNUSED u_char* arg0, UNUSED short arg1)
 {
     func_800CB7DC();
-    return (D_800F4C2C == 2) * 4;
+    return (scriptSkipMode == vs_battle_scriptSkipping) ? vs_battle_scriptYield
+                                                        : vs_battle_scriptNext;
 }
 
-int func_800BB33C(u_char* arg0, short arg1)
+int vs_battle_script_DE(UNUSED u_char* arg0, UNUSED short arg1)
 {
     func_800BE3A0();
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int func_800BB35C(u_char* arg0, short arg1)
+int vs_battle_script_DF(u_char* arg0, UNUSED short arg1)
 {
     int new_var = arg0[1] & 2;
     func_800BE36C(arg0[1] & 1, new_var != 0);
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int func_800BB38C(u_char* arg0, short arg1)
+int vs_battle_script_E8(u_char* arg0, UNUSED short arg1)
 {
-    func_800BBE10(func_800BFE50(vs_battle_getShort(arg0 + 1)));
-    return 0;
+    func_800BBE10(resolveActorId(getShort(arg0 + 1)));
+    return vs_battle_scriptNext;
 }
 
-int func_800BB3BC(u_char* arg0, short arg1)
+int vs_battle_script_E9(u_char* arg0, UNUSED short arg1)
 {
     func_800BC1CC(
         arg0[1] != 0xFF ? ((arg0[1] + 4) & 7) : -1, arg0[2] != 0 ? arg0[2] : -1);
     D_800F4BB6 = 1;
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int func_800BB41C(u_char* arg0, short arg1)
+int vs_battle_script_E0(u_char* arg0, UNUSED short arg1)
 {
-    return arg0[1] != (arg0[1] & func_800BD610());
+    return arg0[1] != (arg0[1] & func_800BD610()) ? vs_battle_scriptRepeat
+                                                  : vs_battle_scriptNext;
 }
 
-int func_800BB450(u_char* arg0, short arg1)
+int vs_battle_script_E1(u_char* arg0, UNUSED short arg1)
 {
     func_8007DD50(arg0[1]);
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int func_800BB474(u_char* arg0, short arg1)
+int vs_battle_script_F0(u_char* arg0, short arg1)
 {
     if (D_800F4C58[arg1] == 0) {
         D_800F4C58[arg1] = arg0[1];
-        return 1;
+        return vs_battle_scriptRepeat;
     }
 
     --D_800F4C58[arg1];
 
     if ((D_800F4C58[arg1] << 0x10) <= 0) {
         D_800F4C58[arg1] = 0;
-        return 0;
+        return vs_battle_scriptNext;
     }
-    return 1;
+    return vs_battle_scriptRepeat;
 }
 
-int func_800BB4CC(u_char* arg0, short arg1)
+int vs_battle_script_F1(u_char* arg0, UNUSED short arg1)
 {
     func_8007C36C(arg0[1]);
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int func_800BB4F0(u_char* arg0, short arg1)
+int vs_battle_script_F3(u_char* arg0, UNUSED short arg1)
 {
     D_800F4BE4 = arg0[1];
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-int func_800BB504(u_char* arg0, short arg1)
+int vs_battle_script_F4(u_char* arg0, UNUSED short arg1)
 {
     u_short temp_a0 = arg0[1] & 3;
     if ((arg0[1] & 0x80)) {
         D_800F4C38[temp_a0] = 0;
-        return 0;
+        return vs_battle_scriptNext;
     }
-    return D_800F4C38[temp_a0] != 0;
+    return D_800F4C38[temp_a0] != 0 ? vs_battle_scriptRepeat : vs_battle_scriptNext;
 }
 
-int func_800BB554(u_char* arg0, short arg1)
+int vs_battle_script_F5(u_char* arg0, UNUSED short arg1)
 {
     D_800F4C38[arg0[1]] = arg0 + 4;
-    return (int)&arg0[vs_battle_getShort(arg0 + 2)];
+    return (int)&arg0[getShort(arg0 + 2)];
 }
 
-int func_800BB5A4(u_char* arg0, short arg1) { return 3; }
-
-int func_800BB5AC(u_char* arg0, short arg1)
+int vs_battle_script_F6(UNUSED u_char* arg0, UNUSED short arg1)
 {
-    _evtFile = vs_battle_getShort(arg0 + 1);
-    D_800F4C24 = vs_main_allocHeapR(0x1800);
-    func_800C00E8(_evtFile, D_800F4C24);
-    D_800F4C54 = 1;
-    return 0;
+    return vs_battle_scriptEnd;
 }
 
-int func_800BB604(u_char* arg0, short arg1)
+int vs_battle_script_F7(u_char* arg0, UNUSED short arg1)
+{
+    evtFile = getShort(arg0 + 1);
+    D_800F4C24 = vs_main_allocHeapR(0x1800);
+    func_800C00E8(evtFile, D_800F4C24);
+    D_800F4C54 = 1;
+    return vs_battle_scriptNext;
+}
+
+int vs_battle_script_FE_FF(UNUSED u_char* arg0, UNUSED short arg1)
 {
     int i;
     int var_s1;
@@ -2679,21 +2880,21 @@ int func_800BB604(u_char* arg0, short arg1)
         func_8007C36C(2);
         return 2;
     }
-    return 1;
+    return vs_battle_scriptRepeat;
 }
 
-int vs_battle_script_playMenuSelectSfx(UNUSED u_char* arg0, UNUSED short arg1)
+int vs_battle_script_F2_playMenuSelectSfx(UNUSED u_char* arg0, UNUSED short arg1)
 {
     vs_main_playSfxDefault(0x7E, VS_SFX_MENUSELECT);
-    return 0;
+    return vs_battle_scriptNext;
 }
 
-void func_800BB68C(u_short arg0, func_800BB68C_t* arg1)
+void expandActorSelector(u_short arg0, ActorList* arg1)
 {
-    vs_battle_actor* temp_v0;
+    vs_Actor* temp_v0;
     short var_s3 = 0;
-    arg1->unk0 = 0;
-    arg1->unk1 = 0;
+    arg1->remaining = 0;
+    arg1->next = 0;
 
     if (arg0 & 0x2000) {
         short i;
@@ -2703,32 +2904,32 @@ void func_800BB68C(u_short arg0, func_800BB68C_t* arg1)
         }
 
         for (i = 0; i < 17; ++i) {
-            temp_v0 = vs_battle_getActor(i);
+            temp_v0 = getActor(i);
             if (temp_v0 != NULL) {
                 if ((var_a0 < 0) || (temp_v0->unk1C == var_a0)) {
-                    arg1->unk2[var_s3++] = i;
-                    ++arg1->unk0;
+                    arg1->actors[var_s3++] = i;
+                    ++arg1->remaining;
                 }
             }
         }
 
         return;
     }
-    ++arg1->unk0;
-    arg1->unk2[0] = func_800BFE50(arg0);
+    ++arg1->remaining;
+    arg1->actors[0] = resolveActorId(arg0);
 }
 
-u_short func_800BB788(func_800BB68C_t* arg0)
+u_short nextActor(ActorList* arg0)
 {
-    if (arg0->unk0 == 0) {
+    if (arg0->remaining == 0) {
         return 1;
     }
 
-    --arg0->unk0;
-    return arg0->unk2[(u_int)(arg0->unk1++)];
+    --arg0->remaining;
+    return arg0->actors[(u_int)(arg0->next++)];
 }
 
-int func_800BB7C4(int arg0, SVECTOR* arg1)
+int getActorScreenPosition(int arg0, SVECTOR* arg1)
 {
     MATRIX sp10;
     long sp30[5];
@@ -2783,21 +2984,22 @@ void func_800BB9B0(void)
 {
     short i;
     short temp_a0;
-    D_800F4B30_t* var_s0 = D_800F4B30;
-    D_800EB9BC_t* var_s1 = D_800EB9BC;
+    GimTween* tween = gimTweens;
+    Gim* gim = gims;
 
-    for (i = 0; i < 3; ++i, ++var_s0, ++var_s1) {
-        if (var_s0->unk3 != 0) {
-            var_s0->unk2 += vs_gametime_tickspeed >> 1;
-            temp_a0 = func_800BFEBC(var_s0->unk1, var_s0->unk2, var_s0->unk3);
-            if (D_800EB9BC != NULL) {
-                var_s1->unk8 = (var_s0->unk4 + ((var_s0->unk8 * temp_a0) >> 0xC));
-                var_s1->unkA = (var_s0->unk6 + ((var_s0->unkA * temp_a0) >> 0xC));
-                var_s1->unkC = (var_s0->unkC + ((var_s0->unkE * temp_a0) >> 0xC));
-                var_s1->unk0_24 = (var_s0->unk10 + ((var_s0->unk12 * temp_a0) >> 0xC));
+    for (i = 0; i < 3; ++i, ++tween, ++gim) {
+        if (tween->duration != 0) {
+            tween->elapsed += vs_gametime_tickspeed >> 1;
+            temp_a0 = func_800BFEBC(tween->curve, tween->elapsed, tween->duration);
+            if (gims != NULL) {
+                gim->x = (tween->startX + ((tween->deltaX * temp_a0) >> 0xC));
+                gim->y = (tween->startY + ((tween->deltaY * temp_a0) >> 0xC));
+                gim->scale = (tween->startScale + ((tween->deltaScale * temp_a0) >> 0xC));
+                gim->brightness =
+                    tween->startBrightness + ((tween->deltaBrightness * temp_a0) >> 0xC);
             }
-            if (var_s0->unk2 >= var_s0->unk3) {
-                var_s0->unk3 = 0;
+            if (tween->elapsed >= tween->duration) {
+                tween->duration = 0;
             }
         }
     }
@@ -2831,12 +3033,12 @@ void func_800BBBE8(void)
     D_800F4BA4 = vs_main_allocHeapR(sizeof *D_800F4BA4);
     D_800F4BA0 = 0;
 
-    vs_battle_getCameraPosition(&sp20);
-    vs_battle_getCameraLookAt(&sp30);
-    _copyVector(&D_800F4BA4->eye.current, &sp20);
-    _copyVector(&D_800F4BA4->lookAt.target, &sp20);
-    _copyVector(&D_800F4BA4->lookAt.current, &sp30);
-    _copyVector(&D_800F4BA4->eye.target, &sp30);
+    getCameraPosition(&sp20);
+    getCameraLookAt(&sp30);
+    vectorCopy(&D_800F4BA4->eye.current, &sp20);
+    vectorCopy(&D_800F4BA4->lookAt.target, &sp20);
+    vectorCopy(&D_800F4BA4->lookAt.current, &sp30);
+    vectorCopy(&D_800F4BA4->eye.target, &sp30);
 
     D_800F4BA4->lookAt.mode = 0xF;
     D_800F4BA4->lookAt.follow = D_800F4BA4->lookAt.following = 0;
@@ -2899,9 +3101,9 @@ void func_800BBE10(u_short arg0)
     int _[4];
     if (arg0 == 0x2000) {
         if (D_800F4BA4->unk1E8 != arg0) {
-            _vectorAdd(
+            vectorAdd(
                 &D_800F4BA4->eye.current, &D_800F4BA4->eye.current, &D_800F4BA4->unk1EC);
-            _vectorAdd(&D_800F4BA4->lookAt.current, &D_800F4BA4->lookAt.current,
+            vectorAdd(&D_800F4BA4->lookAt.current, &D_800F4BA4->lookAt.current,
                 &D_800F4BA4->unk1EC);
         }
     }
@@ -2911,7 +3113,7 @@ void func_800BBE10(u_short arg0)
 
 void func_800BBE94(void)
 {
-    vs_battle_actorPosition sp10;
+    vs_ActorPosition sp10;
 
     if (D_800F4BA4->unk1E8 == 0x2000) {
         D_800F4BA4->unk1EC.vz = 0;
@@ -2919,48 +3121,48 @@ void func_800BBE94(void)
         D_800F4BA4->unk1EC.vx = 0;
         return;
     }
-    func_800A1108(D_800F4BA4->unk1E8, &sp10);
+    vs_battle_getActorPosition(D_800F4BA4->unk1E8, &sp10);
     D_800F4BA4->unk1EC.vx = sp10.unk0.unk4.vx * ONE;
     D_800F4BA4->unk1EC.vy = sp10.unk0.unk4.vy * ONE;
     D_800F4BA4->unk1EC.vz = sp10.unk0.unk4.vz * ONE;
 }
 
-void vs_battle_applyCameraState(void)
+static void applyCameraState(void)
 {
     VECTOR cameraLookAt;
     VECTOR cameraPos;
     SVECTOR* vec;
 
     if (D_800F4BA0 != 0) {
-        vs_battle_initialiseCameraFromSpherical(&cameraPos, &cameraLookAt, -1, -1);
-        _copyVector(&D_800F4BA4->lookAt.current, &cameraLookAt);
-        _copyVector(&D_800F4BA4->eye.current, &cameraPos);
+        initialiseCameraFromSpherical(&cameraPos, &cameraLookAt, -1, -1);
+        vectorCopy(&D_800F4BA4->lookAt.current, &cameraLookAt);
+        vectorCopy(&D_800F4BA4->eye.current, &cameraPos);
     } else {
-        _copyVector(&cameraLookAt, &D_800F4BA4->lookAt.current);
-        _copyVector(&cameraPos, &D_800F4BA4->eye.current);
+        vectorCopy(&cameraLookAt, &D_800F4BA4->lookAt.current);
+        vectorCopy(&cameraPos, &D_800F4BA4->eye.current);
         if (D_800F4BA4->unk1E8 != 0x2000) {
-            _vectorAdd(&cameraLookAt, &cameraLookAt, &D_800F4BA4->unk1EC);
-            _vectorAdd(&cameraPos, &cameraPos, &D_800F4BA4->unk1EC);
+            vectorAdd(&cameraLookAt, &cameraLookAt, &D_800F4BA4->unk1EC);
+            vectorAdd(&cameraPos, &cameraPos, &D_800F4BA4->unk1EC);
         }
     }
     if (*(short*)&D_800F4BA4->unk1A4.unk0 != 0) {
-        _sVectorToFixedPointVector((VECTOR*)0x1F800098, (SVECTOR*)&D_800F4BA4->unk1BE);
-        _sVectorToFixedPointVector((VECTOR*)0x1F8000A8, (SVECTOR*)&D_800F4BA4->unk1C6);
+        sVectorToFixedPointVector((VECTOR*)0x1F800098, (SVECTOR*)&D_800F4BA4->unk1BE);
+        sVectorToFixedPointVector((VECTOR*)0x1F8000A8, (SVECTOR*)&D_800F4BA4->unk1C6);
         vec = (SVECTOR*)0x1F800088;
         vec[10].vz = 0;
         vec[10].vx = 0;
-        vec[10].vy = _atan2FixedPoint(
+        vec[10].vy = atan2FixedPoint(
             cameraLookAt.vx - cameraPos.vx, cameraLookAt.vz - cameraPos.vz);
         RotMatrix_gte((SVECTOR*)0x1F8000D8, (MATRIX*)0x1F8000F8);
         ApplyMatrixLV((MATRIX*)0x1F8000F8, (VECTOR*)0x1F800098, (VECTOR*)0x1F800098);
         ApplyMatrixLV((MATRIX*)0x1F8000F8, (VECTOR*)0x1F8000A8, (VECTOR*)0x1F8000A8);
-        _vectorAdd(&cameraLookAt, &cameraLookAt, (VECTOR*)0x1F800098);
-        _vectorAdd(&cameraPos, &cameraPos, (VECTOR*)0x1F8000A8);
+        vectorAdd(&cameraLookAt, &cameraLookAt, (VECTOR*)0x1F800098);
+        vectorAdd(&cameraPos, &cameraPos, (VECTOR*)0x1F8000A8);
     }
-    vs_battle_setCameraLookAt(&cameraLookAt);
-    vs_battle_setCameraPosition(&cameraPos);
+    setCameraLookAt(&cameraLookAt);
+    setCameraPosition(&cameraPos);
     if (D_800F4BA4->unk168.unk0 != 0) {
-        vs_battle_setCameraRoll(D_800F4BA4->unk168.unk2);
+        setCameraRoll(D_800F4BA4->unk168.unk2);
         D_800F4BA4->unk168.unk0 = 0;
     }
     if (D_800F4BA4->unk174.unk0 != 0) {
@@ -2972,11 +3174,11 @@ void vs_battle_applyCameraState(void)
         D_800F4BA4->projectionDistance.unk0 = 0;
     }
     if (D_800F4BA4->nearClip.unk0 != 0) {
-        vs_battle_setNearClip(D_800F4BA4->nearClip.unk2);
+        setNearClip(D_800F4BA4->nearClip.unk2);
         D_800F4BA4->nearClip.unk0 = 0;
     }
     if (D_800F4BA4->farClip.unk0 != 0) {
-        vs_battle_setFarClip(D_800F4BA4->farClip.unk2, D_800F4C6A);
+        setFarClip(D_800F4BA4->farClip.unk2, D_800F4C6A);
         D_800F4BA4->farClip.unk0 = 0;
     }
 }
@@ -2992,23 +3194,23 @@ void func_800BC1CC(short arg0, int arg1)
         D_800F4BA0 = 0;
         return;
     }
-    vs_battle_initialiseCameraFromSpherical(&sp10, &sp20, arg0, (short)arg1);
-    _copyVector(&D_800F4BA4->eye.position, &sp10);
-    _copyVector(&D_800F4BA4->lookAt.position, &sp20);
-    temp_s0 = _vectorMagnitude(_vectorSubtract(
+    initialiseCameraFromSpherical(&sp10, &sp20, arg0, (short)arg1);
+    vectorCopy(&D_800F4BA4->eye.position, &sp10);
+    vectorCopy(&D_800F4BA4->lookAt.position, &sp20);
+    temp_s0 = vectorMagnitude(vectorSubtract(
         (VECTOR*)0x1F800098, &D_800F4BA4->eye.current, &D_800F4BA4->eye.position));
     temp_v0 = (temp_s0
-                  + _vectorMagnitude(_vectorSubtract((VECTOR*)0x1F800098,
+                  + vectorMagnitude(vectorSubtract((VECTOR*)0x1F800098,
                       &D_800F4BA4->lookAt.current, &D_800F4BA4->lookAt.position)))
             / 0x28000;
     if ((temp_v0 << 0x10) != 0) {
         D_800E9C1C[2] = D_800E9C1C[6] = temp_v0;
-        func_800BC2E8(D_800E9C1C, 0);
-        func_800BC2E8(D_800E9C1C + 3, 0);
+        vs_battle_script_Cx_Dx_camera(D_800E9C1C, 0);
+        vs_battle_script_Cx_Dx_camera(D_800E9C1C + 3, 0);
     }
 }
 
-int func_800BC2E8(u_char* script, short unused)
+int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
 {
     D_800F4BA4_t2* c;
     D_800F4BA4_t2* other;
@@ -3021,48 +3223,48 @@ int func_800BC2E8(u_char* script, short unused)
     }
     switch (script[0] & 15) {
     case 0:
-        _setVectorImm(&c->position, script + 1);
-        return 0;
+        setVectorImm(&c->position, script + 1);
+        return vs_battle_scriptNext;
     case 1:
         c->mode = 15;
-        _copyVector(&c->current, &c->position);
-        _copyVector(&other->target, &c->position);
-        return 0;
+        vectorCopy(&c->current, &c->position);
+        vectorCopy(&other->target, &c->position);
+        return vs_battle_scriptNext;
     case 2:
         c->mode = 2;
         c->time = 0;
         c->ease1 = script[1];
         c->duration = script[2];
-        _copyVector(&c->start, &c->current);
-        _vectorSubtract(&c->velocity, &c->position, &c->current);
-        return 0;
+        vectorCopy(&c->start, &c->current);
+        vectorSubtract(&c->velocity, &c->position, &c->current);
+        return vs_battle_scriptNext;
     case 3:
         c->mode = 3;
         c->time = 0;
         c->ease1 = script[1];
         c->duration = script[2];
-        _copyVector(&c->start, &c->current);
-        _vectorSubtract(&c->velocity, &c->position, &c->current);
-        c->value = _vectorMagnitude(
-            _vectorSubtract((VECTOR*)0x1F800098, &c->target, &c->current));
-        return 0;
+        vectorCopy(&c->start, &c->current);
+        vectorSubtract(&c->velocity, &c->position, &c->current);
+        c->value =
+            vectorMagnitude(vectorSubtract((VECTOR*)0x1F800098, &c->target, &c->current));
+        return vs_battle_scriptNext;
     case 4: {
-        cameraScratch* s;
+        CameraScratch* s;
         c->mode = 4;
         c->time = 0;
         c->duration = script[3];
         c->ease1 = script[1] >> 4;
         c->ease2 = script[2] & 15;
         c->ease3 = script[2] >> 4;
-        _copyVector(&c->start, &c->target);
-        s = (cameraScratch*)0x1F800088;
+        vectorCopy(&c->start, &c->target);
+        s = (CameraScratch*)0x1F800088;
         setVector(&s->v1, c->current.vx - c->target.vx, 0, c->current.vz - c->target.vz);
-        c->value = _vectorMagnitude((VECTOR*)0x1F800098);
-        c->angle = _atan2FixedPoint(s->v1.vx, s->v1.vz) & 4095;
+        c->value = vectorMagnitude((VECTOR*)0x1F800098);
+        c->angle = atan2FixedPoint(s->v1.vx, s->v1.vz) & 4095;
         setVector(
             &s->v2, c->position.vx - c->target.vx, 0, c->position.vz - c->target.vz);
-        c->delta = _vectorMagnitude((VECTOR*)0x1F8000A8) - c->value;
-        s->value = (_atan2FixedPoint(s->v2.vx, s->v2.vz) & 4095) - c->angle;
+        c->delta = vectorMagnitude((VECTOR*)0x1F8000A8) - c->value;
+        s->value = (atan2FixedPoint(s->v2.vx, s->v2.vz) & 4095) - c->angle;
         if (s->value < -ONE / 2) {
             s->value += ONE;
         }
@@ -3085,13 +3287,13 @@ int func_800BC2E8(u_char* script, short unused)
             }
             break;
         }
-        c->angleDelta = ((cameraScratch*)0x1F800088)->value;
+        c->angleDelta = ((CameraScratch*)0x1F800088)->value;
         c->aux.vy = c->current.vy - c->target.vy;
         c->velocity.vy = c->position.vy - c->target.vy - c->aux.vy;
-        return 0;
+        return vs_battle_scriptNext;
     }
     case 5: {
-        cameraScratch* s;
+        CameraScratch* s;
         int height;
         c->mode = 5;
         c->time = 0;
@@ -3099,82 +3301,82 @@ int func_800BC2E8(u_char* script, short unused)
         c->ease1 = script[6] & 15;
         c->ease2 = script[6] >> 4;
         c->ease3 = script[7] & 15;
-        _copyVector(&c->position, &c->target);
-        s = (cameraScratch*)0x1F800088;
+        vectorCopy(&c->position, &c->target);
+        s = (CameraScratch*)0x1F800088;
         setVector(&s->v1, c->current.vx - c->target.vx, 0, c->current.vz - c->target.vz);
-        c->value = _vectorMagnitude((VECTOR*)0x1F800098);
+        c->value = vectorMagnitude((VECTOR*)0x1F800098);
         c->delta = ((c->value * script[5]) >> 6) - c->value;
-        c->angle = _atan2FixedPoint(s->v1.vx, s->v1.vz);
-        c->angleDelta = vs_battle_getShort(script + 1);
-        height = vs_battle_getShort(script + 3) * ONE;
+        c->angle = atan2FixedPoint(s->v1.vx, s->v1.vz);
+        c->angleDelta = getShort(script + 1);
+        height = getShort(script + 3) * ONE;
         c->start.vy = c->current.vy;
         c->velocity.vy = height - c->start.vy;
-        return 0;
+        return vs_battle_scriptNext;
     }
     case 7:
-        func_800A190C(func_800BFE50(vs_battle_getShort(script + 1)), script[3],
-            (SVECTOR*)0x1F8000D8, 2);
-        _sVectorToFixedPointVector((VECTOR*)0x1F800098, (SVECTOR*)0x1F8000D8);
-        _setVectorImm((VECTOR*)0x1F8000A8, script + 4);
-        _vectorAdd(&c->position, (VECTOR*)0x1F800098, (VECTOR*)0x1F8000A8);
+        func_800A190C(
+            resolveActorId(getShort(script + 1)), script[3], (SVECTOR*)0x1F8000D8, 2);
+        sVectorToFixedPointVector((VECTOR*)0x1F800098, (SVECTOR*)0x1F8000D8);
+        setVectorImm((VECTOR*)0x1F8000A8, script + 4);
+        vectorAdd(&c->position, (VECTOR*)0x1F800098, (VECTOR*)0x1F8000A8);
         if (D_800F4BA4->unk1E8 != 0x2000) {
-            _vectorSubtract(&c->position, &c->position, &D_800F4BA4->unk1EC);
+            vectorSubtract(&c->position, &c->position, &D_800F4BA4->unk1EC);
         }
-        return 0;
+        return vs_battle_scriptNext;
     case 8:
         c->mode = 8;
-        c->value = func_800BFE50(vs_battle_getShort(script + 1));
+        c->value = resolveActorId(getShort(script + 1));
         c->delta = script[3];
         c->time = 0;
         c->duration = script[10];
-        _setVectorImm(&c->velocity, script + 4);
-        return 0;
+        setVectorImm(&c->velocity, script + 4);
+        return vs_battle_scriptNext;
     case 9:
         c->mode = 9;
         c->time = 0;
         c->duration = script[1];
-        _vectorSubtract(&c->velocity, &c->current, &c->target);
-        return 0;
+        vectorSubtract(&c->velocity, &c->current, &c->target);
+        return vs_battle_scriptNext;
     case 10: {
-        int id = func_800BFE50(vs_battle_getShort(script + 1));
-        cameraScratch* s = (cameraScratch*)0x1F800088;
+        int id = resolveActorId(getShort(script + 1));
+        CameraScratch* s = (CameraScratch*)0x1F800088;
         s->value = id;
-        func_800A1108(id, &D_800F4BA4->unk1D0);
+        vs_battle_getActorPosition(id, &D_800F4BA4->unk1D0);
         s->rotation2.vz = 0;
         s->rotation2.vx = 0;
         s->rotation2.vy = D_800F4BA4->unk1D0.unk0.unk4.pad;
         RotMatrix_gte((SVECTOR*)0x1F8000E0, (MATRIX*)0x1F8000F8);
-        _setVectorImm((VECTOR*)0x1F800098, script + 4);
+        setVectorImm((VECTOR*)0x1F800098, script + 4);
         ApplyMatrixLV((MATRIX*)0x1F8000F8, (VECTOR*)0x1F800098, (VECTOR*)0x1F800098);
         func_800A190C(s->value, script[3], (SVECTOR*)0x1F8000E0, 2);
-        _vectorAdd(&c->position,
-            _sVectorToFixedPointVector((VECTOR*)0x1F8000A8, (SVECTOR*)0x1F8000E0),
+        vectorAdd(&c->position,
+            sVectorToFixedPointVector((VECTOR*)0x1F8000A8, (SVECTOR*)0x1F8000E0),
             (VECTOR*)0x1F800098);
         if (D_800F4BA4->unk1E8 != 0x2000) {
-            _vectorSubtract(&c->position, &c->position, &D_800F4BA4->unk1EC);
+            vectorSubtract(&c->position, &c->position, &D_800F4BA4->unk1EC);
         }
-        return 0;
+        return vs_battle_scriptNext;
     }
     case 11: {
-        cameraScratch* s;
+        CameraScratch* s;
         c->mode = 11;
         c->time = 0;
         c->ease1 = 0;
         c->duration = script[2];
-        _vectorSubtract((VECTOR*)0x1F800098, &c->target, &c->current);
-        _vecToRotMatrix((VECTOR*)0x1F800098, (MATRIX*)0x1F8000F8);
-        s = (cameraScratch*)0x1F800088;
+        vectorSubtract((VECTOR*)0x1F800098, &c->target, &c->current);
+        vecToRotMatrix((VECTOR*)0x1F800098, (MATRIX*)0x1F8000F8);
+        s = (CameraScratch*)0x1F800088;
         s->matrix.t[0] = c->current.vx >> 12;
         s->matrix.t[1] = c->current.vy >> 12;
         s->matrix.t[2] = c->current.vz >> 12;
         c->current.vy = func_800BD2B8((MATRIX*)0x1F8000F8);
-        _copyVector(&c->computed, &c->current);
-        c->delta = _vectorMagnitude(
-            _vectorSubtract((VECTOR*)0x1F800098, &c->position, &c->computed));
+        vectorCopy(&c->computed, &c->current);
+        c->delta = vectorMagnitude(
+            vectorSubtract((VECTOR*)0x1F800098, &c->position, &c->computed));
         c->value = c->delta / script[2];
         D_800F4BA4->unk27C.vx = D_800F4BA4->unk27C.vy = D_800F4BA4->unk27C.vz =
             0x80000000;
-        return 0;
+        return vs_battle_scriptNext;
     }
     }
 }
@@ -3210,30 +3412,30 @@ void func_800BCA8C(D_800F4BA4_t2* c, D_800F4BA4_t2* other)
     }
     switch (c->mode) {
     case 2:
-        ((cameraScratch*)0x1F800088)->value =
+        ((CameraScratch*)0x1F800088)->value =
             func_800BFEBC(c->ease1, c->time, c->duration);
-        _vectorFixedPointMult(
-            (VECTOR*)0x1F800098, &c->velocity, ((cameraScratch*)0x1F800088)->value);
-        _vectorAdd(&c->computed, &c->start, (VECTOR*)0x1F800098);
+        vectorFixedPointMult(
+            (VECTOR*)0x1F800098, &c->velocity, ((CameraScratch*)0x1F800088)->value);
+        vectorAdd(&c->computed, &c->start, (VECTOR*)0x1F800098);
         break;
     case 3: {
-        cameraScratch* s = (cameraScratch*)0x1F800088;
+        CameraScratch* s = (CameraScratch*)0x1F800088;
         s->value = func_800BFEBC(c->ease1, c->time, c->duration);
-        _vectorFixedPointMult((VECTOR*)0x1F800098, &c->velocity, s->value);
-        _vectorAdd((VECTOR*)0x1F8000A8, &c->start, (VECTOR*)0x1F800098);
-        _vectorSubtract((VECTOR*)0x1F800098, (VECTOR*)0x1F8000A8, &c->target);
-        _toNormalIntegerVector((VECTOR*)0x1F800098, (VECTOR*)0x1F800098);
-        s->distance = _vectorMagnitude(
-            _vectorSubtract((VECTOR*)0x1F8000A8, &c->target, &c->position));
+        vectorFixedPointMult((VECTOR*)0x1F800098, &c->velocity, s->value);
+        vectorAdd((VECTOR*)0x1F8000A8, &c->start, (VECTOR*)0x1F800098);
+        vectorSubtract((VECTOR*)0x1F800098, (VECTOR*)0x1F8000A8, &c->target);
+        toNormalIntegerVector((VECTOR*)0x1F800098, (VECTOR*)0x1F800098);
+        s->distance = vectorMagnitude(
+            vectorSubtract((VECTOR*)0x1F8000A8, &c->target, &c->position));
         s->value = c->value
-                 + _fixedPointMult(s->distance - c->value,
+                 + fixedPointMult(s->distance - c->value,
                      func_800BFEBC(c->ease1, c->time, c->duration));
-        _vectorFixedPointMult((VECTOR*)0x1F800098, (VECTOR*)0x1F800098, s->value);
-        _vectorAdd(&c->computed, &c->target, (VECTOR*)0x1F800098);
+        vectorFixedPointMult((VECTOR*)0x1F800098, (VECTOR*)0x1F800098, s->value);
+        vectorAdd(&c->computed, &c->target, (VECTOR*)0x1F800098);
         break;
     }
     case 4: {
-        cameraScratch* s = (cameraScratch*)0x1F800088;
+        CameraScratch* s = (CameraScratch*)0x1F800088;
         s->rotation.vz = 0;
         s->rotation.vx = 0;
         s->rotation.vy =
@@ -3242,18 +3444,18 @@ void func_800BCA8C(D_800F4BA4_t2* c, D_800F4BA4_t2* other)
         RotMatrix_gte((SVECTOR*)0x1F8000D8, (MATRIX*)0x1F8000F8);
         s->v1.vz =
             c->value
-            + _fixedPointMult(c->delta, func_800BFEBC(c->ease2, c->time, c->duration));
+            + fixedPointMult(c->delta, func_800BFEBC(c->ease2, c->time, c->duration));
         s->v1.vx = 0;
         s->v1.vy = 0;
         ApplyMatrixLV((MATRIX*)0x1F8000F8, (VECTOR*)0x1F800098, (VECTOR*)0x1F800098);
         s->v1.vy = c->aux.vy
-                 + _fixedPointMult(
+                 + fixedPointMult(
                      c->velocity.vy, func_800BFEBC(c->ease3, c->time, c->duration));
-        _vectorAdd(&c->computed, &c->start, (VECTOR*)0x1F800098);
+        vectorAdd(&c->computed, &c->start, (VECTOR*)0x1F800098);
         break;
     }
     case 5: {
-        cameraScratch* s = (cameraScratch*)0x1F800088;
+        CameraScratch* s = (CameraScratch*)0x1F800088;
         s->rotation.vz = 0;
         s->rotation.vx = 0;
         s->rotation.vy =
@@ -3262,84 +3464,84 @@ void func_800BCA8C(D_800F4BA4_t2* c, D_800F4BA4_t2* other)
         RotMatrix_gte((SVECTOR*)0x1F8000D8, (MATRIX*)0x1F8000F8);
         s->v1.vz =
             c->value
-            + _fixedPointMult(c->delta, func_800BFEBC(c->ease2, c->time, c->duration));
+            + fixedPointMult(c->delta, func_800BFEBC(c->ease2, c->time, c->duration));
         s->v1.vx = 0;
         s->v1.vy = 0;
         ApplyMatrixLV((MATRIX*)0x1F8000F8, (VECTOR*)0x1F800098, (VECTOR*)0x1F800098);
         c->computed.vx = c->position.vx + s->v1.vx;
         c->computed.vz = c->position.vz + s->v1.vz;
         c->computed.vy = c->start.vy
-                       + _fixedPointMult(
+                       + fixedPointMult(
                            c->velocity.vy, func_800BFEBC(c->ease3, c->time, c->duration));
         break;
     }
     case 8:
         func_800A190C(c->value, c->delta, (SVECTOR*)0x1F8000D8, 2);
-        _vectorAdd(&c->computed,
-            _sVectorToFixedPointVector((VECTOR*)0x1F800098, (SVECTOR*)0x1F8000D8),
+        vectorAdd(&c->computed,
+            sVectorToFixedPointVector((VECTOR*)0x1F800098, (SVECTOR*)0x1F8000D8),
             &c->velocity);
         break;
     case 9:
-        _vectorAdd(&c->computed, &c->velocity, &c->target);
+        vectorAdd(&c->computed, &c->velocity, &c->target);
         break;
     case 11:
         func_800BCFB4(c);
         break;
     }
-    _copyVector(&c->previousCamera, &c->current);
+    vectorCopy(&c->previousCamera, &c->current);
     if (c->follow & c->following) {
         int fraction;
-        cameraScratch* s;
-        _vectorAdd(&c->followPosition, &c->followPosition, &c->followDelta);
+        CameraScratch* s;
+        vectorAdd(&c->followPosition, &c->followPosition, &c->followDelta);
         fraction = func_800BFEBC(1, c->time, c->duration);
-        s = (cameraScratch*)0x1F800088;
+        s = (CameraScratch*)0x1F800088;
         s->value = fraction;
-        _vectorSubtract((VECTOR*)0x1F800098, &c->computed, &c->followPosition);
-        _vectorFixedPointMult((VECTOR*)0x1F800098, (VECTOR*)0x1F800098, s->value);
-        _vectorAdd(&c->current, &c->followPosition, (VECTOR*)0x1F800098);
+        vectorSubtract((VECTOR*)0x1F800098, &c->computed, &c->followPosition);
+        vectorFixedPointMult((VECTOR*)0x1F800098, (VECTOR*)0x1F800098, s->value);
+        vectorAdd(&c->current, &c->followPosition, (VECTOR*)0x1F800098);
     } else {
-        _copyVector(&c->current, &c->computed);
+        vectorCopy(&c->current, &c->computed);
     }
     if (c->time == c->duration) {
         c->mode = 15;
         if (c->follow) {
             c->following = 1;
-            _copyVector(&c->followPosition, &c->current);
-            _vectorSubtract(&c->followDelta, &c->current, &c->previousCamera);
+            vectorCopy(&c->followPosition, &c->current);
+            vectorSubtract(&c->followDelta, &c->current, &c->previousCamera);
         }
     }
 }
 
 void func_800BCFB4(D_800F4BA4_t2* c)
 {
-    cameraMotionScratch* scratch;
-    cameraMotionScratch* finalScratch;
+    CameraMotionScratch* scratch;
+    CameraMotionScratch* finalScratch;
     short i;
     int height;
-    _vectorSubtract((VECTOR*)0x1F800098, &c->target, &c->position);
-    _vecToRotMatrix((VECTOR*)0x1F800098, (MATRIX*)0x1F8000F8);
-    scratch = (cameraMotionScratch*)0x1F800088;
+    vectorSubtract((VECTOR*)0x1F800098, &c->target, &c->position);
+    vecToRotMatrix((VECTOR*)0x1F800098, (MATRIX*)0x1F8000F8);
+    scratch = (CameraMotionScratch*)0x1F800088;
     scratch->matrix.t[0] = c->position.vx >> 12;
     scratch->matrix.t[1] = c->position.vy >> 12;
     scratch->matrix.t[2] = c->position.vz >> 12;
     setVector(&scratch->delta, c->position.vx - c->computed.vx,
         func_800BD2B8((MATRIX*)0x1F8000F8) - c->computed.vy,
         c->position.vz - c->computed.vz);
-    scratch->distance = _vectorMagnitude((VECTOR*)0x1F800098);
+    scratch->distance = vectorMagnitude((VECTOR*)0x1F800098);
     scratch->steps = scratch->distance / c->value;
     if (scratch->steps < 2) {
         c->time = c->duration;
     } else if (scratch->steps > 10) {
         scratch->steps = 10;
     }
-    _toNormalIntegerVector((VECTOR*)0x1F800098, (VECTOR*)0x1F800098);
-    _vectorFixedPointMult((VECTOR*)0x1F800098, (VECTOR*)0x1F800098, c->value);
-    _copyVector((VECTOR*)0x1F8000A8, &c->computed);
-    for (i = 1; i <= ((cameraMotionScratch*)0x1F800088)->steps; ++i) {
-        scratch = (cameraMotionScratch*)0x1F800088;
-        _vectorAdd((VECTOR*)0x1F8000A8, (VECTOR*)0x1F8000A8, (VECTOR*)0x1F800098);
-        _vectorSubtract((VECTOR*)0x1F8000B8, &c->target, (VECTOR*)0x1F8000A8);
-        _vecToRotMatrix((VECTOR*)0x1F8000B8, (MATRIX*)0x1F8000F8);
+    toNormalIntegerVector((VECTOR*)0x1F800098, (VECTOR*)0x1F800098);
+    vectorFixedPointMult((VECTOR*)0x1F800098, (VECTOR*)0x1F800098, c->value);
+    vectorCopy((VECTOR*)0x1F8000A8, &c->computed);
+    for (i = 1; i <= ((CameraMotionScratch*)0x1F800088)->steps; ++i) {
+        scratch = (CameraMotionScratch*)0x1F800088;
+        vectorAdd((VECTOR*)0x1F8000A8, (VECTOR*)0x1F8000A8, (VECTOR*)0x1F800098);
+        vectorSubtract((VECTOR*)0x1F8000B8, &c->target, (VECTOR*)0x1F8000A8);
+        vecToRotMatrix((VECTOR*)0x1F8000B8, (MATRIX*)0x1F8000F8);
         scratch->matrix.t[0] = scratch->candidate.vx >> 12;
         scratch->matrix.t[1] = scratch->candidate.vy >> 12;
         scratch->matrix.t[2] = scratch->candidate.vz >> 12;
@@ -3347,20 +3549,20 @@ void func_800BCFB4(D_800F4BA4_t2* c)
         if (height < scratch->candidate.vy) {
             setVector(&scratch->delta, scratch->candidate.vx - c->computed.vx,
                 height - c->computed.vy, scratch->candidate.vz - c->computed.vz);
-            _toNormalIntegerVector((VECTOR*)0x1F800098, (VECTOR*)0x1F800098);
-            _vectorFixedPointMult((VECTOR*)0x1F800098, (VECTOR*)0x1F800098, c->value);
+            toNormalIntegerVector((VECTOR*)0x1F800098, (VECTOR*)0x1F800098);
+            vectorFixedPointMult((VECTOR*)0x1F800098, (VECTOR*)0x1F800098, c->value);
             break;
         }
     }
-    _vectorAdd((VECTOR*)0x1F8000A8, (VECTOR*)0x1F800098, &c->computed);
-    finalScratch = (cameraMotionScratch*)0x1F800088;
+    vectorAdd((VECTOR*)0x1F8000A8, (VECTOR*)0x1F800098, &c->computed);
+    finalScratch = (CameraMotionScratch*)0x1F800088;
     if (finalScratch->candidate.vx == D_800F4BA4->unk27C.vx
         && finalScratch->candidate.vy == D_800F4BA4->unk27C.vy
         && finalScratch->candidate.vz == D_800F4BA4->unk27C.vz) {
         c->time = c->duration;
     } else {
-        _copyVector(&D_800F4BA4->unk27C, &c->computed);
-        _copyVector(&c->computed, (VECTOR*)0x1F8000A8);
+        vectorCopy(&D_800F4BA4->unk27C, &c->computed);
+        vectorCopy(&c->computed, (VECTOR*)0x1F8000A8);
     }
 }
 
@@ -3409,7 +3611,7 @@ int func_800BD2B8(MATRIX* arg0)
     return lowest * ONE;
 }
 
-int func_800BD444(u_char* arg0, short arg1)
+int vs_battle_script_E2_E3_camera(u_char* arg0, UNUSED short arg1)
 {
     func_800BD57C_t* var_s0;
 
@@ -3425,11 +3627,11 @@ int func_800BD444(u_char* arg0, short arg1)
     var_s0->unkA = arg0[4];
 
     if (var_s0->unkA == 0) {
-        var_s0->unk2 = vs_battle_getShort(arg0 + 1);
+        var_s0->unk2 = getShort(arg0 + 1);
         var_s0->unk0 = 1;
     } else {
         var_s0->unk4 = var_s0->unk2;
-        var_s0->unk6 = vs_battle_getShort(arg0 + 1) - var_s0->unk2;
+        var_s0->unk6 = getShort(arg0 + 1) - var_s0->unk2;
         if (var_s0->unk6 < -(ONE / 2)) {
             var_s0->unk6 += ONE;
         } else if (var_s0->unk6 > (ONE / 2)) {
@@ -3452,7 +3654,7 @@ int func_800BD444(u_char* arg0, short arg1)
         var_s0->unk1 = arg0[3] & 0xF;
         var_s0->unk8 = 0;
     }
-    return 0;
+    return vs_battle_scriptNext;
 }
 
 void func_800BD57C(func_800BD57C_t* arg0)
@@ -3499,7 +3701,7 @@ int func_800BD610(void)
     return temp_a2;
 }
 
-int func_800BD6C4(u_char* script, short arg1)
+int vs_battle_script_B9_BA_BF_E4_E5_E6_E7_ED(u_char* script, UNUSED short arg1)
 {
     VECTOR values;
     CVECTOR color;
@@ -3507,12 +3709,12 @@ int func_800BD6C4(u_char* script, short arg1)
     short effectValue;
     switch (script[0]) {
     case 185:
-        func_8007DE44(vs_battle_getShort(script + 1));
-        return 0;
+        func_8007DE44(getShort(script + 1));
+        return vs_battle_scriptNext;
 
     case 186:
         func_8007DE5C(script[1]);
-        return 0;
+        return vs_battle_scriptNext;
 
     case 228:
         D_800F4BA4->unk1FC.unk1E = script[4];
@@ -3529,7 +3731,7 @@ int func_800BD6C4(u_char* script, short arg1)
                 (script[2] << 7) - (D_800F4BA4->unk1FC.unkC = values.vy);
             D_800F4BA4->unk1FC.unk1 = script[3];
         }
-        return 0;
+        return vs_battle_scriptNext;
 
     case 229:
         D_800F4BA4->unk21C.unk1E = script[5];
@@ -3546,7 +3748,7 @@ int func_800BD6C4(u_char* script, short arg1)
             D_800F4BA4->unk21C.unk16 = script[3] - (D_800F4BA4->unk21C.unkE = color.b);
             D_800F4BA4->unk21C.unk1 = script[4];
         }
-        return 0;
+        return vs_battle_scriptNext;
 
     case 230:
         D_800F4BA4->unk23C.unk1E = script[4];
@@ -3563,15 +3765,15 @@ int func_800BD6C4(u_char* script, short arg1)
                 (signed char)script[2] - (D_800F4BA4->unk23C.unkC = values.vy);
             D_800F4BA4->unk23C.unk1 = script[3];
         }
-        return 0;
+        return vs_battle_scriptNext;
 
     case 231:
         func_8007DE2C(script[1]);
-        return 0;
+        return vs_battle_scriptNext;
 
     case 237:
         if (D_800F4BA4->unk25C.unk1E > 0) {
-            return 1;
+            return vs_battle_scriptRepeat;
         }
 
         D_800F4BA4->unk25C.unk1E = script[4];
@@ -3588,10 +3790,10 @@ int func_800BD6C4(u_char* script, short arg1)
                 - (D_800F4BA4->unk25C.unkC = D_800F4BA4->unk25C.unk4);
             D_800F4BA4->unk25C.unk1 = script[3];
         }
-        return 0;
+        return vs_battle_scriptNext;
 
     case 191:
-        mode = vs_battle_getShort(script + 1);
+        mode = getShort(script + 1);
         if (!mode) {
             func_8007DE2C(0);
             values.vx = values.vy = 0;
@@ -3616,7 +3818,7 @@ int func_800BD6C4(u_char* script, short arg1)
             func_8007DDD4(&color);
             func_8007DE44(mode);
         }
-        return 0;
+        return vs_battle_scriptNext;
     }
 }
 
@@ -3670,7 +3872,7 @@ int func_800BDBB4(func_800BDBB4_t* arg0)
     return 1;
 }
 
-int func_800BDC9C(u_char* script, short arg1)
+int vs_battle_script_EA_EB_EC_EE_EF_camera(u_char* script, UNUSED short arg1)
 {
     func_800BDF6C_t* entry;
     short i;
@@ -3688,7 +3890,7 @@ int func_800BDC9C(u_char* script, short arg1)
             D_800F4BA4->projectionDistance.unk1 = script[2];
             D_800F4BA4->projectionDistance.unk8 = 0;
         }
-        return 0;
+        return vs_battle_scriptNext;
     case 235:
         if ((D_800F4BA4->nearClip.unk9 = script[3]) == 0) {
             D_800F4BA4->nearClip.unk2 = script[1] ? script[1] : 64;
@@ -3700,7 +3902,7 @@ int func_800BDC9C(u_char* script, short arg1)
             D_800F4BA4->nearClip.unk1 = script[2];
             D_800F4BA4->nearClip.unk8 = 0;
         }
-        return 0;
+        return vs_battle_scriptNext;
     case 236:
         if ((D_800F4BA4->farClip.unk9 = script[3]) == 0) {
             D_800F4BA4->farClip.unk2 = script[1] ? (script[1] << 7) : ONE;
@@ -3713,12 +3915,12 @@ int func_800BDC9C(u_char* script, short arg1)
             D_800F4BA4->farClip.unk1 = script[2];
             D_800F4BA4->farClip.unk8 = 0;
         }
-        return 0;
+        return vs_battle_scriptNext;
     case 239:
         entry = (func_800BDF6C_t*)&D_800F4BA4->unk1A4.unk2;
         if (script[2] == 0) {
             entry[0].unk9 = entry[1].unk9 = 0;
-            return 0;
+            return vs_battle_scriptNext;
         }
         for (i = 0; i < 2; ++i, ++entry) {
             if (entry->unk9 == 0) {
@@ -3731,7 +3933,7 @@ int func_800BDC9C(u_char* script, short arg1)
                 break;
             }
         }
-        return 0;
+        return vs_battle_scriptNext;
     }
 }
 
@@ -3794,13 +3996,13 @@ int func_800BE01C(func_800BDF6C_t* arg0)
 void func_800BE180(void)
 {
     short count = 0;
-    cameraShakeScratch* clear = (cameraShakeScratch*)0x1F800088;
+    CameraShakeScratch* clear = (CameraShakeScratch*)0x1F800088;
     short i = 0;
     int x, y, z;
-    cameraShakeScratch* scratch;
+    CameraShakeScratch* scratch;
     func_800BDF6C_t* entry = (func_800BDF6C_t*)&D_800F4BA4->unk1A4.unk2;
     clear->a.vx = clear->a.vy = clear->a.vz = clear->b.vx = clear->b.vy = clear->b.vz = 0;
-    scratch = (cameraShakeScratch*)0x1F800088;
+    scratch = (CameraShakeScratch*)0x1F800088;
     for (; i < 2; ++entry, ++i) {
         if (func_800BE01C(entry)) {
             setVector(&scratch->c, x = entry->unk2 * (((entry->unkA >> 2) & 3) - 1),
@@ -3857,37 +4059,36 @@ void func_800BE3D0(char arg0)
     u_char temp_s3;
     int new_var;
 
-    temp_s3 = vs_battle_getStateFlag(0xAF);
-    temp_s0 = vs_battle_getStateFlag(0xB0);
+    temp_s3 = getStateFlag(0xAF);
+    temp_s0 = getStateFlag(0xB0);
     new_var = temp_s3 - 1;
-    vs_battle_initialiseCameraFromSpherical(
-        &sp30, &sp10, (new_var + (arg0 * 2)) & 7, temp_s0 + 1);
+    initialiseCameraFromSpherical(&sp30, &sp10, (new_var + (arg0 * 2)) & 7, temp_s0 + 1);
 
     sp30.vy += D_800E9C24[temp_s0] << 0xC;
     sp10.vy += D_800E9C24[temp_s0] << 0xC;
 
-    _copyVector(&D_800F4BA4->lookAt.current, &sp10);
-    _copyVector(&D_800F4BA4->lookAt.target, &sp30);
-    _copyVector(&D_800F4BA4->eye.target, &sp10);
-    _copyVector(&D_800F4BA4->eye.current, &sp30);
+    vectorCopy(&D_800F4BA4->lookAt.current, &sp10);
+    vectorCopy(&D_800F4BA4->lookAt.target, &sp30);
+    vectorCopy(&D_800F4BA4->eye.target, &sp10);
+    vectorCopy(&D_800F4BA4->eye.current, &sp30);
 
     D_800F4BA4->lookAt.mode = 0xF;
 
-    vs_battle_initialiseCameraFromSpherical(&sp40, &sp20, temp_s3, temp_s0 + 1);
+    initialiseCameraFromSpherical(&sp40, &sp20, temp_s3, temp_s0 + 1);
 
-    _copyVector(&D_800F4BA4->eye.position, &sp40);
-    _copyVector(&D_800F4BA4->lookAt.position, &sp20);
+    vectorCopy(&D_800F4BA4->eye.position, &sp40);
+    vectorCopy(&D_800F4BA4->lookAt.position, &sp20);
 
-    func_800BC2E8(&D_800E9C28, 0);
-    func_800BC2E8(&D_800E9C2C, 0);
+    vs_battle_script_Cx_Dx_camera(&D_800E9C28, 0);
+    vs_battle_script_Cx_Dx_camera(&D_800E9C2C, 0);
 }
 
 void func_800BE53C(D_800F4BA4_t2* arg0)
 {
     VECTOR sp10;
 
-    _vectorSubtract(&sp10, &arg0->current, &arg0->position);
-    arg0->duration = ((_vectorMagnitude(&sp10) >> 0xC) * arg0->duration) / 1000;
+    vectorSubtract(&sp10, &arg0->current, &arg0->position);
+    arg0->duration = ((vectorMagnitude(&sp10) >> 0xC) * arg0->duration) / 1000;
 }
 
 void func_800BE5A4(short arg0)
@@ -3914,39 +4115,39 @@ void func_800BE5A4(short arg0)
     func_800BE53C(var_a0);
 }
 
-VECTOR* _vectorAdd(VECTOR* arg0, VECTOR* arg1, VECTOR* arg2)
+VECTOR* vectorAdd(VECTOR* arg0, VECTOR* arg1, VECTOR* arg2)
 {
     setVector(arg0, arg1->vx + arg2->vx, arg1->vy + arg2->vy, arg1->vz + arg2->vz);
     return arg0;
 }
 
-VECTOR* _vectorSubtract(VECTOR* arg0, VECTOR* arg1, VECTOR* arg2)
+VECTOR* vectorSubtract(VECTOR* arg0, VECTOR* arg1, VECTOR* arg2)
 {
     setVector(arg0, arg1->vx - arg2->vx, arg1->vy - arg2->vy, arg1->vz - arg2->vz);
     return arg0;
 }
 
-VECTOR* _vectorFixedPointMult(VECTOR* arg0, VECTOR* arg1, int arg2)
+VECTOR* vectorFixedPointMult(VECTOR* arg0, VECTOR* arg1, int arg2)
 {
-    setVector(arg0, _fixedPointMult(arg1->vx, arg2), _fixedPointMult(arg1->vy, arg2),
-        _fixedPointMult(arg1->vz, arg2));
+    setVector(arg0, fixedPointMult(arg1->vx, arg2), fixedPointMult(arg1->vy, arg2),
+        fixedPointMult(arg1->vz, arg2));
     return arg0;
 }
 
-static VECTOR* _copyVector(VECTOR* arg0, VECTOR* arg1)
+static VECTOR* vectorCopy(VECTOR* arg0, VECTOR* arg1)
 {
     copyVector(arg0, arg1);
     return arg0;
 }
 
-static int _vectorMagnitude(VECTOR* arg0)
+static int vectorMagnitude(VECTOR* arg0)
 {
     VECTOR sp10;
     int temp_lo;
     int temp_lo_2;
     int temp_v0;
 
-    _copyVector(&sp10, arg0);
+    vectorCopy(&sp10, arg0);
     temp_lo = (sp10.vx >> 0xC) * (sp10.vx >> 0xC);
     temp_lo_2 = (sp10.vy >> 0xC) * (sp10.vy >> 0xC);
     temp_v0 = (sp10.vz >> 0xC) * (sp10.vz >> 0xC);
@@ -3956,14 +4157,14 @@ static int _vectorMagnitude(VECTOR* arg0)
     return vs_gte_rsqrt(temp_lo + temp_lo_2 + temp_v0) * ONE;
 }
 
-VECTOR* _setVectorImm(VECTOR* arg0, u_char* arg1)
+VECTOR* setVectorImm(VECTOR* arg0, u_char* arg1)
 {
-    setVector(arg0, vs_battle_getShort(arg1) * ONE, vs_battle_getShort(arg1 + 2) * ONE,
-        vs_battle_getShort(arg1 + 4) * ONE);
+    setVector(
+        arg0, getShort(arg1) * ONE, getShort(arg1 + 2) * ONE, getShort(arg1 + 4) * ONE);
     return arg0;
 }
 
-static VECTOR* _sVectorToFixedPointVector(VECTOR* arg0, SVECTOR* arg1)
+static VECTOR* sVectorToFixedPointVector(VECTOR* arg0, SVECTOR* arg1)
 {
     arg0->vx = arg1->vx * ONE;
     arg0->vy = arg1->vy * ONE;
@@ -3971,7 +4172,7 @@ static VECTOR* _sVectorToFixedPointVector(VECTOR* arg0, SVECTOR* arg1)
     return arg0;
 }
 
-static int _fixedPointMult(int a, int b)
+static int fixedPointMult(int a, int b)
 {
     int result;
     __asm__("mult       %1, %2;"
@@ -3985,9 +4186,9 @@ static int _fixedPointMult(int a, int b)
     return result;
 }
 
-int _atan2FixedPoint(int arg0, int arg1) { return ratan2(arg0 >> 6, arg1 >> 6); }
+int atan2FixedPoint(int arg0, int arg1) { return ratan2(arg0 >> 6, arg1 >> 6); }
 
-void _vecToRotMatrix(VECTOR* arg0, MATRIX* arg1)
+void vecToRotMatrix(VECTOR* arg0, MATRIX* arg1)
 {
     SVECTOR sp10;
     SVECTOR sp18;
@@ -4001,7 +4202,7 @@ void _vecToRotMatrix(VECTOR* arg0, MATRIX* arg1)
     RotMatrix_gte(&sp10, arg1);
 }
 
-static void _toNormalIntegerVector(VECTOR* arg0, VECTOR* arg1)
+static void toNormalIntegerVector(VECTOR* arg0, VECTOR* arg1)
 {
     VECTOR sp10;
 
@@ -4009,7 +4210,7 @@ static void _toNormalIntegerVector(VECTOR* arg0, VECTOR* arg1)
     VectorNormal(&sp10, arg1);
 }
 
-int _loadMpdClearedScriptDoorSections(void* clearedSection, u_short clearedSectionLen,
+int loadMpdClearedScriptDoorSections(void* clearedSection, u_short clearedSectionLen,
     void* scriptSection, u_short scriptSectionLen, void* doorSection,
     u_short doorSectionLen, int startState)
 {
@@ -4022,17 +4223,17 @@ int _loadMpdClearedScriptDoorSections(void* clearedSection, u_short clearedSecti
     }
 
     if (clearedSectionLen != 0) {
-        _mpdClearedSection = vs_main_allocHeap(clearedSectionLen);
-        memcpy(_mpdClearedSection, clearedSection, clearedSectionLen);
+        mpdClearedSection = vs_main_allocHeap(clearedSectionLen);
+        memcpy(mpdClearedSection, clearedSection, clearedSectionLen);
     } else {
-        _mpdClearedSection = NULL;
+        mpdClearedSection = NULL;
     }
 
     if (doorSectionLen != 0) {
-        _mpdRoomDoorSection = vs_main_allocHeap(doorSectionLen);
-        memcpy(_mpdRoomDoorSection, doorSection, doorSectionLen);
+        mpdRoomDoorSection = vs_main_allocHeap(doorSectionLen);
+        memcpy(mpdRoomDoorSection, doorSection, doorSectionLen);
     } else {
-        _mpdRoomDoorSection = NULL;
+        mpdRoomDoorSection = NULL;
     }
 
     if (D_800F4BE2 == 1) {
@@ -4046,9 +4247,9 @@ int _loadMpdClearedScriptDoorSections(void* clearedSection, u_short clearedSecti
         D_800F4BB8 = 0;
     }
 
-    _mpdScriptSection = scriptSectionLen != 0;
+    mpdScriptSection = scriptSectionLen != 0;
 
-    if (_mpdScriptSection != 0) {
+    if (mpdScriptSection != 0) {
         memcpy(D_800F4C30, scriptSection, scriptSectionLen);
     }
     return 0;
@@ -4056,18 +4257,18 @@ int _loadMpdClearedScriptDoorSections(void* clearedSection, u_short clearedSecti
 
 short func_800BEB00(void) { return D_800F4C34; }
 
-short func_800BEB10(void) { return (D_800F4BE0 << 0xC) | _evtFile; }
+short func_800BEB10(void) { return (D_800F4BE0 << 0xC) | evtFile; }
 
 void func_800BEB34(void)
 {
     if (D_800F4BE2 == 3) {
         func_800BFD9C();
     }
-    if (_mpdClearedSection != 0) {
-        vs_main_freeHeap(_mpdClearedSection);
+    if (mpdClearedSection != 0) {
+        vs_main_freeHeap(mpdClearedSection);
     }
-    if (_mpdRoomDoorSection != 0) {
-        vs_main_freeHeap(_mpdRoomDoorSection);
+    if (mpdRoomDoorSection != 0) {
+        vs_main_freeHeap(mpdRoomDoorSection);
     }
 }
 
@@ -4083,7 +4284,7 @@ void func_800BEB9C(int arg0)
 
 void func_800BEBEC(void) { }
 
-char vs_battle_getStateFlag(short arg0)
+char getStateFlag(short arg0)
 {
     char* flags = (char*)&vs_main_stateFlags;
     return flags[arg0];
@@ -4107,7 +4308,7 @@ int func_800BEC30(void)
 short func_800BEC58(short type, int arg1, int arg2, short mode)
 {
     char buf[64];
-    vs_battle_actorPosition position;
+    vs_ActorPosition position;
     short i;
     short otherActorId;
     short flagId;
@@ -4129,10 +4330,10 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
     }
 
     if (type == 1) {
-        int scriptSection = _mpdScriptSection;
+        int scriptSection = mpdScriptSection;
 
         if (scriptSection & 1) {
-            _mpdScriptSection = 0;
+            mpdScriptSection = 0;
             D_800F4C34 = 1;
             D_800F4BE0 = 1;
             D_800F4BA8 = 1;
@@ -4141,7 +4342,7 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
     }
 
     if (type == 64) {
-        _evtFile = arg1;
+        evtFile = arg1;
         D_800F4BE0 = 0;
         D_800F4C34 = 1;
         D_800F4BA8 = 1;
@@ -4153,20 +4354,20 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
     }
 
     for (i = 0; i < 16; ++i) {
-        u_short offset = ((u_short*)_mpdClearedSection)[i];
+        u_short offset = ((u_short*)mpdClearedSection)[i];
 
         if (offset == 0xFFFF) {
             return 0;
         }
 
-        p = _mpdClearedSection + offset;
+        p = mpdClearedSection + offset;
 
         if (!(*p & type)) {
             continue;
         }
 
         ++p;
-        eventId = vs_battle_getShort(p);
+        eventId = getShort(p);
         p += 2;
         negate = 0;
 
@@ -4176,10 +4377,10 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
             switch (*p) {
             case 0xFF:
                 if (eventId & 0x8000) {
-                    _evtFile = eventId & 0xF;
+                    evtFile = eventId & 0xF;
                     D_800F4BE0 = 2;
                 } else {
-                    _evtFile = eventId;
+                    evtFile = eventId;
                     D_800F4BE0 = 0;
                 }
 
@@ -4188,7 +4389,7 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
                 return 1;
 
             case 1:
-                func_800A1108(0, &position);
+                vs_battle_getActorPosition(0, &position);
 
                 if (position.unk0.unk0.x == p[1] && position.unk0.unk0.z == p[2]) {
                     result = 1;
@@ -4198,7 +4399,7 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
                 break;
 
             case 2:
-                func_800A1108(0, &position);
+                vs_battle_getActorPosition(0, &position);
 
                 if (position.unk0.unk0.x >= p[1] && position.unk0.unk0.x < p[1] + p[3]
                     && position.unk0.unk0.z >= p[2]
@@ -4210,13 +4411,13 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
                 break;
 
             case 3:
-                left = vs_battle_getStateFlag(((p[1] & 0xF) << 6) | (p[2] >> 2));
+                left = getStateFlag(((p[1] & 0xF) << 6) | (p[2] >> 2));
                 right = p[3];
                 goto compare;
 
             case 15:
-                left = vs_battle_getStateFlag(((p[1] & 0xF) << 6) | (p[2] >> 2));
-                right = vs_battle_getStateFlag(((p[2] & 3) << 8) | p[3]);
+                left = getStateFlag(((p[1] & 0xF) << 6) | (p[2] >> 2));
+                right = getStateFlag(((p[2] & 3) << 8) | p[3]);
             compare:
                 switch (p[1] & 0xF0) {
                 case 0x00:
@@ -4260,10 +4461,10 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
                 break;
 
             case 4:
-                left = vs_battle_getShort(p + 1);
+                left = getShort(p + 1);
 
                 if (left & 0x1000) {
-                    if (vs_battle_getActor(left & 0x1F) != NULL) {
+                    if (getActor(left & 0x1F) != NULL) {
                         result = 1;
                     }
                 } else if (func_8007CF18(left) != 1) {
@@ -4275,7 +4476,7 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
 
             case 5:
                 left = flagValue = func_8007CF80(p[1]);
-                flagId = vs_battle_getShort(p + 2);
+                flagId = getShort(p + 2);
 
                 if (flagId != 0) {
                     vs_battle_setStateFlag(flagId, flagValue);
@@ -4289,8 +4490,8 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
 
             case 6:
                 if (mode == 0) {
-                    actorId = func_800BFE50(vs_battle_getShort(p + 1));
-                    otherActorId = func_800BFE50(vs_battle_getShort(p + 3));
+                    actorId = resolveActorId(getShort(p + 1));
+                    otherActorId = resolveActorId(getShort(p + 3));
 
                     if (actorId != 1 && otherActorId != 1 && arg1 == actorId
                         && arg2 == otherActorId) {
@@ -4302,7 +4503,7 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
                 break;
 
             case 7:
-                actorId = func_800BFE50(vs_battle_getShort(p + 1));
+                actorId = resolveActorId(getShort(p + 1));
 
                 if (actorId == 1) {
                     negate = 0;
@@ -4310,7 +4511,7 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
                 }
 
                 left = flagValue = func_8007C218(actorId);
-                flagId = vs_battle_getShort(p + 3);
+                flagId = getShort(p + 3);
 
                 if (flagId != 0) {
                     vs_battle_setStateFlag(flagId, flagValue);
@@ -4332,7 +4533,7 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
                 break;
 
             case 9:
-                if (!(func_800A0BE0(0) & 0x104000)) {
+                if (!(vs_battle_getActorFlags(0) & 0x104000)) {
                     result = 1;
                 }
 
@@ -4340,9 +4541,8 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
                 break;
 
             case 10:
-                left = flagValue =
-                    vs_battle_itemIdIsInInventory(vs_battle_getShort(p + 1));
-                flagId = vs_battle_getShort(p + 3);
+                left = flagValue = vs_battle_itemIdIsInInventory(getShort(p + 1));
+                flagId = getShort(p + 3);
 
                 if (flagId != 0) {
                     vs_battle_setStateFlag(flagId, flagValue);
@@ -4358,7 +4558,7 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
                 if ((short)func_800A0024(p[1], &position.unk0) >= 0
                     && position.unk0.unk0.x == p[2] && position.unk0.unk0.z == p[3]
                     && (p[4] == 0 || -(position.unk0.unk4.vy / 128) + 1 == p[4])
-                    && (p[5] == 0 || (position.unk0.unk0.status >> 2) + 1 == p[5])) {
+                    && (p[5] == 0 || (position.unk0.unk0.extra >> 2) + 1 == p[5])) {
                     result = 1;
                 }
 
@@ -4367,7 +4567,7 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
 
             case 12:
                 left = flagValue = -func_800A92B8(p[1], p[2]) / 128;
-                flagId = vs_battle_getShort(p + 3);
+                flagId = getShort(p + 3);
 
                 if (flagId != 0) {
                     vs_battle_setStateFlag(flagId, flagValue);
@@ -4380,14 +4580,14 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
                 break;
 
             case 13:
-                actorId = func_800BFE50(vs_battle_getShort(p + 1));
+                actorId = resolveActorId(getShort(p + 1));
 
                 if (actorId == 1) {
                     negate = 0;
                     break;
                 }
 
-                func_800A1108(actorId, &position);
+                vs_battle_getActorPosition(actorId, &position);
 
                 if (position.unk0.unk0.x == p[3] && position.unk0.unk0.z == p[4]) {
                     result = 1;
@@ -4397,14 +4597,14 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
                 break;
 
             case 14:
-                actorId = func_800BFE50(vs_battle_getShort(p + 1));
+                actorId = resolveActorId(getShort(p + 1));
 
                 if (actorId == 1) {
                     negate = 0;
                     break;
                 }
 
-                func_800A1108(actorId, &position);
+                vs_battle_getActorPosition(actorId, &position);
 
                 if (position.unk0.unk0.x >= p[3] && position.unk0.unk0.x < p[3] + p[5]
                     && position.unk0.unk0.z >= p[4]
@@ -4416,7 +4616,7 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
                 break;
 
             case 16:
-                actorId = func_800BFE50(vs_battle_getShort(p + 1));
+                actorId = resolveActorId(getShort(p + 1));
 
                 if (actorId == 1) {
                     negate = 0;
@@ -4449,12 +4649,12 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
     }
 }
 
-void _parseEvt(u_char* data)
+void parseEvt(u_char* data)
 {
     short i;
     u_char* table;
 
-    _scriptStrings = (u_short*)(data + *(u_short*)(data + 2));
+    scriptStrings = (u_short*)(data + *(u_short*)(data + 2));
     table = data + *(u_short*)(data + 4);
 
     for (i = 9; i < 16; ++i) {
@@ -4469,15 +4669,15 @@ void _parseEvt(u_char* data)
 
     D_800F4C38[0] = data + 16;
     D_800F4C38[1] = D_800F4C38[2] = D_800F4C38[3] = 0;
-    D_800F4C2C = 0;
-    D_800F4C68 = 0;
+    scriptSkipMode = vs_battle_scriptSkipOff;
+    skipRequested = 0;
 
     vs_battle_setStateFlag(168, 0);
 
     D_800F4C58[1] = D_800F4C58[2] = D_800F4C58[3] = 0;
     D_800F4BB9 = 0;
     D_800F4C4E = 0;
-    _textBoxSelectionPending = 0;
+    textBoxSelectionPending = 0;
     D_800F4BE4 = 0;
     D_800F4BF8 = 0;
     D_800F4BE2 = 0;
@@ -4486,17 +4686,17 @@ void _parseEvt(u_char* data)
     D_800F4C22 = 0;
 
     for (i = 0; i < 8; ++i) {
-        vs_battle_textBoxStatuses[i] = 0;
+        textBoxStatuses[i] = 0;
     }
 
     for (i = 0; i < 4; ++i) {
-        ((scriptBytePair*)D_800F4B28)[i].low = ((scriptBytePair*)D_800F4B28)[i].high = 0;
+        ((ScriptBytePair*)D_800F4B28)[i].low = ((ScriptBytePair*)D_800F4B28)[i].high = 0;
     }
 
     D_800F4B8B = 0;
-    D_800F4B30[0].unk3 = D_800F4B30[1].unk3 = D_800F4B30[2].unk3 = 0;
+    gimTweens[0].duration = gimTweens[1].duration = gimTweens[2].duration = 0;
     D_800F4C69 = vs_main_getcurrentMusicSlot();
-    D_800F4BBC = 0;
+    evtCdSlot = NULL;
 
     for (i = 16; i < 32; ++i) {
         vs_battle_setStateFlag(i, 0);
@@ -4535,17 +4735,17 @@ int func_800BF850(void)
 
         switch (D_800F4BE0) {
         case 1:
-            _parseEvt(D_800F4C30);
+            parseEvt(D_800F4C30);
             D_800F4C34 = 4;
             break;
 
         case 2:
-            _parseEvt(_mpdRoomDoorSection + ((short*)_mpdRoomDoorSection)[_evtFile]);
+            parseEvt(mpdRoomDoorSection + ((short*)mpdRoomDoorSection)[evtFile]);
             D_800F4C34 = 4;
             break;
 
         case 0:
-            func_800C00E8(_evtFile, D_800F4C30);
+            func_800C00E8(evtFile, D_800F4C30);
             D_800F4C34 = 3;
             break;
         }
@@ -4554,8 +4754,8 @@ int func_800BF850(void)
     }
 
     if (D_800F4C34 == 3) {
-        if (D_800F4BBC->state == 4) {
-            vs_main_freeCdQueueSlot(D_800F4BBC);
+        if (evtCdSlot->state == vs_main_CdQueueStateLoaded) {
+            vs_main_freeCdQueueSlot(evtCdSlot);
 
             if (D_800F4C54 != 0) {
                 vs_main_memcpy(D_800F4C30, D_800F4C24, 0x1800);
@@ -4563,7 +4763,7 @@ int func_800BF850(void)
                 D_800F4C54 = 0;
             }
 
-            _parseEvt(D_800F4C30);
+            parseEvt(D_800F4C30);
             D_800F4C34 = 4;
         }
 
@@ -4590,7 +4790,7 @@ int func_800BF850(void)
 
     func_800BC9E0();
     func_800BDAB4();
-    vs_battle_applyCameraState();
+    applyCameraState();
     func_800BB9B0();
     func_800BBAFC();
 

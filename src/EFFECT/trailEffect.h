@@ -23,8 +23,8 @@
 #ifndef VS_TRAIL_TYPES_DECLARED
 #define VS_TRAIL_TYPES_DECLARED
 
-/* Declares the trail type and the trail effect state type, vs_trail<n> and
- * vs_trail<n>State, for trails with n spline samples. */
+/* Declares the trail type and the trail effect state type, vs_Trail<n> and
+ * vs_Trail<n>State, for trails with n spline samples. */
 #define VS_TRAIL_TYPES(n)                                                                \
     typedef struct {                                                                     \
         SVECTOR splinePoints[4];                                                         \
@@ -36,18 +36,18 @@
         int splineProgress;                                                              \
         int speed;                                                                       \
         int unk;                                                                         \
-    } vs_trail##n;                                                                       \
+    } vs_Trail##n;                                                                       \
                                                                                          \
     typedef struct {                                                                     \
         u_char unk0;                                                                     \
         u_char unk1;                                                                     \
         u_char trailcount;                                                               \
         u_char unk3;                                                                     \
-        vs_trail##n* trails;                                                             \
+        vs_Trail##n* trails;                                                             \
         int curveSampleDistance;                                                         \
         func_800D6CF_t unkC;                                                             \
         u_char sampledTransparencyCurve[0];                                              \
-    } vs_trail##n##State;
+    } vs_Trail##n##State;
 
 VS_TRAIL_TYPES(5)
 VS_TRAIL_TYPES(9)
@@ -56,7 +56,7 @@ VS_TRAIL_TYPES(9)
 
 #endif
 
-#define VS_TRAIL_T VS_CAT(vs_trail, TRAIL_SAMPLE_COUNT)
+#define VS_TRAIL_T VS_CAT(vs_Trail, TRAIL_SAMPLE_COUNT)
 #define VS_TRAIL_STATE VS_CAT(VS_TRAIL_T, State)
 
 #define VS_TRAIL_ORIGIN_FUNCTION VS_CAT(VS_TRAIL_DISPATCH_FUNCTION, _origin)
@@ -495,7 +495,7 @@ static void VS_TRAIL_UPDATE_FUNCTION(UNUSED func_800FA098_arg0* arg0,
 static void VS_TRAIL_RENDER_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg1* arg1,
     D_800F53B8_t* arg2, VS_TRAIL_STATE* arg3)
 {
-    vs_gt4Prim quad;
+    vs_Gt4Prim quad;
     DVECTOR screen[TRAIL_SAMPLE_COUNT + 1];
     int depths[TRAIL_SAMPLE_COUNT + 1];
     int angles[TRAIL_SAMPLE_COUNT - 1];
@@ -504,7 +504,7 @@ static void VS_TRAIL_RENDER_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg
     DVECTOR* points;
     int i;
     int j;
-    pFileTexture* texture;
+    vs_PFileTexture* texture;
 
     vs_battle_lerpSvector(arg0->unk34[4],
         vs_battle_sampleCurve(arg0->unkE, arg3->curveSampleDistance), &arg1->unk108);
@@ -547,7 +547,7 @@ static void VS_TRAIL_RENDER_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg
     for (i = 0; i < arg3->trailcount; ++i) {
         VS_TRAIL_T* trail = &arg3->trails[i];
         SVECTOR* samples = trail->splineSamples;
-        vs_gt4Prim* prim;
+        vs_Gt4Prim* prim;
         int dx;
         int dy;
         int sample;

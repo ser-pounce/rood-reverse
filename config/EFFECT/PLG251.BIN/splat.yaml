@@ -2,7 +2,7 @@ sha1: c0dbe52e9e6d268f2b4e4e42bf717347cbe7272c
 options:
   basename: EFFECT/PLG251.BIN
   target_path: data/EFFECT/PLG251.BIN
-  elf_path: build/data/EFFECT/PLG251.BIN.elf
+  elf_path: build/data/EFFECT/PLG251.BIN.sym.elf
   asm_path: build/src/EFFECT/PLG251.BIN
   src_path: src/EFFECT/PLG251.BIN
   asset_path: build/assets/EFFECT/PLG251.BIN

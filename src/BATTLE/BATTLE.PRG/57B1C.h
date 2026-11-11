@@ -40,7 +40,7 @@ typedef struct {
 typedef struct {
     short xyz[3];
     short flags;
-} menuShapeVertex;
+} MenuShapeVertex;
 
 void func_800C031C(void);
 int func_800C0758(int phase, int segments, int index);

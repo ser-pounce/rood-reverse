@@ -1,11 +1,8 @@
 battle.prg := BATTLE/BATTLE.PRG
 buildDir   := $(BUILD)/src/$(battle.prg)
 
-$(BUILD)/data/$(battle.prg): LDFLAGS += \
+$(BUILD)/data/$(battle.prg).elf $(BUILD)/data/$(battle.prg).sym.elf: LDFLAGS += \
 	--defsym=vs_scratch=0x1F800000
-
-$(BUILD)/data/BATTLE/BATTLE.PRG.elf: LDFLAGS += \
-	--retain-symbols-file=config/BATTLE/BATTLE.PRG/exports.txt
 
 $(buildDir)/%.c.o: CC1VER := 2.8.1-psx
 $(buildDir)/%.c.o: ASFLAGS += -no-pad-sections
@@ -20,11 +17,11 @@ $(buildDir)/30DB0.c.o: CC1FLAGS += -Wno-return-type -Wno-sign-compare -Wno-unini
 $(patsubst %,$(buildDir)/%.c.o,38C1C 3A1A0 40564 44F14 49268 6E4CC 6F014 6FC00 71618 73700 74088 770A4 7CD68 7EE98): CC1FLAGS += -Wno-uninitialized
 
 $(BUILD)/config/$(battle.prg)/link.d: \
-	config/SLUS_010.40/symbol_addrs.txt \
-	config/MENU/MAINMENU.PRG/symbol_addrs.txt
+	config/SLUS_010.40/symbol_addrs.txt
 
 # Patch single byte in string table padding, seems it might actually be used though
 $(BUILD)/data/BATTLE/BATTLE.PRG: FIXUP = $(XDELTA) -dfans $@ tools/data/BATTLE/BATTLE.PRG.xdelta $@
+$(BUILD)/data/BATTLE/BATTLE.PRG: tools/data/BATTLE/BATTLE.PRG.xdelta
 
 $(BUILD)/assets/BATTLE/BATTLE.PRG/keyStrings.vsStringFixed.bin $(BUILD)/assets/BATTLE/BATTLE.PRG/keyStrings.h &: $(BUILD)/assets/BATTLE/BATTLE.PRG/keyStrings.vsStringFixed.yaml | $$(@D)/
 	$(ECHO) Converting $<
@@ -34,6 +31,6 @@ $(BUILD)/assets/BATTLE/BATTLE.PRG/keyStrings.vsStringFixed.yaml.o: $(BUILD)/asse
 	$(ECHO) Converting $<
 	$(OBJCOPY) $(OBJCOPYFLAGS) $< $@
 
-BATTLE_LDLIBS := $(patsubst %,$(BUILD)/data/%.elf,GIM/SCREFF2.PRG EFFECT/EFFPURGE.BIN)
-$(BUILD)/data/$(battle.prg): $(BATTLE_LDLIBS)
-$(BUILD)/data/$(battle.prg): private LDLIBS += $(BATTLE_LDLIBS)
+BATTLE_LDLIBS := $(patsubst %,$(BUILD)/data/%.sym.elf,GIM/SCREFF2.PRG EFFECT/EFFPURGE.BIN MENU/MAINMENU.PRG SLUS_010.40)
+$(BUILD)/data/$(battle.prg).elf: $(BATTLE_LDLIBS)
+$(BUILD)/data/$(battle.prg).elf: private LDLIBS += $(BATTLE_LDLIBS)

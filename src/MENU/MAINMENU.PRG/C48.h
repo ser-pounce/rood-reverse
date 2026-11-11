@@ -10,19 +10,6 @@ enum vs_mainMenu_menuItemIds { vs_mainMenu_menuItemIds_none = 40 };
 void vs_mainMenu_initInventory(void);
 
 /**
- * Ranks the two top class and affinity values.
- *
- * @return Packed value:
- *
- * - Bits 0-7: The rank from 0-10 of the second highest stat.
- *
- * - Bits 8-15: The rank from 0-3 of the highest stat.
- *
- * - Bits 16+: The highest stat identifier, where 0-5 == class, 6-12 == affinity.
- */
-int vs_mainMenu_getEquipmentMaxStats(void* item, u_int itemCategory);
-
-/**
  * Dismisses the specified row to the left.
  */
 void vs_mainMenu_menuItemFlyoutLeft(int row);
@@ -101,9 +88,9 @@ enum vs_mainMenu_renderDpPpBarsTarget {
 };
 
 enum vs_mainMenu_renderDpPpBarsState {
-    renderDpPpBarsStatSlideIn = 0 << 2,
-    renderDpPpBarsStatSlideOut = 1 << 2,
-    renderDpPpBarsStatStatic = 2 << 2
+    renderDpPpBarsStateSlideIn = 0 << 2,
+    renderDpPpBarsStateSlideOut = 1 << 2,
+    renderDpPpBarsStateStatic = 2 << 2
 };
 
 /**
@@ -114,10 +101,10 @@ enum vs_mainMenu_renderDpPpBarsState {
  */
 void vs_mainMenu_renderDpPpBars(int flags);
 
-extern vs_main_inventoryGem* vs_mainMenu_gems;
-extern vs_menu_inventoryStorage_t* vs_menu_inventoryStorage;
-extern vs_main_inventoryGrip* vs_mainMenu_grips;
-extern vs_main_inventoryBlade* vs_mainMenu_blades;
-extern vs_main_inventoryArmor* vs_mainMenu_armor;
-extern vs_main_inventoryShield* vs_mainMenu_shields;
-extern vs_main_inventoryWeapon* vs_mainMenu_weapons;
+extern vs_InventoryGem* vs_mainMenu_gems;
+extern vs_InventoryStorage* vs_menu_inventoryStorage;
+extern vs_InventoryGrip* vs_mainMenu_grips;
+extern vs_InventoryBlade* vs_mainMenu_blades;
+extern vs_InventoryArmor* vs_mainMenu_armor;
+extern vs_InventoryShield* vs_mainMenu_shields;
+extern vs_InventoryWeapon* vs_mainMenu_weapons;

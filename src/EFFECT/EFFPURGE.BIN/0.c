@@ -122,7 +122,7 @@
 #include "src/EFFECT/PLG301.BIN/110.h"
 #include "build/src/include/lbas.h"
 
-static u_char _fbcClutRows[] = { 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1,
+static u_char fbcClutRows[] = { 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1,
     1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1, 2, 2,
     3, 1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 3, 3, 3, 3, 1, 1, 1, 1,
     3, 3, 3, 3, 1, 1, 2, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 3, 3, 2, 0, 2, 2, 1, 1, 2, 1, 1, 1,
@@ -138,7 +138,7 @@ static u_char _fbcClutRows[] = { 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0 };
 
-static u_char _fbcSlots[] = { 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+static u_char fbcSlots[] = { 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -157,7 +157,7 @@ static u_char _fbcSlots[] = { 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 #define FBC_DEFAULT { VS_E000_0_FBC_LBA - VS_E000_P_LBA, VS_E000_0_FBC_SIZE }
 #define FBC(x) { VS_E##x##_1_FBC_LBA - VS_E000_P_LBA, VS_E##x##_1_FBC_SIZE }
 
-static _loadFileContext _fbcFiles[] = {
+static vs_LoadFileContext fbcFiles[] = {
     { VS_E000_0_FBC_LBA - VS_E000_P_LBA, VS_E000_0_FBC_SIZE }, FBC(001), FBC(002),
     FBC(003), FBC(004), FBC(005), FBC_DEFAULT, FBC(007), FBC(008), FBC(009), FBC(010),
     FBC_DEFAULT, FBC_DEFAULT, FBC(013), FBC(014), FBC(015), FBC(016), FBC(017), FBC(018),
@@ -216,7 +216,7 @@ static _loadFileContext _fbcFiles[] = {
     FBC_DEFAULT
 };
 
-static u_char _fbtCounts[] = { 1, 2, 2, 2, 2, 3, 0, 2, 2, 2, 2, 0, 0, 2, 2, 2, 2, 2, 2, 2,
+static u_char fbtCounts[] = { 1, 2, 2, 2, 2, 3, 0, 2, 2, 2, 2, 0, 0, 2, 2, 2, 2, 2, 2, 2,
     2, 0, 2, 2, 3, 0, 2, 2, 0, 3, 3, 0, 3, 0, 2, 3, 3, 3, 3, 3, 3, 2, 2, 2, 3, 3, 3, 3, 3,
     3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
     3, 3, 3, 3, 3, 4, 4, 3, 3, 3, 3, 1, 3, 3, 3, 3, 3, 3, 3, 0, 3, 3, 3, 3, 3, 3, 3, 3, 3,
@@ -232,7 +232,7 @@ static u_char _fbtCounts[] = { 1, 2, 2, 2, 2, 3, 0, 2, 2, 2, 2, 0, 0, 2, 2, 2, 2
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0 };
 
-static u_char _fbtSlots[] = { 0, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 3, 1, 2, 1, 2, 1, 2, 1, 2,
+static u_char fbtSlots[] = { 0, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 3, 1, 2, 1, 2, 1, 2, 1, 2,
     1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 3, 1, 2, 1, 2, 1, 2,
     3, 1, 2, 3, 1, 2, 3, 1, 2, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2,
     1, 2, 1, 2, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1,
@@ -262,7 +262,7 @@ static u_char _fbtSlots[] = { 0, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 3, 1, 2, 1, 2, 1,
 
 #define FBT(x) { VS_E##x##_FBT_LBA - VS_E000_P_LBA, VS_E##x##_FBT_SIZE }
 
-static _loadFileContext _fbtFiles[] = { FBT(000_0), FBT(001_1), FBT(001_2), FBT(002_1),
+static vs_LoadFileContext fbtFiles[] = { FBT(000_0), FBT(001_1), FBT(001_2), FBT(002_1),
     FBT(002_2), FBT(003_1), FBT(003_2), FBT(004_1), FBT(004_2), FBT(005_1), FBT(005_2),
     FBT(005_3), FBT(007_1), FBT(007_2), FBT(008_1), FBT(008_2), FBT(009_1), FBT(009_2),
     FBT(010_1), FBT(010_2), FBT(013_1), FBT(013_2), FBT(014_1), FBT(014_2), FBT(015_1),
@@ -375,7 +375,7 @@ static _loadFileContext _fbtFiles[] = { FBT(000_0), FBT(001_1), FBT(001_2), FBT(
 #define P(x) { VS_E##x##_P_LBA - VS_E000_P_LBA, VS_E##x##_P_SIZE }
 #define P_DEFAULT P(000)
 
-static _loadFileContext _pFiles[] = { P_DEFAULT, P(001), P(002), P(003), P(004), P(005),
+static vs_LoadFileContext pFiles[] = { P_DEFAULT, P(001), P(002), P(003), P(004), P(005),
     P(006), P(007), P(008), P(009), P(010), P(011), P(012), P(013), P(014), P(015),
     P(016), P(017), P(018), P(019), P(020), P(021), P(022), P(023), P(024), P(025),
     P(026), P(027), P(028), P(029), P(030), P(031), P(032), P(033), P(034), P(035),
@@ -421,7 +421,7 @@ static _loadFileContext _pFiles[] = { P_DEFAULT, P(001), P(002), P(003), P(004),
     P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT,
     P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT, P_DEFAULT };
 
-static u_short _effectEntryPointIndices[] = { 0x000, 0x000, 0x000, 0x000, 0x000, 0x000,
+static u_short effectEntryPointIndices[] = { 0x000, 0x000, 0x000, 0x000, 0x000, 0x000,
     0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001,
     0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001,
     0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001,
@@ -456,7 +456,7 @@ static u_short _effectEntryPointIndices[] = { 0x000, 0x000, 0x000, 0x000, 0x000,
     0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157,
     0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157, 0x157 };
 
-static effectExec _effectEntryPoints[] = { vs_effect_analyze_0, vs_effect_solidShock_0,
+static effectExec effectEntryPoints[] = { vs_effect_analyze_0, vs_effect_solidShock_0,
     vs_effect_lightningBolt_0, vs_effect_vulcanLance_0, vs_effect_aquaBlast_0,
     vs_spiritSurge_0, vs_spiritSurge_1, vs_spiritSurge_2, vs_spiritSurge_3,
     vs_effect_darkChant_0, vs_effect_darkChant_1, NULL, vs_effect_exorcism_0,
@@ -561,7 +561,7 @@ static effectExec _effectEntryPoints[] = { vs_effect_analyze_0, vs_effect_solidS
 #define PLG(x) { VS_PLG##x##_BIN_LBA - VS_E000_P_LBA, VS_PLG##x##_BIN_SIZE }
 #define PLG_NONE { 0x0000, 0x0000 }
 
-static _loadFileContext _plgFiles[] = { PLG_NONE, PLG_NONE, PLG_NONE, PLG_NONE, PLG_NONE,
+static vs_LoadFileContext plgFiles[] = { PLG_NONE, PLG_NONE, PLG_NONE, PLG_NONE, PLG_NONE,
     PLG(005), PLG_NONE, PLG_NONE, PLG_NONE, PLG_NONE, PLG_NONE, PLG_NONE, PLG_NONE,
     PLG_NONE, PLG_NONE, PLG_NONE, PLG_NONE, PLG_NONE, PLG_NONE, PLG_NONE, PLG_NONE,
     PLG_NONE, PLG_NONE, PLG_NONE, PLG_NONE, PLG_NONE, PLG_NONE, PLG_NONE, PLG_NONE,
@@ -924,15 +924,15 @@ int func_800F9800(func_800D4910_t* arg0, u_int arg1, int arg2)
     return vs_effect_plg301_1(NULL, 2, 0);
 }
 
-static void _configureFb(void);
-static void _configurePlg(void);
+static void configureFb(void);
+static void configurePlg(void);
 
 void vs_effpurge_exec(void)
 {
     func_800D8038(0);
-    _configureFb();
-    _configurePlg();
-    vs_battle_pFileLoadContext = _pFiles[D_800F5230.effectId];
+    configureFb();
+    configurePlg();
+    vs_battle_pFileLoadContext = pFiles[D_800F5230.effectId];
     func_800D2698(255);
     D_800F569C->block9Data = NULL;
     D_800F56C8.curveBlock = NULL;
@@ -941,45 +941,45 @@ void vs_effpurge_exec(void)
     D_800F56C8.block13Data = NULL;
 }
 
-static void _configureFb(void)
+static void configureFb(void)
 {
     int i;
     int texCount;
     u_char* a2;
 
-    int clutRows = _fbcClutRows[D_800F5230.effectId];
+    int clutRows = fbcClutRows[D_800F5230.effectId];
     int var_s2 = 0;
 
     for (i = 0; i < D_800F5230.effectId; ++i) {
-        var_s2 += _fbtCounts[i];
+        var_s2 += fbtCounts[i];
     }
 
-    texCount = _fbtCounts[D_800F5230.effectId];
+    texCount = fbtCounts[D_800F5230.effectId];
 
     func_800D7FFC(texCount + (clutRows != 0));
 
-    a2 = &_fbcSlots[D_800F5230.effectId];
+    a2 = &fbcSlots[D_800F5230.effectId];
 
-    vs_battle_configureEffectFbLoad(_fbcFiles[D_800F5230.effectId].lba,
-        _fbcFiles[D_800F5230.effectId].size, *a2, 1, 0);
+    vs_battle_configureEffectFbLoad(
+        fbcFiles[D_800F5230.effectId].lba, fbcFiles[D_800F5230.effectId].size, *a2, 1, 0);
 
     for (i = 0; i < texCount; ++i) {
-        vs_battle_configureEffectFbLoad(_fbtFiles[var_s2 + i].lba,
-            _fbtFiles[var_s2 + i].size, _fbtSlots[var_s2 + i], 0, i + 1);
+        vs_battle_configureEffectFbLoad(fbtFiles[var_s2 + i].lba,
+            fbtFiles[var_s2 + i].size, fbtSlots[var_s2 + i], 0, i + 1);
     }
 }
 
-static void _configurePlg(void)
+static void configurePlg(void)
 {
     int i;
-    int firstindex = _effectEntryPointIndices[D_800F5230.effectId];
-    int count = _effectEntryPointIndices[D_800F5230.effectId + 1] - firstindex;
+    int firstindex = effectEntryPointIndices[D_800F5230.effectId];
+    int count = effectEntryPointIndices[D_800F5230.effectId + 1] - firstindex;
 
     vs_battle_configurePlg(
-        _plgFiles[D_800F5230.effectId].lba, _plgFiles[D_800F5230.effectId].size, count);
+        plgFiles[D_800F5230.effectId].lba, plgFiles[D_800F5230.effectId].size, count);
 
     for (i = 0; i < count; ++i) {
-        vs_battle_setEffectExec(_effectEntryPoints[firstindex + i], i);
+        vs_battle_setEffectExec(effectEntryPoints[firstindex + i], i);
     }
 
     if (count != 0) {

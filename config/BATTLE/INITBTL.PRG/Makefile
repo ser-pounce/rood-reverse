@@ -1,9 +1,9 @@
-$(BUILD)/data/BATTLE/INITBTL.PRG: $(patsubst %,$(BUILD)/data/%.elf,SLUS_010.40 BATTLE/BATTLE.PRG)
-$(BUILD)/data/BATTLE/INITBTL.PRG: private LDLIBS += $(patsubst %,$(BUILD)/data/%.elf,SLUS_010.40 BATTLE/BATTLE.PRG)
-$(BUILD)/data/BATTLE/INITBTL.PRG: private LDFLAGS += \
+$(BUILD)/data/BATTLE/INITBTL.PRG.elf: $(patsubst %,$(BUILD)/data/%.sym.elf,SLUS_010.40 BATTLE/BATTLE.PRG)
+$(BUILD)/data/BATTLE/INITBTL.PRG.elf: private LDLIBS += $(patsubst %,$(BUILD)/data/%.sym.elf,SLUS_010.40 BATTLE/BATTLE.PRG)
+$(BUILD)/data/BATTLE/INITBTL.PRG.elf: private LDFLAGS += \
 	--defsym=vs_scratch=0x1F800000
 
-$(BUILD)/data/BATTLE/INITBTL.PRG $(BUILD)/data/BATTLE/INITBTL.PRG.elf: private LDSCRIPT := link.ld
+$(BUILD)/data/BATTLE/INITBTL.PRG.elf $(BUILD)/data/BATTLE/INITBTL.PRG.sym.elf: private LDSCRIPT := link.ld
 
 $(BUILD)/src/BATTLE/INITBTL.PRG/%.c.o: ASFLAGS += -no-pad-sections
 $(BUILD)/src/BATTLE/INITBTL.PRG/%.c.o: CC1VER := 2.8.1-psx

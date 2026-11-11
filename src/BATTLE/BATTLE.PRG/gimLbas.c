@@ -2,7 +2,7 @@
 #include "build/src/include/lbas.h"
 #include "lbaMacros.h"
 
-u_int _gimLbas[] = { squashLba(VS_STAFF011_GIM), squashLba(VS_STAFF001_GIM),
+u_int gimLbas[] = { squashLba(VS_STAFF011_GIM), squashLba(VS_STAFF001_GIM),
     squashLba(VS_STAFF002_GIM), squashLba(VS_STAFF003_GIM), squashLba(VS_STAFF004_GIM),
     squashLba(VS_STAFF005_GIM), squashLba(VS_STAFF006_GIM), squashLba(VS_STAFF007_GIM),
     squashLba(VS_STAFF008_GIM), squashLba(VS_GAMEOVER_GIM), squashLba(VS_STAFF009_GIM),

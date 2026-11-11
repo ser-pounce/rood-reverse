@@ -11,21 +11,21 @@ typedef struct {
     char musicIds[4];
     u_int musicHandleBySlot[4];
     void* musicData[4];
-    vs_main_CdQueueSlot* musicQueueSlot[4];
+    vs_Main_CdQueueSlot* musicQueueSlot[4];
     u_int currentSfxId;
     char sfxIds[4];
     int* sfxData[3]; // bank: [0] = entry count, [1..] = byte offsets to each effect
-    vs_main_CdQueueSlot* sfxQueueSlot[3];
+    vs_Main_CdQueueSlot* sfxQueueSlot[3];
     void* unk64[3];
     UNUSED int* unused[3];
     int soundFileId;
     void* soundData;
-    vs_main_CdQueueSlot* soundQueueSlot;
-} soundData_t;
+    vs_Main_CdQueueSlot* soundQueueSlot;
+} SoundData;
 
 // Avoids breaking .bss order
 #ifndef VS_MAIN_INCLUDE
-extern soundData_t vs_main_soundData;
+extern SoundData vs_main_soundData;
 #endif
 
 int vs_main_loadMusicSlot(int id, int targetSlot);
@@ -45,6 +45,7 @@ int vs_main_queueMusicSlot(int slot);
 int vs_main_playMusicSlotFadeIn(int slot, int volume, u_int duration);
 int vs_main_playMusicSlot(int slot, int volume, int duration);
 int vs_main_getMusicSlotVolume(int slot);
+int vs_main_getcurrentMusicSlot(void);
 int vs_main_fadeMusicTempo(int slot, int tempo, int duration);
 int vs_main_fadeMusicPitch(int slot, int pitch, int duration);
 int vs_main_getMusicSlotVolume2(int slot);

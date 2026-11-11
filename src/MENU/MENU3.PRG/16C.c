@@ -15,81 +15,81 @@
 #include "build/assets/MENU/MENU3.PRG/menuText.h"
 #include <memory.h>
 
-#define _ITEMMENU
+#define ITEMMENU
 
-#include "src/MENU/_toggleUi.h"
+#include "src/MENU/toggleUi.h"
 #include "src/MENU/items0.h"
 #include "src/MENU/items1.h"
 
-static char _miscActions[64];
+static char miscActions[64];
 
 #include "src/MENU/items2.h"
 
-static char* _itemsText;
-static int _selectedItemRow;
+static char* itemsText;
+static int selectedItemRow;
 static u_char state;
-static char _menuRowCount;
-static char _itemsFirstRow;
-static char _equippedItem;
+static char menuRowCount;
+static char itemsFirstRow;
+static char equippedItem;
 
 /**
  * Allocates and initializes the menu rows.
  */
-static void _populateMenuRows(int count, u_short** menuText, int* rowTypes)
+static void populateMenuRows(int count, u_short** menuText, int* rowTypes)
 {
     int i;
     int j;
-    vs_battle_menuItem_t* menuItem;
+    vs_MenuItem* menuItem;
 
-    _menuRowCount = count;
-    _itemsFirstRow = 0;
-    _selectedItemRow = 0;
+    menuRowCount = count;
+    itemsFirstRow = 0;
+    selectedItemRow = 0;
     state = 1;
 
-    if (_itemsText && _itemsText) { }
+    if (itemsText && itemsText) { }
 
-    _itemsText = vs_main_allocHeapR(count * 128);
+    itemsText = vs_main_allocHeapR(count * 128);
 
     for (i = 0; i < count; ++i) {
         u_short* text;
 
-        ((_itemsText_t*)_itemsText)[i].menuRowFlags = rowTypes[i];
+        ((ItemsText*)itemsText)[i].menuRowFlags = rowTypes[i];
 
         text = menuText[i * 2];
 
         if (text != NULL) {
             for (j = 0; j < 13; j++) {
-                ((u_short*)_itemsText)[i * 64 + j] = text[j];
+                ((u_short*)itemsText)[i * 64 + j] = text[j];
             }
-            ((u_short*)(i * 128 + _itemsText))[13] =
+            ((u_short*)(i * 128 + itemsText))[13] =
                 vs_char_terminator << 8 | vs_char_terminator;
         } else {
-            ((u_short*)(i * 128 + _itemsText))[0] =
+            ((u_short*)(i * 128 + itemsText))[0] =
                 vs_char_terminator << 8 | vs_char_terminator;
         }
 
         text = menuText[i * 2 + 1];
 
         if (text != NULL) {
-            ((_itemsText_t*)_itemsText)[i].description[0] = vs_char_chunkSize;
+            ((ItemsText*)itemsText)[i].description[0] = vs_char_chunkSize;
             for (j = 0; j < 46; ++j) {
-                ((u_short*)(_itemsText))[i * 64 + j + 17] = text[j];
+                ((u_short*)(itemsText))[i * 64 + j + 17] = text[j];
             }
-            ((_itemsText_t*)_itemsText)[i].description[47] =
+            ((ItemsText*)itemsText)[i].description[47] =
                 vs_char_terminator << 8 | vs_char_terminator;
         } else {
-            ((_itemsText_t*)_itemsText)[i].description[0] =
+            ((ItemsText*)itemsText)[i].description[0] =
                 vs_char_terminator << 8 | vs_char_terminator;
         }
     }
 
     j = rowTypes[0];
-    menuItem = vs_battle_setMenuItem(20, 155, 18, 165, 0, (char*)_itemsText);
+    menuItem = vs_battle_setMenuItem(20, 155, 18, 165, 0, (char*)itemsText);
     menuItem->unselectable = j & 1;
     menuItem->rowIcon = j >> 26;
     menuItem->material = (j >> 16) & 7;
     menuItem->selected = 1;
-    _equippedItem = (j >> 19) & 0x7F;
+    equippedItem = (j >> 19) & 0x7F;
 }
 
 /**
@@ -97,17 +97,14 @@ static void _populateMenuRows(int count, u_short** menuText, int* rowTypes)
  *
  * @return The selected item, or -1 if selection is pending.
  */
-static int _getSelectedItemRow(void)
-{
-    return _itemsText != NULL ? -1 : _selectedItemRow;
-}
+static int getSelectedItemRow(void) { return itemsText != NULL ? -1 : selectedItemRow; }
 
 /**
  * Common method for processing equip submenus.
  *
  * @param hasSfx set to 1 for weapons and shields
  */
-static void _processEquipSubMenu(int hasSfx)
+static void processEquipSubMenu(int hasSfx)
 {
     static char D_80109620 = 0;
 
@@ -115,19 +112,19 @@ static void _processEquipSubMenu(int hasSfx)
     int temp_s4;
     int i;
     int temp_s6;
-    vs_battle_menuItem_t* menuItem;
+    vs_MenuItem* menuItem;
 
     if (state < 6) {
-        if (state == _menuRowCount) {
+        if (state == menuRowCount) {
             state = 16;
             return;
         }
 
         menuItem = vs_battle_setMenuItem(
-            state + 20, 320, (state * 16) + 18, 151, 0, _itemsText + (state << 7));
+            state + 20, 320, (state * 16) + 18, 151, 0, itemsText + (state << 7));
         menuItem->state = 2;
         menuItem->targetPosition0 = 0xA9;
-        temp_s0 = ((_itemsText_t*)_itemsText)[state].menuRowFlags;
+        temp_s0 = ((ItemsText*)itemsText)[state].menuRowFlags;
         menuItem->unselectable = temp_s0 & 1;
         menuItem->rowIcon = (temp_s0 >> 0x1A);
 
@@ -139,7 +136,7 @@ static void _processEquipSubMenu(int hasSfx)
         ++state;
 
         if (state == 6) {
-            if (_menuRowCount >= 7) {
+            if (menuRowCount >= 7) {
                 menuItem->isScrollable = 2;
             }
 
@@ -149,11 +146,11 @@ static void _processEquipSubMenu(int hasSfx)
         return;
     }
 
-    temp_s6 = _itemsFirstRow;
-    temp_s4 = _selectedItemRow + temp_s6;
+    temp_s6 = itemsFirstRow;
+    temp_s4 = selectedItemRow + temp_s6;
 
-    menuItem = vs_battle_getMenuItem(_selectedItemRow + 20);
-    vs_mainmenu_setInformationMessage(_itemsText + ((temp_s4 << 7) + 0x20));
+    menuItem = vs_battle_getMenuItem(selectedItemRow + 20);
+    vs_mainmenu_setInformationMessage(itemsText + ((temp_s4 << 7) + 0x20));
 
     switch (state) {
     case 16:
@@ -170,10 +167,10 @@ static void _processEquipSubMenu(int hasSfx)
                 vs_battle_playMenuLeaveSfx();
             }
 
-            vs_main_freeHeapR(_itemsText);
+            vs_main_freeHeapR(itemsText);
 
-            _itemsText = NULL;
-            _selectedItemRow = -3;
+            itemsText = NULL;
+            selectedItemRow = -3;
 
             break;
         }
@@ -183,10 +180,10 @@ static void _processEquipSubMenu(int hasSfx)
                 vs_battle_playInvalidSfx();
             } else {
 
-                vs_main_freeHeapR(_itemsText);
+                vs_main_freeHeapR(itemsText);
 
-                _itemsText = NULL;
-                _selectedItemRow = temp_s4;
+                itemsText = NULL;
+                selectedItemRow = temp_s4;
 
                 if (hasSfx != 0) {
                     if (temp_s4 == 0) {
@@ -204,53 +201,53 @@ static void _processEquipSubMenu(int hasSfx)
         if (vs_main_buttonsPressed.all & PADRdown) {
 
             vs_battle_playMenuLeaveSfx();
-            vs_main_freeHeapR(_itemsText);
+            vs_main_freeHeapR(itemsText);
 
-            _itemsText = NULL;
-            _selectedItemRow = -2;
+            itemsText = NULL;
+            selectedItemRow = -2;
 
             break;
         }
 
         if (vs_main_buttonRepeat & PADLup) {
-            if (_menuRowCount < 7 || _itemsFirstRow == 0) {
-                if (_selectedItemRow != 0) {
-                    --_selectedItemRow;
+            if (menuRowCount < 7 || itemsFirstRow == 0) {
+                if (selectedItemRow != 0) {
+                    --selectedItemRow;
                 }
-            } else if (_selectedItemRow == 2) {
-                --_itemsFirstRow;
+            } else if (selectedItemRow == 2) {
+                --itemsFirstRow;
             } else {
-                --_selectedItemRow;
+                --selectedItemRow;
             }
         }
 
         if (vs_main_buttonRepeat & PADLdown) {
-            if (_menuRowCount < 7) {
-                if (_selectedItemRow < (_menuRowCount - 1)) {
-                    ++_selectedItemRow;
+            if (menuRowCount < 7) {
+                if (selectedItemRow < (menuRowCount - 1)) {
+                    ++selectedItemRow;
                 }
-            } else if (_itemsFirstRow == (_menuRowCount - 6)) {
-                if (_selectedItemRow < 5) {
-                    ++_selectedItemRow;
+            } else if (itemsFirstRow == (menuRowCount - 6)) {
+                if (selectedItemRow < 5) {
+                    ++selectedItemRow;
                 }
-            } else if (_selectedItemRow == 4) {
-                ++_itemsFirstRow;
+            } else if (selectedItemRow == 4) {
+                ++itemsFirstRow;
             } else {
-                ++_selectedItemRow;
+                ++selectedItemRow;
             }
         }
 
-        if (temp_s4 != (_selectedItemRow + _itemsFirstRow)) {
+        if (temp_s4 != (selectedItemRow + itemsFirstRow)) {
             vs_battle_playMenuChangeSfx();
 
-            if (_itemsFirstRow != temp_s6) {
-                char buf[_menuRowCount];
-                for (i = 0; i < _menuRowCount; ++i) {
+            if (itemsFirstRow != temp_s6) {
+                char buf[menuRowCount];
+                for (i = 0; i < menuRowCount; ++i) {
                     buf[i] = 0;
                 }
-                temp_s0 = _menuRowCount;
+                temp_s0 = menuRowCount;
 
-                if (_menuRowCount >= 7) {
+                if (menuRowCount >= 7) {
                     temp_s0 = 6;
                 }
                 for (i = 1; i < temp_s0; ++i) {
@@ -259,10 +256,9 @@ static void _processEquipSubMenu(int hasSfx)
 
                 for (i = 1;;) {
                     menuItem = vs_battle_setMenuItem(i + 0x14, 0xA9, 0x12 + i * 0x10,
-                        0x97, 0, _itemsText + ((i + _itemsFirstRow) << 7));
-                    menuItem->gradientState = buf[i + _itemsFirstRow];
-                    temp_s0 =
-                        ((_itemsText_t*)_itemsText)[i + _itemsFirstRow].menuRowFlags;
+                        0x97, 0, itemsText + ((i + itemsFirstRow) << 7));
+                    menuItem->gradientState = buf[i + itemsFirstRow];
+                    temp_s0 = ((ItemsText*)itemsText)[i + itemsFirstRow].menuRowFlags;
                     menuItem->unselectable = temp_s0 & 1;
                     menuItem->rowIcon = temp_s0 >> 0x1A;
 
@@ -273,32 +269,32 @@ static void _processEquipSubMenu(int hasSfx)
                     menuItem->material = (temp_s0 >> 0x10) & 7;
                     i++;
 
-                    if (i == _menuRowCount) {
+                    if (i == menuRowCount) {
                         break;
                     }
                     if (i == 6) {
-                        if ((_itemsFirstRow + 6) < _menuRowCount) {
+                        if ((itemsFirstRow + 6) < menuRowCount) {
                             menuItem->isScrollable = 2;
                         }
                         break;
                     }
                 }
 
-                if (_itemsFirstRow != 0) {
+                if (itemsFirstRow != 0) {
                     vs_battle_getMenuItem(0x15)->isScrollable = 1;
                 }
             }
 
-            temp_s0 = ((_itemsText_t*)_itemsText)[_selectedItemRow + _itemsFirstRow]
-                          .menuRowFlags;
-            _equippedItem = (temp_s0 >> 19) & 0x7F;
+            temp_s0 =
+                ((ItemsText*)itemsText)[selectedItemRow + itemsFirstRow].menuRowFlags;
+            equippedItem = (temp_s0 >> 19) & 0x7F;
         }
 
-        vs_battle_getMenuItem(_selectedItemRow + 0x14)->selected = 1;
+        vs_battle_getMenuItem(selectedItemRow + 0x14)->selected = 1;
 
-        i = (((_selectedItemRow * 0x10) + 0xA) << 0x10) | 0x9B;
+        i = (((selectedItemRow * 0x10) + 0xA) << 0x10) | 0x9B;
 
-        if (_selectedItemRow == 0) {
+        if (selectedItemRow == 0) {
             i -= 0xE;
         }
 
@@ -307,14 +303,14 @@ static void _processEquipSubMenu(int hasSfx)
     }
 }
 
-static void _populateUiAccessory(int accessoryId)
+static void populateUiAccessory(int accessoryId)
 {
 
     vs_mainMenu_resetStats();
 
     if (accessoryId != 0) {
         int i;
-        vs_battle_uiAccessory accessory;
+        vs_UiAccessory accessory;
 
         vs_battle_applyAccessory(&accessory, &vs_mainMenu_armor[accessoryId - 1]);
 
@@ -339,7 +335,7 @@ static void _populateUiAccessory(int accessoryId)
  *
  * @return The selected accessory, or 0 if pending.
  */
-static int _equipAccessoryMenu(int initialize)
+static int equipAccessoryMenu(int initialize)
 {
     enum state { init, handleInput, loadObject, waitMenuReady };
 
@@ -366,7 +362,7 @@ static int _equipAccessoryMenu(int initialize)
 
         equippedAccessory = index;
 
-        _populateUiAccessory(index);
+        populateUiAccessory(index);
         vs_mainMenu_drawClassAffinityType(7);
         vs_mainMenu_renderEquipStats(1);
 
@@ -400,7 +396,8 @@ static int _equipAccessoryMenu(int initialize)
 
             if (!hasAccessory) {
                 for (i = 0; i < 2; ++i) {
-                    menuText[i] = &_menuText[_menuText[VS_menuText_INDEX_none + i]];
+                    menuText[i] =
+                        &menuTextTable[menuTextTable[VS_menuText_INDEX_none + i]];
                 }
                 rowTypes[0] = 1;
             } else {
@@ -438,17 +435,17 @@ static int _equipAccessoryMenu(int initialize)
                 }
             }
 
-            _populateMenuRows(rowCount, menuText, rowTypes);
+            populateMenuRows(rowCount, menuText, rowTypes);
 
             state = handleInput;
         }
         break;
     }
     case handleInput:
-        _populateUiAccessory(_equippedItem);
-        _processEquipSubMenu(1);
+        populateUiAccessory(equippedItem);
+        processEquipSubMenu(1);
 
-        selectedAccessory = _getSelectedItemRow() + 1;
+        selectedAccessory = getSelectedItemRow() + 1;
 
         if (!selectedAccessory) {
             break;
@@ -467,8 +464,7 @@ static int _equipAccessoryMenu(int initialize)
             }
 
             if (selectedAccessory != 1) {
-                vs_main_inventoryArmor* armor =
-                    &vs_main_inventory.armor[_equippedItem - 1];
+                vs_InventoryArmor* armor = &vs_main_inventory.armor[equippedItem - 1];
                 armor->limb = 7;
 
                 vs_battle_equipAccessory(armor);
@@ -499,7 +495,7 @@ static int _equipAccessoryMenu(int initialize)
  *
  * @return The selected weapon, or 0 if pending.
  */
-static int _equipWeaponMenu(int initialize)
+static int equipWeaponMenu(int initialize)
 {
     enum state { init, handleInput, loadObject, waitMenuReady };
 
@@ -511,7 +507,7 @@ static int _equipWeaponMenu(int initialize)
 
     int i;
     int index;
-    vs_main_inventoryWeapon* weapon;
+    vs_InventoryWeapon* weapon;
 
     if (initialize != 0) {
         for (i = 0; i < 8; ++i) {
@@ -559,7 +555,8 @@ static int _equipWeaponMenu(int initialize)
 
             if (!hasWeapon) {
                 for (i = 0; i < 2; ++i) {
-                    menuText[i] = &_menuText[_menuText[VS_menuText_INDEX_none + i]];
+                    menuText[i] =
+                        &menuTextTable[menuTextTable[VS_menuText_INDEX_none + i]];
                 }
                 rowTypes[0] = 1;
             } else {
@@ -587,8 +584,7 @@ static int _equipWeaponMenu(int initialize)
 
                 if (index != 0) {
 
-                    vs_main_inventoryWeapon* weapon =
-                        &vs_main_inventory.weapons[index - 1];
+                    vs_InventoryWeapon* weapon = &vs_main_inventory.weapons[index - 1];
 
                     if (weapon->isEquipped == 0) {
 
@@ -602,17 +598,17 @@ static int _equipWeaponMenu(int initialize)
                 }
             }
 
-            _populateMenuRows(rowCount, menuText, rowTypes);
+            populateMenuRows(rowCount, menuText, rowTypes);
 
             state = handleInput;
         }
         break;
     }
     case handleInput:
-        vs_mainMenu_setStatsFromWeapon(_equippedItem);
-        _processEquipSubMenu(0);
+        vs_mainMenu_setStatsFromWeapon(equippedItem);
+        processEquipSubMenu(0);
 
-        selectedWeapon = _getSelectedItemRow() + 1;
+        selectedWeapon = getSelectedItemRow() + 1;
 
         if (selectedWeapon == 0) {
             break;
@@ -635,9 +631,9 @@ static int _equipWeaponMenu(int initialize)
                 wepId = 0;
                 material = 0;
             } else {
-                vs_main_inventoryBlade* blade;
+                vs_InventoryBlade* blade;
 
-                weapon = &vs_main_inventory.weapons[_equippedItem - 1];
+                weapon = &vs_main_inventory.weapons[equippedItem - 1];
                 weapon->isEquipped = 1;
 
                 blade = &vs_main_inventory.blades[weapon->blade - 1];
@@ -656,7 +652,7 @@ static int _equipWeaponMenu(int initialize)
         break;
 
     case loadObject:
-        if (_loadObjectData(category, wepId, material)) {
+        if (loadObjectData(category, wepId, material)) {
             break;
         }
 
@@ -679,7 +675,7 @@ static int _equipWeaponMenu(int initialize)
  *
  * @return The selected shield, or 0 if pending.
  */
-static int _equipShieldMenu(int initialize)
+static int equipShieldMenu(int initialize)
 {
     enum state { init, handleInput, loadObject, waitMenuReady };
 
@@ -740,7 +736,8 @@ static int _equipShieldMenu(int initialize)
 
             if (!hasShield) {
                 for (i = 0; i < 2; ++i) {
-                    menuText[i] = &_menuText[_menuText[VS_menuText_INDEX_none + i]];
+                    menuText[i] =
+                        &menuTextTable[menuTextTable[VS_menuText_INDEX_none + i]];
                 }
                 rowTypes[0] = 1;
             } else {
@@ -776,7 +773,7 @@ static int _equipShieldMenu(int initialize)
                 }
             }
 
-            _populateMenuRows(rowCount, menuText, rowTypes);
+            populateMenuRows(rowCount, menuText, rowTypes);
 
             state = handleInput;
         }
@@ -784,10 +781,10 @@ static int _equipShieldMenu(int initialize)
     }
 
     case handleInput:
-        vs_mainMenu_setStatsFromShield(_equippedItem);
-        _processEquipSubMenu(0);
+        vs_mainMenu_setStatsFromShield(equippedItem);
+        processEquipSubMenu(0);
 
-        selectedShield = _getSelectedItemRow() + 1;
+        selectedShield = getSelectedItemRow() + 1;
 
         if (selectedShield == 0) {
             break;
@@ -809,9 +806,8 @@ static int _equipShieldMenu(int initialize)
                 wepId = 0;
                 material = 0;
             } else {
-                vs_battle_actorStats* stats;
-                vs_main_inventoryShield* shield =
-                    &vs_main_inventory.shields[_equippedItem - 1];
+                vs_ActorStats* stats;
+                vs_InventoryShield* shield = &vs_main_inventory.shields[equippedItem - 1];
                 shield->isEquipped = 1;
 
                 stats = vs_battle_characterState->stats;
@@ -830,7 +826,7 @@ static int _equipShieldMenu(int initialize)
         break;
 
     case loadObject:
-        if (_loadObjectData(0, wepId, material)) {
+        if (loadObjectData(0, wepId, material)) {
             break;
         }
         state = waitMenuReady;
@@ -852,7 +848,7 @@ static int _equipShieldMenu(int initialize)
  * @param initBodyPart Target body part for initialization, 0 otherwise.
  * @return The selected armor, or 0 if pending.
  */
-static int _equipArmorMenu(int initBodyPart)
+static int equipArmorMenu(int initBodyPart)
 {
     enum state { init, handleInput, loadObject, waitMenuReady };
 
@@ -921,7 +917,8 @@ static int _equipArmorMenu(int initBodyPart)
 
             if (!hasArmor) {
                 for (i = 0; i < 2; ++i) {
-                    menuText[i] = &_menuText[_menuText[VS_menuText_INDEX_none + i]];
+                    menuText[i] =
+                        &menuTextTable[menuTextTable[VS_menuText_INDEX_none + i]];
                 }
                 rowTypes[0] = 1;
             } else {
@@ -961,7 +958,7 @@ static int _equipArmorMenu(int initBodyPart)
                     ++rowCount;
                 }
             }
-            _populateMenuRows(rowCount, menuText, rowTypes);
+            populateMenuRows(rowCount, menuText, rowTypes);
 
             state = handleInput;
         }
@@ -970,10 +967,10 @@ static int _equipArmorMenu(int initBodyPart)
     }
 
     case handleInput:
-        vs_mainMenu_setStatsFromArmor(_equippedItem);
-        _processEquipSubMenu(1);
+        vs_mainMenu_setStatsFromArmor(equippedItem);
+        processEquipSubMenu(1);
 
-        selectedArmor = _getSelectedItemRow() + 1;
+        selectedArmor = getSelectedItemRow() + 1;
 
         if (selectedArmor == 0) {
             break;
@@ -994,8 +991,7 @@ static int _equipArmorMenu(int initBodyPart)
             if (selectedArmor == 1) {
                 vs_battle_equipArmor(bodyPart - 1, NULL);
             } else {
-                vs_main_inventoryArmor* armor =
-                    &vs_main_inventory.armor[_equippedItem - 1];
+                vs_InventoryArmor* armor = &vs_main_inventory.armor[equippedItem - 1];
                 armor->limb = bodyPart;
 
                 vs_battle_equipArmor(bodyPart - 1, armor);
@@ -1024,10 +1020,10 @@ static int _equipArmorMenu(int initBodyPart)
  *
  * @return The result of the invoked row.
  */
-static int _dispatchEquipMenu(int row)
+static int dispatchEquipMenu(int row)
 {
-    static int (*equipMenuHandlers[])(int) = { _equipArmorMenu, _equipWeaponMenu,
-        _equipShieldMenu, _equipAccessoryMenu };
+    static int (*equipMenuHandlers[])(
+        int) = { equipArmorMenu, equipWeaponMenu, equipShieldMenu, equipAccessoryMenu };
 
     static u_char currentEquipMenu;
 
@@ -1050,7 +1046,7 @@ static int _dispatchEquipMenu(int row)
  *
  * @return Negative when user has returned, 0 otherwise.
  */
-static int _equipMenu(int initialize)
+static int equipMenu(int initialize)
 {
     enum state { init, initMenu, topMenu, quit, initEquipSubMenu, equipSubMenu };
 
@@ -1065,14 +1061,14 @@ static int _equipMenu(int initialize)
     char buf[768];
     int j;
     int i;
-    vs_battle_menuItem_t* menuItem;
-    vs_main_inventoryShield* shield;
-    vs_main_inventoryWeapon* weapon;
+    vs_MenuItem* menuItem;
+    vs_InventoryShield* shield;
+    vs_InventoryWeapon* weapon;
 
     if (initialize != 0) {
         vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
 
-        _selectedItemCategoryIconOnTop = 1;
+        selectedItemCategoryIconOnTop = 1;
         state = init;
 
         return 0;
@@ -1085,7 +1081,7 @@ static int _equipMenu(int initialize)
         }
 
         menuItem = vs_battle_setMenuItem(
-            31, 320, 18, 126, 8, (char*)&_menuText[VS_menuText_OFFSET_equip]);
+            31, 320, 18, 126, 8, (char*)&menuTextTable[VS_menuText_OFFSET_equip]);
         menuItem->state = menuItemStateSlideX;
         menuItem->targetPosition0 = 180;
         menuItem->selected = 1;
@@ -1097,12 +1093,12 @@ static int _equipMenu(int initialize)
             break;
         }
 
-        _selectedItemCategoryIconOnTop = 1;
+        selectedItemCategoryIconOnTop = 1;
 
         for (i = 0; i < 8; ++i) {
             for (j = 0; j < 2; ++j) {
                 rowStrings[i * 2 + j] =
-                    (char*)&_menuText[_menuText[VS_menuText_INDEX_none + j]];
+                    (char*)&menuTextTable[menuTextTable[VS_menuText_INDEX_none + j]];
             }
             rowTypes[i] = 0;
         }
@@ -1128,7 +1124,7 @@ static int _equipMenu(int initialize)
         }
 
         for (i = 2; i < 8; ++i) {
-            vs_main_inventoryArmor* armor = vs_main_inventory.armor;
+            vs_InventoryArmor* armor = vs_main_inventory.armor;
 
             for (j = 0; j < 16; ++j, ++armor) {
                 if (((i != 7) + armor->limb) == i) {
@@ -1160,13 +1156,13 @@ static int _equipMenu(int initialize)
         }
 
         if (selectedRow < 0) {
-            _selectedItemCategoryIconOnTop = -selectedRow;
+            selectedItemCategoryIconOnTop = -selectedRow;
 
             vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
 
             state = quit;
         } else {
-            _startMenuTransition(selectedRow - 1 + 10);
+            startMenuTransition(selectedRow - 1 + 10);
 
             state = initEquipSubMenu;
         }
@@ -1184,20 +1180,20 @@ static int _equipMenu(int initialize)
             break;
         }
 
-        _ashleyRenderState = 1;
+        ashleyRenderState = 1;
 
-        _continueMenuTransition(selectedRow + 9);
+        continueMenuTransition(selectedRow + 9);
 
-        _itemCategoryIconsEnabled = 0;
-        _statusCommandState = 0;
+        itemCategoryIconsEnabled = 0;
+        statusCommandState = 0;
 
-        _dispatchEquipMenu(selectedRow);
+        dispatchEquipMenu(selectedRow);
 
         state = equipSubMenu;
         break;
 
     case equipSubMenu:
-        selectedRow = _dispatchEquipMenu(0);
+        selectedRow = dispatchEquipMenu(0);
 
         if (selectedRow == 0) {
             break;
@@ -1208,10 +1204,10 @@ static int _equipMenu(int initialize)
             break;
         }
 
-        _ashleyRenderState = 0;
-        _itemCategoryIconsEnabled = 1;
-        _selectedItemCategoryIconOnTop = 2;
-        _statusCommandState = 1;
+        ashleyRenderState = 0;
+        itemCategoryIconsEnabled = 1;
+        selectedItemCategoryIconOnTop = 2;
+        statusCommandState = 1;
         state = init;
 
         break;
@@ -1219,15 +1215,15 @@ static int _equipMenu(int initialize)
 
     if (state == topMenu) {
         menuItem = vs_battle_setMenuItem(31, 180, 18, 140, 8,
-            (char*)&_menuText[_menuText[VS_menuText_INDEX_equipWeapon
-                                        + vs_mainMenu_getConfirmedRow()]]);
+            (char*)&menuTextTable[menuTextTable[VS_menuText_INDEX_equipWeapon
+                                                + vs_mainMenu_getConfirmedRow()]]);
         menuItem->selected = 1;
     }
 
     return 0;
 }
 
-#include "src/MENU/_renderAshley.h"
+#include "src/MENU/renderAshley.h"
 
 /**
  * Module entrypoint
@@ -1254,13 +1250,13 @@ int vs_menu3_exec(u_char* state)
 
     switch (*state) {
     case init:
-        _toggleMenuUi(0);
+        toggleMenuUi(0);
         vs_mainMenu_populateBaseStats(16);
 
-        _secondaryTitleAnimationStep = 0;
-        _itemCategoryIconsAnimationStep = 0;
-        _statusCommandAnimationStep = 0;
-        _selectedItemCategoryIconOnTop = 0;
+        secondaryTitleAnimationStep = 0;
+        itemCategoryIconsAnimationStep = 0;
+        statusCommandAnimationStep = 0;
+        selectedItemCategoryIconOnTop = 0;
 
         if (vs_mainMenu_itemNames == NULL) {
             vs_mainMenu_loadItemText(1);
@@ -1276,8 +1272,8 @@ int vs_menu3_exec(u_char* state)
 
         D_800EB9B0 = 0x200000;
 
-        _renderAshley(1);
-        _itemNavigation(D_80109649 + 1);
+        renderAshley(1);
+        itemNavigation(D_80109649 + 1);
 
         D_80109649 = 0;
         *state = loadItemNamesWait;
@@ -1292,7 +1288,7 @@ int vs_menu3_exec(u_char* state)
         // Fallthrough
 
     case itemsTop:
-        row = _itemNavigation(0);
+        row = itemNavigation(0);
 
         if (row == 0) {
             break;
@@ -1301,7 +1297,7 @@ int vs_menu3_exec(u_char* state)
         if (row > 0) {
             switch (row) {
             case 1:
-                _equipMenu(1);
+                equipMenu(1);
 
                 vs_mainMenu_freezeTabArrows = 0;
                 *state = equip;
@@ -1309,19 +1305,19 @@ int vs_menu3_exec(u_char* state)
                 break;
 
             case 2:
-                _ashleyRenderState = 3;
+                ashleyRenderState = 3;
 
                 vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
 
-                _secondaryTitleEnabled = 0;
-                _itemCategoryIconsEnabled = 0;
-                _statusCommandState = 0;
+                secondaryTitleEnabled = 0;
+                itemCategoryIconsEnabled = 0;
+                statusCommandState = 0;
                 *state = 7;
 
                 break;
 
             case 3:
-                _toggleMenuUi(0);
+                toggleMenuUi(0);
                 vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
                 func_8008A4DC(1);
 
@@ -1332,7 +1328,7 @@ int vs_menu3_exec(u_char* state)
 
                 D_800EB9B0 = 0;
 
-                _renderAshley(2);
+                renderAshley(2);
 
                 break;
             }
@@ -1342,34 +1338,34 @@ int vs_menu3_exec(u_char* state)
             } else {
                 *state = quit;
 
-                _toggleMenuUi(0);
+                toggleMenuUi(0);
                 vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
                 func_8008A4DC(1);
                 func_800CB654(0);
 
                 D_800EB9B0 = 0;
 
-                _renderAshley(2);
+                renderAshley(2);
             }
         }
         break;
 
     case equip:
-        row = _equipMenu(0);
+        row = equipMenu(0);
 
         if (row != 0) {
             if (row == menuSelectionQuit) {
-                _secondaryTitleEnabled = 0;
-                _secondaryTitleAnimationStep = 0;
+                secondaryTitleEnabled = 0;
+                secondaryTitleAnimationStep = 0;
                 *state = quitToBattle;
                 break;
             }
 
-            _itemCategoryIconsEnabled = 1;
-            _selectedItemCategoryIconOnTop = 0;
-            _statusCommandState = 1;
+            itemCategoryIconsEnabled = 1;
+            selectedItemCategoryIconOnTop = 0;
+            statusCommandState = 1;
 
-            _itemNavigation(1);
+            itemNavigation(1);
 
             *state = itemsTop;
         }
@@ -1378,7 +1374,7 @@ int vs_menu3_exec(u_char* state)
 
     case 7:
         if (vs_mainmenu_ready()) {
-            _renderAshley(2);
+            renderAshley(2);
 
             *state = 8;
             temp_a1 = vs_battle_menuState.currentMenu;
@@ -1392,7 +1388,7 @@ int vs_menu3_exec(u_char* state)
         if (vs_battle_menuState.returnState != 0) {
             vs_mainMenu_setBackgroundRenderPriority(-4, 128);
             func_8008A4DC(1);
-            _toggleMenuUi(0);
+            toggleMenuUi(0);
             vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
             func_800CB654(0);
 
@@ -1401,15 +1397,15 @@ int vs_menu3_exec(u_char* state)
 
             *state = 11;
         } else if (vs_mainmenu_ready()) {
-            _toggleMenuUi(0);
+            toggleMenuUi(0);
 
-            _secondaryTitleAnimationStep = 0;
-            _itemCategoryIconsAnimationStep = 0;
-            _statusCommandAnimationStep = 0;
-            _selectedItemCategoryIconOnTop = 0;
+            secondaryTitleAnimationStep = 0;
+            itemCategoryIconsAnimationStep = 0;
+            statusCommandAnimationStep = 0;
+            selectedItemCategoryIconOnTop = 0;
 
-            _renderAshley(1);
-            _itemNavigation(1);
+            renderAshley(1);
+            itemNavigation(1);
 
             *state = itemsTop;
         }
@@ -1429,13 +1425,13 @@ int vs_menu3_exec(u_char* state)
 
     case quitToBattle:
         func_8008A4DC(1);
-        _toggleMenuUi(0);
+        toggleMenuUi(0);
         vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
         func_800CB654(0);
 
         D_800EB9B0 = 0;
 
-        _renderAshley(2);
+        renderAshley(2);
 
         D_80109710 = 10;
         *state = 11;
@@ -1486,24 +1482,24 @@ int vs_menu3_exec(u_char* state)
         break;
     }
 
-    if (_secondaryTitleEnabled != 0) {
-        if (_secondaryTitleAnimationStep < 10) {
-            ++_secondaryTitleAnimationStep;
+    if (secondaryTitleEnabled != 0) {
+        if (secondaryTitleAnimationStep < 10) {
+            ++secondaryTitleAnimationStep;
         }
-        row = vs_battle_rowAnimationSteps[10 - _secondaryTitleAnimationStep];
+        row = vs_battle_rowAnimationSteps[10 - secondaryTitleAnimationStep];
     } else {
-        if (_secondaryTitleAnimationStep != 0) {
-            --_secondaryTitleAnimationStep;
+        if (secondaryTitleAnimationStep != 0) {
+            --secondaryTitleAnimationStep;
         }
-        row = (10 - _secondaryTitleAnimationStep) << 5;
+        row = (10 - secondaryTitleAnimationStep) << 5;
     }
 
-    if ((_secondaryTitleAnimationStep != 0) && (_selectedItemCategoryIconOnTop == 0)) {
+    if ((secondaryTitleAnimationStep != 0) && (selectedItemCategoryIconOnTop == 0)) {
 
         int category = (D_800F4EE8.unk3A.currentItemCategory - 1) & 7;
 
-        vs_battle_menuItem_t* menuitem = vs_battle_setMenuItem(
-            31, row + 180, 34, 140, 8, (char*)&_menuText[_menuText[category]]);
+        vs_MenuItem* menuitem = vs_battle_setMenuItem(
+            31, row + 180, 34, 140, 8, (char*)&menuTextTable[menuTextTable[category]]);
         menuitem->selected = 1;
 
         if (category != 7) {
@@ -1512,35 +1508,35 @@ int vs_menu3_exec(u_char* state)
         }
     }
 
-    _renderAshley(0);
+    renderAshley(0);
 
-    if (_itemCategoryIconsEnabled) {
-        if (_itemCategoryIconsAnimationStep < 4) {
-            ++_itemCategoryIconsAnimationStep;
+    if (itemCategoryIconsEnabled) {
+        if (itemCategoryIconsAnimationStep < 4) {
+            ++itemCategoryIconsAnimationStep;
         }
-    } else if (_itemCategoryIconsAnimationStep != 0) {
-        --_itemCategoryIconsAnimationStep;
+    } else if (itemCategoryIconsAnimationStep != 0) {
+        --itemCategoryIconsAnimationStep;
     }
 
-    _renderItemCategory(_itemCategoryIconsAnimationStep, _selectedItemCategoryIconOnTop);
+    renderItemCategory(itemCategoryIconsAnimationStep, selectedItemCategoryIconOnTop);
 
-    if (_statusCommandState) {
-        if (_statusCommandAnimationStep < 10) {
-            ++_statusCommandAnimationStep;
+    if (statusCommandState) {
+        if (statusCommandAnimationStep < 10) {
+            ++statusCommandAnimationStep;
         }
-        row = vs_battle_rowAnimationSteps[10 - _statusCommandAnimationStep];
+        row = vs_battle_rowAnimationSteps[10 - statusCommandAnimationStep];
     } else {
-        if (_statusCommandAnimationStep != 0) {
-            --_statusCommandAnimationStep;
+        if (statusCommandAnimationStep != 0) {
+            --statusCommandAnimationStep;
         }
-        row = (10 - _statusCommandAnimationStep) << 5;
+        row = (10 - statusCommandAnimationStep) << 5;
     }
 
-    if (_statusCommandAnimationStep != 0) {
+    if (statusCommandAnimationStep != 0) {
         vs_mainmenu_renderButtonBackground(16 - row, 38, 88, 10);
         vs_mainmenu_renderButton(buttonIdSquare, 8 - row, 36, NULL);
         vs_battle_renderTextRawColor("STATUS", vs_getXY(28 - row, 38),
-            vs_getRGB888(32, 32, 32) << _statusCommandState, NULL);
+            vs_getRGB888(32, 32, 32) << statusCommandState, NULL);
     }
 
     return 0;

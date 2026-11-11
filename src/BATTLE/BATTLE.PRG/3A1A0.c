@@ -1,12 +1,12 @@
 #include "common.h"
 #include "3A1A0.h"
-#include "146C.h"
-#include "30DB0.h"
+#include "146CPrivate.h"
+#include "30DB0Private.h"
 #include "38C1C.h"
-#include "40564.h"
-#include "44F14.h"
+#include "40564Private.h"
+#include "44F14Private.h"
 #include "4B16C.h"
-#include "6E4CC.h"
+#include "6E4CCPrivate.h"
 #include "battleUnk.h"
 #include "entity.h"
 #include "src/SLUS_010.40/gameState.h"
@@ -53,7 +53,7 @@ extern int D_800E90BC;
 extern u_char D_800E91AC[];
 extern u_char D_800F1D6E[];
 extern short D_800F4B0A;
-extern _mpdRoomSection3* D_800F49F0;
+extern MpdRoomSection3* D_800F49F0;
 extern SVECTOR D_800F4B08;
 
 inline SVECTOR* func_800A4A24(int);
@@ -71,7 +71,7 @@ void func_800A29A0(D_800F4538_t* arg0)
     switch (arg0->unk0.unkB_0) {
     case 1:
         arg0->unk0.unkA_5 = 0;
-        func_800A0204(arg0->unk0.unkF, 0x13, 0, 8);
+        vs_battle_setActorAnimation(arg0->unk0.unkF, 0x13, 0, 8);
         func_800A01C8(arg0->unk0.unkF, 0x14, 8, 0);
         arg0->unk0.unk54.cd = 0;
         arg0->unk0.unkB_0 = 2;
@@ -95,7 +95,7 @@ void func_800A29A0(D_800F4538_t* arg0)
             arg0->unk0.unk9_0 = 9;
             func_800A9C54(arg0->unk0.unkF, &arg0->unk5EC.tile, 0);
             arg0->unk0.facing = arg0->unk5EC.vec.pad;
-            func_800A0204(arg0->unk0.unkF, 0x15, 0, 8);
+            vs_battle_setActorAnimation(arg0->unk0.unkF, 0x15, 0, 8);
             func_800A01C8(arg0->unk0.unkF, 0x16, 8, 0);
             arg0->unk0.unkB_0 = 3;
         }
@@ -112,7 +112,7 @@ void func_800A29A0(D_800F4538_t* arg0)
             return;
         }
 
-        func_800A0204(arg0->unk0.unkF, 1, 0, 8);
+        vs_battle_setActorAnimation(arg0->unk0.unkF, 1, 0, 8);
         // fallthrough
 
     case 4:
@@ -146,7 +146,7 @@ void func_800A2CD4(D_800F4538_t* arg0)
 {
     switch (arg0->unk0.unkB_4) {
     case 1:
-        func_800A0204(arg0->unk0.unkF, 9, 0, 8);
+        vs_battle_setActorAnimation(arg0->unk0.unkF, 9, 0, 8);
         func_800A9C54(arg0->unk0.unkF, &arg0->unk5EC.tile, -1);
         func_800A9EB4(arg0->unk0.unkF, arg0->unk5EC.vec.pad, 8);
         arg0->unk5CA = arg0->unk0.unk1A;
@@ -170,7 +170,7 @@ void func_800A2CD4(D_800F4538_t* arg0)
         }
 
         if (arg0->unk5CA == 0) {
-            func_800A0204(arg0->unk0.unkF, 10, 0, 8);
+            vs_battle_setActorAnimation(arg0->unk0.unkF, 10, 0, 8);
             arg0->unk0.unkA_5 = 0;
             arg0->unk0.unkB_4 = 3;
         }
@@ -183,14 +183,14 @@ void func_800A2CD4(D_800F4538_t* arg0)
             arg0->unk0.unkA_5 = 0;
             func_800ACF54(arg0);
             func_800E4C28(arg0->unk0.currentTile.x, arg0->unk0.currentTile.z);
-            func_800A0204(arg0->unk0.unkF, 1, 0, 8);
+            vs_battle_setActorAnimation(arg0->unk0.unkF, 1, 0, 8);
             arg0->unk0.unkB_4 = 0;
         }
 
         return;
 
     case 4:
-        func_800A0204(arg0->unk0.unkF, 7, 0, 8);
+        vs_battle_setActorAnimation(arg0->unk0.unkF, 7, 0, 8);
         func_800A01C8(arg0->unk0.unkF, 37, 8, 0);
         func_800AA620(arg0->unk0.unkF, &arg0->unk5EC.vec, -1);
         func_800A9EB4(arg0->unk0.unkF, arg0->unk5EC.vec.pad, 8);
@@ -213,7 +213,7 @@ void func_800A2CD4(D_800F4538_t* arg0)
 
         if (D_800F49F4 != 0 || arg0->unk5CA == 0) {
         idle:
-            func_800A0204(arg0->unk0.unkF, 1, 0, 8);
+            vs_battle_setActorAnimation(arg0->unk0.unkF, 1, 0, 8);
             arg0->unk0.unkB_4 = 0;
         }
 
@@ -297,7 +297,7 @@ void func_800A30A0(int actorId, func_80089888_t* placement, int height, int mode
         }
 
         actor->unk0.unkA_5 = 1;
-        func_800A0204(actorId, 8, 0, 0);
+        vs_battle_setActorAnimation(actorId, 8, 0, 0);
     } else {
         u_char tileType;
 
@@ -324,7 +324,7 @@ void func_800A30A0(int actorId, func_80089888_t* placement, int height, int mode
                 actor->unk0.unkC_4 = placement->unk0_8;
             }
 
-            func_800A0204(actorId, 1, 0, 0);
+            vs_battle_setActorAnimation(actorId, 1, 0, 0);
         }
     }
 
@@ -441,7 +441,7 @@ void func_800A35A8(void)
     }
 }
 
-void func_800A36E0(int actorId, int arg1, vs_battle_actorPosition* arg2)
+void func_800A36E0(int actorId, int arg1, vs_ActorPosition* arg2)
 {
     D_800F4538_t* temp_a0 = D_800F4538[actorId];
     if (temp_a0 != NULL) {
@@ -449,7 +449,7 @@ void func_800A36E0(int actorId, int arg1, vs_battle_actorPosition* arg2)
         if (temp_a0->unk0.unkA_5 && ((arg1 == 0x10) || (arg1 == 0x20))) {
             arg2->unk0.unk0 = temp_a0->unk0.currentTile;
         }
-        arg2->unk0.unk0.status = temp_a0->unk0.facing / 16;
+        arg2->unk0.unk0.extra = temp_a0->unk0.facing / 16;
     }
 }
 
@@ -784,7 +784,7 @@ int func_800A3E6C(int actorId)
     move:
         object->unk0.unk34.vy = 0;
         func_800AE6C0(actor, 44, 45);
-        func_800A0204(actorId, height + 79, 0, 4);
+        vs_battle_setActorAnimation(actorId, height + 79, 0, 4);
         actor->unk5AC_20 = 1;
         func_800E4C1C((object->unk0.position.vx + object->unk0.unk34.vx) / 128,
             (object->unk0.position.vz + object->unk0.unk34.vz) / 128);
@@ -794,11 +794,11 @@ int func_800A3E6C(int actorId)
     case 5:
     case 6:
         if (actor->unk5AC_3) {
-            func_800A0204(actorId, 76, 0, 4);
+            vs_battle_setActorAnimation(actorId, 76, 0, 4);
             func_800AE6C0(actor, 46, 47);
             actor->unk5AC_20 = 1;
         } else {
-            func_800A0204(actorId, height + 71, 0, 4);
+            vs_battle_setActorAnimation(actorId, height + 71, 0, 4);
             func_800AE6C0(actor, 44, 45);
             actor->unk5AC_20 = 1;
         }
@@ -890,7 +890,7 @@ void func_800A41D0(D_800F4538_t* actor, int mode)
     }
 
     if (object == NULL || object->unk0.unk9_0) {
-        func_800A0204(actor->unk0.unkF, 1, 0, 8);
+        vs_battle_setActorAnimation(actor->unk0.unkF, 1, 0, 8);
         return;
     }
 
@@ -1068,7 +1068,7 @@ void func_800A48CC(int index, int direction, int distance)
     if (distance == 0) {
         actor->unk5B0_2 = 0;
         actor->unk5B0_0 = 0;
-        func_800A0204(index, 0x2F, 0, 4);
+        vs_battle_setActorAnimation(index, 0x2F, 0, 4);
         actor->unk0.unk11 = 6;
         actor->unk0.unkA_0 = 2;
     } else {
@@ -1440,7 +1440,7 @@ int func_800A5280(int index, int direction, int distance, SVECTOR* input)
         actor->unk0.unk34.vy = 0;
         actor->unk0.unk34.vz = 0;
         actor->unk6EC = 0;
-        func_800A0204(index, 1, 0, 10);
+        vs_battle_setActorAnimation(index, 1, 0, 10);
     }
 
     if (actor->unk0.unkA_0) {
@@ -1630,7 +1630,7 @@ move:
             actor->unk0.unk34.vx = 0;
             actor->unk0.unk34.vz = 0;
             if (actor->unk0.unkA_0 == 1) {
-                func_800A0204(index, 0x30, 0, 2);
+                vs_battle_setActorAnimation(index, 0x30, 0, 2);
                 actor->unk0.unkA_0 = 2;
             }
             return 3;
@@ -1696,7 +1696,7 @@ move:
         if (actor->unk0.unkA_0 == 1) {
             actor->unk0.unk34.vx = motion.vx;
             actor->unk0.unk34.vz = motion.vz;
-            func_800A0204(index, 0x30, 0, 4);
+            vs_battle_setActorAnimation(index, 0x30, 0, 4);
             actor->unk0.unkA_0 = 2;
             return 3;
         }
@@ -1831,13 +1831,13 @@ move:
             }
             if ((u_int)(animation - 13) >= 2 && animation != 0x13 && animation != 0x14
                 && animation != 0x54) {
-                func_800A0204(index, D_800E90C4, 0, 4);
+                vs_battle_setActorAnimation(index, D_800E90C4, 0, 4);
             }
             actor->unk0.unkA_3 = 1;
             actor->unk1800 = (actor->unk0.facing + actor->unk0.unk3E) & 0xFFF;
             actor->unk0.unk9_6 = 1;
         } else if (actor->unk0.unkA_3 == 2) {
-            func_800A0204(index, D_800E90C6, 0, 4);
+            vs_battle_setActorAnimation(index, D_800E90C6, 0, 4);
             if (index == 0) {
                 func_800AE6C0(actor, 0x2A, 0x2B);
             } else {
@@ -1848,7 +1848,7 @@ move:
             if (result == 4) {
                 actor->unk0.unkA_3 = 2;
             }
-            func_800A0204(index, D_800E90C3[result], 0, 4);
+            vs_battle_setActorAnimation(index, D_800E90C3[result], 0, 4);
             actor->unk1800 = (actor->unk0.facing + actor->unk0.unk3E) & 0xFFF;
             if (index == 0) {
                 func_800AE6C0(actor, 0x29, 0);
@@ -1889,7 +1889,7 @@ move:
             actor->unk0.unk34.vx = motion.vx;
             actor->unk0.unk34.vz = motion.vz;
             actor->unk0.unk34.vy = 0;
-            func_800A0204(index, 0x2F, 0, 4);
+            vs_battle_setActorAnimation(index, 0x2F, 0, 4);
             actor->unk0.unkA_0 = 3;
             actor->unk5B0_2 = 0;
             actor->unk5B0_0 = 1;
@@ -2068,7 +2068,7 @@ int func_800A6AA0(D_800F4538_t* actor, int speed)
             return;
         }
 
-        func_800A0204(actor->unk0.unkF, next, 0, frames);
+        vs_battle_setActorAnimation(actor->unk0.unkF, next, 0, frames);
         return;
     }
 
@@ -2084,7 +2084,7 @@ int func_800A6AA0(D_800F4538_t* actor, int speed)
             frames = 10;
         }
 
-        func_800A0204(actor->unk0.unkF, next, 0, frames);
+        vs_battle_setActorAnimation(actor->unk0.unkF, next, 0, frames);
         return;
     }
 
@@ -2112,7 +2112,7 @@ int func_800A6AA0(D_800F4538_t* actor, int speed)
             next = 6;
         }
 
-        func_800A0204(actor->unk0.unkF, next, 0, 8);
+        vs_battle_setActorAnimation(actor->unk0.unkF, next, 0, 8);
     } else if (speed >= actor->unk5B9 - 1) {
         if (animation >= 19 && animation <= 20) {
             return;
@@ -2122,7 +2122,7 @@ int func_800A6AA0(D_800F4538_t* actor, int speed)
             || (animation >= 9 && animation <= 12) || animation == 1 || animation == 6) {
             u_int state = actor->unk5AC_25;
             actor->unk5AC_25 ^= 1;
-            func_800A0204(actor->unk0.unkF, state + 19, 0, 6);
+            vs_battle_setActorAnimation(actor->unk0.unkF, state + 19, 0, 6);
             return;
         }
 
@@ -2160,7 +2160,7 @@ int func_800A6AA0(D_800F4538_t* actor, int speed)
             next = step + 15;
         }
 
-        func_800A0204(actor->unk0.unkF, next, 0, 6);
+        vs_battle_setActorAnimation(actor->unk0.unkF, next, 0, 6);
         return;
 
     walk_start:
@@ -2178,13 +2178,13 @@ int func_800A6AA0(D_800F4538_t* actor, int speed)
         return;
     } else {
         if (animation >= 13 && animation <= 16) {
-            func_800A0204(actor->unk0.unkF, 6, 0, 10);
+            vs_battle_setActorAnimation(actor->unk0.unkF, 6, 0, 10);
             func_800A01C8(actor->unk0.unkF, 1, 10, 0);
             return;
         }
 
         if (animation != 1 && actor->unk1848.unk0 != 6) {
-            func_800A0204(actor->unk0.unkF, 1, 0, 10);
+            vs_battle_setActorAnimation(actor->unk0.unkF, 1, 0, 10);
             actor->unk5B3 = 0;
         }
 
@@ -2199,7 +2199,7 @@ int func_800A6AA0(D_800F4538_t* actor, int speed)
 int func_800A6EE8(SVECTOR* arg0, int arg1, int arg2, int arg3)
 {
     SVECTOR sp;
-    _mpdRoomSection3* ent;
+    MpdRoomSection3* ent;
     int h;
     int r;
     int los;
@@ -2473,7 +2473,7 @@ int func_800A76BC(D_800F4538_t* actor, SVECTOR* motion, int* result, int probeOn
     SVECTOR opposite;
     SVECTOR xProbe;
     SVECTOR zProbe;
-    _mpdRoomSection3* probeTiles[2];
+    MpdRoomSection3* probeTiles[2];
     int sideOffset;
     int cornerStep;
     int diagonal;
@@ -3033,7 +3033,7 @@ slideZ:
 
 int func_800A8B34(SVECTOR* arg0, int arg1)
 {
-    _mpdRoomSection3* ent;
+    MpdRoomSection3* ent;
     int h;
     int elev2;
     int gx;

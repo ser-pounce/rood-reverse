@@ -14,7 +14,7 @@ typedef struct {
 typedef struct {
     short value0;
     short value1;
-} limbEffects_t;
+} LimbEffects;
 
 typedef struct {
     union {
@@ -45,7 +45,7 @@ typedef struct {
     u_int unk1C_26 : 2;
     u_int unk1C_28 : 4;
     union {
-        limbEffects_t effects;
+        LimbEffects effects;
         u_int hp;
     } limbs[6];
     short weaponDp;
@@ -53,15 +53,15 @@ typedef struct {
     short armorDp;
     short shieldPp;
     int kind;
-} _hitEntity_t;
+} HitEntity;
 
 typedef struct {
     u_short actionIndex;
     char unk2;
     char unk3;
-    _hitEntity_t unk4;
+    HitEntity unk4;
     u_short unk48;
     u_short targetCount;
-    _hitEntity_t targets[30];
+    HitEntity targets[30];
     SVECTOR unk844;
 } D_800F19CC_t2;

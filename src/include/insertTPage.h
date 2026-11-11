@@ -1,6 +1,6 @@
 #pragma once
 
-#define _insertTPage(after, arg1)                                                        \
+#define insertTPage(after, arg1)                                                        \
     __asm__("scratch = $t3;"                                                             \
             "tpageOp = $t4;"                                                             \
             "li         scratch, 0x1F800000;"                                            \

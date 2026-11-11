@@ -32,7 +32,7 @@ typedef struct {
     SVECTOR unk38;
     D_800F19CC_t5* unk40;
     D_800F19CC_t5* unk44;
-    menuShapeVertex unk48[297];
+    MenuShapeVertex unk48[297];
     D_800EB9B8_unk990 unk990[24];
     char unkB70[0x3800];
     int unk4370[81];

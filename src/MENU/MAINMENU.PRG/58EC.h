@@ -5,7 +5,7 @@ typedef struct {
     u_short name[14];
     int menuRowFlags;
     u_short description[48];
-} _itemsText_t;
+} ItemsText;
 
 enum vs_mainMenu_actionsMenuActions { actionMenuDiscard = 4, actionMenuSort = 45 };
 
@@ -123,17 +123,6 @@ int vs_mainMenu_renderCursor(u_int animStep, int xy);
  */
 int vs_mainMenu_renderIntColor(int value, int xy, int color, u_long* before);
 
-/**
- * Renders the provided value with preset colors based on
- * a comparison to `threshold`.
- */
-int vs_mainMenu_renderIntWithThreshold(int value, int xy, int threshold, u_long* before);
-
-/**
- * Invokes `vs_mainMenu_renderIntColor` with a neutral gray color.
- */
-void vs_mainMenu_renderIntColorDefault(int value, int xy, u_long* before);
-
 enum vs_mainMenu_icons { mainMenuIconGem = 22 };
 
 /**
@@ -235,7 +224,7 @@ void vs_mainMenu_renderItemsList(void);
  * @return The x position immediately after the rendered character.
  */
 int vs_mainMenu_renderRowLabel(
-    u_int character, int x, vs_battle_menuItem_t* menuItem, u_long* before);
+    u_int character, int x, vs_MenuItem* menuItem, u_long* before);
 
 /**
  * Renders the tab navigation arrows, e.g. in the inventory, container,
@@ -246,11 +235,6 @@ int vs_mainMenu_renderRowLabel(
  * right of the screen, adding "L1/R1" prompts next to them.
  */
 void vs_mainMenu_renderTabNavigation(int mode);
-
-/**
- * Redraws the entire screen based on the current state.
- */
-void vs_mainMenu_renderScreen(void);
 
 /**
  * Controls whether the purple action cost elements are rendered.
@@ -290,7 +274,7 @@ extern char vs_mainMenu_itemsListRow;
  */
 extern char vs_mainMenu_freezeTabArrows;
 
-extern char _rangeRiskData[8];
+extern char rangeRiskData[8];
 extern short D_80102488[4];
 
 /**
@@ -299,7 +283,7 @@ extern short D_80102488[4];
 extern char D_80102490[8];
 
 extern short D_80102498[4];
-extern char _menuActionsPageOffset;
+extern char menuActionsPageOffset;
 
 /**
  * Holds the ID of the item in the current status view.
@@ -357,11 +341,11 @@ extern char bss_3[6];
  * as a flat array.
  *
  * struct vs_mainMenu_equipmentStats_t {
- *   vs_battle_classAffinityCurrent classAffinityCurrent;
+ *   vs_ClassAffinityCurrent classAffinityCurrent;
  *   short types[4];
  *   short damageType;
  *   short unk4A[11];
- *   vs_battle_classAffinityBaseline classAffinityBaseline;
+ *   vs_ClassAffinityBaseline classAffinityBaseline;
  * };
  */
 extern short vs_mainMenu_equipmentStats[64];
@@ -382,7 +366,7 @@ extern char vs_mainMenu_enabledStatPages;
 extern char vs_mainMenu_equipmentSubtype;
 
 extern char bss_4[18];
-extern struct textHeader_t _textHeaders[];
+extern struct TextHeader textHeaders[];
 
 /**
  * Purpose unclear, seems to be related to an unused game setting.

@@ -1,7 +1,7 @@
 #include "common.h"
-#include "C48.h"
+#include "C48Private.h"
 #include "2D10.h"
-#include "58EC.h"
+#include "58ECPrivate.h"
 #include "src/SLUS_010.40/actions.h"
 #include "src/SLUS_010.40/gameFlags.h"
 #include "src/SLUS_010.40/gameState.h"
@@ -40,18 +40,18 @@
 #include <libetc.h>
 #include <limits.h>
 
-vs_main_inventoryGem* vs_mainMenu_gems;
-vs_menu_inventoryStorage_t* vs_menu_inventoryStorage;
-vs_main_inventoryGrip* vs_mainMenu_grips;
-vs_main_inventoryBlade* vs_mainMenu_blades;
-vs_main_inventoryArmor* vs_mainMenu_armor;
-vs_main_inventoryShield* vs_mainMenu_shields;
-vs_main_inventoryWeapon* vs_mainMenu_weapons;
+vs_InventoryGem* vs_mainMenu_gems;
+vs_InventoryStorage* vs_menu_inventoryStorage;
+vs_InventoryGrip* vs_mainMenu_grips;
+vs_InventoryBlade* vs_mainMenu_blades;
+vs_InventoryArmor* vs_mainMenu_armor;
+vs_InventoryShield* vs_mainMenu_shields;
+vs_InventoryWeapon* vs_mainMenu_weapons;
 
 void vs_mainMenu_initInventory(void)
 {
     int i;
-    vs_battle_actorStats* stats = vs_battle_characterState->stats;
+    vs_ActorStats* stats = vs_battle_characterState->stats;
 
     if (stats->weapon.index != 0) {
         vs_battle_copyUiWeaponStats(
@@ -77,15 +77,15 @@ void vs_mainMenu_initInventory(void)
     }
 }
 
-static UNUSED void _nop(void);
-static void _nop(void) { }
+static UNUSED void noop(void);
+static void noop(void) { }
 
 /**
  * Processes the object queue in the hope of finding a free slot.
  * Unused.
  */
-static UNUSED int _getNextEmptyObjectDataSlot(void);
-static int _getNextEmptyObjectDataSlot(void)
+static UNUSED int getNextEmptyObjectDataSlot(void);
+static int getNextEmptyObjectDataSlot(void)
 {
     vs_battle_processObjectDataQueue();
     return vs_battle_getEmptyObjectDataSlot();
@@ -93,10 +93,10 @@ static int _getNextEmptyObjectDataSlot(void)
 
 int vs_mainMenu_getEquipmentMaxStats(void* item, u_int itemCategory)
 {
-    static short _weaponTitleSubmaxThresholds[] = { 10, 20, 30, 40, 50, 60, 70, 80, 90,
+    static short weaponTitleSubmaxThresholds[] = { 10, 20, 30, 40, 50, 60, 70, 80, 90,
         100, SHRT_MAX };
 
-    static short _weaponTitleMaxThresholds[] = { 50, 95, SHRT_MAX,
+    static short weaponTitleMaxThresholds[] = { 50, 95, SHRT_MAX,
         8192 }; // Last one junk?
 
     int i;
@@ -110,31 +110,25 @@ int vs_mainMenu_getEquipmentMaxStats(void* item, u_int itemCategory)
     switch (itemCategory) {
     case 0:
         for (i = 0; i < 6; ++i) {
-            if (maxParam
-                < ((vs_battle_uiWeapon*)(item))->classAffinityCurrent.class[1][i]) {
+            if (maxParam < ((vs_UiWeapon*)(item))->classAffinityCurrent.class[1][i]) {
                 subMaxParam = maxParam;
-                maxParam =
-                    ((vs_battle_uiWeapon*)(item))->classAffinityCurrent.class[1][i];
+                maxParam = ((vs_UiWeapon*)(item))->classAffinityCurrent.class[1][i];
                 param = i;
-            } else if (subMaxParam < ((vs_battle_uiWeapon*)(item))
-                           ->classAffinityCurrent.class[1][i]) {
-                subMaxParam =
-                    ((vs_battle_uiWeapon*)(item))->classAffinityCurrent.class[1][i];
+            } else if (subMaxParam
+                       < ((vs_UiWeapon*)(item))->classAffinityCurrent.class[1][i]) {
+                subMaxParam = ((vs_UiWeapon*)(item))->classAffinityCurrent.class[1][i];
             }
         }
 
         for (i = 0; i < 7; ++i) {
-            if (maxParam
-                < ((vs_battle_uiWeapon*)(item))->classAffinityCurrent.affinity[1][i]) {
+            if (maxParam < ((vs_UiWeapon*)(item))->classAffinityCurrent.affinity[1][i]) {
                 subMaxParam = maxParam;
-                maxParam =
-                    ((vs_battle_uiWeapon*)(item))->classAffinityCurrent.affinity[1][i];
+                maxParam = ((vs_UiWeapon*)(item))->classAffinityCurrent.affinity[1][i];
                 param = i;
                 isAffinity = 1;
-            } else if (subMaxParam < ((vs_battle_uiWeapon*)(item))
-                           ->classAffinityCurrent.affinity[1][i]) {
-                subMaxParam =
-                    ((vs_battle_uiWeapon*)(item))->classAffinityCurrent.affinity[1][i];
+            } else if (subMaxParam
+                       < ((vs_UiWeapon*)(item))->classAffinityCurrent.affinity[1][i]) {
+                subMaxParam = ((vs_UiWeapon*)(item))->classAffinityCurrent.affinity[1][i];
             }
         }
 
@@ -142,31 +136,25 @@ int vs_mainMenu_getEquipmentMaxStats(void* item, u_int itemCategory)
 
     case 1:
         for (i = 0; i < 6; ++i) {
-            if (maxParam
-                < ((vs_battle_uiShield*)(item))->classAffinityCurrent.class[1][i]) {
+            if (maxParam < ((vs_UiShield*)(item))->classAffinityCurrent.class[1][i]) {
                 subMaxParam = maxParam;
-                maxParam =
-                    ((vs_battle_uiShield*)(item))->classAffinityCurrent.class[1][i];
+                maxParam = ((vs_UiShield*)(item))->classAffinityCurrent.class[1][i];
                 param = i;
-            } else if (subMaxParam < ((vs_battle_uiShield*)(item))
-                           ->classAffinityCurrent.class[1][i]) {
-                subMaxParam =
-                    ((vs_battle_uiShield*)(item))->classAffinityCurrent.class[1][i];
+            } else if (subMaxParam
+                       < ((vs_UiShield*)(item))->classAffinityCurrent.class[1][i]) {
+                subMaxParam = ((vs_UiShield*)(item))->classAffinityCurrent.class[1][i];
             }
         }
 
         for (i = 0; i < 7; ++i) {
-            if (maxParam
-                < ((vs_battle_uiShield*)(item))->classAffinityCurrent.affinity[1][i]) {
+            if (maxParam < ((vs_UiShield*)(item))->classAffinityCurrent.affinity[1][i]) {
                 subMaxParam = maxParam;
-                maxParam =
-                    ((vs_battle_uiShield*)(item))->classAffinityCurrent.affinity[1][i];
+                maxParam = ((vs_UiShield*)(item))->classAffinityCurrent.affinity[1][i];
                 param = i;
                 isAffinity = 1;
-            } else if (subMaxParam < ((vs_battle_uiShield*)(item))
-                           ->classAffinityCurrent.affinity[1][i]) {
-                subMaxParam =
-                    ((vs_battle_uiShield*)(item))->classAffinityCurrent.affinity[1][i];
+            } else if (subMaxParam
+                       < ((vs_UiShield*)(item))->classAffinityCurrent.affinity[1][i]) {
+                subMaxParam = ((vs_UiShield*)(item))->classAffinityCurrent.affinity[1][i];
             }
         }
 
@@ -175,30 +163,25 @@ int vs_mainMenu_getEquipmentMaxStats(void* item, u_int itemCategory)
     case 2:
     default:
         for (i = 0; i < 6; ++i) {
-            if (maxParam
-                < ((vs_battle_uiArmor*)(item))->classAffinityCurrent.class[1][i]) {
+            if (maxParam < ((vs_UiArmor*)(item))->classAffinityCurrent.class[1][i]) {
                 subMaxParam = maxParam;
-                maxParam = ((vs_battle_uiArmor*)(item))->classAffinityCurrent.class[1][i];
+                maxParam = ((vs_UiArmor*)(item))->classAffinityCurrent.class[1][i];
                 param = i;
             } else if (subMaxParam
-                       < ((vs_battle_uiArmor*)(item))->classAffinityCurrent.class[1][i]) {
-                subMaxParam =
-                    ((vs_battle_uiArmor*)(item))->classAffinityCurrent.class[1][i];
+                       < ((vs_UiArmor*)(item))->classAffinityCurrent.class[1][i]) {
+                subMaxParam = ((vs_UiArmor*)(item))->classAffinityCurrent.class[1][i];
             }
         }
 
         for (i = 0; i < 7; ++i) {
-            if (maxParam
-                < ((vs_battle_uiArmor*)(item))->classAffinityCurrent.affinity[1][i]) {
+            if (maxParam < ((vs_UiArmor*)(item))->classAffinityCurrent.affinity[1][i]) {
                 subMaxParam = maxParam;
-                maxParam =
-                    ((vs_battle_uiArmor*)(item))->classAffinityCurrent.affinity[1][i];
+                maxParam = ((vs_UiArmor*)(item))->classAffinityCurrent.affinity[1][i];
                 param = i;
                 isAffinity = 1;
-            } else if (subMaxParam < ((vs_battle_uiArmor*)(item))
-                           ->classAffinityCurrent.affinity[1][i]) {
-                subMaxParam =
-                    ((vs_battle_uiArmor*)(item))->classAffinityCurrent.affinity[1][i];
+            } else if (subMaxParam
+                       < ((vs_UiArmor*)(item))->classAffinityCurrent.affinity[1][i]) {
+                subMaxParam = ((vs_UiArmor*)(item))->classAffinityCurrent.affinity[1][i];
             }
         }
 
@@ -208,7 +191,7 @@ int vs_mainMenu_getEquipmentMaxStats(void* item, u_int itemCategory)
     subMaxRank = 0;
 
     for (i = 0; i < 11; ++i) {
-        if (subMaxParam < _weaponTitleSubmaxThresholds[i]) {
+        if (subMaxParam < weaponTitleSubmaxThresholds[i]) {
             subMaxRank = i;
             break;
         }
@@ -217,7 +200,7 @@ int vs_mainMenu_getEquipmentMaxStats(void* item, u_int itemCategory)
     maxRank = 0;
 
     for (i = 0; i < 3; ++i) {
-        if (maxParam < _weaponTitleMaxThresholds[i]) {
+        if (maxParam < weaponTitleMaxThresholds[i]) {
             maxRank = i;
             break;
         }
@@ -230,9 +213,11 @@ int vs_mainMenu_getEquipmentMaxStats(void* item, u_int itemCategory)
     }
 }
 
+VS_HIDDEN(vs_mainMenu_getEquipmentMaxStats);
+
 void vs_mainMenu_menuItemFlyoutLeft(int row)
 {
-    vs_battle_menuItem_t* menuItem = vs_battle_getMenuItem(row + 32);
+    vs_MenuItem* menuItem = vs_battle_getMenuItem(row + 32);
 
     if (menuItem->state != menuItemStateInactive) {
         menuItem->state = menuItemStateDismiss;
@@ -253,7 +238,7 @@ void vs_mainMenu_flyoutLeftExcept(int row)
 
 void vs_mainMenu_menuItemFlyoutRight(int row)
 {
-    vs_battle_menuItem_t* menuItem = vs_battle_getMenuItem(row);
+    vs_MenuItem* menuItem = vs_battle_getMenuItem(row);
 
     if (menuItem->state != menuItemStateInactive) {
         menuItem->state = menuItemStateSlideX;
@@ -274,7 +259,7 @@ void vs_mainMenu_clearMenuExcept(enum vs_mainMenu_menuItemIds id)
 
 void vs_mainMenu_flyoutMenuRightAndHoistSelection(int row, int offset)
 {
-    vs_battle_menuItem_t* menuItem;
+    vs_MenuItem* menuItem;
     int i;
 
     for (i = offset * 10; i < 30; ++i) {
@@ -294,7 +279,7 @@ void vs_mainMenu_flyoutMenuRightAndHoistSelection(int row, int offset)
 int vs_mainmenu_ready(void)
 {
     int i;
-    vs_battle_menuItem_t* menuItem = vs_battle_getMenuItem(0);
+    vs_MenuItem* menuItem = vs_battle_getMenuItem(0);
 
     for (i = 0; i < 40; ++i) {
         if (menuItem->state > 1) {
@@ -309,7 +294,7 @@ int vs_mainmenu_ready(void)
  * Called when menu is closing to add a 4 frame delay before
  * relinquishing control.
  */
-static int _quitDelay(void)
+static int quitDelay(void)
 {
     static int delay = 0;
 
@@ -348,10 +333,10 @@ void vs_mainMenu_exec(int arg0)
     int menuLoaded;
     int state;
     char* submenuState;
-    vs_battle_menuState_t* menuState = &vs_battle_menuState;
-    vs_battle_menuItem_t* menuItem = vs_battle_getMenuItem((arg0 - 1) & 0xF);
+    vs_MenuState* menuState = &vs_battle_menuState;
+    vs_MenuItem* menuItem = vs_battle_getMenuItem((arg0 - 1) & 0xF);
     int submenuReturn = 0;
-    vs_main_inventory_t* inventory = &vs_main_inventory;
+    vs_Inventory* inventory = &vs_main_inventory;
 
     vs_mainMenu_weapons = inventory->weapons;
     vs_mainMenu_blades = inventory->blades;
@@ -366,7 +351,7 @@ void vs_mainMenu_exec(int arg0)
 
     if (selectedMenu != 0) {
         if (selectedMenu == 31) {
-            submenuReturn = _quitDelay();
+            submenuReturn = quitDelay();
         } else if (D_800F4EA0 & 0x200) {
             if (menuLoaded) {
                 if (selectedMenu == 15) {
@@ -506,7 +491,7 @@ void vs_mainMenu_miscItemsShortcutMenu(int initialize)
     int* rowTypes;
     char** menuText;
     void* buf;
-    vs_battle_menuItem_t* menuItem;
+    vs_MenuItem* menuItem;
 
     if (initialize != 0) {
         vs_mainMenu_initInformationBox();
@@ -557,7 +542,7 @@ void vs_mainMenu_miscItemsShortcutMenu(int initialize)
 
         for (i = 0; i < 64; ++i, ++rowCount) {
 
-            vs_main_inventoryMisc* misc;
+            vs_InventoryMisc* misc;
             int index = vs_main_inventoryIndices.misc[i];
 
             if (index == 0) {
@@ -672,12 +657,12 @@ void vs_mainMenu_miscItemsShortcutMenu(int initialize)
     return;
 }
 
-static inline int _subtract(int a0, int a1, int a2) { return (u_short)(a0 - (a1 - a2)); }
+static inline int subtract(int a0, int a1, int a2) { return (u_short)(a0 - (a1 - a2)); }
 
 /**
  * Draws the class / affinity / type pages
  */
-static void _renderStatPage(int xOffset)
+static void renderStatPage(int xOffset)
 {
     static char const* statHeaders[] = { "#HUMAN", "#BEAST", "#UNDEAD", "#PHANTOM",
         "#DRAGON", "#EVIL", NULL, NULL, "#PHYSICAL", "#AIR", "#FIRE", "#EARTH", "#WATER",
@@ -846,14 +831,14 @@ static void _renderStatPage(int xOffset)
 
         for (j = 2; j < 6; ++j) {
             vs_battle_addTile(before, 0x40330500,
-                _subtract(xOffset, j, 97) | ((var_s6 + j + 64) << 0x10),
-                _subtract(xOffset, j, 142) | ((var_s6 + j + 64) << 0x10));
+                subtract(xOffset, j, 97) | ((var_s6 + j + 64) << 0x10),
+                subtract(xOffset, j, 142) | ((var_s6 + j + 64) << 0x10));
         }
 
         for (j = 0; j < 8; ++j) {
             vs_battle_addTile(before, 0x405D3200,
-                _subtract(xOffset, j, 97) | ((var_s6 + j + 64) << 0x10),
-                _subtract(xOffset, j, 145) | ((var_s6 + j + 64) << 0x10));
+                subtract(xOffset, j, 97) | ((var_s6 + j + 64) << 0x10),
+                subtract(xOffset, j, 145) | ((var_s6 + j + 64) << 0x10));
         }
 
         vs_battle_insertTpage(
@@ -906,7 +891,7 @@ static void _renderStatPage(int xOffset)
 /**
  * Cycles to the next available stat page.
  */
-static int _getNextStatPage(int currentPage)
+static int getNextStatPage(int currentPage)
 {
     do {
         currentPage = (currentPage + 1) & 3;
@@ -920,7 +905,7 @@ void vs_mainMenu_updateStatPage(int enabledPage)
     vs_mainMenu_enabledStatPages = enabledPage;
 
     if (!((enabledPage >> vs_mainMenu_itemStatPage) & 1)) {
-        vs_mainMenu_itemStatPage = _getNextStatPage(vs_mainMenu_itemStatPage);
+        vs_mainMenu_itemStatPage = getNextStatPage(vs_mainMenu_itemStatPage);
     }
 }
 
@@ -956,7 +941,7 @@ void vs_mainMenu_drawClassAffinityType(int arg0)
         if (D_801020F8 != 0) {
             --D_801020F8;
         } else if (vs_main_buttonsPressed.all & PADRleft) {
-            statPage = _getNextStatPage(statPage);
+            statPage = getNextStatPage(statPage);
             if (statPage != vs_mainMenu_itemStatPage) {
                 vs_main_playSfxDefault(0x7E, 14);
             } else {
@@ -971,7 +956,7 @@ void vs_mainMenu_drawClassAffinityType(int arg0)
     }
 
     if (var_s1 <= 0) {
-        _renderStatPage(var_s1);
+        renderStatPage(var_s1);
     }
 
     vs_mainMenu_itemStatPage = statPage;
@@ -979,10 +964,10 @@ void vs_mainMenu_drawClassAffinityType(int arg0)
 
 void vs_mainMenu_setRangeRisk(int range, int risk, int arg2, int arg3)
 {
-    _rangeRiskData[0] = range;
-    _rangeRiskData[1] = risk;
-    _rangeRiskData[2] = arg2;
-    _rangeRiskData[3] = arg3;
+    rangeRiskData[0] = range;
+    rangeRiskData[1] = risk;
+    rangeRiskData[2] = arg2;
+    rangeRiskData[3] = arg3;
 }
 
 void vs_mainMenu_setStrIntAgi(
@@ -998,7 +983,7 @@ void vs_mainMenu_setStrIntAgi(
 
 void vs_mainMenu_populateBaseStats(int actorId)
 {
-    vs_battle_actorStats* stats = vs_battle_actors[actorId & 0xF]->stats;
+    vs_ActorStats* stats = vs_battle_actors[actorId & 0xF]->stats;
     D_80102488[3] = actorId & 0xF;
     D_80102498[0] = stats->accessory.currentStr;
     D_80102498[1] = stats->accessory.currentInt;
@@ -1045,7 +1030,7 @@ void vs_mainMenu_renderEquipStats(int animate)
     int i;
     u_long* temp_s4;
     int position;
-    vs_battle_actorStats* stats;
+    vs_ActorStats* stats;
 
     position = vs_getXY(248, 126);
     stats = vs_battle_actors[D_80102488[3]]->stats;
@@ -1073,14 +1058,14 @@ void vs_mainMenu_renderEquipStats(int animate)
         --D_80102131;
     }
 
-    if (_rangeRiskData[3] != 0) {
+    if (rangeRiskData[3] != 0) {
         vs_battle_renderTextRaw("ORG/EQP", position + 4, temp_s4);
 
         for (i = 0; i < 2; ++i) {
             position += vs_getXY(0, 10);
             vs_battle_renderTextRaw(rangeRiskStr[i], position, temp_s4);
             if (valuesKnown != 0) {
-                stat = _rangeRiskData[i];
+                stat = rangeRiskData[i];
                 vs_mainMenu_renderIntColorDefault(stat, position + 28, temp_s4);
                 if (i == 0) {
                     stat += stats->currentRange - stats->weapon.range.range;
@@ -1125,17 +1110,17 @@ void vs_mainMenu_renderEquipStats(int animate)
 }
 
 static u_short dpPpBarAnimState = 0;
-static u_short _currentDp = 0;
-static u_short _maxDp = 0;
-static u_short _currentPp = 0;
-static u_short _maxPp = 0;
+static u_short displayedDp = 0;
+static u_short displayedMaxDp = 0;
+static u_short displayedPp = 0;
+static u_short displayedMaxPp = 0;
 
 void vs_mainMenu_setDpPp(int currentDp, int maxDp, int currentPp, int maxPp)
 {
-    _currentPp = currentPp;
-    _maxPp = maxPp;
-    _currentDp = (currentDp + 99) / 100;
-    _maxDp = (maxDp + 99) / 100;
+    displayedPp = currentPp;
+    displayedMaxPp = maxPp;
+    displayedDp = (currentDp + 99) / 100;
+    displayedMaxDp = (maxDp + 99) / 100;
 }
 
 void vs_mainMenu_renderDpPpBars(int flags)
@@ -1180,42 +1165,42 @@ void vs_mainMenu_renderDpPpBars(int flags)
             if (target & 1) {
                 vs_battle_renderTextRaw("DP", (temp_s1 + vs_getXY(0, -1)) | 10, before);
 
-                temp = vs_battle_renderValue(0, temp_s1 | 66, _maxDp, before);
+                temp = vs_battle_renderValue(0, temp_s1 | 66, displayedMaxDp, before);
                 vs_battle_renderValue(2, temp, 0, before);
-                vs_battle_renderValue(1, temp + vs_getXY(-7, -2), _currentDp, before);
+                vs_battle_renderValue(1, temp + vs_getXY(-7, -2), displayedDp, before);
             }
 
             if (target & 2) {
                 vs_battle_renderTextRaw("PP", (temp_s1 + vs_getXY(0, -1)) | 80, before);
 
-                temp = vs_battle_renderValue(0, temp_s1 | 136, _maxPp, before);
+                temp = vs_battle_renderValue(0, temp_s1 | 136, displayedMaxPp, before);
                 vs_battle_renderValue(2, temp, 0, before);
-                vs_battle_renderValue(1, temp + vs_getXY(-7, -2), _currentPp, before);
+                vs_battle_renderValue(1, temp + vs_getXY(-7, -2), displayedPp, before);
             }
 
             temp_s1 += 8 << 16;
 
             if (target & 1) {
 
-                temp = _maxDp;
+                temp = displayedMaxDp;
 
                 if (temp == 0) {
                     temp = 1;
                 }
 
                 vs_battle_renderStatBar(
-                    0, (((_currentDp << 6) + temp) - 1) / temp, before, temp_s1 | 10);
+                    0, (((displayedDp << 6) + temp) - 1) / temp, before, temp_s1 | 10);
             }
             if (target & 2) {
 
-                temp = _maxPp;
+                temp = displayedMaxPp;
 
                 if (temp == 0) {
                     temp = 1;
                 }
 
                 vs_battle_renderStatBar(
-                    1, (((_currentPp << 6) + temp) - 1) / temp, before, temp_s1 | 80);
+                    1, (((displayedPp << 6) + temp) - 1) / temp, before, temp_s1 | 80);
             }
         }
     }

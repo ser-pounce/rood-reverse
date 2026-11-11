@@ -69,7 +69,7 @@ typedef struct {
     u_char unkD;
     u_char unkE;
     u_char unkF;
-} _armature_t;
+} Armature;
 
 typedef struct {
     u_char unk0[48];
@@ -77,7 +77,7 @@ typedef struct {
     void* groupOffset;
     void* vertexOffset;
     void* polyOffset;
-    _armature_t armatures[0];
+    Armature armatures[0];
 } D_800F4538_unk68;
 
 typedef struct {
@@ -106,7 +106,7 @@ typedef struct {
     int verticesOffset;
     int polygonsOffset;
     u_char unk40[0x7C0];
-} _wepModelOffsets;
+} WepModelOffsets;
 
 typedef struct {
     u_char nBones;
@@ -245,7 +245,7 @@ typedef struct {
     u_char y;
     u_char w;
     u_char h;
-} texMapOverlay_t;
+} TexMapOverlay;
 
 typedef struct {
     u_char x;
@@ -259,7 +259,7 @@ typedef struct {
     u_char x;
     u_char y;
     u_char columns;
-} texMapAnimation_t;
+} TexMapAnimation;
 
 typedef struct {
     u_char x;
@@ -311,7 +311,7 @@ typedef struct {
     u_char unk5AC_21 : 1;
     u_char unk5AC_22 : 1;
     u_char unk5AC_23 : 1;
-    u_char unk5AC_24 : 1;
+    u_char inactive : 1;
     u_char unk5AC_25 : 1;
     u_char unk5AC_26 : 1;
     u_char unk5AC_27 : 1;
@@ -352,7 +352,7 @@ typedef struct {
         SVECTOR vec;
         vs_battle_tilePosition tile;
     } unk5EC;
-    texMapOverlay_t texMapOverlays[8];
+    TexMapOverlay texMapOverlays[8];
     D_800F4538_unk614 unk614[2];
     D_800F4538_unk61C unk61C[4];
     u_short unk63C;
@@ -415,7 +415,7 @@ typedef struct {
     u_char unk17FF;
     u_short unk1800;
     u_char unk1802[2];
-    texMapAnimation_t unk1804[2];
+    TexMapAnimation unk1804[2];
     D_800F4538_unk180C unk180C[2];
     short unk1814;
     short unk1816;
@@ -473,7 +473,7 @@ typedef struct {
     int unk14;
     short unk18;
     short unk1A;
-    _wepModelOffsets* offsets;
+    WepModelOffsets* offsets;
     MATRIX unk20[4];
     SVECTOR unkBoneInfo[4];
     u_short palettes[7][64];
@@ -493,7 +493,7 @@ typedef struct {
     int unk5DC;
     int unk5E0;
     int unk5E4;
-} vs_battle_wepModels_t;
+} vs_WepModels;
 
 typedef struct {
     D_800F45E0_unk0 unk0;
@@ -506,5 +506,5 @@ typedef struct {
 } D_800F45E0_t;
 
 extern D_800F4538_t* D_800F4538[17];
-extern vs_battle_wepModels_t* vs_battle_wepModels[20];
+extern vs_WepModels* vs_battle_wepModels[20];
 extern D_800F45E0_t* D_800F45E0[16];

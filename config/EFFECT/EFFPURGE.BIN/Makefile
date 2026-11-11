@@ -1,8 +1,8 @@
 $(BUILD)/src/EFFECT/EFFPURGE.BIN/0.c.o: CC1VER := 2.8.1-psx
 
 EFFPURGE_LDLIBS := \
-	$(patsubst %,$(BUILD)/data/%.elf,SLUS_010.40 BATTLE/BATTLE.PRG) \
-	$(patsubst %,$(BUILD)/data/EFFECT/PLG%.BIN.elf,$(PLG_NUMBERS))
-$(BUILD)/data/EFFECT/EFFPURGE.BIN: $(EFFPURGE_LDLIBS)
-$(BUILD)/data/EFFECT/EFFPURGE.BIN: private LDLIBS += $(EFFPURGE_LDLIBS)
-$(BUILD)/data/EFFECT/EFFPURGE.BIN $(BUILD)/data/EFFECT/EFFPURGE.BIN.elf: private LDSCRIPT := link.ld
+	$(patsubst %,$(BUILD)/data/%.sym.elf,SLUS_010.40 BATTLE/BATTLE.PRG) \
+	$(patsubst %,$(BUILD)/data/EFFECT/PLG%.BIN.sym.elf,$(PLG_NUMBERS))
+$(BUILD)/data/EFFECT/EFFPURGE.BIN.elf: $(EFFPURGE_LDLIBS)
+$(BUILD)/data/EFFECT/EFFPURGE.BIN.elf: private LDLIBS += $(EFFPURGE_LDLIBS)
+$(BUILD)/data/EFFECT/EFFPURGE.BIN.elf $(BUILD)/data/EFFECT/EFFPURGE.BIN.sym.elf: private LDSCRIPT := link.ld

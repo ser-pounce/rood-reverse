@@ -1,3 +1,3 @@
 #pragma once
 
-extern int _menuLbas[];
+extern int menuLbas[];

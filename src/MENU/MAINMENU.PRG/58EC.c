@@ -1,5 +1,5 @@
 #include "common.h"
-#include "58EC.h"
+#include "58ECPrivate.h"
 #include "2D10.h"
 #include "C48.h"
 #include "src/SLUS_010.40/clut.h"
@@ -17,38 +17,45 @@
 #include "vs_string.h"
 #include <libetc.h>
 
-typedef struct textHeader_t {
+typedef struct TextHeader {
     char text[14];
     char disabled;
     char x;
-} textHeader_t;
+} TextHeader;
 
 char vs_mainMenu_actionMenuState = 0;
-static u_short* _sortItemsTextBuf = NULL;
-static int _selectedItemAction = 0;
-static char _actionsSubMenuId = 0;
-static char _itemActionCount = 0;
-static char _itemActionListOffset = 0;
+static u_short* sortItemsTextBuf = NULL;
+static int selectedItemAction = 0;
+static char actionsSubMenuId = 0;
+static char itemActionCount = 0;
+static char itemActionListOffset = 0;
 
-char _rangeRiskData[8];
+char rangeRiskData[8];
+VS_HIDDEN(rangeRiskData);
+
 short D_80102488[4];
-char D_80102490[8];
-short D_80102498[4];
+VS_HIDDEN(D_80102488);
 
-char _menuActionsPageOffset;
+char D_80102490[8];
+VS_HIDDEN(D_80102490);
+
+short D_80102498[4];
+VS_HIDDEN(D_80102498);
+
+static char menuActionsPageOffset;
 char vs_mainMenu_currentStatusViewItem;
-UNUSED char bss_7[2];
+static UNUSED char bss_7[2];
 u_short* vs_mainMenu_menu12Text;
 short vs_mainMenu_strIntAgi[8];
 u_char vs_mainMenu_selectedStatusViewElement;
 char vs_mainMenu_itemStatPage;
-UNUSED char bss_3[6];
+static UNUSED char bss_3[6];
 short vs_mainMenu_equipmentStats[64];
 u_short* vs_mainMenu_itemHelp;
 char vs_mainMenu_enabledStatPages;
 char vs_mainMenu_equipmentSubtype;
-UNUSED char bss_4[18]; // Garbage, patched in MAINMENU_PRG.py
-textHeader_t _textHeaders[2];
+static UNUSED char bss_4[18]; // Garbage, patched in MAINMENU_PRG.py
+static TextHeader textHeaders[2];
 char vs_mainMenu_containerEmptyBackup;
 
 void vs_mainMenu_addMenuActions(
@@ -58,18 +65,18 @@ void vs_mainMenu_addMenuActions(
 
     int i = 0;
     int scrollOffset = 0;
-    _menuActionsPageOffset = rowCount >> 8;
+    menuActionsPageOffset = rowCount >> 8;
     rowCount &= 0xFF;
 
-    if (!_menuActionsPageOffset) {
+    if (!menuActionsPageOffset) {
         if (rowCount < 7) {
-            _menuActionsPageOffset = 10 - rowCount;
+            menuActionsPageOffset = 10 - rowCount;
         } else {
-            _menuActionsPageOffset = 3;
+            menuActionsPageOffset = 3;
         }
     }
 
-    _actionsSubMenuId = subMenuId;
+    actionsSubMenuId = subMenuId;
 
     if (subMenuId == actionMenuDiscard) {
         i = 1;
@@ -110,38 +117,38 @@ void vs_mainMenu_addMenuActions(
         ++scrollOffset;
     }
 
-    _selectedItemAction = i;
-    _itemActionListOffset = scrollOffset;
-    _itemActionCount = rowCount;
+    selectedItemAction = i;
+    itemActionListOffset = scrollOffset;
+    itemActionCount = rowCount;
     vs_mainMenu_actionMenuState = 0;
 
-    _sortItemsTextBuf = vs_main_allocHeapR(rowCount * 128);
+    sortItemsTextBuf = vs_main_allocHeapR(rowCount * 128);
 
     for (i = 0; i < rowCount; ++i) {
         char* text;
 
-        ((_itemsText_t*)_sortItemsTextBuf)[i].menuRowFlags = rowTypes[i];
+        ((ItemsText*)sortItemsTextBuf)[i].menuRowFlags = rowTypes[i];
 
         if (menuText[i * 2] != NULL) {
-            vs_battle_copyAligned(&_sortItemsTextBuf[i * 64], menuText[i * 2], 26);
+            vs_battle_copyAligned(&sortItemsTextBuf[i * 64], menuText[i * 2], 26);
 
-            _sortItemsTextBuf[(i * 64) + 13] =
+            sortItemsTextBuf[(i * 64) + 13] =
                 vs_char_terminator << 8 | vs_char_terminator;
         } else {
-            _sortItemsTextBuf[i * 64] = vs_char_terminator << 8 | vs_char_terminator;
+            sortItemsTextBuf[i * 64] = vs_char_terminator << 8 | vs_char_terminator;
         }
 
         text = menuText[i * 2 + 1];
 
         if (text != NULL) {
-            ((_itemsText_t*)_sortItemsTextBuf)[i].description[0] = vs_char_chunkSize;
+            ((ItemsText*)sortItemsTextBuf)[i].description[0] = vs_char_chunkSize;
 
-            vs_battle_copyAligned(&_sortItemsTextBuf[(i * 64) + 17], text, 92);
+            vs_battle_copyAligned(&sortItemsTextBuf[(i * 64) + 17], text, 92);
 
-            ((_itemsText_t*)_sortItemsTextBuf)[i].description[47] =
+            ((ItemsText*)sortItemsTextBuf)[i].description[47] =
                 vs_char_terminator << 8 | vs_char_terminator;
         } else {
-            ((_itemsText_t*)_sortItemsTextBuf)[i].description[0] =
+            ((ItemsText*)sortItemsTextBuf)[i].description[0] =
                 vs_char_terminator << 8 | vs_char_terminator;
         }
     }
@@ -149,12 +156,12 @@ void vs_mainMenu_addMenuActions(
 
 int vs_mainMenu_getSelectedAction(void)
 {
-    return _selectedItemAction + _itemActionListOffset;
+    return selectedItemAction + itemActionListOffset;
 }
 
 int vs_mainMenu_actionInputProcessed(void)
 {
-    return _sortItemsTextBuf == NULL ? _selectedItemAction : -1;
+    return sortItemsTextBuf == NULL ? selectedItemAction : -1;
 }
 
 /**
@@ -162,18 +169,17 @@ int vs_mainMenu_actionInputProcessed(void)
  *
  * @return The selected row.
  */
-static vs_battle_menuItem_t* _renderActionRow(int row, int x)
+static vs_MenuItem* renderActionRow(int row, int x)
 {
-    vs_battle_menuItem_t* menuItem = vs_battle_setMenuItem(row + 32, x,
-        ((row + _menuActionsPageOffset) * 16) + 18, 126, 0,
-        (char*)((_itemsText_t*)_sortItemsTextBuf)[_itemActionListOffset + row].name);
+    vs_MenuItem* menuItem =
+        vs_battle_setMenuItem(row + 32, x, ((row + menuActionsPageOffset) * 16) + 18, 126,
+            0, (char*)((ItemsText*)sortItemsTextBuf)[itemActionListOffset + row].name);
 
-    int flags =
-        ((_itemsText_t*)_sortItemsTextBuf)[_itemActionListOffset + row].menuRowFlags;
+    int flags = ((ItemsText*)sortItemsTextBuf)[itemActionListOffset + row].menuRowFlags;
 
     menuItem->unselectable = flags & 1;
 
-    if ((row == 0) && (_itemActionListOffset != 0)) {
+    if ((row == 0) && (itemActionListOffset != 0)) {
         menuItem->isScrollable = menuItem_scrollUp;
     }
 
@@ -187,23 +193,22 @@ void vs_mainMenu_renderItemActionMenu(void)
     int selectedAction;
     int i;
     int previousOffset;
-    vs_battle_menuItem_t* menuItem;
+    vs_MenuItem* menuItem;
 
     if (vs_mainMenu_actionMenuState < 10) {
-        menuItem = _renderActionRow(vs_mainMenu_actionMenuState, -194);
+        menuItem = renderActionRow(vs_mainMenu_actionMenuState, -194);
         menuItem->state = 5;
         menuItem->targetPosition0 = 0;
 
         ++vs_mainMenu_actionMenuState;
 
-        if (vs_mainMenu_actionMenuState == _itemActionCount) {
+        if (vs_mainMenu_actionMenuState == itemActionCount) {
             vs_mainMenu_actionMenuState = 16;
         }
 
         if (vs_mainMenu_actionMenuState == 7) {
 
-            if ((vs_mainMenu_actionMenuState + _itemActionListOffset)
-                < _itemActionCount) {
+            if ((vs_mainMenu_actionMenuState + itemActionListOffset) < itemActionCount) {
                 menuItem->isScrollable = 2;
             }
 
@@ -212,11 +217,11 @@ void vs_mainMenu_renderItemActionMenu(void)
 
     } else {
 
-        menuItem = vs_battle_getMenuItem(_selectedItemAction + 32);
+        menuItem = vs_battle_getMenuItem(selectedItemAction + 32);
 
         vs_mainmenu_setInformationMessage(
-            (char*)(_sortItemsTextBuf
-                    + (((_selectedItemAction + _itemActionListOffset) * 64) + 16)));
+            (char*)(sortItemsTextBuf
+                    + (((selectedItemAction + itemActionListOffset) * 64) + 16)));
 
         switch (vs_mainMenu_actionMenuState) {
         case 16:
@@ -226,31 +231,30 @@ void vs_mainMenu_renderItemActionMenu(void)
             break;
 
         case 17:
-            selectedAction = _selectedItemAction + _itemActionListOffset;
-            previousOffset = _itemActionListOffset;
+            selectedAction = selectedItemAction + itemActionListOffset;
+            previousOffset = itemActionListOffset;
 
             if (vs_main_buttonsPressed.all & PADRup) {
 
-                vs_main_freeHeapR(_sortItemsTextBuf);
+                vs_main_freeHeapR(sortItemsTextBuf);
 
-                _sortItemsTextBuf = NULL;
-                D_800F4EE8.cursorMemories[_actionsSubMenuId * 2] = _selectedItemAction;
-                D_800F4EE8.cursorMemories[_actionsSubMenuId * 2 + 1] =
-                    _itemActionListOffset;
-                _selectedItemAction = -3;
+                sortItemsTextBuf = NULL;
+                D_800F4EE8.cursorMemories[actionsSubMenuId * 2] = selectedItemAction;
+                D_800F4EE8.cursorMemories[actionsSubMenuId * 2 + 1] =
+                    itemActionListOffset;
+                selectedItemAction = -3;
                 break;
             }
 
             if (vs_main_buttonsPressed.all & PADRright) {
                 if (menuItem->unselectable == 0) {
                     menuItem->selected = 1;
-                    vs_main_freeHeapR(_sortItemsTextBuf);
-                    _sortItemsTextBuf = NULL;
-                    D_800F4EE8.cursorMemories[_actionsSubMenuId * 2] =
-                        _selectedItemAction;
-                    D_800F4EE8.cursorMemories[_actionsSubMenuId * 2 + 1] =
-                        _itemActionListOffset;
-                    _selectedItemAction = selectedAction;
+                    vs_main_freeHeapR(sortItemsTextBuf);
+                    sortItemsTextBuf = NULL;
+                    D_800F4EE8.cursorMemories[actionsSubMenuId * 2] = selectedItemAction;
+                    D_800F4EE8.cursorMemories[actionsSubMenuId * 2 + 1] =
+                        itemActionListOffset;
+                    selectedItemAction = selectedAction;
                     break;
                 }
                 vs_battle_playInvalidSfx();
@@ -259,74 +263,74 @@ void vs_mainMenu_renderItemActionMenu(void)
             menuItem->selected = 0;
 
             if (vs_main_buttonsPressed.all & PADRdown) {
-                vs_main_freeHeapR(_sortItemsTextBuf);
-                _sortItemsTextBuf = NULL;
-                D_800F4EE8.cursorMemories[_actionsSubMenuId * 2] = _selectedItemAction;
-                D_800F4EE8.cursorMemories[_actionsSubMenuId * 2 + 1] =
-                    _itemActionListOffset;
-                _selectedItemAction = -2;
+                vs_main_freeHeapR(sortItemsTextBuf);
+                sortItemsTextBuf = NULL;
+                D_800F4EE8.cursorMemories[actionsSubMenuId * 2] = selectedItemAction;
+                D_800F4EE8.cursorMemories[actionsSubMenuId * 2 + 1] =
+                    itemActionListOffset;
+                selectedItemAction = -2;
                 break;
             }
 
             if (vs_main_buttonRepeat & PADLup) {
-                if (_itemActionCount < 8) {
-                    if (_selectedItemAction == 0) {
-                        _selectedItemAction = _itemActionCount - 1;
+                if (itemActionCount < 8) {
+                    if (selectedItemAction == 0) {
+                        selectedItemAction = itemActionCount - 1;
                     } else {
-                        --_selectedItemAction;
+                        --selectedItemAction;
                     }
-                } else if (_itemActionListOffset == 0) {
-                    if (_selectedItemAction == 0) {
+                } else if (itemActionListOffset == 0) {
+                    if (selectedItemAction == 0) {
                         if (vs_main_buttonsPressed.all & PADLup) {
-                            _selectedItemAction = 6;
-                            _itemActionListOffset = _itemActionCount - 7;
+                            selectedItemAction = 6;
+                            itemActionListOffset = itemActionCount - 7;
                         }
                     } else {
-                        --_selectedItemAction;
+                        --selectedItemAction;
                     }
-                } else if (_selectedItemAction == 1) {
-                    --_itemActionListOffset;
+                } else if (selectedItemAction == 1) {
+                    --itemActionListOffset;
                 } else {
-                    --_selectedItemAction;
+                    --selectedItemAction;
                 }
             }
 
             if (vs_main_buttonRepeat & PADLdown) {
-                if (_itemActionCount < 8) {
-                    if (_selectedItemAction == (_itemActionCount - 1)) {
-                        _selectedItemAction = 0;
+                if (itemActionCount < 8) {
+                    if (selectedItemAction == (itemActionCount - 1)) {
+                        selectedItemAction = 0;
                     } else {
-                        ++_selectedItemAction;
+                        ++selectedItemAction;
                     }
-                } else if (_itemActionListOffset == (_itemActionCount - 7)) {
-                    if (_selectedItemAction == 6) {
+                } else if (itemActionListOffset == (itemActionCount - 7)) {
+                    if (selectedItemAction == 6) {
                         if (vs_main_buttonsPressed.all & PADLdown) {
-                            _selectedItemAction = 0;
-                            _itemActionListOffset = 0;
+                            selectedItemAction = 0;
+                            itemActionListOffset = 0;
                         }
                     } else {
-                        ++_selectedItemAction;
+                        ++selectedItemAction;
                     }
-                } else if (_selectedItemAction == 5) {
-                    _itemActionListOffset = _itemActionListOffset + 1;
+                } else if (selectedItemAction == 5) {
+                    itemActionListOffset = itemActionListOffset + 1;
                 } else {
-                    _selectedItemAction += 1;
+                    selectedItemAction += 1;
                 }
             }
 
-            if (selectedAction != (_selectedItemAction + _itemActionListOffset)) {
+            if (selectedAction != (selectedItemAction + itemActionListOffset)) {
                 vs_battle_playMenuChangeSfx();
 
-                if (_itemActionListOffset != previousOffset) {
+                if (itemActionListOffset != previousOffset) {
                     int actionCount;
 
-                    char gradientStates[_itemActionCount];
+                    char gradientStates[itemActionCount];
 
-                    for (i = 0; i < _itemActionCount; ++i) {
+                    for (i = 0; i < itemActionCount; ++i) {
                         gradientStates[i] = 0;
                     }
 
-                    actionCount = _itemActionCount;
+                    actionCount = itemActionCount;
 
                     if (actionCount > 7u) {
                         actionCount = 7;
@@ -338,17 +342,17 @@ void vs_mainMenu_renderItemActionMenu(void)
                     }
 
                     for (i = 0;;) {
-                        menuItem = _renderActionRow(i, 0);
+                        menuItem = renderActionRow(i, 0);
                         menuItem->gradientState =
-                            gradientStates[i + _itemActionListOffset];
+                            gradientStates[i + itemActionListOffset];
                         ++i;
 
-                        if (i == _itemActionCount) {
+                        if (i == itemActionCount) {
                             break;
                         }
 
                         if (i == 7) {
-                            if ((_itemActionListOffset + 7) < _itemActionCount) {
+                            if ((itemActionListOffset + 7) < itemActionCount) {
                                 menuItem->isScrollable = 2;
                             }
                             break;
@@ -357,7 +361,7 @@ void vs_mainMenu_renderItemActionMenu(void)
                 }
             }
 
-            menuItem = vs_battle_getMenuItem(_selectedItemAction + 32);
+            menuItem = vs_battle_getMenuItem(selectedItemAction + 32);
             menuItem->selected = 1;
             cursorAnimStep =
                 vs_mainMenu_renderCursor(cursorAnimStep, vs_getXY(0, menuItem->y - 8));
@@ -399,21 +403,21 @@ char vs_mainMenu_displayActionCost = 0;
 char vs_mainMenu_cursorColor = 0;
 char vs_mainMenu_hideMenu = 0;
 int vs_mainMenu_backgroundFadeStep = 0;
-char _backgroundFadeState = 0;
-static short _backgroundOtOffset = -4;
-static short _backgroundBrightness = 128;
-static char _menuActionCurrent = 0;
-static char _menuActionNext = 0;
+static char backgroundFadeState = 0;
+static short backgroundOtOffset = -4;
+static short backgroundBrightness = 128;
+static char menuActionCurrent = 0;
+static char menuActionNext = 0;
 
 void vs_mainMenu_setMenuCommand(enum vs_mainMenu_menuCommands action)
 {
-    _menuActionNext = action;
+    menuActionNext = action;
 }
 
 /**
  * Renders the menu command, sliding in and out as necessary.
  */
-static void _renderMenuCommand(void)
+static void renderMenuCommand(void)
 {
     static int actionYPos = 0;
     static u_short menuActionUvs[] = { vs_getUV(0, 0), vs_getUV(0, 64), vs_getUV(64, 64),
@@ -423,12 +427,12 @@ static void _renderMenuCommand(void)
         vs_getXY(32, 10), vs_getXY(0, 0) };
 
     u_long* prim;
-    int action = _menuActionCurrent;
+    int action = menuActionCurrent;
     int y = actionYPos;
 
-    if (action != _menuActionNext) {
+    if (action != menuActionNext) {
         if (y == 0) {
-            _menuActionCurrent = _menuActionNext;
+            menuActionCurrent = menuActionNext;
             return;
         }
         y -= 2;
@@ -451,16 +455,16 @@ static void _renderMenuCommand(void)
 void vs_mainMenu_toggleBackgroundFade(int fadeState)
 {
     if (fadeState != 0) {
-        _backgroundOtOffset = -4;
-        _backgroundBrightness = 128;
+        backgroundOtOffset = -4;
+        backgroundBrightness = 128;
     }
 
-    _backgroundFadeState = fadeState;
+    backgroundFadeState = fadeState;
 }
 
 void vs_mainMenu_deactivateMenuItem(int row)
 {
-    vs_battle_menuItem_t* menuItem = &vs_battle_menuItems[row];
+    vs_MenuItem* menuItem = &vs_battle_menuItems[row];
     menuItem->state = menuItemStateInactive;
 }
 
@@ -483,7 +487,7 @@ void vs_mainmenu_setInformationMessage(char* message)
 #pragma vsstring(end)
 
     vs_battle_memcpy(&infoMessage[2], message, 96);
-    vs_battle_textBoxes[7].unk0.unk0_24 = 32;
+    vs_battle_textBoxes[7].unk0.speakerActor = 32;
     vs_battle_setTextBox(7, infoMessage);
 }
 
@@ -562,16 +566,20 @@ int vs_mainMenu_renderIntWithThreshold(int value, int xy, int threshold, u_long*
     return vs_mainMenu_renderIntColor(value, xy, color, before);
 }
 
+VS_HIDDEN(vs_mainMenu_renderIntWithThreshold);
+
 void vs_mainMenu_renderIntColorDefault(int value, int xy, u_long* before)
 {
     vs_mainMenu_renderIntColor(value, xy, vs_getRGB888(128, 128, 128), before);
 }
 
+VS_HIDDEN(vs_mainMenu_renderIntColorDefault);
+
 /**
  * Fades the top or bottom 16 pixels of the icon, used for elements at the
  * very top or bottom of the menu.
  */
-static void _renderFeatheredIcon(int direction, int xy, int uvClut, u_long* before)
+static void renderFeatheredIcon(int direction, int xy, int uvClut, u_long* before)
 {
     int i = 0;
 
@@ -594,7 +602,7 @@ static void _renderFeatheredIcon(int direction, int xy, int uvClut, u_long* befo
 /**
  * Draws the material indicator character.
  */
-static void _renderItemMaterial(int materialId, int xy)
+static void renderItemMaterial(int materialId, int xy)
 {
     u_long* prim = vs_battle_setSpriteDefault(vs_getWH(7, 7), xy);
     int uv = (((materialId / 3) * 8) + 216) | ((((materialId % 3) * 8) + 200) << 8);
@@ -609,7 +617,7 @@ static void _renderItemMaterial(int materialId, int xy)
 /**
  * Draws the "Set" or "Eqp" icon.
  */
-static void _renderOutsetIcon(int icon, int xy)
+static void renderOutsetIcon(int icon, int xy)
 {
     vs_battle_setSpriteDefault(vs_getWH(16, 16), xy)[4] =
         vs_getUV0Clut(96 - (icon * 16), 128, 976, 223);
@@ -647,7 +655,7 @@ void vs_mainMenu_renderMenuRowIcon(int icon, int x, int y)
             fade = -1;
         }
 
-        _renderFeatheredIcon(fade, vs_getXY_2(x, y),
+        renderFeatheredIcon(fade, vs_getXY_2(x, y),
             vs_getUV0Clut(iconUvs[icon], 0, 992, 223), vs_scratch.unk8 + 4);
     }
 }
@@ -656,16 +664,16 @@ void vs_mainmenu_setActionCost(int index, char const* text, int xOffset, int dis
 {
     vs_mainMenu_displayActionCost = 1;
 
-    vs_battle_rMemcpy(&_textHeaders[index], text, 14);
+    vs_battle_rMemcpy(&textHeaders[index], text, 14);
 
-    _textHeaders[index].disabled = disabled;
-    _textHeaders[index].x = xOffset;
+    textHeaders[index].disabled = disabled;
+    textHeaders[index].x = xOffset;
 }
 
 /**
  * Slides and renders the ability cost element.
  */
-static void _renderAbilityCost(void)
+static void renderAbilityCost(void)
 {
     static u_char animState = 8;
 
@@ -690,9 +698,9 @@ static void _renderAbilityCost(void)
         int x1 = -vs_battle_rowAnimationSteps[animState];
 
         for (i = 0; i < 2; ++i) {
-            vs_battle_renderTextRawColor(_textHeaders[i].text,
-                ((x1 + _textHeaders[i].x) & 0xFFFF) | (160 << 16),
-                vs_getRGB888(128, 128, 128) >> _textHeaders[i].disabled, NULL);
+            vs_battle_renderTextRawColor(textHeaders[i].text,
+                ((x1 + textHeaders[i].x) & 0xFFFF) | (160 << 16),
+                vs_getRGB888(128, 128, 128) >> textHeaders[i].disabled, NULL);
         }
 
         x0 = x1 & 0xFFFF;
@@ -747,8 +755,8 @@ void vs_mainMenu_setBackgroundRenderPriority(int otOffset, int brightness)
         vs_battle_lowerScreenUiState &= 1;
     }
 
-    _backgroundOtOffset = otOffset;
-    _backgroundBrightness = brightness;
+    backgroundOtOffset = otOffset;
+    backgroundBrightness = brightness;
 }
 
 void vs_mainMenu_unpackMenubg(u_int* buf)
@@ -790,13 +798,13 @@ void vs_mainMenu_unpackMenubg(u_int* buf)
 }
 
 char vs_mainMenu_itemsListRow = 0;
-static u_short* _itemsText = NULL;
-static int _selectedRow = 0;
-static u_char _subMenuId = 0;
-static char _subMenuRowInfo = 0;
-static char _subMenuPage = 0;
-static char _menuRowYOffset = 0;
-static u_short _subMenuRowCount = 0;
+static u_short* itemsText = NULL;
+static int selectedRow = 0;
+static u_char currentSubMenuId = 0;
+static char subMenuRowInfo = 0;
+static char subMenuPage = 0;
+static char menuRowYOffset = 0;
+static u_short subMenuRowCount = 0;
 
 void vs_mainmenu_setMenuRows(int rowCount, int rowInfo, char* strings[], int rowTypes[])
 {
@@ -807,8 +815,8 @@ void vs_mainmenu_setMenuRows(int rowCount, int rowInfo, char* strings[], int row
     int i = 0;
     int page = 0;
     int subMenuId = rowInfo & 0xFF;
-    _menuRowYOffset = (rowInfo >> 0xC);
-    _subMenuId = subMenuId;
+    menuRowYOffset = (rowInfo >> 0xC);
+    currentSubMenuId = subMenuId;
     rowInfo = (rowInfo >> 8) & 0xF;
 
     if (vs_main_settings.cursorMemory != 0) {
@@ -854,39 +862,39 @@ void vs_mainmenu_setMenuRows(int rowCount, int rowInfo, char* strings[], int row
         }
     }
 
-    _selectedRow = i;
+    selectedRow = i;
 
-    _subMenuPage = page;
-    _subMenuRowCount = rowCount;
-    _subMenuRowInfo = rowInfo;
+    subMenuPage = page;
+    subMenuRowCount = rowCount;
+    subMenuRowInfo = rowInfo;
     vs_mainMenu_itemsListRow = 0;
 
-    _itemsText = vs_main_allocHeapR(rowCount * 128);
+    itemsText = vs_main_allocHeapR(rowCount * 128);
 
     for (i = 0; i < rowCount; ++i) {
         char* text;
 
-        ((_itemsText_t*)_itemsText)[i].menuRowFlags = rowTypes[i];
+        ((ItemsText*)itemsText)[i].menuRowFlags = rowTypes[i];
 
         if (strings[i * 2] != NULL) {
-            vs_battle_copyAligned(&_itemsText[i * 64], strings[i * 2], 26);
+            vs_battle_copyAligned(&itemsText[i * 64], strings[i * 2], 26);
 
-            _itemsText[(i * 64) + 13] = vs_char_terminator << 8 | vs_char_terminator;
+            itemsText[(i * 64) + 13] = vs_char_terminator << 8 | vs_char_terminator;
         } else {
-            _itemsText[i * 64] = vs_char_terminator << 8 | vs_char_terminator;
+            itemsText[i * 64] = vs_char_terminator << 8 | vs_char_terminator;
         }
 
         text = strings[i * 2 + 1];
 
         if (text != NULL) {
-            ((_itemsText_t*)_itemsText)[i].description[0] = vs_char_chunkSize;
+            ((ItemsText*)itemsText)[i].description[0] = vs_char_chunkSize;
 
-            vs_battle_copyAligned(&_itemsText[(i * 64) + 17], text, 92);
+            vs_battle_copyAligned(&itemsText[(i * 64) + 17], text, 92);
 
-            ((_itemsText_t*)_itemsText)[i].description[47] =
+            ((ItemsText*)itemsText)[i].description[47] =
                 vs_char_terminator << 8 | vs_char_terminator;
         } else {
-            ((_itemsText_t*)_itemsText)[i].description[0] =
+            ((ItemsText*)itemsText)[i].description[0] =
                 vs_char_terminator << 8 | vs_char_terminator;
         }
     }
@@ -894,30 +902,30 @@ void vs_mainmenu_setMenuRows(int rowCount, int rowInfo, char* strings[], int row
 
 int vs_mainMenu_storeCursor(void)
 {
-    vs_main_freeHeapR(_itemsText);
+    vs_main_freeHeapR(itemsText);
 
-    _itemsText = NULL;
-    D_800F4EE8.cursorMemories[_subMenuId * 2] = _selectedRow;
-    D_800F4EE8.cursorMemories[_subMenuId * 2 + 1] = _subMenuPage;
+    itemsText = NULL;
+    D_800F4EE8.cursorMemories[currentSubMenuId * 2] = selectedRow;
+    D_800F4EE8.cursorMemories[currentSubMenuId * 2 + 1] = subMenuPage;
 
-    return (_selectedRow + _subMenuPage) | ((_selectedRow + (_subMenuRowInfo * 10)) << 8);
+    return (selectedRow + subMenuPage) | ((selectedRow + (subMenuRowInfo * 10)) << 8);
 }
 
-int vs_mainMenu_getConfirmedRow(void) { return _selectedRow + _subMenuPage; }
+int vs_mainMenu_getConfirmedRow(void) { return selectedRow + subMenuPage; }
 
-int vs_mainmenu_getSelectedRow(void) { return _itemsText != NULL ? -1 : _selectedRow; }
+int vs_mainmenu_getSelectedRow(void) { return itemsText != NULL ? -1 : selectedRow; }
 
 /**
  * Sets the individual properties of a row based on its rowflags.
  */
-static vs_battle_menuItem_t* _initItemRow(int row, int x)
+static vs_MenuItem* initItemRow(int row, int x)
 {
     int temp_v1;
-    vs_battle_menuItem_t* menuItem = vs_battle_setMenuItem(row + (_subMenuRowInfo * 10),
-        x, ((row + _subMenuRowInfo) * 16) + 18, _menuRowYOffset + 126, 0,
-        (char*)((_itemsText_t*)_itemsText)[_subMenuPage + row].name);
+    vs_MenuItem* menuItem = vs_battle_setMenuItem(row + (subMenuRowInfo * 10), x,
+        ((row + subMenuRowInfo) * 16) + 18, menuRowYOffset + 126, 0,
+        (char*)((ItemsText*)itemsText)[subMenuPage + row].name);
 
-    int flags = ((_itemsText_t*)_itemsText)[_subMenuPage + row].menuRowFlags;
+    int flags = ((ItemsText*)itemsText)[subMenuPage + row].menuRowFlags;
 
     menuItem->unselectable = flags & 1;
     menuItem->backgroundWidth += (flags & 2) * 12;
@@ -928,7 +936,7 @@ static vs_battle_menuItem_t* _initItemRow(int row, int x)
     menuItem->fontColor = temp_v1 | ((flags >> 2) & 1);
     menuItem->rowIcon = (flags >> 26);
 
-    if ((row == 0) && (_subMenuPage != 0)) {
+    if ((row == 0) && (subMenuPage != 0)) {
         menuItem->isScrollable = menuItem_scrollUp;
     }
 
@@ -956,34 +964,34 @@ void vs_mainMenu_renderItemsList(void)
     int i;
     int var_s1;
     int page;
-    vs_battle_menuItem_t* menuItem;
+    vs_MenuItem* menuItem;
 
-    if (_subMenuRowCount == 0) {
+    if (subMenuRowCount == 0) {
 
-        if (_itemsText != NULL) {
-            vs_main_freeHeapR(_itemsText);
-            _itemsText = NULL;
+        if (itemsText != NULL) {
+            vs_main_freeHeapR(itemsText);
+            itemsText = NULL;
         }
 
-        _selectedRow = -2;
+        selectedRow = -2;
         return;
     }
 
     if (vs_mainMenu_itemsListRow < 10) {
 
-        menuItem = _initItemRow(vs_mainMenu_itemsListRow, 320);
+        menuItem = initItemRow(vs_mainMenu_itemsListRow, 320);
 
         menuItem->state = menuItemStateSlideX;
         ++vs_mainMenu_itemsListRow;
-        menuItem->targetPosition0 = 194 - _menuRowYOffset;
+        menuItem->targetPosition0 = 194 - menuRowYOffset;
 
-        if (vs_mainMenu_itemsListRow == _subMenuRowCount) {
+        if (vs_mainMenu_itemsListRow == subMenuRowCount) {
             vs_mainMenu_itemsListRow = 16;
         }
 
-        if (vs_mainMenu_itemsListRow == (10 - _subMenuRowInfo)) {
+        if (vs_mainMenu_itemsListRow == (10 - subMenuRowInfo)) {
 
-            if ((vs_mainMenu_itemsListRow + _subMenuPage) < _subMenuRowCount) {
+            if ((vs_mainMenu_itemsListRow + subMenuPage) < subMenuRowCount) {
                 menuItem->isScrollable = menuItem_scrollDown;
             }
 
@@ -991,9 +999,9 @@ void vs_mainMenu_renderItemsList(void)
         }
     } else {
 
-        menuItem = vs_battle_getMenuItem(_selectedRow + (_subMenuRowInfo * 10));
+        menuItem = vs_battle_getMenuItem(selectedRow + (subMenuRowInfo * 10));
         vs_mainmenu_setInformationMessage(
-            (char*)(_itemsText + (((_selectedRow + _subMenuPage) * 64) + 16)));
+            (char*)(itemsText + (((selectedRow + subMenuPage) * 64) + 16)));
 
         switch (vs_mainMenu_itemsListRow) {
         case 16:
@@ -1003,18 +1011,18 @@ void vs_mainMenu_renderItemsList(void)
             return;
 
         case 17:
-            absRow = _selectedRow + _subMenuPage;
-            page = _subMenuPage;
+            absRow = selectedRow + subMenuPage;
+            page = subMenuPage;
 
             if (vs_main_buttonsPressed.all & PADRup) {
 
                 vs_battle_playMenuLeaveSfx();
-                vs_main_freeHeapR(_itemsText);
+                vs_main_freeHeapR(itemsText);
 
-                _itemsText = NULL;
-                D_800F4EE8.cursorMemories[_subMenuId * 2] = _selectedRow;
-                D_800F4EE8.cursorMemories[_subMenuId * 2 + 1] = _subMenuPage;
-                _selectedRow = -3;
+                itemsText = NULL;
+                D_800F4EE8.cursorMemories[currentSubMenuId * 2] = selectedRow;
+                D_800F4EE8.cursorMemories[currentSubMenuId * 2 + 1] = subMenuPage;
+                selectedRow = -3;
 
                 return;
             }
@@ -1025,12 +1033,12 @@ void vs_mainMenu_renderItemsList(void)
                     menuItem->selected = 1;
 
                     vs_battle_playMenuSelectSfx();
-                    vs_main_freeHeapR(_itemsText);
+                    vs_main_freeHeapR(itemsText);
 
-                    _itemsText = NULL;
-                    D_800F4EE8.cursorMemories[_subMenuId * 2] = _selectedRow;
-                    D_800F4EE8.cursorMemories[_subMenuId * 2 + 1] = _subMenuPage;
-                    _selectedRow = absRow;
+                    itemsText = NULL;
+                    D_800F4EE8.cursorMemories[currentSubMenuId * 2] = selectedRow;
+                    D_800F4EE8.cursorMemories[currentSubMenuId * 2 + 1] = subMenuPage;
+                    selectedRow = absRow;
 
                     return;
                 }
@@ -1043,88 +1051,88 @@ void vs_mainMenu_renderItemsList(void)
             if (vs_main_buttonsPressed.all & PADRdown) {
 
                 vs_battle_playMenuLeaveSfx();
-                vs_main_freeHeapR(_itemsText);
+                vs_main_freeHeapR(itemsText);
 
-                _itemsText = NULL;
-                D_800F4EE8.cursorMemories[_subMenuId * 2] = _selectedRow;
-                D_800F4EE8.cursorMemories[_subMenuId * 2 + 1] = _subMenuPage;
-                _selectedRow = -2;
+                itemsText = NULL;
+                D_800F4EE8.cursorMemories[currentSubMenuId * 2] = selectedRow;
+                D_800F4EE8.cursorMemories[currentSubMenuId * 2 + 1] = subMenuPage;
+                selectedRow = -2;
 
                 return;
             }
 
             if (vs_main_buttonRepeat & PADLup) {
 
-                if (_subMenuRowCount <= (10 - _subMenuRowInfo)) {
+                if (subMenuRowCount <= (10 - subMenuRowInfo)) {
 
-                    if (_selectedRow == 0) {
-                        _selectedRow = _subMenuRowCount - 1;
+                    if (selectedRow == 0) {
+                        selectedRow = subMenuRowCount - 1;
                     } else {
-                        --_selectedRow;
+                        --selectedRow;
                     }
 
-                } else if (_subMenuPage == 0) {
+                } else if (subMenuPage == 0) {
 
-                    if (_selectedRow == 0) {
+                    if (selectedRow == 0) {
                         if (vs_main_buttonsPressed.all & PADLup) {
-                            _selectedRow = 9 - _subMenuRowInfo;
-                            _subMenuPage = _subMenuRowInfo + (_subMenuRowCount + 246);
+                            selectedRow = 9 - subMenuRowInfo;
+                            subMenuPage = subMenuRowInfo + (subMenuRowCount + 246);
                         }
                     } else {
-                        --_selectedRow;
+                        --selectedRow;
                     }
 
-                } else if (_selectedRow == 1) {
-                    --_subMenuPage;
+                } else if (selectedRow == 1) {
+                    --subMenuPage;
                 } else {
-                    --_selectedRow;
+                    --selectedRow;
                 }
             }
 
             if (vs_main_buttonRepeat & PADLdown) {
 
-                if (_subMenuRowCount <= (10 - _subMenuRowInfo)) {
+                if (subMenuRowCount <= (10 - subMenuRowInfo)) {
 
-                    if (_selectedRow == (_subMenuRowCount - 1)) {
-                        _selectedRow = 0;
+                    if (selectedRow == (subMenuRowCount - 1)) {
+                        selectedRow = 0;
                     } else {
-                        ++_selectedRow;
+                        ++selectedRow;
                     }
 
-                } else if (_subMenuPage == (_subMenuRowCount + (_subMenuRowInfo - 10))) {
+                } else if (subMenuPage == (subMenuRowCount + (subMenuRowInfo - 10))) {
 
-                    if (_selectedRow == (9 - _subMenuRowInfo)) {
+                    if (selectedRow == (9 - subMenuRowInfo)) {
 
                         if (vs_main_buttonsPressed.all & PADLdown) {
-                            _selectedRow = 0;
-                            _subMenuPage = 0;
+                            selectedRow = 0;
+                            subMenuPage = 0;
                         }
 
                     } else {
-                        ++_selectedRow;
+                        ++selectedRow;
                     }
 
-                } else if (_selectedRow == (8 - _subMenuRowInfo)) {
-                    ++_subMenuPage;
+                } else if (selectedRow == (8 - subMenuRowInfo)) {
+                    ++subMenuPage;
                 } else {
-                    ++_selectedRow;
+                    ++selectedRow;
                 }
             }
 
-            if (absRow != (_selectedRow + _subMenuPage)) {
+            if (absRow != (selectedRow + subMenuPage)) {
 
                 vs_battle_playMenuChangeSfx();
 
-                if (_subMenuPage != page) {
+                if (subMenuPage != page) {
 
-                    char gradientStates[_subMenuRowCount];
+                    char gradientStates[subMenuRowCount];
 
-                    for (i = 0; i < _subMenuRowCount; ++i) {
+                    for (i = 0; i < subMenuRowCount; ++i) {
                         gradientStates[i] = 0;
                     }
 
-                    var_s1 = _subMenuRowCount;
-                    temp_v1 = 10 - _subMenuRowInfo;
+                    var_s1 = subMenuRowCount;
+                    temp_v1 = 10 - subMenuRowInfo;
 
                     if (temp_v1 < var_s1) {
                         var_s1 = temp_v1;
@@ -1132,21 +1140,21 @@ void vs_mainMenu_renderItemsList(void)
 
                     for (i = 0; i < var_s1; ++i) {
                         gradientStates[i + page] =
-                            vs_battle_getMenuItem(i + (_subMenuRowInfo * 10))
+                            vs_battle_getMenuItem(i + (subMenuRowInfo * 10))
                                 ->gradientState;
                     }
 
                     for (i = 0;;) {
-                        menuItem = _initItemRow(i, 194 - _menuRowYOffset);
-                        menuItem->gradientState = gradientStates[i + _subMenuPage];
+                        menuItem = initItemRow(i, 194 - menuRowYOffset);
+                        menuItem->gradientState = gradientStates[i + subMenuPage];
                         i += 1;
 
-                        if (i == _subMenuRowCount) {
+                        if (i == subMenuRowCount) {
                             break;
                         }
 
-                        if (i == (10 - _subMenuRowInfo)) {
-                            if ((i + _subMenuPage) < _subMenuRowCount) {
+                        if (i == (10 - subMenuRowInfo)) {
+                            if ((i + subMenuPage) < subMenuRowCount) {
                                 menuItem->isScrollable = menuItem_scrollDown;
                             }
                             break;
@@ -1155,11 +1163,11 @@ void vs_mainMenu_renderItemsList(void)
                 }
             }
 
-            vs_battle_getMenuItem(_selectedRow + (_subMenuRowInfo * 10))->selected = 1;
+            vs_battle_getMenuItem(selectedRow + (subMenuRowInfo * 10))->selected = 1;
 
             cursorAnimStep = vs_mainMenu_renderCursor(cursorAnimStep,
-                (180 - _menuRowYOffset)
-                    | ((((_selectedRow + _subMenuRowInfo) * 16) + 10) << 0x10));
+                (180 - menuRowYOffset)
+                    | ((((selectedRow + subMenuRowInfo) * 16) + 10) << 0x10));
 
             break;
         }
@@ -1172,13 +1180,13 @@ void vs_mainMenu_renderItemsList(void)
  * @param brightness Passed as the fade step from 0-16, if < 16 the background
  * will blend with the previous screen.
  */
-static void _renderBackground(int brightness)
+static void renderBackground(int brightness)
 {
     int opaque;
     u_long* prim;
 
     int uCoord = 0;
-    u_long* before = vs_scratch.unk4 + _backgroundOtOffset * 4;
+    u_long* before = vs_scratch.unk4 + backgroundOtOffset * 4;
 
     if (vs_main_frameBuf == 0) {
         uCoord = 320;
@@ -1188,7 +1196,7 @@ static void _renderBackground(int brightness)
     opaque = brightness == 128;
 
     if (opaque) {
-        brightness = _backgroundBrightness;
+        brightness = backgroundBrightness;
     } else {
         brightness |= 256;
     }
@@ -1216,7 +1224,7 @@ static void _renderBackground(int brightness)
 
 #pragma vsstring(start)
 int vs_mainMenu_renderRowLabel(
-    u_int character, int x, vs_battle_menuItem_t* menuItem, u_long* before)
+    u_int character, int x, vs_MenuItem* menuItem, u_long* before)
 {
     int i;
     int uvClut;
@@ -1309,7 +1317,7 @@ void vs_mainMenu_renderTabNavigation(int mode)
 /**
  * Invoked on rows that have more rows above or below them.
  */
-static void _renderScrollableRow(vs_battle_menuItem_t* menuItem)
+static void renderScrollableRow(vs_MenuItem* menuItem)
 {
     static char previousFrameBuf = 0;
     static char animState = 0;
@@ -1454,10 +1462,10 @@ static void _renderScrollableRow(vs_battle_menuItem_t* menuItem)
     }
 }
 
-static void _renderMenuItems(void)
+static void renderMenuItems(void)
 {
     int i;
-    vs_battle_menuItem_t* menuItem = vs_battle_menuItems;
+    vs_MenuItem* menuItem = vs_battle_menuItems;
 
     for (i = 0; i < 40; ++i, ++menuItem) {
         int var_v1;
@@ -1674,7 +1682,7 @@ static void _renderMenuItems(void)
         if (menuItem->x < 320) {
 
             if (menuItem->isScrollable != 0) {
-                _renderScrollableRow(menuItem);
+                renderScrollableRow(menuItem);
             } else {
                 vs_battle_renderMenuItem(menuItem);
             }
@@ -1682,8 +1690,7 @@ static void _renderMenuItems(void)
             j = menuItem->outsetIcon;
 
             if (j != 0) {
-                _renderOutsetIcon(
-                    j - 1, (menuItem->x - 24) | ((menuItem->y - 3) << 0x10));
+                renderOutsetIcon(j - 1, (menuItem->x - 24) | ((menuItem->y - 3) << 0x10));
             }
         }
 
@@ -1704,7 +1711,7 @@ static void _renderMenuItems(void)
         j = menuItem->material;
 
         if (j != 0) {
-            _renderItemMaterial(j - 1, (menuItem->x + 13) | ((menuItem->y - 3) << 0x10));
+            renderItemMaterial(j - 1, (menuItem->x + 13) | ((menuItem->y - 3) << 0x10));
         }
     }
 }
@@ -1713,11 +1720,11 @@ void vs_mainMenu_renderScreen(void)
 {
     int fadeStep = vs_mainMenu_backgroundFadeStep;
 
-    if (_itemsText != NULL) {
+    if (itemsText != NULL) {
         vs_mainMenu_renderItemsList();
     }
 
-    if (_backgroundFadeState != 0) {
+    if (backgroundFadeState != 0) {
 
         fadeStep += 2;
 
@@ -1735,19 +1742,21 @@ void vs_mainMenu_renderScreen(void)
     vs_mainMenu_backgroundFadeStep = fadeStep;
 
     if (fadeStep != 0) {
-        _renderBackground(fadeStep);
+        renderBackground(fadeStep);
     }
 
     if (vs_battle_shortcutInvoked == 0) {
-        _renderMenuCommand();
+        renderMenuCommand();
     }
 
     if (vs_battle_menuItems != 0) {
-        _renderMenuItems();
+        renderMenuItems();
     }
 
-    _renderAbilityCost();
+    renderAbilityCost();
     vs_mainMenu_drawClassAffinityType(0);
     vs_mainMenu_renderEquipStats(0);
     vs_mainMenu_renderDpPpBars(0);
 }
+
+VS_HIDDEN(vs_mainMenu_renderScreen);

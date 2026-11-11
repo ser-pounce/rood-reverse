@@ -1,10 +1,11 @@
 #include "common.h"
-#include "49268.h"
+#include "30DB0Private.h"
+#include "49268Private.h"
 #include "38C1C.h"
 #include "44F14.h"
 #include "48C7C.h"
 #include "4B16C.h"
-#include "4DEA8.h"
+#include "4DEA8Private.h"
 #include "src/SLUS_010.40/graphics.h"
 #include "vs_inline_c.h"
 #include <inline_c.h>
@@ -124,7 +125,7 @@ composed:
     }
 }
 
-void func_800B217C(vs_battle_wepModels_t* weapon, MATRIX* source)
+void func_800B217C(vs_WepModels* weapon, MATRIX* source)
 {
     CVECTOR color;
     D_1F80035C_t* scratch = (void*)0x1F80035C;

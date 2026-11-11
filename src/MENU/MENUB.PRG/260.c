@@ -29,29 +29,29 @@ typedef struct {
     u_char itemIndex;
     char unk2;
     char state;
-} _lootListItem;
+} LootListItem;
 
-static char _gradientStateIndex = 0;
-static char _controlsEnabled = 0;
+static char gradientStateIndex = 0;
+static char controlsEnabled = 0;
 
-static _lootListItem* _lootList;
-static _lootListItem* _lootListWorkingCopy;
-static vs_main_inventory_t* _inventory;
-static vs_main_inventory_t* _inventoryBackup;
-static char _showInventory;
-static u_char _inventoryCapacityFlyinTimer;
-static char _showLoot;
-static u_char _lootLeftEdge;
-static char _selectedLoot;
-static u_char _lootListOffset;
-static u_char _lootListCount;
+static LootListItem* lootList;
+static LootListItem* lootListWorkingCopy;
+static vs_Inventory* inventory;
+static vs_Inventory* inventoryBackup;
+static char showInventory;
+static u_char inventoryCapacityFlyinTimer;
+static char showLoot;
+static u_char lootLeftEdge;
+static char selectedLoot;
+static u_char lootListOffset;
+static u_char lootListCount;
 static char D_8010A6B7;
-static char _lootClaimed;
+static char lootClaimed;
 
 #include "src/MENU/items1.h"
-#include "src/MENU/_toggleUi.h"
+#include "src/MENU/toggleUi.h"
 #include "src/MENU/items2.h"
-#include "src/MENU/_renderAshley.h"
+#include "src/MENU/renderAshley.h"
 
 /**
  * Manages transitions between menu categories.
@@ -61,7 +61,7 @@ static char _lootClaimed;
  *
  * @return Nonzero when the transition completes.
  */
-static int _topLevelMenuTransition(int category)
+static int topLevelMenuTransition(int category)
 {
     enum state { init };
 
@@ -69,12 +69,12 @@ static int _topLevelMenuTransition(int category)
     static char D_8010A681;
 
     int stepValue;
-    vs_battle_menuItem_t* menuItem;
+    vs_MenuItem* menuItem;
 
     if (category != 0) {
         D_800F4EE8.unk3A.currentItemCategory = category;
-        _showInventory = 0;
-        _showLoot = 0;
+        showInventory = 0;
+        showLoot = 0;
         state = init;
         return 0;
     }
@@ -98,12 +98,12 @@ static int _topLevelMenuTransition(int category)
         break;
 
     case 1:
-        _toggleMenuUi(0);
+        toggleMenuUi(0);
 
-        _secondaryTitleAnimationStep = 0;
-        _itemCategoryIconsAnimationStep = 0;
-        _statusCommandAnimationStep = 0;
-        _selectedItemCategoryIconOnTop = 0;
+        secondaryTitleAnimationStep = 0;
+        itemCategoryIconsAnimationStep = 0;
+        statusCommandAnimationStep = 0;
+        selectedItemCategoryIconOnTop = 0;
 
         if (!vs_mainmenu_ready()) {
             break;
@@ -118,18 +118,18 @@ static int _topLevelMenuTransition(int category)
             D_800EB9B0 = 0x200000;
         }
 
-        _renderAshley(1);
-        _itemNavigation(1);
+        renderAshley(1);
+        itemNavigation(1);
 
         state = 2;
         break;
 
     case 2:
-        if (_itemNavigation(0) == 0) {
+        if (itemNavigation(0) == 0) {
             break;
         }
 
-        _toggleMenuUi(0);
+        toggleMenuUi(0);
         vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
         func_8008A4DC(1);
 
@@ -138,7 +138,7 @@ static int _topLevelMenuTransition(int category)
             D_800EB9B0 = 0;
         }
 
-        _renderAshley(2);
+        renderAshley(2);
 
         state = 3;
 
@@ -153,33 +153,33 @@ static int _topLevelMenuTransition(int category)
         vs_mainMenu_setMenuCommand(menuActionNone);
 
         if (vs_mainmenu_ready() != 0) {
-            _showInventory = 1;
-            _showLoot = 1;
+            showInventory = 1;
+            showLoot = 1;
             return 1;
         }
 
         break;
     }
 
-    if (_secondaryTitleEnabled != 0) {
-        if (_secondaryTitleAnimationStep < 10) {
-            ++_secondaryTitleAnimationStep;
+    if (secondaryTitleEnabled != 0) {
+        if (secondaryTitleAnimationStep < 10) {
+            ++secondaryTitleAnimationStep;
         }
-        stepValue = vs_battle_rowAnimationSteps[10 - _secondaryTitleAnimationStep];
+        stepValue = vs_battle_rowAnimationSteps[10 - secondaryTitleAnimationStep];
     } else {
-        if (_secondaryTitleAnimationStep != 0) {
-            --_secondaryTitleAnimationStep;
+        if (secondaryTitleAnimationStep != 0) {
+            --secondaryTitleAnimationStep;
         }
-        stepValue = (10 - _secondaryTitleAnimationStep) << 5;
+        stepValue = (10 - secondaryTitleAnimationStep) << 5;
     }
 
-    if ((_secondaryTitleAnimationStep != 0) && (_selectedItemCategoryIconOnTop == 0)) {
+    if ((secondaryTitleAnimationStep != 0) && (selectedItemCategoryIconOnTop == 0)) {
 
         int itemCategory = (D_800F4EE8.unk3A.currentItemCategory - 1) & 7;
 
-        vs_battle_menuItem_t* menuItem =
-            vs_battle_setMenuItem(31, stepValue + 180, 34, 140, 8,
-                (char*)&_menuText[_menuText[itemCategory + VS_menuText_INDEX_weapons]]);
+        vs_MenuItem* menuItem = vs_battle_setMenuItem(31, stepValue + 180, 34, 140, 8,
+            (char*)&menuTextTable[menuTextTable[itemCategory
+                                                + VS_menuText_INDEX_weapons]]);
         menuItem->selected = 1;
 
         if (itemCategory != 7) {
@@ -188,41 +188,41 @@ static int _topLevelMenuTransition(int category)
         }
     }
 
-    _renderAshley(0);
+    renderAshley(0);
 
-    if (_itemCategoryIconsEnabled != 0) {
-        if (_itemCategoryIconsAnimationStep < 4) {
-            ++_itemCategoryIconsAnimationStep;
+    if (itemCategoryIconsEnabled != 0) {
+        if (itemCategoryIconsAnimationStep < 4) {
+            ++itemCategoryIconsAnimationStep;
         }
-    } else if (_itemCategoryIconsAnimationStep != 0) {
-        --_itemCategoryIconsAnimationStep;
+    } else if (itemCategoryIconsAnimationStep != 0) {
+        --itemCategoryIconsAnimationStep;
     }
 
-    _renderItemCategory(_itemCategoryIconsAnimationStep, _selectedItemCategoryIconOnTop);
+    renderItemCategory(itemCategoryIconsAnimationStep, selectedItemCategoryIconOnTop);
 
-    if (_statusCommandState != 0) {
-        if (_statusCommandAnimationStep < 10) {
-            ++_statusCommandAnimationStep;
+    if (statusCommandState != 0) {
+        if (statusCommandAnimationStep < 10) {
+            ++statusCommandAnimationStep;
         }
-        stepValue = vs_battle_rowAnimationSteps[10 - _statusCommandAnimationStep];
+        stepValue = vs_battle_rowAnimationSteps[10 - statusCommandAnimationStep];
     } else {
-        if (_statusCommandAnimationStep != 0) {
-            --_statusCommandAnimationStep;
+        if (statusCommandAnimationStep != 0) {
+            --statusCommandAnimationStep;
         }
-        stepValue = (10 - _statusCommandAnimationStep) << 5;
+        stepValue = (10 - statusCommandAnimationStep) << 5;
     }
 
-    if (_statusCommandAnimationStep != 0) {
+    if (statusCommandAnimationStep != 0) {
         vs_mainmenu_renderButtonBackground(0x10 - stepValue, 0x26, 0x58, 10);
         vs_mainmenu_renderButton(buttonIdSquare, 8 - stepValue, 0x24, NULL);
         vs_battle_renderTextRawColor("STATUS", ((0x1C - stepValue) & 0xFFFF) | 0x260000,
-            0x202020 << _statusCommandState, NULL);
+            0x202020 << statusCommandState, NULL);
     }
 
     return 0;
 }
 
-static void _updateLootList(void);
+static void updateLootList(void);
 
 /**
  * Disassembles the selected weapon or shield.
@@ -232,7 +232,7 @@ static void _updateLootList(void);
  *
  * @return Nonzero when the operation and its exit animation complete.
  */
-static int _disassembleItem(int itemIndex)
+static int disassembleItem(int itemIndex)
 {
     enum state {
         init,
@@ -255,100 +255,100 @@ static int _disassembleItem(int itemIndex)
     static UNUSED char _;
 
     int i;
-    vs_battle_menuItem_t* menuItem;
+    vs_MenuItem* menuItem;
 
     if (itemIndex != 0) {
 
         vs_battle_memcpy(
-            _lootListWorkingCopy, _lootList, 160 * sizeof *_lootListWorkingCopy);
+            lootListWorkingCopy, lootList, 160 * sizeof *lootListWorkingCopy);
 
-        _showLoot = 0;
-        lootCount = _lootListCount;
+        showLoot = 0;
+        lootCount = lootListCount;
         targetItemIndex = itemIndex - 1;
-        disassembleItemCategory = _lootList[targetItemIndex].itemCategory;
-        _selectedLoot = 0;
-        _lootListOffset = 0;
+        disassembleItemCategory = lootList[targetItemIndex].itemCategory;
+        selectedLoot = 0;
+        lootListOffset = 0;
         D_8010A683 = 0;
         state = init;
 
         return 0;
     }
 
-    i = _lootListWorkingCopy[targetItemIndex].itemIndex;
+    i = lootListWorkingCopy[targetItemIndex].itemIndex;
 
     switch (state) {
     case init:
-        if (_lootLeftEdge != 6) {
+        if (lootLeftEdge != 6) {
             break;
         }
 
-        vs_battle_rMemzero(_lootList, 0x280);
+        vs_battle_rMemzero(lootList, 0x280);
 
-        _lootList->itemCategory = _lootListWorkingCopy[targetItemIndex].itemCategory;
-        _lootList->itemIndex = i;
-        _lootList->state = lootStateNoIndent;
+        lootList->itemCategory = lootListWorkingCopy[targetItemIndex].itemCategory;
+        lootList->itemIndex = i;
+        lootList->state = lootStateNoIndent;
 
         if (disassembleItemCategory != itemCategoryWeapon) {
 
-            vs_main_inventoryShield* shield = &_inventory->shields[i];
-            _lootList[1].itemCategory = itemCategoryShield;
-            _lootList[1].itemIndex = i;
-            _lootList[1].state = lootStateIndent1;
-            _lootListCount = 2;
+            vs_InventoryShield* shield = &inventory->shields[i];
+            lootList[1].itemCategory = itemCategoryShield;
+            lootList[1].itemIndex = i;
+            lootList[1].state = lootStateIndent1;
+            lootListCount = 2;
 
             for (i = 0; i < shield->base.gemSlots; ++i) {
                 if (shield->gems[i] != 0) {
-                    _lootList[_lootListCount].itemCategory = itemCategoryGem;
-                    _lootList[_lootListCount].itemIndex = shield->gems[i] - 1;
-                    _lootList[_lootListCount].state = lootStateIndent3;
-                    ++_lootListCount;
+                    lootList[lootListCount].itemCategory = itemCategoryGem;
+                    lootList[lootListCount].itemIndex = shield->gems[i] - 1;
+                    lootList[lootListCount].state = lootStateIndent3;
+                    ++lootListCount;
                 }
             }
         } else {
-            vs_main_inventoryWeapon* weapon = &_inventory->weapons[i];
-            _lootList[1].itemCategory = itemCategoryBlade;
-            _lootList[1].itemIndex = weapon->blade - 1;
-            _lootList[1].state = lootStateIndent2;
-            _lootList[2].itemCategory = itemCategoryGrip;
-            _lootList[2].itemIndex = weapon->grip - 1;
-            _lootList[2].state = lootStateIndent2;
-            _lootListCount = 3;
+            vs_InventoryWeapon* weapon = &inventory->weapons[i];
+            lootList[1].itemCategory = itemCategoryBlade;
+            lootList[1].itemIndex = weapon->blade - 1;
+            lootList[1].state = lootStateIndent2;
+            lootList[2].itemCategory = itemCategoryGrip;
+            lootList[2].itemIndex = weapon->grip - 1;
+            lootList[2].state = lootStateIndent2;
+            lootListCount = 3;
 
-            for (i = 0; i < _inventory->grips[weapon->grip - 1].gemSlots; ++i) {
+            for (i = 0; i < inventory->grips[weapon->grip - 1].gemSlots; ++i) {
                 if (weapon->gems[i] != 0) {
-                    _lootList[_lootListCount].itemCategory = itemCategoryGem;
-                    _lootList[_lootListCount].itemIndex = weapon->gems[i] - 1;
-                    _lootList[_lootListCount].state = lootStateIndent3;
-                    ++_lootListCount;
+                    lootList[lootListCount].itemCategory = itemCategoryGem;
+                    lootList[lootListCount].itemIndex = weapon->gems[i] - 1;
+                    lootList[lootListCount].state = lootStateIndent3;
+                    ++lootListCount;
                 }
             }
         }
 
-        _lootLeftEdge = 10;
-        _showLoot = 1;
+        lootLeftEdge = 10;
+        showLoot = 1;
         state = initOptionYes;
         break;
 
     case initOptionYes:
-        menuItem = vs_battle_setMenuItem(
-            0x1E, 0x140, 0x92, 0x7E, 0, (char*)&_menuText[VS_menuText_OFFSET_optionYes]);
+        menuItem = vs_battle_setMenuItem(0x1E, 0x140, 0x92, 0x7E, 0,
+            (char*)&menuTextTable[VS_menuText_OFFSET_optionYes]);
         menuItem->state = 2;
         menuItem->targetPosition0 = 0xC2;
         state = initOptionNo;
         break;
 
     case initOptionNo:
-        menuItem = vs_battle_setMenuItem(
-            0x1F, 0x140, 0xA2, 0x7E, 0, (char*)&_menuText[VS_menuText_OFFSET_optionNo]);
+        menuItem = vs_battle_setMenuItem(0x1F, 0x140, 0xA2, 0x7E, 0,
+            (char*)&menuTextTable[VS_menuText_OFFSET_optionNo]);
         menuItem->state = 2;
         menuItem->targetPosition0 = 0xC2;
-        vs_battle_stringContext.strings[0] =
+        vs_battle_printfArgs.strings[0] =
             disassembleItemCategory == 0
-                ? _inventory->weapons[i].name
-                : vs_mainMenu_itemNames[_inventory->shields[i].base.id];
+                ? inventory->weapons[i].name
+                : vs_mainMenu_itemNames[inventory->shields[i].base.id];
         vs_battle_initInformationTextBox(1);
         vs_mainmenu_setInformationMessage(
-            (char*)&_menuText[VS_menuText_OFFSET_disassembleConfirm]);
+            (char*)&menuTextTable[VS_menuText_OFFSET_disassembleConfirm]);
         state = waitInit;
         break;
 
@@ -363,7 +363,7 @@ static int _disassembleItem(int itemIndex)
         if (vs_main_buttonsPressed.all & (PADRright | PADRdown)) {
             vs_mainMenu_menuItemFlyoutRight(30);
             vs_mainMenu_menuItemFlyoutRight(31);
-            _showLoot = 0;
+            showLoot = 0;
             if ((D_8010A683 != 0) || (vs_main_buttonsPressed.all & PADRdown)) {
                 vs_battle_playMenuLeaveSfx();
                 state = finalize;
@@ -386,61 +386,61 @@ static int _disassembleItem(int itemIndex)
         break;
 
     case disassemble:
-        if (_lootLeftEdge != 6) {
+        if (lootLeftEdge != 6) {
             break;
         }
 
-        vs_battle_rMemcpy(&_lootListWorkingCopy[lootCount], &_lootList[1],
-            (_lootListCount - 1) * sizeof _lootList[1]);
+        vs_battle_rMemcpy(&lootListWorkingCopy[lootCount], &lootList[1],
+            (lootListCount - 1) * sizeof lootList[1]);
 
         if (disassembleItemCategory != itemCategoryWeapon) {
-            vs_main_inventoryShield* shield = &_inventory->shields[i];
+            vs_InventoryShield* shield = &inventory->shields[i];
             for (i = 0; i < shield->base.gemSlots; ++i) {
                 int gem = shield->gems[i];
                 if (gem != 0) {
                     shield->gems[i] = 0;
-                    _inventory->gems[gem - 1].setItemIndex = 0;
+                    inventory->gems[gem - 1].setItemIndex = 0;
                 }
             }
         } else {
-            vs_main_inventoryWeapon* weapon = &_inventory->weapons[i];
-            _inventory->blades[weapon->blade - 1].assembledWeaponIndex = 0;
-            _inventory->grips[weapon->grip - 1].assembledWeaponIndex = 0;
+            vs_InventoryWeapon* weapon = &inventory->weapons[i];
+            inventory->blades[weapon->blade - 1].assembledWeaponIndex = 0;
+            inventory->grips[weapon->grip - 1].assembledWeaponIndex = 0;
 
-            for (i = 0; i < _inventory->grips[weapon->grip - 1].gemSlots; ++i) {
+            for (i = 0; i < inventory->grips[weapon->grip - 1].gemSlots; ++i) {
                 int gem = weapon->gems[i];
                 if (gem != 0) {
                     weapon->gems[i] = 0;
-                    _inventory->gems[gem - 1].setItemIndex = 0;
+                    inventory->gems[gem - 1].setItemIndex = 0;
                 }
             }
         }
 
-        lootCount = _lootListCount + (lootCount + 254);
+        lootCount = lootListCount + (lootCount + 254);
 
         for (i = targetItemIndex; i < lootCount; ++i) {
-            _lootListWorkingCopy[i] = _lootListWorkingCopy[i + 1];
+            lootListWorkingCopy[i] = lootListWorkingCopy[i + 1];
         }
         // Fallthrough
 
     case finalize:
-        if (_lootLeftEdge != 6) {
+        if (lootLeftEdge != 6) {
             break;
         }
 
-        _lootListCount = lootCount;
+        lootListCount = lootCount;
 
         vs_battle_memcpy(
-            _lootList, _lootListWorkingCopy, 160 * sizeof *_lootListWorkingCopy);
-        _updateLootList();
+            lootList, lootListWorkingCopy, 160 * sizeof *lootListWorkingCopy);
+        updateLootList();
 
-        _lootLeftEdge = 10;
-        _showLoot = 1;
+        lootLeftEdge = 10;
+        showLoot = 1;
         state = leave;
         break;
 
     case leave:
-        if (_lootLeftEdge != 0) {
+        if (lootLeftEdge != 0) {
             break;
         }
         return -1;
@@ -458,7 +458,7 @@ static int _disassembleItem(int itemIndex)
  *
  * @return Nonzero when the operation completes.
  */
-static int _consolidateMiscItems(int lootIndex)
+static int consolidateMiscItems(int lootIndex)
 {
     static char cursorMemory = 0;
 
@@ -469,24 +469,24 @@ static int _consolidateMiscItems(int lootIndex)
     static char D_8010A68F;
     static u_char lootCount;
 
-    _lootListItem* loot;
+    LootListItem* loot;
     int i;
     int j;
     int var_v0;
-    vs_main_inventoryMisc* item;
-    vs_battle_menuItem_t* menuItem;
+    vs_InventoryMisc* item;
+    vs_MenuItem* menuItem;
 
     if (lootIndex != 0) {
 
         vs_battle_memcpy(
-            _lootListWorkingCopy, _lootList, 160 * sizeof *_lootListWorkingCopy);
-        vs_battle_memcpy(_inventoryBackup, _inventory, sizeof *_inventory);
+            lootListWorkingCopy, lootList, 160 * sizeof *lootListWorkingCopy);
+        vs_battle_memcpy(inventoryBackup, inventory, sizeof *inventory);
 
-        _showLoot = 0;
-        lootCount = _lootListCount;
-        itemId = _inventory->misc[_lootList[lootIndex - 1].itemIndex].id;
-        _selectedLoot = 0;
-        _lootListOffset = 0;
+        showLoot = 0;
+        lootCount = lootListCount;
+        itemId = inventory->misc[lootList[lootIndex - 1].itemIndex].id;
+        selectedLoot = 0;
+        lootListOffset = 0;
         D_8010A68F = 0;
         state = 0;
         return 0;
@@ -494,7 +494,7 @@ static int _consolidateMiscItems(int lootIndex)
 
     switch (state) {
     case 0:
-        if (_lootLeftEdge == 6) {
+        if (lootLeftEdge == 6) {
 
             amountToAdd = 0;
             item = vs_main_inventory.misc;
@@ -509,31 +509,31 @@ static int _consolidateMiscItems(int lootIndex)
 
             totalCount = 0;
 
-            for (i = 0; i < _lootListCount; ++i) {
-                if (_lootList[i].itemCategory == itemCategoryMisc) {
-                    item = &_inventory->misc[_lootList[i].itemIndex];
+            for (i = 0; i < lootListCount; ++i) {
+                if (lootList[i].itemCategory == itemCategoryMisc) {
+                    item = &inventory->misc[lootList[i].itemIndex];
                     if (item->id == itemId) {
 
                         totalCount += item->count;
 
                         vs_battle_rMemzero(item, sizeof *item);
 
-                        --_lootListCount;
+                        --lootListCount;
 
-                        for (j = i; j < _lootListCount; ++j) {
-                            _lootList[j] = _lootList[j + 1];
+                        for (j = i; j < lootListCount; ++j) {
+                            lootList[j] = lootList[j + 1];
                         }
                         --i;
                     }
                 }
             }
 
-            _lootListCount = 0;
+            lootListCount = 0;
 
             while (totalCount != 0) {
 
                 for (i = 0; i < 64; ++i) {
-                    if (_inventory->misc[i].id == 0) {
+                    if (inventory->misc[i].id == 0) {
                         break;
                     }
                 }
@@ -542,41 +542,41 @@ static int _consolidateMiscItems(int lootIndex)
                     break;
                 }
 
-                loot = &_lootList[_lootListCount++];
+                loot = &lootList[lootListCount++];
                 loot->itemCategory = itemCategoryMisc;
                 loot->itemIndex = i;
                 loot->unk2 = 0;
-                _inventory->misc[i].id = itemId;
+                inventory->misc[i].id = itemId;
                 loot->state = amountToAdd != 0;
 
                 if (loot->state != lootStateNone) {
                     if (amountToAdd > 100) {
-                        _inventory->misc[i].count = 100;
+                        inventory->misc[i].count = 100;
                         totalCount -= 100;
                         amountToAdd -= 100;
                     } else {
-                        _inventory->misc[i].count = amountToAdd;
+                        inventory->misc[i].count = amountToAdd;
                         totalCount = totalCount - amountToAdd;
                         amountToAdd = 0;
                     }
                 } else if (totalCount > 100) {
-                    _inventory->misc[i].count = 100;
+                    inventory->misc[i].count = 100;
                     totalCount -= 100;
                 } else {
-                    _inventory->misc[i].count = totalCount;
+                    inventory->misc[i].count = totalCount;
                     totalCount = 0;
                 }
             }
 
-            _lootLeftEdge = 10;
-            _showLoot = 1;
+            lootLeftEdge = 10;
+            showLoot = 1;
             state = 1;
         }
         break;
 
     case 1:
         menuItem = vs_battle_setMenuItem(
-            30, 320, 146, 0x7E, 0, (char*)&_menuText[VS_menuText_OFFSET_optionYes]);
+            30, 320, 146, 0x7E, 0, (char*)&menuTextTable[VS_menuText_OFFSET_optionYes]);
         menuItem->state = 2;
         menuItem->targetPosition0 = 194;
         state = 2;
@@ -584,14 +584,14 @@ static int _consolidateMiscItems(int lootIndex)
 
     case 2:
         menuItem = vs_battle_setMenuItem(
-            31, 320, 162, 0x7E, 0, (char*)&_menuText[VS_menuText_OFFSET_optionNo]);
+            31, 320, 162, 0x7E, 0, (char*)&menuTextTable[VS_menuText_OFFSET_optionNo]);
         menuItem->state = 2;
         menuItem->targetPosition0 = 194;
-        vs_battle_stringContext.strings[0] = vs_mainMenu_itemNames[itemId];
+        vs_battle_printfArgs.strings[0] = vs_mainMenu_itemNames[itemId];
 
         vs_battle_initInformationTextBox(1);
         vs_mainmenu_setInformationMessage(
-            (char*)&_menuText[VS_menuText_OFFSET_organizeConfirm]);
+            (char*)&menuTextTable[VS_menuText_OFFSET_organizeConfirm]);
 
         state = 3;
         break;
@@ -609,7 +609,7 @@ static int _consolidateMiscItems(int lootIndex)
             vs_mainMenu_menuItemFlyoutRight(30);
             vs_mainMenu_menuItemFlyoutRight(31);
 
-            _showLoot = 0;
+            showLoot = 0;
 
             if ((D_8010A68F != 0) || (vs_main_buttonsPressed.all & PADRdown)) {
                 vs_battle_playMenuLeaveSfx();
@@ -637,14 +637,14 @@ static int _consolidateMiscItems(int lootIndex)
         break;
 
     case 5:
-        if (_lootLeftEdge != 6) {
+        if (lootLeftEdge != 6) {
             break;
         }
 
         for (i = 0; i < lootCount; ++i) {
-            if (_lootListWorkingCopy[i].itemCategory == 6) {
+            if (lootListWorkingCopy[i].itemCategory == 6) {
 
-                item = &_inventoryBackup->misc[_lootListWorkingCopy[i].itemIndex];
+                item = &inventoryBackup->misc[lootListWorkingCopy[i].itemIndex];
 
                 if (item->id == itemId) {
 
@@ -653,16 +653,16 @@ static int _consolidateMiscItems(int lootIndex)
                     --lootCount;
 
                     for (j = i; j < lootCount; ++j) {
-                        _lootListWorkingCopy[j] = _lootListWorkingCopy[j + 1];
+                        lootListWorkingCopy[j] = lootListWorkingCopy[j + 1];
                     }
                     --i;
                 }
             }
         }
 
-        for (i = 0; i < _lootListCount; ++i) {
+        for (i = 0; i < lootListCount; ++i) {
             for (j = 0; j < 64; ++j) {
-                if (_inventoryBackup->misc[j].id == 0) {
+                if (inventoryBackup->misc[j].id == 0) {
                     break;
                 }
             }
@@ -671,33 +671,33 @@ static int _consolidateMiscItems(int lootIndex)
                 break;
             }
 
-            loot = &_lootListWorkingCopy[lootCount++];
+            loot = &lootListWorkingCopy[lootCount++];
             loot->itemCategory = itemCategoryMisc;
             loot->itemIndex = j;
             loot->unk2 = 0;
-            loot->state = _lootList[i].state;
-            item = &_inventoryBackup->misc[j];
+            loot->state = lootList[i].state;
+            item = &inventoryBackup->misc[j];
             item->id = itemId;
-            item->count = _inventory->misc[_lootList[i].itemIndex].count;
+            item->count = inventory->misc[lootList[i].itemIndex].count;
         }
         // Fallthrough
 
     case 6:
-        if (_lootLeftEdge == 6) {
+        if (lootLeftEdge == 6) {
 
-            _lootListCount = lootCount;
+            lootListCount = lootCount;
 
-            vs_battle_memcpy(_lootList, _lootListWorkingCopy, sizeof *_lootList * 160);
-            vs_battle_memcpy(_inventory, _inventoryBackup, sizeof *_inventory);
+            vs_battle_memcpy(lootList, lootListWorkingCopy, sizeof *lootList * 160);
+            vs_battle_memcpy(inventory, inventoryBackup, sizeof *inventory);
 
-            _lootLeftEdge = 10;
-            _showLoot = 1;
+            lootLeftEdge = 10;
+            showLoot = 1;
             state = 7;
         }
         break;
 
     case 7:
-        if (_lootLeftEdge != 0) {
+        if (lootLeftEdge != 0) {
             break;
         }
         return -1;
@@ -712,10 +712,10 @@ static int _consolidateMiscItems(int lootIndex)
  * @param weapon Associated weapon index, or zero when the blade is not assembled.
  * @return The one-based inventory index, or zero if no slot is available.
  */
-static int _copyBladeToInventory(vs_main_inventoryBlade* source, int weapon)
+static int copyBladeToInventory(vs_InventoryBlade* source, int weapon)
 {
     int index = 1;
-    vs_main_inventoryBlade* blade = _inventory->blades;
+    vs_InventoryBlade* blade = inventory->blades;
 
     while (blade->id != 0) {
         ++blade;
@@ -739,10 +739,10 @@ static int _copyBladeToInventory(vs_main_inventoryBlade* source, int weapon)
  * assembled.
  * @return The one-based inventory index, or zero if no slot is available.
  */
-static int _copyGripToInventory(vs_main_inventoryGrip* source, int weaponIndex)
+static int copyGripToInventory(vs_InventoryGrip* source, int weaponIndex)
 {
     int index = 1;
-    vs_main_inventoryGrip* grip = _inventory->grips;
+    vs_InventoryGrip* grip = inventory->grips;
 
     while (grip->id != 0) {
         ++grip;
@@ -766,10 +766,10 @@ static int _copyGripToInventory(vs_main_inventoryGrip* source, int weaponIndex)
  * or zero when it is not attached.
  * @return The one-based inventory index, or zero if no slot is available.
  */
-static int _copyGemToInventory(vs_main_inventoryGem* source, int item)
+static int copyGemToInventory(vs_InventoryGem* source, int item)
 {
     int index = 1;
-    vs_main_inventoryGem* gem = _inventory->gems;
+    vs_InventoryGem* gem = inventory->gems;
 
     while (gem->id != 0) {
         ++gem;
@@ -792,10 +792,10 @@ static int _copyGemToInventory(vs_main_inventoryGem* source, int item)
  * @param arg0 Looted weapon and component data.
  * @return The one-based weapon index, or zero if no weapon slot is available.
  */
-static int _copyWeaponToInventory(vs_battle_lootedWeapon* arg0)
+static int copyWeaponToInventory(vs_LootedWeapon* arg0)
 {
     int i;
-    vs_main_inventoryWeapon* slot = _inventory->weapons;
+    vs_InventoryWeapon* slot = inventory->weapons;
     int index = 1;
 
     while (slot->blade != 0) {
@@ -808,12 +808,12 @@ static int _copyWeaponToInventory(vs_battle_lootedWeapon* arg0)
     vs_battle_rMemzero(slot, sizeof *slot);
 
     slot->index = index;
-    slot->blade = _copyBladeToInventory(&arg0->blade, index);
-    slot->grip = _copyGripToInventory(&arg0->grip, index);
+    slot->blade = copyBladeToInventory(&arg0->blade, index);
+    slot->grip = copyGripToInventory(&arg0->grip, index);
 
     for (i = 0; i < 3; i++) {
         if (arg0->gems[i].id != 0) {
-            slot->gems[i] = _copyGemToInventory(&arg0->gems[i], index);
+            slot->gems[i] = copyGemToInventory(&arg0->gems[i], index);
         }
     }
 
@@ -827,10 +827,10 @@ static int _copyWeaponToInventory(vs_battle_lootedWeapon* arg0)
  *
  * @return The one-based inventory index, or zero if no slot is available.
  */
-static int _copyArmorToInventory(vs_main_inventoryArmor* source)
+static int copyArmorToInventory(vs_InventoryArmor* source)
 {
     int index = 1;
-    vs_main_inventoryArmor* armor = _inventory->armor;
+    vs_InventoryArmor* armor = inventory->armor;
 
     while (armor->id != 0) {
         ++armor;
@@ -852,11 +852,11 @@ static int _copyArmorToInventory(vs_main_inventoryArmor* source)
  * @param arg0 Looted shield and attached gem data.
  * @return The one-based shield index, or zero if no shield slot is available.
  */
-static int _copyShieldToInventory(vs_battle_lootedShield* arg0)
+static int copyShieldToInventory(vs_LootedShield* arg0)
 {
     int i;
 
-    vs_main_inventoryShield* shield = _inventory->shields;
+    vs_InventoryShield* shield = inventory->shields;
     int index = 1;
 
     while (shield->base.id != 0) {
@@ -874,7 +874,7 @@ static int _copyShieldToInventory(vs_battle_lootedShield* arg0)
 
     for (i = 0; i < 3; ++i) {
         if (arg0->gems[i].id != 0) {
-            shield->gems[i] = _copyGemToInventory(&arg0->gems[i], index | 0x80);
+            shield->gems[i] = copyGemToInventory(&arg0->gems[i], index | 0x80);
         }
     }
 
@@ -886,10 +886,10 @@ static int _copyShieldToInventory(vs_battle_lootedShield* arg0)
  *
  * @return The one-based inventory index, or zero if no slot is available.
  */
-static int _copyMiscToInventory(vs_battle_lootedMisc* arg0)
+static int copyMiscToInventory(vs_LootedMisc* arg0)
 {
     int index = 1;
-    vs_main_inventoryMisc* item = _inventory->misc;
+    vs_InventoryMisc* item = inventory->misc;
 
     while (item->id != 0) {
         ++index;
@@ -907,41 +907,41 @@ static int _copyMiscToInventory(vs_battle_lootedMisc* arg0)
 /**
  * Rechecks which loot items can be claimed and updates loot paging.
  */
-static void _updateLootList(void)
+static void updateLootList(void)
 {
     int i;
     int newOffset;
-    _lootListItem* loot = _lootList;
+    LootListItem* loot = lootList;
 
-    for (i = 0; i < _lootListCount; ++i, ++loot) {
+    for (i = 0; i < lootListCount; ++i, ++loot) {
         loot->state = vs_mainMenu_copyItem(loot->itemCategory, &vs_main_inventory,
-                          loot->itemIndex, _inventory)
+                          loot->itemIndex, inventory)
                    != 0;
     }
 
-    i = _selectedLoot + _lootListOffset;
+    i = selectedLoot + lootListOffset;
 
-    if (i >= _lootListCount) {
-        i = _lootListCount - 1;
-        _lootListOffset = _lootListCount - 8;
-        _selectedLoot = 7;
+    if (i >= lootListCount) {
+        i = lootListCount - 1;
+        lootListOffset = lootListCount - 8;
+        selectedLoot = 7;
     }
 
-    if (_lootListCount < 9) {
-        _selectedLoot = i;
-        _lootListOffset = 0;
+    if (lootListCount < 9) {
+        selectedLoot = i;
+        lootListOffset = 0;
         return;
     }
 
-    newOffset = _lootListCount - 8;
-    if (newOffset < _lootListOffset) {
-        _lootListOffset = newOffset;
-        _selectedLoot = i - newOffset;
+    newOffset = lootListCount - 8;
+    if (newOffset < lootListOffset) {
+        lootListOffset = newOffset;
+        selectedLoot = i - newOffset;
     }
 
-    if ((_selectedLoot == 7) && (i != (_lootListCount - 1))) {
-        _selectedLoot -= 1;
-        _lootListOffset = _lootListOffset + 1;
+    if ((selectedLoot == 7) && (i != (lootListCount - 1))) {
+        selectedLoot -= 1;
+        lootListOffset = lootListOffset + 1;
     }
 }
 
@@ -950,15 +950,15 @@ static void _updateLootList(void)
  *
  * @param itemIndex One-based inventory index; stored in the list as zero-based.
  */
-static void _addLootToList(int itemCategory, int itemIndex)
+static void addLootToList(int itemCategory, int itemIndex)
 {
-    _lootListItem* item = &_lootList[_lootListCount++];
+    LootListItem* item = &lootList[lootListCount++];
     item->itemCategory = itemCategory;
     item->itemIndex = itemIndex - 1;
     item->unk2 = 0;
 }
 
-static char* _itemCategoryHeaders[] = { "WEAPON", "BLADE", "GRIP", "SHIELD", "ARMOR",
+static char* itemCategoryHeaders[] = { "WEAPON", "BLADE", "GRIP", "SHIELD", "ARMOR",
     "GEM", "MISC" };
 
 /**
@@ -968,11 +968,11 @@ static char* _itemCategoryHeaders[] = { "WEAPON", "BLADE", "GRIP", "SHIELD", "AR
  * @param arg0 Inventory item category to count.
  * @param arg1 Loot-list entry whose item and components are counted.
  */
-static int _itemIncludesItemsInCategory(int arg0, _lootListItem* arg1)
+static int itemIncludesItemsInCategory(int arg0, LootListItem* arg1)
 {
     int i;
-    vs_main_inventoryShield* shield;
-    vs_main_inventoryWeapon* weapon;
+    vs_InventoryShield* shield;
+    vs_InventoryWeapon* weapon;
 
     int category = arg1->itemCategory;
     int count = 0;
@@ -994,14 +994,14 @@ static int _itemIncludesItemsInCategory(int arg0, _lootListItem* arg1)
         count += category == itemCategoryGem;
 
         if (category == itemCategoryWeapon) {
-            weapon = &_inventory->weapons[arg1->itemIndex];
-            for (i = 0; i < _inventory->grips[weapon->grip - 1].gemSlots; ++i) {
+            weapon = &inventory->weapons[arg1->itemIndex];
+            for (i = 0; i < inventory->grips[weapon->grip - 1].gemSlots; ++i) {
                 count += weapon->gems[i] != 0;
             }
         }
 
         if (category == itemCategoryShield) {
-            shield = &_inventory->shields[arg1->itemIndex];
+            shield = &inventory->shields[arg1->itemIndex];
             for (i = 0; i < shield->base.gemSlots; ++i) {
                 count += shield->gems[i] != 0;
             }
@@ -1015,7 +1015,7 @@ static int _itemIncludesItemsInCategory(int arg0, _lootListItem* arg1)
 /**
  * Draws inventory capacities, item counts, and loot-menu controls.
  */
-void _displayInventoryCapacities(int edgeX)
+static void displayInventoryCapacities(int edgeX)
 {
     int itemCountPos;
     int buttonBgPos;
@@ -1023,7 +1023,7 @@ void _displayInventoryCapacities(int edgeX)
     int var_fp;
     int i;
     int y;
-    _lootListItem* item;
+    LootListItem* item;
     unsigned int xy;
     char* str;
 
@@ -1032,15 +1032,15 @@ void _displayInventoryCapacities(int edgeX)
 
     if (D_8010A6B7 != 0) {
 
-        item = (_lootListItem*)1;
+        item = (LootListItem*)1;
 
         if (D_8010A6B7 & 0xF) {
 
             var_fp = 0;
-            item = &_lootList[_lootListOffset + D_8010A6B7 - 1];
+            item = &lootList[lootListOffset + D_8010A6B7 - 1];
 
-            for (i = 0; i < _lootListCount; ++i) {
-                var_fp += _lootList[i].state;
+            for (i = 0; i < lootListCount; ++i) {
+                var_fp += lootList[i].state;
             }
         }
     }
@@ -1056,15 +1056,15 @@ void _displayInventoryCapacities(int edgeX)
 
         if (item != NULL) {
             color = vs_getRGB(64, 64, 64)
-                 << ((item == (_lootListItem*)1)
-                        || (_itemIncludesItemsInCategory(i, item) != 0));
+                 << ((item == (LootListItem*)1)
+                        || (itemIncludesItemsInCategory(i, item) != 0));
         }
 
         y = (24 + i * 12) << 16;
 
         vs_battle_renderTextRawColor("/", itemCountPos | y, color, NULL);
         vs_battle_renderTextRawColor(
-            _itemCategoryHeaders[i], (edgeX + 192) | y, color, NULL);
+            itemCategoryHeaders[i], (edgeX + 192) | y, color, NULL);
         vs_mainMenu_renderIntColor(capacity, (edgeX + 296) | y, color, NULL);
 
         if (((u_int)color >> 23) != 0) {
@@ -1074,7 +1074,7 @@ void _displayInventoryCapacities(int edgeX)
             }
 
             if (((u_long)item >> 1) != 0) {
-                if (capacity < (_itemIncludesItemsInCategory(i, item) + itemCount)) {
+                if (capacity < (itemIncludesItemsInCategory(i, item) + itemCount)) {
                     color = vs_getRGB(128, 64, 32);
                 }
             }
@@ -1088,14 +1088,14 @@ void _displayInventoryCapacities(int edgeX)
     vs_mainmenu_renderButtonBackground(buttonBgPos, 112, 112, 10);
     vs_mainmenu_renderButtonBackground(buttonBgPos, 128, 64, 10);
     vs_battle_renderTextRawColor("GET", (edgeX + 196) | (112 << 16),
-        vs_getRGB(64, 64, 64) << _controlsEnabled, NULL);
+        vs_getRGB(64, 64, 64) << controlsEnabled, NULL);
     vs_mainmenu_renderButton(buttonIdCircle, edgeX + 176, 110, NULL);
 
     str = "ALL";
     xy = (edgeX + 252) | (112 << 16);
 
     if (var_fp != 0) {
-        var_a2 = vs_getRGB(64, 64, 64) << (_controlsEnabled & 1);
+        var_a2 = vs_getRGB(64, 64, 64) << (controlsEnabled & 1);
     } else {
         var_a2 = vs_getRGB(64, 64, 64);
     }
@@ -1103,7 +1103,7 @@ void _displayInventoryCapacities(int edgeX)
     vs_battle_renderTextRawColor(str, xy, var_a2, NULL);
     vs_mainmenu_renderButton(buttonIdSquare, edgeX + 232, 110, NULL);
     vs_battle_renderTextRawColor("END", (edgeX + 196) | (128 << 16),
-        vs_getRGB(64, 64, 64) << _controlsEnabled, NULL);
+        vs_getRGB(64, 64, 64) << controlsEnabled, NULL);
     vs_mainmenu_renderButton(buttonIdCross, edgeX + 176, 126, NULL);
 }
 
@@ -1113,7 +1113,7 @@ void _displayInventoryCapacities(int edgeX)
  * @param arg0 Difficulty flags from a loot entry.
  * @return Nonzero when the bit corresponding to the current difficulty is set.
  */
-static int _droppableUnderCurrentDifficulty(int arg0)
+static int droppableUnderCurrentDifficulty(int arg0)
 {
     return arg0 & (vs_main_stateFlags.difficulty + 1);
 }
@@ -1124,67 +1124,66 @@ static int _droppableUnderCurrentDifficulty(int arg0)
  *
  * @param arg0 Battle loot record to apply.
  */
-void _applyLootList(vs_battle_loot* arg0)
+static void applyLootList(vs_Loot* arg0)
 {
     int i;
 
-    if (_droppableUnderCurrentDifficulty(arg0->weapon.difficultyFlags) != 0) {
-        _addLootToList(itemCategoryWeapon, _copyWeaponToInventory(&arg0->weapon));
+    if (droppableUnderCurrentDifficulty(arg0->weapon.difficultyFlags) != 0) {
+        addLootToList(itemCategoryWeapon, copyWeaponToInventory(&arg0->weapon));
     }
 
-    if (_droppableUnderCurrentDifficulty(arg0->blade.difficultyFlags) != 0) {
-        _addLootToList(itemCategoryBlade, _copyBladeToInventory(&arg0->blade.blade, 0));
+    if (droppableUnderCurrentDifficulty(arg0->blade.difficultyFlags) != 0) {
+        addLootToList(itemCategoryBlade, copyBladeToInventory(&arg0->blade.blade, 0));
     }
 
-    if (_droppableUnderCurrentDifficulty(arg0->grip.difficultyFlags) != 0) {
-        _addLootToList(itemCategoryGrip, _copyGripToInventory(&arg0->grip.grip, 0));
+    if (droppableUnderCurrentDifficulty(arg0->grip.difficultyFlags) != 0) {
+        addLootToList(itemCategoryGrip, copyGripToInventory(&arg0->grip.grip, 0));
     }
 
-    if (_droppableUnderCurrentDifficulty(arg0->shield.difficultyFlags) != 0) {
-        _addLootToList(itemCategoryShield, _copyShieldToInventory(&arg0->shield));
+    if (droppableUnderCurrentDifficulty(arg0->shield.difficultyFlags) != 0) {
+        addLootToList(itemCategoryShield, copyShieldToInventory(&arg0->shield));
     }
 
     for (i = 0; i < 2; ++i) {
-        if (_droppableUnderCurrentDifficulty(arg0->armor[i].difficultyFlags) != 0) {
-            _addLootToList(
-                itemCategoryArmor, _copyArmorToInventory(&arg0->armor[i].armor));
+        if (droppableUnderCurrentDifficulty(arg0->armor[i].difficultyFlags) != 0) {
+            addLootToList(itemCategoryArmor, copyArmorToInventory(&arg0->armor[i].armor));
         }
     }
 
-    if (_droppableUnderCurrentDifficulty(arg0->accessory.difficultyFlags) != 0) {
-        _addLootToList(
-            itemCategoryArmor, _copyArmorToInventory(&arg0->accessory.accessory));
+    if (droppableUnderCurrentDifficulty(arg0->accessory.difficultyFlags) != 0) {
+        addLootToList(
+            itemCategoryArmor, copyArmorToInventory(&arg0->accessory.accessory));
     }
 
-    if (_droppableUnderCurrentDifficulty(arg0->gem.difficultyFlags) != 0) {
-        _addLootToList(itemCategoryGem, _copyGemToInventory(&arg0->gem.gem, 0));
+    if (droppableUnderCurrentDifficulty(arg0->gem.difficultyFlags) != 0) {
+        addLootToList(itemCategoryGem, copyGemToInventory(&arg0->gem.gem, 0));
     }
 
     for (i = 0; i < 3; ++i) {
-        if ((_droppableUnderCurrentDifficulty(arg0->misc[i].difficultyFlags) != 0)
+        if ((droppableUnderCurrentDifficulty(arg0->misc[i].difficultyFlags) != 0)
             && (arg0->misc[i].id != 0) && (arg0->misc[i].count != 0)) {
-            _addLootToList(itemCategoryMisc, _copyMiscToInventory(&arg0->misc[i]));
+            addLootToList(itemCategoryMisc, copyMiscToInventory(&arg0->misc[i]));
         }
     }
 
-    _updateLootList();
+    updateLootList();
 }
 
 /**
  * Rebuilds the working inventory from a loot-list chain, or from the current
  * battle loot record when no chain is supplied.
  */
-static void _applyAllLootLists(vs_battle_lootListNode* node)
+static void applyAllLootLists(vs_LootListNode* node)
 {
-    vs_battle_rMemzero(_inventory, sizeof *_inventory);
+    vs_battle_rMemzero(inventory, sizeof *inventory);
 
     if (node != NULL) {
         while (node != NULL) {
-            _applyLootList(&node->loot);
+            applyLootList(&node->loot);
             node = node->next;
         }
     } else {
-        _applyLootList(D_800EB9C8);
+        applyLootList(D_800EB9C8);
     }
 }
 
@@ -1192,22 +1191,22 @@ static void _applyAllLootLists(vs_battle_lootListNode* node)
  * Draws the visible page of loot items, preserving their scroll and animation
  * state.
  */
-static void _displayCurrentLoot(int x)
+static void displayCurrentLoot(int x)
 {
     char gradientStates[256];
     int i;
     int index;
     int temp_v1_3;
-    vs_battle_menuItem_t* menuItem;
+    vs_MenuItem* menuItem;
 
-    int count = _lootListCount;
-    _lootListItem* loot = &_lootList[_lootListOffset];
+    int count = lootListCount;
+    LootListItem* loot = &lootList[lootListOffset];
 
     vs_battle_rMemzero(&gradientStates, sizeof gradientStates);
 
     for (i = 0; i < 8; ++i) {
         menuItem = vs_battle_getMenuItem(i + 32);
-        gradientStates[i + _gradientStateIndex] = menuItem->gradientState;
+        gradientStates[i + gradientStateIndex] = menuItem->gradientState;
         menuItem->state = 0;
     }
 
@@ -1221,8 +1220,8 @@ static void _displayCurrentLoot(int x)
 
         switch (loot->itemCategory) {
         case itemCategoryWeapon: {
-            vs_main_inventoryWeapon* weapon = &_inventory->weapons[index];
-            vs_main_inventoryBlade* blade = &_inventory->blades[weapon->blade - 1];
+            vs_InventoryWeapon* weapon = &inventory->weapons[index];
+            vs_InventoryBlade* blade = &inventory->blades[weapon->blade - 1];
             menuItem =
                 vs_battle_setMenuItem(32 + i, 24 - x, 50 + i * 16, 152, 0, weapon->name);
             menuItem->rowIcon = blade->category;
@@ -1230,7 +1229,7 @@ static void _displayCurrentLoot(int x)
             break;
         }
         case itemCategoryBlade: {
-            vs_main_inventoryBlade* blade2 = &_inventory->blades[index];
+            vs_InventoryBlade* blade2 = &inventory->blades[index];
             menuItem = vs_battle_setMenuItem(
                 32 + i, 24 - x, 50 + i * 16, 152, 0, vs_mainMenu_itemNames[blade2->id]);
             menuItem->rowIcon = blade2->category;
@@ -1238,14 +1237,14 @@ static void _displayCurrentLoot(int x)
             break;
         }
         case itemCategoryGrip: {
-            vs_main_inventoryGrip* grip = &_inventory->grips[index];
+            vs_InventoryGrip* grip = &inventory->grips[index];
             menuItem = vs_battle_setMenuItem(
                 32 + i, 24 - x, 50 + i * 16, 152, 0, vs_mainMenu_itemNames[grip->id]);
             menuItem->rowIcon = grip->category + 10;
             break;
         }
         case itemCategoryShield: {
-            vs_main_inventoryShield* shield = &_inventory->shields[index];
+            vs_InventoryShield* shield = &inventory->shields[index];
             menuItem = vs_battle_setMenuItem(32 + i, 24 - x, 50 + i * 16, 152, 0,
                 vs_mainMenu_itemNames[shield->base.id]);
             menuItem->rowIcon = 15;
@@ -1253,7 +1252,7 @@ static void _displayCurrentLoot(int x)
             break;
         }
         case itemCategoryArmor: {
-            vs_main_inventoryArmor* armor = &_inventory->armor[index];
+            vs_InventoryArmor* armor = &inventory->armor[index];
             menuItem = vs_battle_setMenuItem(
                 32 + i, 24 - x, 50 + i * 16, 152, 0, vs_mainMenu_itemNames[armor->id]);
             menuItem->rowIcon = armor->category + 0xE;
@@ -1261,14 +1260,14 @@ static void _displayCurrentLoot(int x)
             break;
         }
         case itemCategoryGem: {
-            vs_main_inventoryGem* gem = &_inventory->gems[index];
+            vs_InventoryGem* gem = &inventory->gems[index];
             menuItem = vs_battle_setMenuItem(
                 32 + i, 24 - x, 50 + i * 16, 152, 0, vs_mainMenu_itemNames[gem->id]);
             menuItem->rowIcon = 22;
             break;
         }
         case itemCategoryMisc: {
-            vs_main_inventoryMisc* misc = &_inventory->misc[index];
+            vs_InventoryMisc* misc = &inventory->misc[index];
             menuItem = vs_battle_setMenuItem(
                 32 + i, 24 - x, 50 + i * 16, 152, 0, vs_mainMenu_itemNames[misc->id]);
             menuItem->count = misc->count;
@@ -1277,7 +1276,7 @@ static void _displayCurrentLoot(int x)
         }
         }
 
-        menuItem->gradientState = gradientStates[i + _lootListOffset];
+        menuItem->gradientState = gradientStates[i + lootListOffset];
         menuItem->unselectable = loot->state == 0;
 
         if (loot->unk2 != 0) {
@@ -1289,12 +1288,12 @@ static void _displayCurrentLoot(int x)
         }
 
         if (i == 0) {
-            if (_lootListOffset != 0) {
+            if (lootListOffset != 0) {
                 menuItem->isScrollable = 1;
             }
         }
 
-        if ((i == 7) && (_lootListOffset != (_lootListCount - 8))) {
+        if ((i == 7) && (lootListOffset != (lootListCount - 8))) {
             menuItem->isScrollable = 2;
         }
 
@@ -1312,23 +1311,23 @@ static void _displayCurrentLoot(int x)
         ++loot;
     }
 
-    _gradientStateIndex = _lootListOffset;
+    gradientStateIndex = lootListOffset;
 }
 
 /**
  * Displays an item's description in the information box using the working
  * inventory data.
  */
-static void _populateLootItem(int lootIndex)
+static void populateLootItem(int lootIndex)
 {
     char* menuText[2];
     int rowType;
-    int itemIndex = _lootList[lootIndex].itemIndex;
+    int itemIndex = lootList[lootIndex].itemIndex;
 
-    vs_battle_memcpy(_inventoryBackup, &vs_main_inventory, sizeof *_inventoryBackup);
-    vs_battle_memcpy(&vs_main_inventory, _inventory, sizeof vs_main_inventory);
+    vs_battle_memcpy(inventoryBackup, &vs_main_inventory, sizeof *inventoryBackup);
+    vs_battle_memcpy(&vs_main_inventory, inventory, sizeof vs_main_inventory);
 
-    switch (_lootList[lootIndex].itemCategory) {
+    switch (lootList[lootIndex].itemCategory) {
     case itemCategoryWeapon:
         vs_mainMenu_setWeaponRowFromInventory(&vs_main_inventory.weapons[itemIndex],
             menuText, &rowType, vs_battle_stringBuf);
@@ -1366,7 +1365,7 @@ static void _populateLootItem(int lootIndex)
     }
 
     vs_mainmenu_setInformationMessage(menuText[1]);
-    vs_battle_memcpy(&vs_main_inventory, _inventoryBackup, sizeof vs_main_inventory);
+    vs_battle_memcpy(&vs_main_inventory, inventoryBackup, sizeof vs_main_inventory);
 }
 
 /**
@@ -1377,7 +1376,7 @@ static void _populateLootItem(int lootIndex)
  *
  * @return Zero while pending, -1 when cancelled, or a positive discard result.
  */
-static int _discardItems(int init)
+static int discardItems(int init)
 {
     static char cursorAnimStep = 0;
 
@@ -1386,7 +1385,7 @@ static int _discardItems(int init)
     static UNUSED char _;
     static char* itemName;
 
-    vs_battle_menuItem_t* menuItem;
+    vs_MenuItem* menuItem;
 
     if (init != 0) {
         int i;
@@ -1394,21 +1393,21 @@ static int _discardItems(int init)
         D_8010A692 = 1;
         state = 0;
 
-        if (_lootListCount == 0) {
+        if (lootListCount == 0) {
             state = 4;
             return 0;
         }
 
-        if ((_lootClaimed == 0) && (D_800EB9C8 != NULL)) {
+        if ((lootClaimed == 0) && (D_800EB9C8 != NULL)) {
             state = 5;
             return 0;
         }
 
-        for (i = 0; i < _lootListCount; ++i) {
-            if ((_lootList[i].itemCategory == itemCategoryMisc)
-                && (_inventory->misc[_lootList[i].itemIndex].id > 457)) {
+        for (i = 0; i < lootListCount; ++i) {
+            if ((lootList[i].itemCategory == itemCategoryMisc)
+                && (inventory->misc[lootList[i].itemIndex].id > 457)) {
                 itemName =
-                    vs_mainMenu_itemNames[_inventory->misc[_lootList[i].itemIndex].id];
+                    vs_mainMenu_itemNames[inventory->misc[lootList[i].itemIndex].id];
                 state = 6;
             }
         }
@@ -1417,8 +1416,8 @@ static int _discardItems(int init)
 
     switch (state) {
     case 0:
-        menuItem = vs_battle_setMenuItem(
-            30, 0x140, 0x92, 0x7E, 0, (char*)&_menuText[VS_menuText_OFFSET_optionYes]);
+        menuItem = vs_battle_setMenuItem(30, 0x140, 0x92, 0x7E, 0,
+            (char*)&menuTextTable[VS_menuText_OFFSET_optionYes]);
         menuItem->state = 2;
         menuItem->targetPosition0 = 0xC2;
         state = 1;
@@ -1426,14 +1425,15 @@ static int _discardItems(int init)
 
     case 1:
         menuItem = vs_battle_setMenuItem(
-            31, 0x140, 0xA2, 0x7E, 0, (char*)&_menuText[VS_menuText_OFFSET_optionNo]);
+            31, 0x140, 0xA2, 0x7E, 0, (char*)&menuTextTable[VS_menuText_OFFSET_optionNo]);
         menuItem->state = 2;
         menuItem->targetPosition0 = 0xC2;
 
         vs_battle_initInformationTextBox(1);
         vs_mainmenu_setInformationMessage(
-            _lootClaimed == 0 ? (char*)(&_menuText[VS_menuText_OFFSET_discardAllConfirm])
-                              : (char*)(&_menuText[VS_menuText_OFFSET_itemsRemaining]));
+            lootClaimed == 0
+                ? (char*)(&menuTextTable[VS_menuText_OFFSET_discardAllConfirm])
+                : (char*)(&menuTextTable[VS_menuText_OFFSET_itemsRemaining]));
         state = 2;
         break;
 
@@ -1458,7 +1458,7 @@ static int _discardItems(int init)
                 int var_v1;
                 vs_main_playSfxDefault(0x7E, 0x1C);
                 var_v1 = 1;
-                if (_lootClaimed == 0) {
+                if (lootClaimed == 0) {
                     var_v1 = 2;
                 }
                 return var_v1;
@@ -1482,11 +1482,11 @@ static int _discardItems(int init)
         return state - 3;
 
     case 6:
-        vs_battle_stringContext.strings[0] = itemName;
+        vs_battle_printfArgs.strings[0] = itemName;
 
         vs_battle_initInformationTextBox(1);
         vs_mainmenu_setInformationMessage(
-            (char*)&_menuText[VS_menuText_OFFSET_invalidDiscard]);
+            (char*)&menuTextTable[VS_menuText_OFFSET_invalidDiscard]);
 
         state = 7;
         /* fallthrough */
@@ -1510,7 +1510,7 @@ static int _discardItems(int init)
  * @return Zero while pending, -1 when cancelled, or the selected action:
  * 1 for the category inventory menu, 2 to disassemble, or 3 to consolidate.
  */
-static int _organizeInventory(_lootListItem* loot)
+static int organizeInventory(LootListItem* loot)
 {
     static char cursorAnimState = 0;
 
@@ -1519,7 +1519,7 @@ static int _organizeInventory(_lootListItem* loot)
     static char selectedRow;
     static char availableAction;
 
-    vs_battle_menuItem_t* menuItem;
+    vs_MenuItem* menuItem;
 
     if (loot != NULL) {
         vs_mainMenu_initInformationBox();
@@ -1534,7 +1534,7 @@ static int _organizeInventory(_lootListItem* loot)
         } else if (itemCategory == itemCategoryShield) {
             availableAction = 1;
         } else if ((itemCategory == itemCategoryMisc)
-                   && (_inventory->misc[loot->itemIndex].id < 458)) {
+                   && (inventory->misc[loot->itemIndex].id < 458)) {
             availableAction = 2;
         } else {
             selectedRow = 1;
@@ -1542,7 +1542,7 @@ static int _organizeInventory(_lootListItem* loot)
 
         if (availableAction != 0) {
             menuItem = vs_battle_setMenuItem(30, 0x140, 0x92, 0x7E, 0,
-                (char*)&_menuText[_menuText[(availableAction + 4) * 2]]);
+                (char*)&menuTextTable[menuTextTable[(availableAction + 4) * 2]]);
             menuItem->state = 2;
             menuItem->targetPosition0 = 0xC2;
         }
@@ -1553,7 +1553,7 @@ static int _organizeInventory(_lootListItem* loot)
     switch (state) {
     case 0:
         menuItem = vs_battle_setMenuItem(31, 0x140, 0xA2, 0x7E, 0,
-            (char*)&_menuText[VS_menuText_OFFSET_organizeInventory]);
+            (char*)&menuTextTable[VS_menuText_OFFSET_organizeInventory]);
         menuItem->state = 2;
         menuItem->targetPosition0 = 0xC2;
         state = 1;
@@ -1595,13 +1595,13 @@ static int _organizeInventory(_lootListItem* loot)
 
         if (selectedRow != 0) {
             vs_mainmenu_setInformationMessage(
-                (char*)&_menuText[VS_menuText_OFFSET_organizeInventoryInfo]);
+                (char*)&menuTextTable[VS_menuText_OFFSET_organizeInventoryInfo]);
         } else if (availableAction == 1) {
             vs_mainmenu_setInformationMessage(
-                (char*)&_menuText[VS_menuText_OFFSET_disassembleInfo]);
+                (char*)&menuTextTable[VS_menuText_OFFSET_disassembleInfo]);
         } else {
             vs_mainmenu_setInformationMessage(
-                (char*)&_menuText[VS_menuText_OFFSET_organizeInfo]);
+                (char*)&menuTextTable[VS_menuText_OFFSET_organizeInfo]);
         }
 
         cursorAnimState = vs_battle_drawCursor(cursorAnimState, selectedRow + 8);
@@ -1610,7 +1610,7 @@ static int _organizeInventory(_lootListItem* loot)
     return 0;
 }
 
-static void _setKeyFlag(int arg0);
+static void setKeyFlag(int arg0);
 
 /**
  * Processes loot-menu input and advances discard, organization, and item
@@ -1622,7 +1622,7 @@ static void _setKeyFlag(int arg0);
  *
  * @param initialize Nonzero to reset the menu state, zero to process it.
  */
-int _processLootMenu(int initialize)
+static int processLootMenu(int initialize)
 {
     enum state {
         init,
@@ -1642,14 +1642,14 @@ int _processLootMenu(int initialize)
     static char state;
     static char updateLootDelay;
 
-    _lootListItem* loot;
+    LootListItem* loot;
     int lootIndex;
     int temp_s2;
     int i;
     int var_v0_4;
 
     if (initialize != 0) {
-        _selectedLoot = 0;
+        selectedLoot = 0;
         state = init;
         return 0;
     }
@@ -1666,45 +1666,45 @@ int _processLootMenu(int initialize)
         // Fallthrough
 
     case processInput:
-        _controlsEnabled = 1;
+        controlsEnabled = 1;
 
         if (vs_main_buttonsPressed.all & PADRdown) {
 
             vs_battle_playMenuLeaveSfx();
 
-            _controlsEnabled = 0;
+            controlsEnabled = 0;
 
-            _discardItems(1);
+            discardItems(1);
 
             state = discard;
             break;
 
         } else if (vs_main_buttonsPressed.all & PADRleft) {
 
-            temp_s2 = _lootClaimed;
+            temp_s2 = lootClaimed;
 
-            for (i = 0; i < _lootListCount; ++i) {
+            for (i = 0; i < lootListCount; ++i) {
 
-                loot = &_lootList[i];
+                loot = &lootList[i];
 
                 if (vs_mainMenu_copyItem(loot->itemCategory | copyItemFlagsWrite,
-                        &vs_main_inventory, loot->itemIndex, _inventory)
+                        &vs_main_inventory, loot->itemIndex, inventory)
                     != 0) {
                     if (loot->itemCategory == itemCategoryMisc) {
 
-                        int miscId = _inventory->misc[loot->itemIndex].id;
+                        int miscId = inventory->misc[loot->itemIndex].id;
 
                         if (miscId > 457) {
-                            _setKeyFlag(miscId);
+                            setKeyFlag(miscId);
                         }
                     }
 
                     loot->unk2 = 1;
-                    ++_lootClaimed;
+                    ++lootClaimed;
                 }
             }
 
-            if (temp_s2 != _lootClaimed) {
+            if (temp_s2 != lootClaimed) {
 
                 vs_main_playSfxDefault(0x7E, 0xD);
 
@@ -1715,17 +1715,17 @@ int _processLootMenu(int initialize)
             vs_battle_playInvalidSfx();
         }
 
-        lootIndex = _selectedLoot + _lootListOffset;
-        loot = &_lootList[lootIndex];
+        lootIndex = selectedLoot + lootListOffset;
+        loot = &lootList[lootIndex];
 
         if (vs_main_buttonsPressed.all & PADRright) {
             if (loot->state == 0) {
 
                 vs_battle_playMenuSelectSfx();
 
-                _controlsEnabled = 0;
+                controlsEnabled = 0;
 
-                _organizeInventory(loot);
+                organizeInventory(loot);
 
                 state = organize;
             } else {
@@ -1734,87 +1734,87 @@ int _processLootMenu(int initialize)
 
                 if (loot->itemCategory == itemCategoryMisc) {
 
-                    i = _inventory->misc[loot->itemIndex].id;
+                    i = inventory->misc[loot->itemIndex].id;
 
                     if (i > 457) {
-                        _setKeyFlag(i);
+                        setKeyFlag(i);
                     }
                 }
 
                 vs_mainMenu_copyItem(loot->itemCategory | 0x10, &vs_main_inventory,
-                    loot->itemIndex, _inventory);
+                    loot->itemIndex, inventory);
 
                 loot->unk2 = 1;
                 updateLootDelay = 3;
-                ++_lootClaimed;
+                ++lootClaimed;
                 state = updateLoot;
             }
         } else {
             i = lootIndex;
 
             if (vs_main_buttonRepeat & PADLup) {
-                if (_lootListCount < 9) {
-                    if (_selectedLoot == 0) {
-                        _selectedLoot = _lootListCount - 1;
+                if (lootListCount < 9) {
+                    if (selectedLoot == 0) {
+                        selectedLoot = lootListCount - 1;
                     } else {
-                        --_selectedLoot;
+                        --selectedLoot;
                     }
                 } else {
-                    if (_lootListOffset == 0) {
-                        if (_selectedLoot == 0) {
+                    if (lootListOffset == 0) {
+                        if (selectedLoot == 0) {
                             if (vs_main_buttonsPressed.all & PADLup) {
-                                _selectedLoot = 7;
-                                _lootListOffset = _lootListCount - 8;
+                                selectedLoot = 7;
+                                lootListOffset = lootListCount - 8;
                             }
                         } else {
-                            --_selectedLoot;
+                            --selectedLoot;
                         }
                     } else {
-                        if (_selectedLoot == 1) {
-                            --_lootListOffset;
+                        if (selectedLoot == 1) {
+                            --lootListOffset;
                         } else {
-                            --_selectedLoot;
+                            --selectedLoot;
                         }
                     }
                 }
             }
 
             if (vs_main_buttonRepeat & PADLdown) {
-                if (_lootListCount < 9) {
-                    if (_selectedLoot == (_lootListCount - 1)) {
-                        _selectedLoot = 0;
+                if (lootListCount < 9) {
+                    if (selectedLoot == (lootListCount - 1)) {
+                        selectedLoot = 0;
                     } else {
-                        ++_selectedLoot;
+                        ++selectedLoot;
                     }
-                } else if (_lootListOffset == (_lootListCount - 8)) {
-                    if (_selectedLoot == 7) {
+                } else if (lootListOffset == (lootListCount - 8)) {
+                    if (selectedLoot == 7) {
                         if (vs_main_buttonsPressed.all & PADLdown) {
-                            _selectedLoot = 0;
-                            _lootListOffset = 0;
+                            selectedLoot = 0;
+                            lootListOffset = 0;
                         }
                     } else {
-                        ++_selectedLoot;
+                        ++selectedLoot;
                     }
-                } else if (_selectedLoot == 6) {
-                    ++_lootListOffset;
+                } else if (selectedLoot == 6) {
+                    ++lootListOffset;
                 } else {
-                    ++_selectedLoot;
+                    ++selectedLoot;
                 }
             }
 
-            if (i != (_selectedLoot + _lootListOffset)) {
+            if (i != (selectedLoot + lootListOffset)) {
                 vs_battle_playMenuChangeSfx();
             }
 
-            _populateLootItem(_selectedLoot + _lootListOffset);
+            populateLootItem(selectedLoot + lootListOffset);
 
             cursorMemory = vs_mainMenu_renderCursor(
-                cursorMemory, (((_selectedLoot * 0x10) + 0x2A) << 0x10) | 0xA);
+                cursorMemory, (((selectedLoot * 0x10) + 0x2A) << 0x10) | 0xA);
         }
         break;
 
     case discard:
-        i = _discardItems(0);
+        i = discardItems(0);
 
         if (i != 0) {
             if (i < 0) {
@@ -1826,7 +1826,7 @@ int _processLootMenu(int initialize)
         break;
 
     case organize:
-        i = _organizeInventory(NULL);
+        i = organizeInventory(NULL);
 
         if (i != 0) {
 
@@ -1835,23 +1835,23 @@ int _processLootMenu(int initialize)
                 break;
             }
 
-            temp_s2 = _selectedLoot + _lootListOffset;
+            temp_s2 = selectedLoot + lootListOffset;
 
             switch (i) {
             case 1:
-                _topLevelMenuTransition(_lootList[temp_s2].itemCategory + 1);
+                topLevelMenuTransition(lootList[temp_s2].itemCategory + 1);
 
                 state = topMenu;
                 break;
 
             case 2:
-                _disassembleItem(temp_s2 + 1);
+                disassembleItem(temp_s2 + 1);
 
                 state = dissasemble;
                 break;
 
             case 3:
-                _consolidateMiscItems(temp_s2 + 1);
+                consolidateMiscItems(temp_s2 + 1);
 
                 state = consolidateItems;
                 break;
@@ -1861,7 +1861,7 @@ int _processLootMenu(int initialize)
         break;
 
     case topMenu:
-        var_v0_4 = _topLevelMenuTransition(0);
+        var_v0_4 = topLevelMenuTransition(0);
 
         if (var_v0_4 != 0) {
             state = waitForTopMenu;
@@ -1870,7 +1870,7 @@ int _processLootMenu(int initialize)
         break;
 
     case dissasemble:
-        var_v0_4 = _disassembleItem(0);
+        var_v0_4 = disassembleItem(0);
 
         if (var_v0_4 != 0) {
             state = waitForTopMenu;
@@ -1879,7 +1879,7 @@ int _processLootMenu(int initialize)
         break;
 
     case consolidateItems:
-        var_v0_4 = _consolidateMiscItems(0);
+        var_v0_4 = consolidateMiscItems(0);
 
         if (var_v0_4 != 0) {
             state = waitForTopMenu;
@@ -1894,10 +1894,10 @@ int _processLootMenu(int initialize)
         // Fallthrough
 
     case waitForTopMenu:
-        if (_lootLeftEdge == 0) {
-            _controlsEnabled = 1;
+        if (lootLeftEdge == 0) {
+            controlsEnabled = 1;
             state = init;
-            _updateLootList();
+            updateLootList();
         }
         break;
 
@@ -1907,30 +1907,30 @@ int _processLootMenu(int initialize)
         } else {
 
             while (1) {
-                for (i = 0; i < _lootListCount; ++i) {
-                    if (_lootList[i].unk2 != 0) {
+                for (i = 0; i < lootListCount; ++i) {
+                    if (lootList[i].unk2 != 0) {
                         break;
                     }
                 }
 
-                if (i == _lootListCount) {
+                if (i == lootListCount) {
                     break;
                 }
 
-                --_lootListCount;
+                --lootListCount;
 
-                for (; i < _lootListCount; ++i) {
-                    _lootList[i] = _lootList[i + 1];
+                for (; i < lootListCount; ++i) {
+                    lootList[i] = lootList[i + 1];
                 }
             }
 
-            _updateLootList();
+            updateLootList();
 
-            if (_lootListCount == 0) {
+            if (lootListCount == 0) {
 
-                _controlsEnabled = 0;
+                controlsEnabled = 0;
 
-                _discardItems(1);
+                discardItems(1);
 
                 state = discard;
             } else {
@@ -1940,7 +1940,7 @@ int _processLootMenu(int initialize)
         break;
     }
 
-    D_8010A6B7 = (state & 7) == 1 ? _selectedLoot + 1 : -128;
+    D_8010A6B7 = (state & 7) == 1 ? selectedLoot + 1 : -128;
 
     return 0;
 }
@@ -1972,39 +1972,39 @@ int vs_menuB_exec(u_char* state)
         }
 
         buf = vs_main_allocHeapR(
-            sizeof *_inventory + sizeof *_inventoryBackup + sizeof *_lootList * 160 * 2);
+            sizeof *inventory + sizeof *inventoryBackup + sizeof *lootList * 160 * 2);
 
-        _inventory = buf;
-        _inventoryBackup = buf + sizeof *_inventory;
-        _lootList = buf + sizeof *_inventory + sizeof *_inventoryBackup;
-        _lootListWorkingCopy =
-            buf + sizeof *_inventory + sizeof *_inventoryBackup + sizeof *_lootList * 160;
-        _lootClaimed = 0;
-        _lootListCount = 0;
-        _lootListOffset = 0;
+        inventory = buf;
+        inventoryBackup = buf + sizeof *inventory;
+        lootList = buf + sizeof *inventory + sizeof *inventoryBackup;
+        lootListWorkingCopy =
+            buf + sizeof *inventory + sizeof *inventoryBackup + sizeof *lootList * 160;
+        lootClaimed = 0;
+        lootListCount = 0;
+        lootListOffset = 0;
         _0 = 0;
 
         vs_mainMenu_loadItemText(1);
-        _applyAllLootLists(D_800EB9C4);
+        applyAllLootLists(D_800EB9C4);
 
-        _controlsEnabled = 0;
-        _showInventory = 1;
-        _inventoryCapacityFlyinTimer = 10;
-        _showLoot = 0;
-        _lootLeftEdge = 10;
+        controlsEnabled = 0;
+        showInventory = 1;
+        inventoryCapacityFlyinTimer = 10;
+        showLoot = 0;
+        lootLeftEdge = 10;
         *state = 1;
         break;
 
     case 1:
         if (vs_mainMenu_loadItemText(0) != 0) {
 
-            _showLoot = 1;
+            showLoot = 1;
 
-            if (_lootListCount == 0) {
+            if (lootListCount == 0) {
 
                 vs_battle_initInformationTextBox(1);
                 vs_mainmenu_setInformationMessage(
-                    (char*)&_menuText[VS_menuText_OFFSET_emptyChest]);
+                    (char*)&menuTextTable[VS_menuText_OFFSET_emptyChest]);
 
                 *state = 4;
 
@@ -2020,17 +2020,17 @@ int vs_menuB_exec(u_char* state)
             break;
         }
 
-        if (_lootLeftEdge != 0) {
+        if (lootLeftEdge != 0) {
             break;
         }
 
-        _processLootMenu(1);
+        processLootMenu(1);
 
         *state = 3;
         // Fallthrough
 
     case 3:
-        i = _processLootMenu(0);
+        i = processLootMenu(0);
         if (i != 0) {
             D_800F4E98.unk2 = i == 1;
             *state = 5;
@@ -2045,15 +2045,15 @@ int vs_menuB_exec(u_char* state)
         break;
 
     case 5:
-        _showInventory = 0;
-        _showLoot = 0;
+        showInventory = 0;
+        showLoot = 0;
 
         if ((vs_battle_dismissTextBox(7) != 0)
             || (vs_mainMenu_ensureItemTextUnloaded() == 0)) {
             break;
         }
 
-        vs_main_freeHeapR(_inventory);
+        vs_main_freeHeapR(inventory);
 
         if (D_800EB9C4 != 0) {
             func_8008A6FC();
@@ -2063,37 +2063,37 @@ int vs_menuB_exec(u_char* state)
         return 1;
     }
 
-    if (_showInventory != 0) {
-        if (_inventoryCapacityFlyinTimer != 0) {
-            --_inventoryCapacityFlyinTimer;
+    if (showInventory != 0) {
+        if (inventoryCapacityFlyinTimer != 0) {
+            --inventoryCapacityFlyinTimer;
         }
-        i = vs_battle_rowAnimationSteps[_inventoryCapacityFlyinTimer];
+        i = vs_battle_rowAnimationSteps[inventoryCapacityFlyinTimer];
     } else {
-        if (_inventoryCapacityFlyinTimer < 10) {
-            ++_inventoryCapacityFlyinTimer;
+        if (inventoryCapacityFlyinTimer < 10) {
+            ++inventoryCapacityFlyinTimer;
         }
-        i = _inventoryCapacityFlyinTimer << 5;
+        i = inventoryCapacityFlyinTimer << 5;
     }
 
-    if (_inventoryCapacityFlyinTimer < 10) {
-        _displayInventoryCapacities(i);
+    if (inventoryCapacityFlyinTimer < 10) {
+        displayInventoryCapacities(i);
     }
 
-    if (_showLoot != 0) {
-        if (_lootLeftEdge != 0) {
-            --_lootLeftEdge;
+    if (showLoot != 0) {
+        if (lootLeftEdge != 0) {
+            --lootLeftEdge;
         }
-        i = vs_battle_rowAnimationSteps[_lootLeftEdge];
+        i = vs_battle_rowAnimationSteps[lootLeftEdge];
     } else {
-        if (_lootLeftEdge < 10) {
-            ++_lootLeftEdge;
+        if (lootLeftEdge < 10) {
+            ++lootLeftEdge;
         }
-        i = _lootLeftEdge << 5;
+        i = lootLeftEdge << 5;
     }
 
-    if (_lootLeftEdge < 10) {
+    if (lootLeftEdge < 10) {
 
-        _displayCurrentLoot(i);
+        displayCurrentLoot(i);
 
         if (D_8010A6B7 & 0xF) {
             vs_battle_getMenuItem(D_8010A6B7 + 31)->selected = 1;
@@ -2108,7 +2108,7 @@ int vs_menuB_exec(u_char* state)
  *
  * @param arg0 Item ID; only IDs greater than 457 set a flag.
  */
-static void _setKeyFlag(int arg0)
+static void setKeyFlag(int arg0)
 {
     if (arg0 > 457) {
         vs_battle_setStateFlag(arg0 + 438, 1);

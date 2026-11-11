@@ -3,9 +3,7 @@
 #include "src/BATTLE/BATTLE.PRG/uiEquipment.h"
 
 int vs_menuD_exec(u_char*);
-void vs_menuD_initUiWeapon(
-    vs_battle_uiWeapon*, vs_main_inventoryWeapon*, vs_menu_containerData*);
-void vs_menuD_initUiShield(
-    vs_battle_uiShield*, vs_main_inventoryShield*, vs_menu_containerData*);
+void vs_menuD_initUiWeapon(vs_UiWeapon*, vs_InventoryWeapon*, vs_ContainerData*);
+void vs_menuD_initUiShield(vs_UiShield*, vs_InventoryShield*, vs_ContainerData*);
 
-extern vs_menu_container* vs_menuD_containerData;
+extern vs_Container* vs_menuD_containerData;

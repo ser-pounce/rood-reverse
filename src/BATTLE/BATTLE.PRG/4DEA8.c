@@ -1364,18 +1364,28 @@ int vs_battle_script_2E_setActorScale(u_char* script, UNUSED short arg1)
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_2F(u_char* arg0, UNUSED short arg1)
+/**
+ * Removes actors, the counterpart of spawnActor. Enemies have their state saved and are
+ * not marked as hidden, so they return when the room is reloaded.
+ * @param script Opcode bytes:
+ *   - [1-2] = actor selector
+ */
+int vs_battle_script_2F_despawnActor(u_char* script, UNUSED short arg1)
 {
-    ActorList sp10;
+    ActorList actors;
 
-    expandActorSelector(getShort(arg0 + 1), &sp10);
+    expandActorSelector(getShort(script + 1), &actors);
+
     while (1) {
-        int temp_a0 = nextActor(&sp10);
-        if (temp_a0 == 1) {
+        int actor = nextActor(&actors);
+
+        if (actor == 1) {
             break;
         }
-        func_8007D340(temp_a0);
+
+        despawnActor(actor);
     }
+
     return vs_battle_scriptNext;
 }
 

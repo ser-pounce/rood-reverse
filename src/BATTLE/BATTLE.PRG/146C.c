@@ -9263,7 +9263,7 @@ void setActionUnlocked(u_int arg0)
     }
 }
 
-void func_8007D340(int arg0) { removeActorById(arg0, 0); }
+void despawnActor(int arg0) { removeActorById(arg0, 0); }
 
 void func_8007D360(void)
 {

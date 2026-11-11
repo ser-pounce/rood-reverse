@@ -233,8 +233,8 @@ VS_HIDDEN(setActionUnlocked);
 void func_8007D260(int arg0);
 VS_HIDDEN(func_8007D260);
 
-void func_8007D340(int);
-VS_HIDDEN(func_8007D340);
+void despawnActor(int);
+VS_HIDDEN(despawnActor);
 
 void func_8007DE88(VECTOR* arg0);
 VS_HIDDEN(func_8007DE88);

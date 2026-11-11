@@ -39,7 +39,7 @@ typedef struct {
 void func_800760CC(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5);
 void func_80076F24(int id, vs_CharInitData* arg1, int arg2, int arg3, int arg4, int arg5);
 vs_Actor* func_800774FC(int arg0, int arg1, int bladeWepId, int bladeMaterial,
-    int shieldWepId, int shieldMaterial, vs_ObjectData_flags* arg6, int arg7);
+    int shieldWepId, int shieldMaterial, vs_battle_tilePosition* arg6, int arg7);
 void func_80077EC4(void);
 void func_8007D3F8(void);
 void func_8007DF48(void);

@@ -1,13 +1,7 @@
 #pragma once
 #include <sys/types.h>
 #include <libgte.h>
-
-typedef struct {
-    u_int unk0_0 : 8;
-    u_int unk0_8 : 8;
-    u_int unk0_16 : 8;
-    u_int unk0_24 : 8;
-} vs_ObjectData_flags;
+#include "tilePosition.h"
 
 typedef struct {
     u_char dataType;
@@ -15,7 +9,7 @@ typedef struct {
     short modelId;
     void* unk4;
     u_long dataAddr;
-    vs_ObjectData_flags unkC;
+    vs_battle_tilePosition unkC;
     u_char actorId;
     char unk11;
     u_char material;

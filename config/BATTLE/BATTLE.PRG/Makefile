@@ -19,6 +19,7 @@ $(BUILD)/config/$(battle.prg)/link.d: \
 
 # Patch single byte in string table padding, seems it might actually be used though
 $(BUILD)/data/BATTLE/BATTLE.PRG: FIXUP = $(XDELTA) -dfans $@ tools/data/BATTLE/BATTLE.PRG.xdelta $@
+$(BUILD)/data/BATTLE/BATTLE.PRG: tools/data/BATTLE/BATTLE.PRG.xdelta
 
 $(BUILD)/assets/BATTLE/BATTLE.PRG/keyStrings.vsStringFixed.bin $(BUILD)/assets/BATTLE/BATTLE.PRG/keyStrings.h &: $(BUILD)/assets/BATTLE/BATTLE.PRG/keyStrings.vsStringFixed.yaml | $$(@D)/
 	$(ECHO) Converting $<

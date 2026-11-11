@@ -353,7 +353,7 @@ exit:
     s1->unk0.skip = 1;
     s1->unk0.visible = 0;
     memcpy(&s1->unk0.currentTile, &arg0->unkC, sizeof(s1->unk0.currentTile));
-    s1->unk0.currentTile.status = 0;
+    s1->unk0.currentTile.extra = 0;
     s1->unk0.position.vx = (s1->unk0.currentTile.x << 7) + 0x40;
     s1->unk0.position.vz = (s1->unk0.currentTile.z << 7) + 0x40;
     s1->unk0.position.vy =
@@ -1090,7 +1090,7 @@ int parseShp(vs_ObjectData* object)
                 }
             }
 
-            *(vs_ObjectData_flags*)&actor->unk0.currentTile = object->unkC;
+            actor->unk0.currentTile = object->unkC;
 
             if (actor->unk5AC_27) {
                 D_800F22B8 = 0xA0;
@@ -1113,7 +1113,7 @@ int parseShp(vs_ObjectData* object)
     }
 
     data += 4;
-    *(vs_ObjectData_flags*)&actor->unk0.currentTile = object->unkC;
+    actor->unk0.currentTile = object->unkC;
     actor->unk0.skip = 1;
     *(int*)&actor->unk0.nBones = *(int*)data;
     *(int*)&actor->unk0.nQuads = *(int*)(data + 4);
@@ -2185,13 +2185,13 @@ void func_8009D468(int arg0)
         if (arg0 == 0) {
             var_a2 = 1;
         }
-        func_800A0204(arg0, var_a2, 0, 0);
+        vs_battle_setActorAnimation(arg0, var_a2, 0, 0);
         temp_s1->unk6E0 = 0;
         temp_s1->unk6EC = 0;
         temp_s1->unk6EE = 0;
         temp_s1->unk6EF = 0;
         temp_s1->unk1846 = 0;
-        temp_s1->unk5AC_24 = 0;
+        temp_s1->inactive = 0;
         temp_s1->unk0.skip = 1;
         temp_s1->unk0.visible = 1;
         temp_s1->unk0.freeze = 1;
@@ -2319,7 +2319,7 @@ void func_8009D934(int arg0, int arg1, int arg2)
 
     if (func_800BEB00() == 4) {
         temp_s0->unk0.weaponDrawn = arg1;
-        func_800A0204(arg0, 1, 0, 16);
+        vs_battle_setActorAnimation(arg0, 1, 0, 16);
         return;
     }
 
@@ -2330,7 +2330,7 @@ void func_8009D934(int arg0, int arg1, int arg2)
                 func_800AE6C0(temp_s0, temp_s1 + 1, 0);
             }
 
-            func_800A0204(arg0, (arg2 * 2) + 10, 0, var_s2);
+            vs_battle_setActorAnimation(arg0, (arg2 * 2) + 10, 0, var_s2);
 
             temp_s0->unk5AC_20 = 1;
             temp_s0->unk0.weaponDrawn = 0;
@@ -2344,7 +2344,7 @@ void func_8009D934(int arg0, int arg1, int arg2)
 
             temp_s0->unk0.weaponDrawn = arg1;
 
-            func_800A0204(arg0, (arg2 * 2) + 9, 0, var_s2);
+            vs_battle_setActorAnimation(arg0, (arg2 * 2) + 9, 0, var_s2);
 
             temp_s0->unk5AC_20 = 1;
 
@@ -2417,7 +2417,7 @@ void func_8009DD00(int arg0, SVECTOR* arg1, int arg2)
             var_a1 = 0x48;
         }
 
-        func_800A0204(arg0, var_a1, 0, 6);
+        vs_battle_setActorAnimation(arg0, var_a1, 0, 6);
         func_8009FD38(temp_s0);
     }
 }
@@ -2453,7 +2453,7 @@ void func_8009DDF4(int arg0, SVECTOR* arg1)
             }
         }
 
-        func_800A0204(arg0, var_a1, 0, var_s1);
+        vs_battle_setActorAnimation(arg0, var_a1, 0, var_s1);
         func_8009FD38(temp_s0);
     }
 
@@ -2503,7 +2503,7 @@ void func_8009DF3C(int arg0, int arg1)
         break;
     }
 
-    func_800A0204(arg0, var_s0, 0, var_s1);
+    vs_battle_setActorAnimation(arg0, var_s0, 0, var_s1);
     if (arg1 < 3) {
         vs_main_memcpy(&temp_s2->unk704, &temp_s2->unkC54, sizeof temp_s2->unk704);
     }
@@ -2545,7 +2545,7 @@ void func_8009E070(int arg0, SVECTOR* arg1, int arg2)
     temp_s0->unk0.unk18 = 0xA;
     temp_s0->unk1846 = 0;
     temp_s0->unk5AC_20 = 1;
-    func_800A0204(arg0, var_s1, 0, 6);
+    vs_battle_setActorAnimation(arg0, var_s1, 0, 6);
     temp_s0->unk6E0 = 0;
 }
 
@@ -2673,7 +2673,7 @@ void func_8009E2E0(int arg0, SVECTOR* arg1, int arg2)
         }
     }
 
-    func_800A0204(arg0, anim, 0, 6);
+    vs_battle_setActorAnimation(arg0, anim, 0, 6);
     func_8009FD38(actor);
 }
 
@@ -2891,9 +2891,9 @@ void func_8009E700(int actorId, int animation)
     }
 
     if (actor->unk5AC_3) {
-        func_800A0204(actor->unk0.unkF, 75, 0, 12);
+        vs_battle_setActorAnimation(actor->unk0.unkF, 75, 0, 12);
     } else {
-        func_800A0204(actorId, animation, 0, 16);
+        vs_battle_setActorAnimation(actorId, animation, 0, 16);
         actor->unk1846 = 0;
     }
 
@@ -3023,7 +3023,7 @@ void func_8009EA14(int arg0, SVECTOR* arg1)
         }
         func_800A525C(temp_s1);
         temp_s1->unk6E3 = 0xFF;
-        func_800A0204(arg0, var_s0, 0, var_s4);
+        vs_battle_setActorAnimation(arg0, var_s0, 0, var_s4);
         func_8009FD38(temp_s1);
     }
 }
@@ -3109,7 +3109,7 @@ void func_8009EC9C(int arg0, SVECTOR* arg1, int arg2, int arg3)
 
     actor->unk0.unk3E = turn;
     actor->unk0.unk18 = 0xA;
-    func_800A0204(arg0, anim, 0, 8);
+    vs_battle_setActorAnimation(arg0, anim, 0, 8);
 }
 
 void func_8009EE9C(int arg0, SVECTOR* arg1, int arg2)
@@ -3143,7 +3143,7 @@ void func_8009EE9C(int arg0, SVECTOR* arg1, int arg2)
             }
         }
 
-        func_800A0204(arg0, var_a1, 0, var_s1);
+        vs_battle_setActorAnimation(arg0, var_a1, 0, var_s1);
         func_8009FD38(temp_s0);
     }
 
@@ -3199,7 +3199,7 @@ void func_8009EFEC(int actorId, SVECTOR* target, int mode)
             value = 0xC1;
         }
 
-        func_800A0204(actorId, value, 0, 8);
+        vs_battle_setActorAnimation(actorId, value, 0, 8);
         func_8009FD38(actor);
     } else if (mode == 1) {
         func_800AD494(actor, 0xFF, &found);
@@ -3229,7 +3229,7 @@ void func_8009EFEC(int actorId, SVECTOR* target, int mode)
                     }
                 }
 
-                func_800A0204(actorId, reactionAnimation, 0, 6);
+                vs_battle_setActorAnimation(actorId, reactionAnimation, 0, 6);
                 func_8009FD38(fallbackActor);
             }
         } else {
@@ -3264,7 +3264,7 @@ void func_8009EFEC(int actorId, SVECTOR* target, int mode)
                 D_800F49E4 = 1;
             }
 
-            func_800A0204(actorId, 0xFF, 0, 8);
+            vs_battle_setActorAnimation(actorId, 0xFF, 0, 8);
         }
     }
 }
@@ -3321,7 +3321,7 @@ void startActorDeath(int actorId, void* context, int animate)
                 animationId = 0x47;
             }
 
-            func_800A0204(actorId, animationId, 0, 6);
+            vs_battle_setActorAnimation(actorId, animationId, 0, 6);
             func_8009FD38(actor);
             actor->unk0.unk9_0 = 1;
         } else {
@@ -3770,7 +3770,7 @@ int func_800A0024(int arg0, vs_ActorLocation* arg1)
     }
 
     arg1->unk0 = temp_s0->unk0.currentTile;
-    arg1->unk0.status = temp_s0->unk16C.unk2;
+    arg1->unk0.extra = temp_s0->unk16C.unk2;
     var_v0_2 =
         func_800A6EE8(&temp_s0->unk0.position, 0, 0, 0) - temp_s0->unk0.position.vy;
     if (var_v0_2 < 0) {
@@ -3817,7 +3817,8 @@ int func_800A01C8(int arg0, int arg1, int arg2, int arg3)
     return 0;
 }
 
-int func_800A0204(int actorId, int animation, int arg2, int blendFrames)
+int vs_battle_setActorAnimation(
+    int actorId, int animation, UNUSED int arg2, int blendFrames)
 {
     u_short* frames;
     D_800F4538_t* actor;
@@ -3834,7 +3835,7 @@ int func_800A0204(int actorId, int animation, int arg2, int blendFrames)
     if (actor == NULL) {
         return -1;
     }
-    if (actor->unk5AC_24) {
+    if (actor->inactive) {
         return 0;
     }
 
@@ -3963,7 +3964,7 @@ int func_800A0618(int arg0, int arg1, int arg2, int arg3)
 {
     D_800F4538_t* temp_s0;
 
-    int v0 = func_800A0204(arg0, arg1, 0, arg2);
+    int v0 = vs_battle_setActorAnimation(arg0, arg1, 0, arg2);
 
     if (v0 < 0) {
         return v0;
@@ -4059,47 +4060,47 @@ int func_800A07FC(int arg0, CVECTOR* arg1)
 
 void func_800A0870(int arg0) { D_800E8FC0 = arg0; }
 
-void func_800A087C(int actorId, int arg1)
+void vs_battle_setActorFlags(int actorId, int flags)
 {
     D_800F4538_t* temp_t0 = D_800F4538[actorId];
 
     if (temp_t0 == NULL) {
         D_800F45E0_t* temp_a0 = D_800F45E0[actorId];
         if (temp_a0 != NULL) {
-            temp_a0->unk0.skip = (arg1 & 1) ^ 1;
-            temp_a0->unk0.visible = arg1 >> 1;
+            temp_a0->unk0.skip = (flags & 1) ^ 1;
+            temp_a0->unk0.visible = flags >> 1;
         }
     } else {
         vs_WepModels* model;
         int new_var;
 
-        temp_t0->unk0.skip = (arg1 & 1) ^ 1;
-        temp_t0->unk0.visible = arg1 >> 1;
-        temp_t0->unk0.freeze = arg1 >> 2;
-        temp_t0->unk0.unk9_7 = arg1 >> 6;
+        temp_t0->unk0.skip = (flags & 1) ^ 1;
+        temp_t0->unk0.visible = flags >> 1;
+        temp_t0->unk0.freeze = flags >> 2;
+        temp_t0->unk0.unk9_7 = flags >> 6;
 
         model = vs_battle_wepModels[actorId * 2];
-        new_var = (arg1 >> 11) & 1;
+        new_var = (flags >> 11) & 1;
         if (model != NULL) {
             model->unk8_4 = new_var;
         }
 
         model = vs_battle_wepModels[actorId * 2 + 1];
-        new_var = (arg1 >> 12) & 1;
+        new_var = (flags >> 12) & 1;
         if (model != NULL) {
             model->unk8_4 = new_var;
         }
 
         if (temp_t0->unk17FD >= 2) {
-            func_800A087C(temp_t0->unk17FD, arg1);
+            vs_battle_setActorFlags(temp_t0->unk17FD, flags);
         }
     }
 }
 
-void func_800A09D8(int arg0, int arg1)
+void setActorInactiveFlag(int actorId, int inactive)
 {
-    if (D_800F4538[arg0] != NULL) {
-        D_800F4538[arg0]->unk5AC_24 = arg1;
+    if (D_800F4538[actorId] != NULL) {
+        D_800F4538[actorId]->inactive = inactive;
     }
 }
 
@@ -4174,7 +4175,7 @@ void func_800A0BA0(int arg0, int* arg1, int* arg2)
     }
 }
 
-u_int func_800A0BE0(int actorId)
+u_int vs_battle_getActorFlags(int actorId)
 {
     D_800F4538_t* temp_a1 = D_800F4538[actorId];
 
@@ -4237,7 +4238,7 @@ u_int func_800A0BE0(int actorId)
             && ((vs_battle_wepModels + 1)[temp_a1->unk0.unkF * 2]->unk8_4)) {
             D_800F49E0 |= 0x1000;
         }
-        if (temp_a1->unk5AC_24) {
+        if (temp_a1->inactive) {
             D_800F49E0 |= 0x2000;
         }
         if (temp_a1->unk0.unkA_0) {

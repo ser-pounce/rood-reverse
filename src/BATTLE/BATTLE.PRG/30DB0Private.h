@@ -143,8 +143,8 @@ VS_HIDDEN(func_800A0618);
 void func_800A0870(int);
 VS_HIDDEN(func_800A0870);
 
-void func_800A09D8(int, int);
-VS_HIDDEN(func_800A09D8);
+void setActorInactiveFlag(int actorId, int inactive);
+VS_HIDDEN(setActorInactiveFlag);
 
 void func_800A0A1C(int, int);
 VS_HIDDEN(func_800A0A1C);

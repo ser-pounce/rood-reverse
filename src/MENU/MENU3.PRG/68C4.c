@@ -59,7 +59,7 @@ int loadObjectData(int category, int wepId, int material)
 
         temp_s1->unk0.weaponDrawn = 0;
 
-        func_800A0204(1, 1, 0, 0);
+        vs_battle_setActorAnimation(1, 1, 0, 0);
         func_800AFA28(temp_s1, &temp_s1->unkC54, 1);
         vs_main_memcpy(&temp_s1->unk704, &temp_s1->unkC54, sizeof temp_s1->unk704);
 

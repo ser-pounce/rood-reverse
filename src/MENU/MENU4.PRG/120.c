@@ -556,7 +556,7 @@ static int getNextValidActor(int currentActor, int targetActor)
     while (1) {
 
         currentActor = (currentActor + targetActor) % 15;
-        temp_a0 = func_800A0BE0(currentActor);
+        temp_a0 = vs_battle_getActorFlags(currentActor);
 
         if ((vs_battle_actors[currentActor] != NULL)
             && (vs_battle_actors[currentActor]->unk1C < 5)

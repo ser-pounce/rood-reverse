@@ -2,6 +2,7 @@ mainmenu_LDLIBS := $(patsubst %,$(BUILD)/data/MENU/MENU%.PRG.sym.elf,0 1 2 3 4 5
 
 # Patch junk in .bss section
 $(BUILD)/data/MENU/MAINMENU.PRG: FIXUP = $(XDELTA) -dfans $@ tools/data/MENU/MAINMENU.PRG.xdelta $@
+$(BUILD)/data/MENU/MAINMENU.PRG: tools/data/MENU/MAINMENU.PRG.xdelta
 
 $(BUILD)/data/MENU/MAINMENU.PRG.elf: $(mainmenu_LDLIBS)
 $(BUILD)/data/MENU/MAINMENU.PRG.elf: private LDLIBS += $(mainmenu_LDLIBS)

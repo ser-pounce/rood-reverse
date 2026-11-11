@@ -2865,7 +2865,7 @@ glabel func_800B6438
     sb         $v1, 0xA($v0)
     or         $a1, $zero, 0x1F
     addu       $a2, $zero, $zero
-    jal        func_800A0204
+    jal        vs_battle_setActorAnimation
      or        $a3, $zero, 0x8
     lw         $a0, 0x0($sp)
     lw         $a1, 0x4($sp)

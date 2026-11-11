@@ -1037,22 +1037,38 @@ int vs_battle_script_24_setActorSfxPanVolume(u_char* script, UNUSED short arg1)
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_25(u_char* arg0, UNUSED short arg1)
+/**
+ * Moves an actor to a tile and turns it to a facing, ignoring the tile map.
+ * Animated move (non-zero values for the frames) does not seem to be used by the scripts.
+ * @param script Opcode bytes:
+ *   - [1-2] = actor selector
+ *   - [3-5] = tile x, surface and z
+ *   - [6] = final facing (1/256 turn), 0xFF keeps the arrival facing
+ *   - [7] = movement frame count, 0 = immediately, 0xFF = default (from distance and
+ *     the actor's unk5C2)
+ *   - [8] = turn frame count, 0 = immediately, 0xFF = default (from angle and the
+ *     actor's unk5C0)
+ */
+int vs_battle_script_25_moveActor(u_char* script, UNUSED short arg1)
 {
-    vs_TilePosition sp10[3];
-    u_short temp_v0 = resolveActorId(getShort(arg0 + 1));
-    sp10[0].x = arg0[3];
-    sp10[0].surface = arg0[4];
-    sp10[0].z = arg0[5];
-    sp10[0].extra = arg0[6];
+    vs_TilePosition tile[3];
+    u_short actor = resolveActorId(getShort(script + 1));
+
+    tile[0].x = script[3];
+    tile[0].surface = script[4];
+    tile[0].z = script[5];
+    tile[0].extra = script[6];
+
     if (scriptSkipMode == vs_battle_scriptSkipping) {
-        func_800A97EC(temp_v0, sp10, 0, 0);
+        func_800A97EC(actor, tile, 0, 0);
     } else {
-        func_800A97EC(temp_v0, sp10, arg0[7] != 0xFF ? arg0[7] : -1,
-            arg0[8] != 0xFF ? arg0[8] : -1);
+        func_800A97EC(actor, tile, script[7] != 0xFF ? script[7] : -1,
+            script[8] != 0xFF ? script[8] : -1);
     }
-    func_8009DC8C(temp_v0);
-    D_800F4B70[temp_v0] = 1;
+
+    func_8009DC8C(actor);
+    D_800F4B70[actor] = 1;
+
     return vs_battle_scriptNext;
 }
 

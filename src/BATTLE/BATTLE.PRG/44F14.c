@@ -1193,7 +1193,7 @@ void func_800AFA28(D_800F4538_t* actor, D_800F4538_unkC54* state, int mode)
             state->unk548_17 = 1;
 
             if (actor->unk6E0 != 0) {
-                func_800A0618(
+                setActorAnimationFromFrame(
                     actor->unk0.unkF, actor->unk6E0, actor->unk6E1, actor->unk6E2);
                 actor->unk6E0 = 0;
                 return;

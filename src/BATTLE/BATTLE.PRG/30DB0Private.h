@@ -137,8 +137,8 @@ VS_HIDDEN(func_800A0104);
 int queueActorAnimation(int, int, int, int);
 VS_HIDDEN(queueActorAnimation);
 
-int func_800A0618(int, int, int, int);
-VS_HIDDEN(func_800A0618);
+int setActorAnimationFromFrame(int, int, int, int);
+VS_HIDDEN(setActorAnimationFromFrame);
 
 void func_800A0870(int);
 VS_HIDDEN(func_800A0870);

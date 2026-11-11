@@ -3960,7 +3960,7 @@ retry:
     return 0;
 }
 
-int func_800A0618(int arg0, int arg1, int arg2, int arg3)
+int setActorAnimationFromFrame(int arg0, int arg1, int arg2, int arg3)
 {
     D_800F4538_t* temp_s0;
 

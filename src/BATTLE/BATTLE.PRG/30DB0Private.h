@@ -122,11 +122,11 @@ VS_HIDDEN(func_8009FD5C);
 int func_8009FE74(int arg0, int arg1);
 VS_HIDDEN(func_8009FE74);
 
-void func_8009FF08(int, int, int, int);
-VS_HIDDEN(func_8009FF08);
+void attachActor(int, int, int, int);
+VS_HIDDEN(attachActor);
 
-int func_8009FFA8(int arg0, int arg1);
-VS_HIDDEN(func_8009FFA8);
+int detachActor(int arg0, int arg1);
+VS_HIDDEN(detachActor);
 
 int func_800A0024(int arg0, ActorLocation* arg1);
 VS_HIDDEN(func_800A0024);

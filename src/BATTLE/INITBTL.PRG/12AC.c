@@ -22,7 +22,7 @@ static int (*skipOpcodeTableInit[])(u_char*, short) = { vs_battle_script_invalid
     vs_battle_script_nop, vs_battle_script_23_setActorFlags,
     vs_battle_script_24_setActorSfxPanVolume, vs_battle_script_25_moveActorToTile,
     vs_battle_script_26_moveActorToCoordinate, vs_battle_script_27_slideActorToTile,
-    vs_battle_script_28_slideActorToCoordinate, vs_battle_script_29,
+    vs_battle_script_28_slideActorToCoordinate, vs_battle_script_29_attachActor,
     vs_battle_script_2A_walkActorToCoordinate, vs_battle_script_2B, vs_battle_script_2C,
     vs_battle_script_2D, vs_battle_script_2E, vs_battle_script_2F, vs_battle_script_yield,
     vs_battle_script_31, vs_battle_script_nop, vs_battle_script_33, vs_battle_script_34,

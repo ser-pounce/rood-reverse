@@ -1422,7 +1422,7 @@ setupPalettes:
         D_800F4538[actor->unk0.unk12]->unk6F4.unk3 = 8;
     } else {
         actor->unk0.unk12 = 0xFF;
-        func_8009FF08(object->index, object->actorId, object->unk11, 0);
+        attachActor(object->index, object->actorId, object->unk11, 0);
     }
 
     D_800E8F29 = 0;
@@ -3704,7 +3704,7 @@ int func_8009FE74(int arg0, int arg1)
     return 0;
 }
 
-void func_8009FF08(int arg0, int arg1, int arg2, int arg3)
+void attachActor(int arg0, int arg1, int arg2, int arg3)
 {
     D_800F4538_t* temp_a0 = D_800F4538[arg0];
 
@@ -3726,7 +3726,7 @@ void func_8009FF08(int arg0, int arg1, int arg2, int arg3)
     temp_a0->unk0.unk9_5 = 1;
 }
 
-int func_8009FFA8(int arg0, int arg1)
+int detachActor(int arg0, int arg1)
 {
     UNUSED int _[2];
 

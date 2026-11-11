@@ -1195,15 +1195,25 @@ int vs_battle_script_28_slideActorToCoordinate(u_char* script, UNUSED short arg1
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_29(u_char* arg0, UNUSED short arg1)
+/**
+ * Attaches an actor to a bone of a parent actor. A parent selector >= 0x2000 detaches it.
+ * @param script Opcode bytes:
+ *   - [1-2] = actor selector
+ *   - [3-4] = parent actor selector
+ *   - [5] = bone index in the parent
+ *   - [6] = unused
+ */
+int vs_battle_script_29_attachActor(u_char* script, UNUSED short arg1)
 {
-    u_short temp_s1 = resolveActorId(getShort(arg0 + 1));
-    u_int temp_a1 = resolveActorId(getShort(arg0 + 3)) & 0xFFFF;
-    if (temp_a1 >= 0x2000) {
-        func_8009FFA8(temp_s1, temp_a1);
+    u_short actor = resolveActorId(getShort(script + 1));
+    u_int parent = resolveActorId(getShort(script + 3)) & 0xFFFF;
+
+    if (parent >= 0x2000) {
+        detachActor(actor, parent);
     } else {
-        func_8009FF08(temp_s1, temp_a1, arg0[5], arg0[6]);
+        attachActor(actor, parent, script[5], script[6]);
     }
+
     return vs_battle_scriptNext;
 }
 

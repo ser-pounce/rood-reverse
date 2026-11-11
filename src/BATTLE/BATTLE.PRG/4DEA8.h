@@ -28,7 +28,7 @@ int vs_battle_script_25_moveActorToTile(u_char*, short);
 int vs_battle_script_26_moveActorToCoordinate(u_char*, short);
 int vs_battle_script_27_slideActorToTile(u_char*, short);
 int vs_battle_script_28_slideActorToCoordinate(u_char*, short);
-int vs_battle_script_29(u_char*, short);
+int vs_battle_script_29_attachActor(u_char*, short);
 int vs_battle_script_2A_walkActorToCoordinate(u_char*, short);
 int vs_battle_script_2B(u_char*, short);
 int vs_battle_script_2C(u_char*, short);

@@ -3357,7 +3357,7 @@ void displaySceneMessage(int arg0, int arg1, int arg2)
                                                                 + 22]]);
     } else {
         if (arg1 != 0) {
-            vs_battle_printfArgs.strings[0] = D_800EBF58[(arg1 - 0x1CA) * 2];
+            vs_battle_printfArgs.strings[0] = D_800EBF58[(arg1 - 458) * 2];
         }
         vs_battle_printf((char*)D_800EB9D8, (char*)&D_800EBDDC[D_800EBDDC[arg0]]);
     }

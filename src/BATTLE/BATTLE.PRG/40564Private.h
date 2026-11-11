@@ -56,8 +56,8 @@ VS_HIDDEN(func_800AA620);
 void func_800AA850(int, short, int);
 VS_HIDDEN(func_800AA850);
 
-void func_800AABD0(int, SVECTOR*, int);
-VS_HIDDEN(func_800AABD0);
+void setActorScale(int, SVECTOR*, int);
+VS_HIDDEN(setActorScale);
 
 void func_800AACDC(void);
 VS_HIDDEN(func_800AACDC);

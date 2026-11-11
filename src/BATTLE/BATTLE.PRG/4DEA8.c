@@ -1345,12 +1345,22 @@ int vs_battle_script_2D_turnActorToFaceTile(u_char* script, UNUSED short arg1)
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_2E(u_char* arg0, UNUSED short arg1)
+/**
+ * Sets the scale of an actor, per axis.
+ * @param script Opcode bytes:
+ *   - [1-2] = actor selector
+ *   - [3-4] = x scale (0x1000 = normal size)
+ *   - [5-6] = y scale
+ *   - [7-8] = z scale
+ *   - [9] = frame count to change over, 0 = immediately
+ */
+int vs_battle_script_2E_setActorScale(u_char* script, UNUSED short arg1)
 {
-    SVECTOR sp10;
+    SVECTOR scale;
+    setVector(&scale, getShort(script + 3), getShort(script + 5), getShort(script + 7));
 
-    setVector(&sp10, getShort(arg0 + 3), getShort(arg0 + 5), getShort(arg0 + 7));
-    func_800AABD0(resolveActorId(getShort(arg0 + 1)), &sp10, arg0[9]);
+    setActorScale(resolveActorId(getShort(script + 1)), &scale, script[9]);
+
     return vs_battle_scriptNext;
 }
 

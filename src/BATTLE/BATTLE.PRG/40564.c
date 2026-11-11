@@ -1176,7 +1176,7 @@ void func_800AAA88(int arg0, SVECTOR* arg1, int arg2)
     }
 }
 
-void func_800AABD0(int arg0, SVECTOR* arg1, int arg2)
+void setActorScale(int arg0, SVECTOR* arg1, int arg2)
 {
     D_800F4538_t* temp_a3 = D_800F4538[arg0];
 

@@ -608,7 +608,7 @@ void slideActorToTile(int arg0, vs_TilePosition* arg1, int arg2)
     temp_s0->unk0.currentTile.z = arg1->z;
 }
 
-void func_800A9CDC(int arg0, vs_TilePosition* arg1, int arg2)
+void turnActorToFaceTile(int arg0, vs_TilePosition* arg1, int arg2)
 {
     D_800F4538_t* new_var = D_800F4538[arg0];
 

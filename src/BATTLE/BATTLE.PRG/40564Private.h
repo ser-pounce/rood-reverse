@@ -26,8 +26,8 @@ VS_HIDDEN(moveActorToCoordinate);
 void slideActorToTile(int, vs_TilePosition*, int);
 VS_HIDDEN(slideActorToTile);
 
-void func_800A9CDC(int, vs_TilePosition*, int);
-VS_HIDDEN(func_800A9CDC);
+void turnActorToFaceTile(int, vs_TilePosition*, int);
+VS_HIDDEN(turnActorToFaceTile);
 
 void func_800A9D24(int, SVECTOR*, int);
 VS_HIDDEN(func_800A9D24);

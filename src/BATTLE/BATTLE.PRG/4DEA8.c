@@ -1299,22 +1299,24 @@ int vs_battle_script_2B_turnActorToFacing(u_char* script, UNUSED short arg1)
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_2C(u_char* arg0, UNUSED short arg1)
+/**
+ * Turns an actor to face the tile another actor is standing on.
+ * @param script Opcode bytes:
+ *   - [1-2] = actor selector
+ *   - [3-4] = target actor selector
+ *   - [5] = frame count, 0 = immediately, 0xFF = default (from angle and the actor's
+ *     unk5C0)
+ */
+int vs_battle_script_2C_turnActorToFaceActor(u_char* script, UNUSED short arg1)
 {
-    vs_ActorPosition sp10;
-    int temp_s0;
-    int temp_s0_2;
-    int var_a2;
+    vs_ActorPosition position;
+    u_short actor = resolveActorId(getShort(script + 1));
 
-    temp_s0 = resolveActorId(getShort(arg0 + 1));
-    vs_battle_getActorPosition(resolveActorId(getShort(arg0 + 3)), &sp10);
-    var_a2 = -1;
-    temp_s0_2 = temp_s0 & 0xFFFF;
-    if (arg0[5] != 0xFF) {
-        var_a2 = arg0[5];
-    }
-    func_800A9CDC(temp_s0_2, &sp10.unk0.unk0, var_a2);
-    D_800F4B70[temp_s0_2] = 1;
+    vs_battle_getActorPosition(resolveActorId(getShort(script + 3)), &position);
+    turnActorToFaceTile(actor, &position.unk0.unk0, script[5] != 0xFF ? script[5] : -1);
+
+    D_800F4B70[actor] = 1;
+
     return vs_battle_scriptNext;
 }
 
@@ -1327,7 +1329,7 @@ int vs_battle_script_2D(u_char* arg0, UNUSED short arg1)
     sp10.surface = arg0[4];
     sp10.z = arg0[5];
 
-    func_800A9CDC(temp_s0, &sp10, arg0[6] != 0xFF ? arg0[6] : -1);
+    turnActorToFaceTile(temp_s0, &sp10, arg0[6] != 0xFF ? arg0[6] : -1);
     D_800F4B70[temp_s0] = 1;
     return vs_battle_scriptNext;
 }

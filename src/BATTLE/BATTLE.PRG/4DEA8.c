@@ -1450,26 +1450,35 @@ int vs_battle_script_32_queueAnimation(u_char* script, UNUSED short arg1)
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_33(u_char* arg0, UNUSED short arg1)
+/**
+ * Rotates an actor, either absolutely or relative to its current one.
+ * @param script Opcode bytes:
+ *   - [1-2] = actor selector
+ *   - [3] = 0: rotate to the given absolute rotation, otherwise rotate by it
+ *   - [4-5] = x rotation (1/4096 turn)
+ *   - [6-7] = y rotation (the facing)
+ *   - [8-9] = z rotation
+ *   - [10] = frame count, 0 = immediately, 0xFF = default (from angle and the actor's
+ *     unk5C0)
+ */
+int vs_battle_script_33_rotateActor(u_char* script, UNUSED short arg1)
 {
-    SVECTOR sp10;
-    u_short temp_s2;
-    short var_s1;
+    SVECTOR rotation;
+    u_short actor = resolveActorId(getShort(script + 1));
+    short frames = script[10] != 0xFF ? script[10] : -1;
 
-    temp_s2 = resolveActorId(getShort(arg0 + 1));
-    var_s1 = -1;
-    if (arg0[10] != 0xFF) {
-        var_s1 = arg0[10];
-    }
-    sp10.vx = getShort(arg0 + 4);
-    sp10.vy = getShort(arg0 + 6);
-    sp10.vz = getShort(arg0 + 8);
-    if (arg0[3] != 0) {
-        func_800A9F64(temp_s2, &sp10, var_s1);
+    rotation.vx = getShort(script + 4);
+    rotation.vy = getShort(script + 6);
+    rotation.vz = getShort(script + 8);
+
+    if (script[3] != 0) {
+        func_800A9F64(actor, &rotation, frames);
     } else {
-        func_800A9FD0(temp_s2, &sp10, var_s1);
+        func_800A9FD0(actor, &rotation, frames);
     }
-    D_800F4B70[temp_s2] = 1;
+
+    D_800F4B70[actor] = 1;
+
     return vs_battle_scriptNext;
 }
 

@@ -1676,9 +1676,15 @@ int vs_battle_script_3C_unloadEventData(u_char* script, UNUSED short arg1)
                                                         : vs_battle_scriptNext;
 }
 
-int vs_battle_script_3D(u_char* arg0, UNUSED short arg1)
+/**
+ * Selects the slot of the loaded event data used by actors.
+ * @param script Opcode bytes:
+ *   - [1] = slot (1-3)
+ */
+int vs_battle_script_3D_selectEventData(u_char* script, UNUSED short arg1)
 {
-    func_8007CC6C(arg0[1]);
+    selectEventData(script[1]);
+
     return vs_battle_scriptNext;
 }
 

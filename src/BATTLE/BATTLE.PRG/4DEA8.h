@@ -44,7 +44,7 @@ int vs_battle_script_39_setActorLookPosition(u_char*, short);
 int vs_battle_script_3A_enqueueEventData(u_char*, short);
 int vs_battle_script_3B_waitDataQueueEmpty(u_char*, short);
 int vs_battle_script_3C_unloadEventData(u_char*, short);
-int vs_battle_script_3D(u_char*, short);
+int vs_battle_script_3D_selectEventData(u_char*, short);
 int vs_battle_script_3E(u_char*, short);
 int vs_battle_script_3F(u_char*, short);
 int vs_battle_script_40_jumpFwdIfFlag(u_char*, short);

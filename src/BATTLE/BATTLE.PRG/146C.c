@@ -9042,7 +9042,7 @@ void enqueueEtm(int index, int effectId, int textureSlot)
 
 void unloadEtm(int arg0) { func_8009D208(arg0); }
 
-void func_8007CC6C(int arg0) { func_8009CE9C(arg0); }
+void selectEventData(int arg0) { func_8009CE9C(arg0); }
 
 void func_8007CC8C(void) { func_8009CFA0(); }
 

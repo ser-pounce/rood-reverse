@@ -197,8 +197,8 @@ VS_HIDDEN(enqueueEtm);
 void unloadEtm(int);
 VS_HIDDEN(unloadEtm);
 
-void func_8007CC6C(int);
-VS_HIDDEN(func_8007CC6C);
+void selectEventData(int);
+VS_HIDDEN(selectEventData);
 
 int getEmptyObjectDataSlot(void);
 VS_HIDDEN(getEmptyObjectDataSlot);

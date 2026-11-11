@@ -1154,36 +1154,44 @@ int vs_battle_script_27_slideActorToTile(u_char* script, UNUSED short arg1)
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_28_slideActorToCoordinate(u_char* arg0, UNUSED short arg1)
+/**
+ * Like slideActorToTile, but to a position given in world coordinates instead of a tile.
+ * @param script Opcode bytes:
+ *   - [1-2] = actor selector
+ *   - [3-4] = x in bits 1-15 (value >> 1). If bit 0 is set, x, y and z are added to the
+ *     actor's current position instead of replacing it
+ *   - [5-6] = y (height)
+ *   - [7-8] = z
+ *   - [9] = frame count, 0xFF = default (from distance and the actor's unk5C2)
+ */
+int vs_battle_script_28_slideActorToCoordinate(u_char* script, UNUSED short arg1)
 {
-    vs_ActorPosition sp10;
-    short temp_s3;
-    short temp_s4;
-    int temp_s1;
-    u_short temp_s2;
+    vs_ActorPosition position;
+    u_short actor = resolveActorId(getShort(script + 1));
+    int x = getShort(script + 3) >> 1;
+    short y = getShort(script + 5);
+    short z = getShort(script + 7);
 
-    temp_s2 = resolveActorId(getShort(arg0 + 1));
-    temp_s1 = getShort(arg0 + 3) >> 1;
-    temp_s3 = getShort(arg0 + 5);
-    temp_s4 = getShort(arg0 + 7);
-
-    if (arg0[3] & 1) {
-        vs_battle_getActorPosition(temp_s2, &sp10);
-        applyVector(&sp10.unk0.unk4, temp_s1, temp_s3, temp_s4, +=);
+    if (script[3] & 1) {
+        vs_battle_getActorPosition(actor, &position);
+        applyVector(&position.unk0.unk4, x, y, z, +=);
     } else {
-        setVector(&sp10.unk0.unk4, temp_s1, temp_s3, temp_s4);
+        setVector(&position.unk0.unk4, x, y, z);
     }
 
-    sp10.unk0.unk4.pad = -0x8000;
+    position.unk0.unk4.pad = -0x8000;
 
     if (scriptSkipMode == vs_battle_scriptSkipping) {
-        slideActorToCoordinate(temp_s2, &sp10.unk0.unk4, 0);
+        slideActorToCoordinate(actor, &position.unk0.unk4, 0);
     } else {
-        slideActorToCoordinate(temp_s2, &sp10.unk0.unk4, arg0[9] != 0xFF ? arg0[9] : -1);
+        slideActorToCoordinate(
+            actor, &position.unk0.unk4, script[9] != 0xFF ? script[9] : -1);
     }
 
-    func_8009DC8C(temp_s2);
-    D_800F4B70[temp_s2] = 1;
+    func_8009DC8C(actor);
+
+    D_800F4B70[actor] = 1;
+
     return vs_battle_scriptNext;
 }
 

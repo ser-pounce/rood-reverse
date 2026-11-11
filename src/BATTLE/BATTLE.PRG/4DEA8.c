@@ -1004,20 +1004,36 @@ int vs_battle_script_23_setActorFlags(u_char* script, UNUSED short arg1)
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_24(u_char* arg0, UNUSED short arg1)
+/**
+ * Overrides the stereo pan and volume used for an actor's sound effects.
+ * @param script Opcode bytes:
+ *   - [1-2] = actor id
+ *   - [3] = mode:
+ *     - 0: clear the override, sounds follow the actor's position on screen
+ *     - 1: use the pan and volume below, ramped over the duration.
+ *     - 2: mute the actor's sounds
+ *   - [4] = pan, 0x80 is centered
+ *   - [5] = volume, 0x7F is maximum
+ *   - [6] = ramp duration in frames, 0 applies immediately
+ */
+int vs_battle_script_24_setActorSfxPanVolume(u_char* script, UNUSED short arg1)
 {
     D_800F4538_unk64 sp10;
-    int var_a0;
+    int actorId;
 
-    sp10.unk0 = arg0[3];
-    sp10.unk1 = arg0[4];
-    sp10.unk2 = arg0[5];
-    sp10.unk3 = arg0[6];
-    var_a0 = resolveActorId(getShort(arg0 + 1));
-    if (var_a0 == 0x2001) {
-        var_a0 = -1;
+    sp10.unk0 = script[3];
+    sp10.unk1 = script[4];
+    sp10.unk2 = script[5];
+    sp10.unk3 = script[6];
+
+    actorId = resolveActorId(getShort(script + 1));
+
+    if (actorId == 0x2001) {
+        actorId = -1;
     }
-    func_8009F990(var_a0, &sp10);
+
+    func_8009F990(actorId, &sp10);
+
     return vs_battle_scriptNext;
 }
 

@@ -35,7 +35,7 @@ int vs_battle_script_2C_turnActorToFaceActor(u_char*, short);
 int vs_battle_script_2D_turnActorToFaceTile(u_char*, short);
 int vs_battle_script_2E_setActorScale(u_char*, short);
 int vs_battle_script_2F_despawnActor(u_char*, short);
-int vs_battle_script_31(u_char*, short);
+int vs_battle_script_31_setActorLightColor(u_char*, short);
 int vs_battle_script_33(u_char*, short);
 int vs_battle_script_34(u_char*, short);
 int vs_battle_script_37(u_char*, short);

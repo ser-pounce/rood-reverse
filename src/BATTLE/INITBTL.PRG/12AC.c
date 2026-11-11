@@ -26,7 +26,7 @@ static int (*skipOpcodeTableInit[])(u_char*, short) = { vs_battle_script_invalid
     vs_battle_script_2A_walkActorToCoordinate, vs_battle_script_2B_turnActorToFacing,
     vs_battle_script_2C_turnActorToFaceActor, vs_battle_script_2D_turnActorToFaceTile,
     vs_battle_script_2E_setActorScale, vs_battle_script_2F_despawnActor,
-    vs_battle_script_yield, vs_battle_script_31, vs_battle_script_nop,
+    vs_battle_script_yield, vs_battle_script_31_setActorLightColor, vs_battle_script_nop,
     vs_battle_script_33, vs_battle_script_34, vs_battle_script_nop, vs_battle_script_nop,
     vs_battle_script_37, vs_battle_script_38, vs_battle_script_39, vs_battle_script_3A,
     vs_battle_script_3B, vs_battle_script_3C, vs_battle_script_3D, vs_battle_script_3E,

@@ -2164,7 +2164,7 @@ void func_8009D468(int arg0)
         temp_s1->unk5AC_21 = 0;
         temp_s1->unk180C[1].unk0_0 = 0;
         temp_s1->unk5AC_22 = 0;
-        func_800A07FC(arg0, NULL);
+        setActorLightColor(arg0, NULL);
         if (temp_s1->unk17FD == 1) {
             temp_s1->unk17FD = 0;
         }
@@ -4040,7 +4040,7 @@ int func_800A07B4(int arg0, CVECTOR* arg1)
     return 0;
 }
 
-int func_800A07FC(int arg0, CVECTOR* arg1)
+int setActorLightColor(int arg0, CVECTOR* arg1)
 {
     D_800F4538_t* temp_a2 = D_800F4538[arg0];
 

@@ -236,6 +236,9 @@ VS_HIDDEN(func_8007D260);
 void despawnActor(int);
 VS_HIDDEN(despawnActor);
 
+int func_8008C458(int, int, CVECTOR*, SVECTOR*);
+VS_HIDDEN(func_8008C458);
+
 void func_8007DE88(VECTOR* arg0);
 VS_HIDDEN(func_8007DE88);
 

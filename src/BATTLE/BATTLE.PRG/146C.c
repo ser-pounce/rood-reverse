@@ -4613,7 +4613,7 @@ void func_800738E4(void)
 
     for (i = 0; i < 16; ++i) {
         func_8009D7E8(i, 0);
-        func_800A07FC(i, 0);
+        setActorLightColor(i, 0);
     }
 
     func_80093A14();
@@ -16349,7 +16349,10 @@ void func_8008C40C(void)
     }
 }
 
-void func_8008C458(int arg0) { func_80098B38(arg0, 0); }
+int func_8008C458(int arg0, UNUSED int arg1, CVECTOR* arg2, UNUSED SVECTOR* arg3)
+{
+    return func_80098B38(arg0, 0, arg2);
+}
 
 int func_8008C478(int arg0)
 {

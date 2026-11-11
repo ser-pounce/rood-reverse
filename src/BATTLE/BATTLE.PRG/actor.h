@@ -191,7 +191,7 @@ void func_8009E634(D_800F4538_t*);
 void func_8009F940(int, int, CVECTOR*, CVECTOR*);
 int vs_battle_setActorAnimation(int actorId, int animation, int unused, int blendFrames);
 int func_800A0768(int, CVECTOR*);
-int func_800A07FC(int, CVECTOR*);
+int setActorLightColor(int, CVECTOR*);
 void vs_battle_setActorFlags(int actorId, int flags);
 u_int vs_battle_getActorFlags(int actorId);
 int vs_battle_getActorPosition(int, vs_ActorPosition*);

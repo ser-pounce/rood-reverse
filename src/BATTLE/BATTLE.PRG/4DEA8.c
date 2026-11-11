@@ -1410,19 +1410,27 @@ int vs_battle_script_30_waitActorActivity(u_char* script, UNUSED short arg1)
     return (status & mask) != 0 ? vs_battle_scriptRepeat : vs_battle_scriptNext;
 }
 
-int vs_battle_script_31(u_char* arg0, UNUSED short arg1)
+/**
+ * Overrides the ambient light colour of an actor. Black (0, 0, 0) restores the colour
+ * taken from the map lighting at the actor's position.
+ * @param script Opcode bytes:
+ *   - [1-2] = actor selector
+ *   - [3-5] = red, green and blue (0x80 = neutral)
+ */
+int vs_battle_script_31_setActorLightColor(u_char* script, UNUSED short arg1)
 {
-    CVECTOR sp10;
+    CVECTOR color;
 
-    sp10.r = arg0[3];
-    sp10.g = arg0[4];
-    sp10.b = arg0[5];
+    color.r = script[3];
+    color.g = script[4];
+    color.b = script[5];
 
-    if (sp10.r | sp10.g | sp10.b) {
-        func_800A07FC(resolveActorId(getShort(arg0 + 1)), &sp10);
+    if (color.r | color.g | color.b) {
+        setActorLightColor(resolveActorId(getShort(script + 1)), &color);
     } else {
-        func_800A07FC(resolveActorId(getShort(arg0 + 1)), NULL);
+        setActorLightColor(resolveActorId(getShort(script + 1)), NULL);
     }
+
     return vs_battle_scriptNext;
 }
 

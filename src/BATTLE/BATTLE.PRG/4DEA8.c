@@ -929,7 +929,7 @@ int vs_battle_script_21_walkActorToTile(u_char* script, UNUSED short arg1)
 
     if (scriptSkipMode == vs_battle_scriptSkipping) {
         destination.pad = -0x8000;
-        func_800A9D90(actor, &destination, 0);
+        slideActorToCoordinate(actor, &destination, 0);
     } else {
         func_8007CFF8(actor, &destination);
     }
@@ -1142,9 +1142,9 @@ int vs_battle_script_27_slideActorToTile(u_char* script, UNUSED short arg1)
     tile[0].extra = 0xFF;
 
     if (scriptSkipMode == vs_battle_scriptSkipping) {
-        func_800A9C54(actor, tile, 0);
+        slideActorToTile(actor, tile, 0);
     } else {
-        func_800A9C54(actor, tile, script[6] != 0xFF ? script[6] : -1);
+        slideActorToTile(actor, tile, script[6] != 0xFF ? script[6] : -1);
     }
 
     func_8009DC8C(actor);
@@ -1177,9 +1177,9 @@ int vs_battle_script_28_slideActorToCoordinate(u_char* arg0, UNUSED short arg1)
     sp10.unk0.unk4.pad = -0x8000;
 
     if (scriptSkipMode == vs_battle_scriptSkipping) {
-        func_800A9D90(temp_s2, &sp10.unk0.unk4, 0);
+        slideActorToCoordinate(temp_s2, &sp10.unk0.unk4, 0);
     } else {
-        func_800A9D90(temp_s2, &sp10.unk0.unk4, arg0[9] != 0xFF ? arg0[9] : -1);
+        slideActorToCoordinate(temp_s2, &sp10.unk0.unk4, arg0[9] != 0xFF ? arg0[9] : -1);
     }
 
     func_8009DC8C(temp_s2);
@@ -1208,7 +1208,7 @@ int vs_battle_script_2A_walkActorToCoordinate(u_char* arg0, UNUSED short arg1)
     sp10.vz = getShort(arg0 + 5);
     if (scriptSkipMode == vs_battle_scriptSkipping) {
         sp10.pad = -0x8000;
-        func_800A9D90(temp_s1, &sp10, 0);
+        slideActorToCoordinate(temp_s1, &sp10, 0);
     } else {
         func_8007CFF8(temp_s1, &sp10);
     }

@@ -533,7 +533,7 @@ void moveActorToCoordinate(int id, SVECTOR* target, int arg2, int arg3)
         }
 
         actor->unk0.unk18 = 0;
-        func_800A9D90(id, target, 0);
+        slideActorToCoordinate(id, target, 0);
         return;
     }
 
@@ -593,7 +593,7 @@ void moveActorToCoordinate(int id, SVECTOR* target, int arg2, int arg3)
     actor->unk5AC_2 = 0;
 }
 
-void func_800A9C54(int arg0, vs_TilePosition* arg1, int arg2)
+void slideActorToTile(int arg0, vs_TilePosition* arg1, int arg2)
 {
     D_800F4538_t* temp_s0 = D_800F4538[arg0];
 
@@ -637,7 +637,7 @@ void func_800A9D24(int arg0, SVECTOR* arg1, int arg2)
     temp_s1->unk5C2 = temp_s0;
 }
 
-void func_800A9D90(int arg0, SVECTOR* arg1, int arg2)
+void slideActorToCoordinate(int arg0, SVECTOR* arg1, int arg2)
 {
     SVECTOR sp10;
     u_short temp_s0;
@@ -1947,7 +1947,7 @@ void processActorMove(int arg0, D_800F4538_t* arg1)
             }
 
             if (!(arg1->unk5AC_2)) {
-                func_800A9D90(arg0, &arg1->unk5EC.vec, arg1->unk5C4);
+                slideActorToCoordinate(arg0, &arg1->unk5EC.vec, arg1->unk5C4);
             } else {
                 func_800AA620(arg0, &arg1->unk5EC.vec, arg1->unk5C4);
             }

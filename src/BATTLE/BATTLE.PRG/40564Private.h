@@ -23,8 +23,8 @@ VS_HIDDEN(moveActorToTile);
 void moveActorToCoordinate(int, SVECTOR*, int, int);
 VS_HIDDEN(moveActorToCoordinate);
 
-void func_800A9C54(int, vs_TilePosition*, int);
-VS_HIDDEN(func_800A9C54);
+void slideActorToTile(int, vs_TilePosition*, int);
+VS_HIDDEN(slideActorToTile);
 
 void func_800A9CDC(int, vs_TilePosition*, int);
 VS_HIDDEN(func_800A9CDC);
@@ -32,8 +32,8 @@ VS_HIDDEN(func_800A9CDC);
 void func_800A9D24(int, SVECTOR*, int);
 VS_HIDDEN(func_800A9D24);
 
-void func_800A9D90(int, SVECTOR*, int);
-VS_HIDDEN(func_800A9D90);
+void slideActorToCoordinate(int, SVECTOR*, int);
+VS_HIDDEN(slideActorToCoordinate);
 
 void func_800A9E38(int, short, int);
 VS_HIDDEN(func_800A9E38);

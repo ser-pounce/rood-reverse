@@ -1092,7 +1092,7 @@ int vs_battle_script_26_moveActorToCoordinate(u_char* arg0, UNUSED short arg1)
 {
     vs_ActorPosition position;
     u_short actor = resolveActorId(getShort(arg0 + 1));
-    int x = getShort(arg0 + 3) >> 1;
+    short x = getShort(arg0 + 3) >> 1;
     short y = getShort(arg0 + 5);
     short z = getShort(arg0 + 7);
 
@@ -1168,7 +1168,7 @@ int vs_battle_script_28_slideActorToCoordinate(u_char* script, UNUSED short arg1
 {
     vs_ActorPosition position;
     u_short actor = resolveActorId(getShort(script + 1));
-    int x = getShort(script + 3) >> 1;
+    short x = getShort(script + 3) >> 1;
     short y = getShort(script + 5);
     short z = getShort(script + 7);
 
@@ -1206,7 +1206,7 @@ int vs_battle_script_28_slideActorToCoordinate(u_char* script, UNUSED short arg1
 int vs_battle_script_29_attachActor(u_char* script, UNUSED short arg1)
 {
     u_short actor = resolveActorId(getShort(script + 1));
-    u_int parent = resolveActorId(getShort(script + 3)) & 0xFFFF;
+    u_short parent = resolveActorId(getShort(script + 3));
 
     if (parent >= 0x2000) {
         detachActor(actor, parent);

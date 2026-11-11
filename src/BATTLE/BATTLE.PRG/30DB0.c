@@ -3283,7 +3283,7 @@ void func_8009F298(int arg0, SVECTOR* arg1, int arg2)
     }
 }
 
-void startActorDeath(int actorId, UNUSED void* context, int animate)
+void startActorDeath(int actorId, void* context, int animate)
 {
     u_short* found;
     D_800F4538_t* actor = D_800F4538[actorId];

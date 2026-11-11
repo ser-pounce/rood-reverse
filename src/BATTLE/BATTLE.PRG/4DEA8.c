@@ -1659,13 +1659,19 @@ int vs_battle_script_3B_waitDataQueueEmpty(UNUSED u_char* script, UNUSED short a
     return getEmptyObjectDataSlot() > 0 ? vs_battle_scriptRepeat : vs_battle_scriptNext;
 }
 
-int vs_battle_script_3C(u_char* arg0, UNUSED short arg1)
+/**
+ * Unloads event data.
+ * @param script Opcode bytes:
+ *   - [1] = bits 0-1: slot, bit 2: unload only the ETM, otherwise the ESQ and its ETM
+ */
+int vs_battle_script_3C_unloadEventData(u_char* script, UNUSED short arg1)
 {
-    if (arg0[1] & 4) {
-        func_8007CC4C(arg0[1] & 3);
+    if (script[1] & 4) {
+        unloadEtm(script[1] & 3);
     } else {
-        func_8007CBBC(arg0[1]);
+        unloadEsqAndEtm(script[1]);
     }
+
     return (scriptSkipMode == vs_battle_scriptSkipping) ? vs_battle_scriptYield
                                                         : vs_battle_scriptNext;
 }

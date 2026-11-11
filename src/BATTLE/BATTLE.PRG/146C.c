@@ -9015,7 +9015,7 @@ void enqueueEsq(int index, int effectId)
     vs_battle_populateDataSlot(&objData);
 }
 
-void func_8007CBBC(int arg0) { func_8009CC20(arg0, 1); }
+void unloadEsqAndEtm(int arg0) { func_8009CC20(arg0, 1); }
 
 void enqueueEsqAndEtm(int index, int effectId, int textureSlot)
 {
@@ -9040,7 +9040,7 @@ void enqueueEtm(int index, int effectId, int textureSlot)
     vs_battle_populateDataSlot(&objData);
 }
 
-void func_8007CC4C(int arg0) { func_8009D208(arg0); }
+void unloadEtm(int arg0) { func_8009D208(arg0); }
 
 void func_8007CC6C(int arg0) { func_8009CE9C(arg0); }
 

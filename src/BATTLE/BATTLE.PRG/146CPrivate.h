@@ -185,8 +185,8 @@ VS_HIDDEN(func_8007CAA4);
 void enqueueEsq(int, int);
 VS_HIDDEN(enqueueEsq);
 
-void func_8007CBBC(int);
-VS_HIDDEN(func_8007CBBC);
+void unloadEsqAndEtm(int);
+VS_HIDDEN(unloadEsqAndEtm);
 
 void enqueueEsqAndEtm(int, int, int);
 VS_HIDDEN(enqueueEsqAndEtm);
@@ -194,8 +194,8 @@ VS_HIDDEN(enqueueEsqAndEtm);
 void enqueueEtm(int, int, int);
 VS_HIDDEN(enqueueEtm);
 
-void func_8007CC4C(int);
-VS_HIDDEN(func_8007CC4C);
+void unloadEtm(int);
+VS_HIDDEN(unloadEtm);
 
 void func_8007CC6C(int);
 VS_HIDDEN(func_8007CC6C);

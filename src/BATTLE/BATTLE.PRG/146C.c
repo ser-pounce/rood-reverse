@@ -4544,7 +4544,7 @@ void func_80073718(void)
 
     for (i = 0; i < 16; ++i) {
         if (vs_battle_actors[i] != NULL) {
-            func_8009FC60(i, -2, NULL, -1);
+            setActorLook(i, -2, NULL, -1);
             switch (vs_battle_actors[i]->unk8) {
             case 0x10:
                 break;
@@ -5565,19 +5565,19 @@ int func_80075554(void)
             state = 0;
             break;
         case 3:
-            func_8009FC60(i, -4, NULL, 0);
+            setActorLook(i, -4, NULL, 0);
             func_800B6634(i, actor->commandArgs.s16[0]);
             state = 0;
             break;
         case 4:
             offset.vx = 0;
             offset.vy = actor->commandArgs.u16[0];
-            func_8009FC60(i, -3, &offset, -1);
+            setActorLook(i, -3, &offset, -1);
             func_800B668C(i, actor->commandArgs.s16[0], actor->commandArgs.s16[1]);
             state = 0;
             break;
         case 15:
-            func_8009FC60(i, -2, NULL, -1);
+            setActorLook(i, -2, NULL, -1);
 
             if (actor->unkA >= 16) {
                 func_800B64CC(i, actor->commandArgs.s16[0],
@@ -5594,7 +5594,7 @@ int func_80075554(void)
             state = ((vs_battle_getActorFlags(i) & 0x4000) != 0) << 6;
             break;
         case 9:
-            func_8009FC60(i, -2, NULL, -1);
+            setActorLook(i, -2, NULL, -1);
 
             if (actor->stats->unk32 == 2) {
                 state = actor->stats->unk33 << 12;
@@ -5618,7 +5618,7 @@ int func_80075554(void)
             state = ((vs_battle_getActorFlags(i) & 0x4000) != 0) << 6;
             break;
         case 10:
-            func_8009FC60(i, -2, NULL, -1);
+            setActorLook(i, -2, NULL, -1);
 
             if (actor->stats->unk32 == 4) {
                 state = actor->stats->unk33 << 12;
@@ -5635,7 +5635,7 @@ int func_80075554(void)
         case 12:
         case 14:
         case 18:
-            func_8009FC60(i, -2, NULL, -1);
+            setActorLook(i, -2, NULL, -1);
             target.unk0.unk4.vx = (actor->commandArgs.u8[0] << 7) + 64;
             target.unk0.unk4.vz = (actor->commandArgs.u8[2] << 7) + 64;
             angle = ratan2(target.unk0.unk4.vx - position.unk0.unk4.vx,
@@ -5669,7 +5669,7 @@ int func_80075554(void)
                  << 6;
             break;
         case 23:
-            func_8009FC60(i, -2, NULL, -1);
+            setActorLook(i, -2, NULL, -1);
 
             if (actor->unkA >= 16) {
                 angle = position.unk0.unk4.pad;
@@ -5684,7 +5684,7 @@ int func_80075554(void)
             state = 0x40;
             break;
         case 16:
-            func_8009FC60(i, -2, NULL, -1);
+            setActorLook(i, -2, NULL, -1);
 
             if (actor->stats->unk32 == 0x10) {
                 state = actor->stats->unk33 << 12;
@@ -5707,7 +5707,7 @@ int func_80075554(void)
             state = 0;
             break;
         case 17:
-            func_8009FC60(i, -2, NULL, -1);
+            setActorLook(i, -2, NULL, -1);
 
             if (actor->stats->unk32 == 0x20) {
                 state = actor->stats->unk33 << 12;
@@ -5750,14 +5750,14 @@ int func_80075554(void)
             func_800B64CC(i, position.unk0.unk4.pad, 0, position.unk0.unk4.pad);
             offset.vy = actor->commandArgs.u16[0];
             offset.vx = 0;
-            func_8009FC60(i, -4, &offset, actor->commandArgs.s16[1]);
+            setActorLook(i, -4, &offset, actor->commandArgs.s16[1]);
             state = 0;
             break;
         case 7:
             func_800B64CC(i, position.unk0.unk4.pad, 0, position.unk0.unk4.pad);
             offset.vy = actor->commandArgs.u16[0];
             offset.vx = 0;
-            func_8009FC60(i, -4, &offset, ONE);
+            setActorLook(i, -4, &offset, ONE);
             state = 0;
             break;
         case 22:
@@ -5807,7 +5807,7 @@ int func_80075554(void)
             state = 0;
             break;
         case 24:
-            func_8009FC60(i, -2, NULL, -1);
+            setActorLook(i, -2, NULL, -1);
             state =
                 actor->stats->armor[actor->commandArgs.u16[0]][actor->commandArgs.u16[1]]
                     .id;

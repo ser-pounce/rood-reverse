@@ -1482,21 +1482,32 @@ int vs_battle_script_33_rotateActor(u_char* script, UNUSED short arg1)
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_34(u_char* arg0, UNUSED short arg1)
+/**
+ * Turns the actor's head to the given angles.
+ * @param script Opcode bytes:
+ *   - [1-2] = actor selector
+ *   - [3-4] = pitch (1/4096 turn)
+ *   - [5-6] = yaw
+ *   - [7] = speed, 0 = unlimited
+ */
+int vs_battle_script_34_setActorLookAngles(u_char* script, UNUSED short arg1)
 {
-    SVECTOR sp10;
-    int temp_v0;
-    int var_a3;
+    SVECTOR angles;
+    int actor;
+    int speed;
 
-    sp10.vx = getShort(arg0 + 3);
-    sp10.vy = getShort(arg0 + 5);
-    sp10.vz = 0;
-    temp_v0 = resolveActorId(getShort(arg0 + 1));
-    var_a3 = 0x1000;
-    if (arg0[7] != 0) {
-        var_a3 = arg0[7];
+    angles.vx = getShort(script + 3);
+    angles.vy = getShort(script + 5);
+    angles.vz = 0;
+    actor = resolveActorId(getShort(script + 1));
+    speed = ONE;
+
+    if (script[7] != 0) {
+        speed = script[7];
     }
-    func_8009FC60(temp_v0, -4, &sp10, var_a3);
+
+    setActorLook(actor, -4, &angles, speed);
+
     return vs_battle_scriptNext;
 }
 
@@ -1542,7 +1553,7 @@ int vs_battle_script_38(u_char* arg0, UNUSED short arg1)
     if (arg0[5] != 0) {
         var_a3 = arg0[5];
     }
-    func_8009FC60(temp_a0, var_a1, 0, var_a3);
+    setActorLook(temp_a0, var_a1, 0, var_a3);
     return vs_battle_scriptNext;
 }
 
@@ -1558,7 +1569,7 @@ int vs_battle_script_39(u_char* arg0, UNUSED short arg1)
     if (arg0[9] != 0) {
         var_a3 = arg0[9];
     }
-    func_8009FC60(temp_v0, -1, &sp10, var_a3);
+    setActorLook(temp_v0, -1, &sp10, var_a3);
     return vs_battle_scriptNext;
 }
 

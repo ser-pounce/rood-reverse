@@ -3603,7 +3603,7 @@ int func_8009FC20(int arg0, int* arg1)
     return 0;
 }
 
-int func_8009FC60(int arg0, int arg1, SVECTOR* arg2, int arg3)
+int setActorLook(int arg0, int arg1, SVECTOR* arg2, int arg3)
 {
     UNUSED int _[2];
     D_800F4538_t* temp_s0 = D_800F4538[arg0];

@@ -1561,39 +1561,64 @@ int vs_battle_script_37_setActorMoveAnimation(u_char* script, UNUSED short arg1)
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_38(u_char* arg0, UNUSED short arg1)
+/**
+ * Turns the actor's head towards another actor.
+ * @param script Opcode bytes:
+ *   - [1-2] = actor selector
+ *   - [3-4] = target actor selector, 0x2000 = stop looking at anything
+ *   - [5] = speed, 0 = unlimited
+ */
+int vs_battle_script_38_setActorLookTarget(u_char* script, UNUSED short arg1)
 {
-    int var_a3;
+    int speed;
 
-    int temp_s0 = resolveActorId(getShort(arg0 + 3));
-    int temp_a0 = resolveActorId(getShort(arg0 + 1));
+    int target = resolveActorId(getShort(script + 3));
+    int actor = resolveActorId(getShort(script + 1));
 
-    int var_a1 = -2;
-    if (temp_s0 != 0x2000) {
-        var_a1 = temp_s0;
+    int mode = -2;
+
+    if (target != 0x2000) {
+        mode = target;
     }
 
-    var_a3 = 0x1000;
-    if (arg0[5] != 0) {
-        var_a3 = arg0[5];
+    speed = ONE;
+
+    if (script[5] != 0) {
+        speed = script[5];
     }
-    setActorLook(temp_a0, var_a1, 0, var_a3);
+
+    setActorLook(actor, mode, 0, speed);
+
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_39(u_char* arg0, UNUSED short arg1)
+/**
+ * Turns the actor's head towards a world position.
+ * @param script Opcode bytes:
+ *   - [1-2] = actor selector
+ *   - [3-4] = x
+ *   - [5-6] = y
+ *   - [7-8] = z
+ *   - [9] = speed, 0 = unlimited
+ */
+int vs_battle_script_39_setActorLookPosition(u_char* script, UNUSED short arg1)
 {
-    SVECTOR sp10;
-    int temp_v0;
-    int var_a3;
+    SVECTOR position;
+    int actor;
+    int speed;
 
-    setVector(&sp10, getShort(arg0 + 3), getShort(arg0 + 5), getShort(arg0 + 7));
-    temp_v0 = resolveActorId(getShort(arg0 + 1));
-    var_a3 = 0x1000;
-    if (arg0[9] != 0) {
-        var_a3 = arg0[9];
+    setVector(
+        &position, getShort(script + 3), getShort(script + 5), getShort(script + 7));
+
+    actor = resolveActorId(getShort(script + 1));
+    speed = ONE;
+
+    if (script[9] != 0) {
+        speed = script[9];
     }
-    setActorLook(temp_v0, -1, &sp10, var_a3);
+
+    setActorLook(actor, -1, &position, speed);
+
     return vs_battle_scriptNext;
 }
 

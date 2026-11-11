@@ -392,8 +392,8 @@ MATRIX* func_800A1DE8(int actorId, int bone, MATRIX* unused)
 
         scratch->matrix = *(weapon->unk20 + bone - 0x3F);
     } else if (bone == 0xFF) {
-        setVector(&scratch->offset, actor->unk704.unk0[41].vx >> 1,
-            actor->unk704.unk0[41].vy >> 1, actor->unk704.unk0[41].vz >> 1);
+        setVector(&scratch->offset, actor->unk704.unk148.vx >> 1,
+            actor->unk704.unk148.vy >> 1, actor->unk704.unk148.vz >> 1);
         setVector(&scratch->offset, scratch->offset.vx * actor->unk183C / ONE,
             scratch->offset.vy * actor->unk183C / ONE,
             scratch->offset.vz * actor->unk183C / ONE);

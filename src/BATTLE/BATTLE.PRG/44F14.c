@@ -761,9 +761,9 @@ void func_800AE980(D_800F4538_unkC54* dst, D_800F4538_unkC54* src, int count)
 {
     int i;
 
-    dst->unk0[41].vx = (dst->unk0[41].vx + src->unk0[41].vx) >> 1;
-    dst->unk0[41].vy = (dst->unk0[41].vy + src->unk0[41].vy) >> 1;
-    dst->unk0[41].vz = (dst->unk0[41].vz + src->unk0[41].vz) >> 1;
+    dst->unk148.vx = (dst->unk148.vx + src->unk148.vx) >> 1;
+    dst->unk148.vy = (dst->unk148.vy + src->unk148.vy) >> 1;
+    dst->unk148.vz = (dst->unk148.vz + src->unk148.vz) >> 1;
 
     for (i = 0; i < count; ++i) {
         int x = src->unk0[i].vx - dst->unk0[i].vx;
@@ -812,13 +812,13 @@ void func_800AEAE8(D_800F4538_t* actor)
 
     if (actor->unk0.unk2C == ONE && actor->unk0.unk2E == ONE
         && actor->unk0.unk30 == ONE) {
-        setVector(&scratch->offset, actor->unk704.unk0[41].vx >> 1,
-            actor->unk704.unk0[41].vy >> 1, actor->unk704.unk0[41].vz >> 1);
+        setVector(&scratch->offset, actor->unk704.unk148.vx >> 1,
+            actor->unk704.unk148.vy >> 1, actor->unk704.unk148.vz >> 1);
     } else {
         setVector(&scratch->offset,
-            actor->unk704.unk0[41].vx * actor->unk0.unk2C / (ONE * 2),
-            actor->unk704.unk0[41].vy * actor->unk0.unk2E / (ONE * 2),
-            actor->unk704.unk0[41].vz * actor->unk0.unk30 / (ONE * 2));
+            actor->unk704.unk148.vx * actor->unk0.unk2C / (ONE * 2),
+            actor->unk704.unk148.vy * actor->unk0.unk2E / (ONE * 2),
+            actor->unk704.unk148.vz * actor->unk0.unk30 / (ONE * 2));
     }
 
     setVector(&scratch->offset, scratch->offset.vx * actor->unk183C / ONE,
@@ -1243,12 +1243,12 @@ void func_800AFA28(D_800F4538_t* actor, D_800F4538_unkC54* state, int mode)
     track = header[4];
 
     if (track != 0) {
-        func_800AFDE8(track, &state->unk150[41], 0);
-        applyVector(&actor->unk0.position, state->unk150[41].vx / 4,
-            state->unk150[41].vy / 4, state->unk150[41].vz / 4, +=);
+        func_800AFDE8(track, &state->unk298, 0);
+        applyVector(&actor->unk0.position, state->unk298.vx / 4, state->unk298.vy / 4,
+            state->unk298.vz / 4, +=);
     }
 
-    func_800AFDE8(header[3], &state->unk0[41], 0);
+    func_800AFDE8(header[3], &state->unk148, 0);
 
     for (i = 0; i < actor->unk0.nBones; ++i) {
         func_800AFDE8(header[i + 5], &state->unk0[i], 1);
@@ -1382,13 +1382,13 @@ void func_800B002C(D_800F4538_t* actor, int arg1)
 
     if (actor->unk0.unk2C == ONE && actor->unk0.unk2E == ONE
         && actor->unk0.unk30 == ONE) {
-        setVector(&scratch->offset, actor->unk704.unk0[41].vx >> 1,
-            actor->unk704.unk0[41].vy >> 1, actor->unk704.unk0[41].vz >> 1);
+        setVector(&scratch->offset, actor->unk704.unk148.vx >> 1,
+            actor->unk704.unk148.vy >> 1, actor->unk704.unk148.vz >> 1);
     } else {
         setVector(&scratch->offset,
-            actor->unk704.unk0[41].vx * actor->unk0.unk2E / (ONE * 2),
-            actor->unk704.unk0[41].vy * actor->unk0.unk30 / (ONE * 2),
-            actor->unk704.unk0[41].vz * actor->unk0.unk2C / (ONE * 2));
+            actor->unk704.unk148.vx * actor->unk0.unk2E / (ONE * 2),
+            actor->unk704.unk148.vy * actor->unk0.unk30 / (ONE * 2),
+            actor->unk704.unk148.vz * actor->unk0.unk2C / (ONE * 2));
     }
 
     setVector(&scratch->offset, scratch->offset.vx * actor->unk183C / ONE,

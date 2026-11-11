@@ -2040,9 +2040,9 @@ void func_800AD008(D_800F4538_t* actor, D_800F4538_unkC54* pose)
     actor->unk5AC_23 = 0;
     pose->unk540 = 0;
     pose->unk549 = 0;
-    *(int*)&pose->unk150[41].vx = 0;
-    *(int*)&pose->unk150[41].vz = 0;
-    pose->unk3F0[41].pad = 0;
+    *(int*)&pose->unk298.vx = 0;
+    *(int*)&pose->unk298.vz = 0;
+    pose->unk538.pad = 0;
     anim = func_800AD494(actor, actor->animationId, &header);
 
     if (anim == NULL) {
@@ -2071,7 +2071,7 @@ void func_800AD008(D_800F4538_t* actor, D_800F4538_unkC54* pose)
     pose->unk548 = actor->animationId;
 
     if (header[4] != 0) {
-        key = &pose->unk150[41];
+        key = &pose->unk298;
         data = anim->unk0;
         data += header[4];
         func_800ACFA0(key, data, 0xFF);
@@ -2083,7 +2083,7 @@ void func_800AD008(D_800F4538_t* actor, D_800F4538_unkC54* pose)
         header = (u_short*)((u_char*)anim->unk8 + (actor->unk0.nBones * 4 + 10) * frame);
     }
 
-    key = &pose->unk0[41];
+    key = &pose->unk148;
     data = anim->unk0;
     data += header[3];
     func_800ACFA0(key, data, frame);

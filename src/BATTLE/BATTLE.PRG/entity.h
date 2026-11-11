@@ -41,10 +41,13 @@ typedef struct {
 } D_800F4538_unk1864;
 
 typedef struct {
-    SVECTOR unk0[42];
-    SVECTOR unk150[42];
+    SVECTOR unk0[41];
+    SVECTOR unk148;
+    SVECTOR unk150[41];
+    SVECTOR unk298;
     SVECTOR unk2A0[42];
-    SVECTOR unk3F0[42];
+    SVECTOR unk3F0[41];
+    SVECTOR unk538;
     short unk540;
     u_short unk542;
     u_char* unk544;

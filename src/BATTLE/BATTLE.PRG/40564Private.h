@@ -17,8 +17,8 @@ VS_HIDDEN(func_800A92B8);
 int func_800A9378(int, int, int, int);
 VS_HIDDEN(func_800A9378);
 
-void func_800A97EC(int, vs_TilePosition*, int, int);
-VS_HIDDEN(func_800A97EC);
+void moveActorToTile(int, vs_TilePosition*, int, int);
+VS_HIDDEN(moveActorToTile);
 
 void func_800A9988(int, SVECTOR*, int, int);
 VS_HIDDEN(func_800A9988);
@@ -92,8 +92,8 @@ VS_HIDDEN(func_800AC440);
 void func_800AC500(D_800F4538_t* arg0);
 VS_HIDDEN(func_800AC500);
 
-void func_800AC540(int arg0, D_800F4538_t* arg1);
-VS_HIDDEN(func_800AC540);
+void processActorMove(int arg0, D_800F4538_t* arg1);
+VS_HIDDEN(processActorMove);
 
 void func_800AC690(int, D_800F4538_t*);
 VS_HIDDEN(func_800AC690);

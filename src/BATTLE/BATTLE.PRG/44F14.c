@@ -940,7 +940,7 @@ void func_800AEF94(MATRIX* camera)
             func_800AB4F0(actor);
         loaded:
             if (actor->unk5AC_0) {
-                func_800AC540(i, actor);
+                processActorMove(i, actor);
             }
 
             if (vs_gametime_tickspeed == 4) {

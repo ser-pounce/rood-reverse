@@ -454,7 +454,7 @@ int func_800A9530(D_800F4538_t* actor, SVECTOR* offset)
     return 1;
 }
 
-void func_800A97EC(int arg0, vs_TilePosition* arg1, int arg2, int arg3)
+void moveActorToTile(int arg0, vs_TilePosition* arg1, int arg2, int arg3)
 {
     int angle;
 
@@ -1933,7 +1933,7 @@ void func_800AC500(D_800F4538_t* arg0)
     }
 }
 
-void func_800AC540(int arg0, D_800F4538_t* arg1)
+void processActorMove(int arg0, D_800F4538_t* arg1)
 {
 
     switch (arg1->unk5AC_0) {

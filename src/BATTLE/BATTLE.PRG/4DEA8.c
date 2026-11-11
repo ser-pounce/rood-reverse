@@ -1060,9 +1060,9 @@ int vs_battle_script_25_moveActor(u_char* script, UNUSED short arg1)
     tile[0].extra = script[6];
 
     if (scriptSkipMode == vs_battle_scriptSkipping) {
-        func_800A97EC(actor, tile, 0, 0);
+        moveActorToTile(actor, tile, 0, 0);
     } else {
-        func_800A97EC(actor, tile, script[7] != 0xFF ? script[7] : -1,
+        moveActorToTile(actor, tile, script[7] != 0xFF ? script[7] : -1,
             script[8] != 0xFF ? script[8] : -1);
     }
 

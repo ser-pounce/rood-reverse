@@ -1,11 +1,11 @@
 #include "common.h"
 #include "146C.h"
-#include "30DB0.h"
+#include "30DB0Private.h"
 #include "44F14.h"
 #include "48C7C.h"
-#include "49268.h"
+#include "49268Private.h"
 #include "4B16C.h"
-#include "4DEA8.h"
+#include "4DEA8Private.h"
 #include "battleUnk.h"
 #include "entity.h"
 #include "src/SLUS_010.40/32154.h"
@@ -46,7 +46,7 @@ void func_800B28A8(D_800F4538_t* actor, MATRIX* camera, int mode)
     D_1F80035C_t* scratch = (void*)0x1F80035C;
     int i;
     int temp;
-    vs_scratch_t* s2;
+    vs_Scratch* s2;
 
     scratch->model = actor->unk0.unk68;
 
@@ -169,14 +169,14 @@ void func_800B28A8(D_800F4538_t* actor, MATRIX* camera, int mode)
                 }
                 break;
             case 7: {
-                s2 = ((vs_scratch_t*)0x1F800000);
+                s2 = ((vs_Scratch*)0x1F800000);
                 setVector(&scratch->rotation, s2->camera.angles.vx,
                     s2->camera.angles.vy - 0x400, s2->camera.angles.vz);
             }
             case 8:
             case 9: {
                 int dx, dz, yaw;
-                s2 = ((vs_scratch_t*)0x1F800000);
+                s2 = ((vs_Scratch*)0x1F800000);
                 dx = s2->camera.position.vx / ONE - scratch->offset.vx;
                 dz = s2->camera.position.vz / ONE - scratch->offset.vz;
 

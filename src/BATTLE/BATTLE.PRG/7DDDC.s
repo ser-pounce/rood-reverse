@@ -736,7 +736,7 @@ alabel func_800E6F9C
     lui        $at, %hi(D_800F58D0)
     sw         $v0, %lo(D_800F58D0)($at)
     addu       $s4, $v0, $zero
-    jal        _getCollisionMapDimensions
+    jal        getCollisionMapDimensions
      addu      $a0, $zero, $zero
     and        $a0, $v0, 0xFFFF
     srl        $a0, 4

@@ -8,8 +8,8 @@
 #include "scratch.h"
 #include <libgpu.h>
 
-extern int _ashleyYOffset;
-extern int _ashleyRenderState;
+extern int ashleyYOffset;
+extern int ashleyRenderState;
 
 enum ashleyRenderMode {
     ashleyRenderModeRender,
@@ -27,31 +27,31 @@ enum ashleyRenderMode {
  *
  * - ashleyRenderModeRestore Called when leaving menu
  */
-static void _renderAshley(int mode)
+static void renderAshley(int mode)
 {
     static int render = 0;
     static char skipFrame = 0;
 
     static int projectionDistance;
-#ifdef _ITEMMENU
+#ifdef ITEMMENU
     static UNUSED int _[3];
 #else
     static UNUSED int _;
 #endif
     static MATRIX viewMatrixBackup;
-    static vs_camera_t cameraBackup;
+    static vs_Camera cameraBackup;
 
     int yOffset;
-    vs_camera_t* camera = &vs_scratch.camera;
+    vs_Camera* camera = &vs_scratch.camera;
 
     switch (mode) {
     case ashleyRenderModeRender:
-        yOffset = _ashleyYOffset;
+        yOffset = ashleyYOffset;
 
-        switch (_ashleyRenderState) {
+        switch (ashleyRenderState) {
         case 0:
             if (yOffset < 10) {
-                _ashleyYOffset = ++yOffset;
+                ashleyYOffset = ++yOffset;
             }
 
             yOffset = 128 - vs_battle_rowAnimationSteps[10 - yOffset];
@@ -59,7 +59,7 @@ static void _renderAshley(int mode)
 
         case 1:
             if (yOffset > 0) {
-                _ashleyYOffset = --yOffset;
+                ashleyYOffset = --yOffset;
             }
 
             yOffset = vs_battle_rowAnimationSteps[yOffset];
@@ -67,9 +67,9 @@ static void _renderAshley(int mode)
 
         case 2:
             if (yOffset < 10) {
-                _ashleyYOffset = ++yOffset;
+                ashleyYOffset = ++yOffset;
             } else {
-                _ashleyRenderState = 0;
+                ashleyRenderState = 0;
             }
 
             yOffset = vs_battle_rowAnimationSteps[10 - yOffset] + 128;
@@ -77,7 +77,7 @@ static void _renderAshley(int mode)
 
         case 3:
             if (yOffset > 0) {
-                _ashleyYOffset = --yOffset;
+                ashleyYOffset = --yOffset;
             }
 
             yOffset = 608 - yOffset * 48;
@@ -118,15 +118,15 @@ static void _renderAshley(int mode)
 
     case ashleyRenderModeInit:
         if (render == 0) {
-            _ashleyYOffset = 0;
-            _ashleyRenderState = 2;
+            ashleyYOffset = 0;
+            ashleyRenderState = 2;
             skipFrame = 1;
             render = 1;
             projectionDistance = vs_main_projectionDistance;
 
             vs_battle_setProjectionDistance(512);
 
-            viewMatrixBackup = ((vs_scratch_t*)((void*)camera - 0x34))->viewMatrix;
+            viewMatrixBackup = ((vs_Scratch*)((void*)camera - 0x34))->viewMatrix;
             cameraBackup = *camera;
             setVector(&camera->angles, 0, 0, 0);
             camera->farClip = 0x1000;
@@ -144,7 +144,7 @@ static void _renderAshley(int mode)
             vs_mainMenu_setBackgroundRenderPriority(-4, 128);
             vs_battle_setProjectionDistance(projectionDistance);
 
-            ((vs_scratch_t*)((void*)camera - 0x34))->viewMatrix = viewMatrixBackup;
+            ((vs_Scratch*)((void*)camera - 0x34))->viewMatrix = viewMatrixBackup;
             *camera = cameraBackup;
             render = 0;
         }

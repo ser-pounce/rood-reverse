@@ -12,7 +12,7 @@
 
 void func_800DBF00(func_800E78F4_t* arg0)
 {
-    vs_battle_actor* data = arg0->unk54;
+    vs_Actor* data = arg0->unk54;
     func_800E78F4_t* node;
 
     arg0->unk12F = 0;
@@ -89,7 +89,7 @@ void func_800DC0D0(void)
     state = D_800F58BC->unk1C;
 
     do {
-        vs_battle_actor* data = state->unk54;
+        vs_Actor* data = state->unk54;
 
         if (state->unk1A4[0].unk0_6 != 2) {
             if (state->unk12F == 0) {

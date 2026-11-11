@@ -14,7 +14,7 @@
 #include "src/BATTLE/BATTLE.PRG/mpd.h"
 #include "build/src/include/lbas.h"
 #include "gpu.h"
-#include "texture_t.h"
+#include "texture.h"
 #include <stdio.h>
 #include <libetc.h>
 #include <rand.h>
@@ -24,10 +24,10 @@
 typedef struct {
     short stat;
     short amount;
-} _buffReels_t;
+} BuffReels;
 
-static int _initMenu(void);
-static int _execMenu(void);
+static int initMenu(void);
+static int execMenu(void);
 
 int vs_menuF_exec(u_char* state)
 {
@@ -36,10 +36,10 @@ int vs_menuF_exec(u_char* state)
         *state = 1;
         // Fallthrough
     case 1:
-        *state += (_initMenu() != 0);
+        *state += (initMenu() != 0);
         break;
     case 2:
-        if (_execMenu() != 0) {
+        if (execMenu() != 0) {
             *state = 0;
             return 1;
         }
@@ -50,55 +50,55 @@ int vs_menuF_exec(u_char* state)
 
 #include "src/MENU/unused_vertices.h"
 
-enum _disFileIndices { rankDis, timeDis, attackDis, iqDis, escDis };
+enum disFileIndices { rankDis, timeDis, attackDis, iqDis, escDis };
 
-static vs_main_CdFile const _disFiles[] = { { VS_RANK_DIS_LBA, VS_RANK_DIS_SIZE },
+static vs_Main_CdFile const disFiles[] = { { VS_RANK_DIS_LBA, VS_RANK_DIS_SIZE },
     { VS_TIME_DIS_LBA, VS_TIME_DIS_SIZE }, { VS_ATTACK_DIS_LBA, VS_ATTACK_DIS_SIZE },
     { VS_IQ_DIS_LBA, VS_IQ_DIS_SIZE }, { VS_ESC_DIS_LBA, VS_ESC_DIS_SIZE } };
 
-static int _initCongratulationsScreen(void);
-static int _initTimeAttackStart(void);
-static int _initTimeAttackEnd(void);
-static void _addHealBonus(void);
-static void _nop2(void);
-static int _initCubePuzzleStart(void);
-static int _initCubePuzzleEnd(void);
-static int _initCubePuzzleQuit(void);
+static int initCongratulationsScreen(void);
+static int initTimeAttackStart(void);
+static int initTimeAttackEnd(void);
+static void addHealBonus(void);
+static void nop2(void);
+static int initCubePuzzleStart(void);
+static int initCubePuzzleEnd(void);
+static int initCubePuzzleQuit(void);
 
-int _initMenu(void)
+int initMenu(void)
 {
     int ret;
 
     switch (vs_main_stateFlags.menuFSubmenu) {
     case 0:
-        ret = _initCongratulationsScreen();
+        ret = initCongratulationsScreen();
         break;
 
     case 1:
-        ret = _initTimeAttackStart();
+        ret = initTimeAttackStart();
         break;
 
     case 2:
-        ret = _initTimeAttackEnd();
+        ret = initTimeAttackEnd();
         break;
 
     case 3:
-        _addHealBonus();
-        _nop2();
+        addHealBonus();
+        nop2();
 
         ret = 1;
         break;
 
     case 4:
-        ret = _initCubePuzzleStart();
+        ret = initCubePuzzleStart();
         break;
 
     case 5:
-        ret = _initCubePuzzleEnd();
+        ret = initCubePuzzleEnd();
         break;
 
     case 6:
-        ret = _initCubePuzzleQuit();
+        ret = initCubePuzzleQuit();
         break;
     }
 
@@ -106,27 +106,27 @@ int _initMenu(void)
 }
 
 static void func_80103748(void);
-static int _getTotalStrength(void);
-static int _getTotalIntelligence(void);
-static int _getTotalAgility(void);
-static void _calculateScore(void);
-static void _determineRank(void);
+static int getTotalStrength(void);
+static int getTotalIntelligence(void);
+static int getTotalAgility(void);
+static void calculateScore(void);
+static void determineRank(void);
 
-static u_int _buffReelSelection;
-static int _rank;
-static int _clearCount;
-static u_int _score;
-static u_int _mapCompletion;
-static u_int _elementAnimationState;
-static int _buffReelIndex;
-static int _onScreenMapCompletion;
-static int _onScreenScore;
-static int _screenTimer;
-static int _screenState;
+static u_int buffReelSelection;
+static int riskbreakerRank;
+static int clearCount;
+static u_int score;
+static u_int mapCompletionPercent;
+static u_int elementAnimationState;
+static int buffReelIndex;
+static int onScreenMapCompletion;
+static int onScreenScore;
+static int screenTimer;
+static int screenState;
 
-int _initCongratulationsScreen(void)
+int initCongratulationsScreen(void)
 {
-    static vs_main_CdQueueSlot* cdSlot;
+    static vs_Main_CdQueueSlot* cdSlot;
     static void* timData;
 
     int i;
@@ -135,8 +135,8 @@ int _initCongratulationsScreen(void)
 
         func_8007DFF0(0x1D, 3, 5);
 
-        timData = vs_main_allocHeapR(_disFiles[rankDis].size);
-        cdSlot = vs_main_allocateCdQueueSlot(&_disFiles[rankDis]);
+        timData = vs_main_allocHeapR(disFiles[rankDis].size);
+        cdSlot = vs_main_allocateCdQueueSlot(&disFiles[rankDis]);
 
         vs_main_cdEnqueue(cdSlot, timData);
 
@@ -186,34 +186,34 @@ int _initCongratulationsScreen(void)
         vs_main_playMusicSlot(2, 0x7F, 0);
         vs_main_freeHeapR(timData);
 
-        _onScreenMapCompletion = 0;
-        _onScreenScore = 0;
-        _screenTimer = 0;
-        _screenState = 0;
-        _elementAnimationState = 0;
-        _buffReelSelection = (rand() & 0xF0) | 8;
+        onScreenMapCompletion = 0;
+        onScreenScore = 0;
+        screenTimer = 0;
+        screenState = 0;
+        elementAnimationState = 0;
+        buffReelSelection = (rand() & 0xF0) | 8;
 
-        strength = _getTotalStrength();
-        intelligence = _getTotalIntelligence();
-        agility = _getTotalAgility();
+        strength = getTotalStrength();
+        intelligence = getTotalIntelligence();
+        agility = getTotalAgility();
 
         if ((intelligence >= strength) && (agility >= strength)) {
-            _buffReelIndex = 0;
+            buffReelIndex = 0;
         } else if (strength >= intelligence) {
             if (agility >= intelligence) {
-                _buffReelIndex = 1;
+                buffReelIndex = 1;
             } else {
-                _buffReelIndex = 2;
+                buffReelIndex = 2;
             }
         } else {
-            _buffReelIndex = 2;
+            buffReelIndex = 2;
         }
 
         vs_battle_submenuState = 0;
 
-        _addHealBonus();
+        addHealBonus();
 
-        _clearCount = vs_main_stateFlags.clearCount;
+        clearCount = vs_main_stateFlags.clearCount;
 
         if (vs_main_mapStatus.roomFlags[1] & 0x800000) {
             vs_main_mapStatus.roomFlags[1] |= 0x400000;
@@ -247,10 +247,10 @@ int _initCongratulationsScreen(void)
             vs_main_scoredata.openedChestCount = chestsOpened;
         }
 
-        _mapCompletion = (mapCompletion * 100) / 361;
+        mapCompletionPercent = (mapCompletion * 100) / 361;
 
-        _calculateScore();
-        _determineRank();
+        calculateScore();
+        determineRank();
 
         return 1;
     }
@@ -258,13 +258,13 @@ int _initCongratulationsScreen(void)
     return 0;
 }
 
-static int _newTimeSlot;
-static int _timeTrialTime;
-static u_short _clutBuf[160];
+static int newTimeSlot;
+static int timeTrialTime;
+static u_short clutBuf[160];
 
-int _initTimeAttackEnd(void)
+int initTimeAttackEnd(void)
 {
-    static vs_main_CdQueueSlot* cdSlot;
+    static vs_Main_CdQueueSlot* cdSlot;
     static void* timData;
 
     int i;
@@ -274,8 +274,8 @@ int _initTimeAttackEnd(void)
 
         func_8007DFF0(0x1D, 1, 5);
 
-        timData = vs_main_allocHeapR(_disFiles[timeDis].size);
-        cdSlot = vs_main_allocateCdQueueSlot(&_disFiles[1]);
+        timData = vs_main_allocHeapR(disFiles[timeDis].size);
+        cdSlot = vs_main_allocateCdQueueSlot(&disFiles[1]);
 
         vs_main_cdEnqueue(cdSlot, timData);
 
@@ -303,7 +303,7 @@ int _initTimeAttackEnd(void)
                 tim.caddr[0] = 0;
 
                 LoadImage(tim.crect, tim.caddr);
-                vs_main_memcpy(_clutBuf, tim.caddr, sizeof _clutBuf);
+                vs_main_memcpy(clutBuf, tim.caddr, sizeof clutBuf);
             }
 
             vs_main_freeCdQueueSlot(cdSlot);
@@ -315,12 +315,12 @@ int _initTimeAttackEnd(void)
 
         vs_main_playMusicSlot(2, 0x7F, 0);
 
-        _timeTrialTime = (vs_main_stateFlags.timeAttackMins << 0x10)
-                       | (vs_main_stateFlags.timeAttackSecs << 8)
-                       | vs_main_stateFlags.timeAttackHundredths;
+        timeTrialTime = (vs_main_stateFlags.timeAttackMins << 0x10)
+                      | (vs_main_stateFlags.timeAttackSecs << 8)
+                      | vs_main_stateFlags.timeAttackHundredths;
 
-        if (_timeTrialTime == 0) {
-            _timeTrialTime = (59 << 16) | (59 << 8) | 99;
+        if (timeTrialTime == 0) {
+            timeTrialTime = (59 << 16) | (59 << 8) | 99;
         }
 
         for (i = 0; i < 3; ++i) {
@@ -329,7 +329,7 @@ int _initTimeAttackEnd(void)
             if ((vs_main_scoredata
                         .bossTimeTrialScores[vs_main_stateFlags.timeAttackBoss][i]
                         .time)
-                < _timeTrialTime) {
+                < timeTrialTime) {
                 continue;
             }
 
@@ -356,7 +356,7 @@ int _initTimeAttackEnd(void)
             }
 
             vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.timeAttackBoss][i]
-                .time = _timeTrialTime;
+                .time = timeTrialTime;
             vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.timeAttackBoss][i]
                 .round = vs_main_stateFlags.clearCount;
             vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.timeAttackBoss][i]
@@ -365,10 +365,10 @@ int _initTimeAttackEnd(void)
             break;
         }
 
-        _newTimeSlot = i;
-        _screenTimer = 0;
-        _screenState = 0;
-        _elementAnimationState = 0;
+        newTimeSlot = i;
+        screenTimer = 0;
+        screenState = 0;
+        elementAnimationState = 0;
         vs_battle_submenuState = 0;
 
         vs_main_freeHeapR(timData);
@@ -378,17 +378,17 @@ int _initTimeAttackEnd(void)
     return 0;
 }
 
-int _initTimeAttackStart(void)
+int initTimeAttackStart(void)
 {
-    static vs_main_CdQueueSlot* cdSlot;
+    static vs_Main_CdQueueSlot* cdSlot;
     static void* timData;
 
     if (vs_battle_submenuState == 0) {
 
         func_8007DFF0(0x1D, 2, 5);
 
-        timData = vs_main_allocHeapR(_disFiles[attackDis].size);
-        cdSlot = vs_main_allocateCdQueueSlot(&_disFiles[attackDis]);
+        timData = vs_main_allocHeapR(disFiles[attackDis].size);
+        cdSlot = vs_main_allocateCdQueueSlot(&disFiles[attackDis]);
 
         vs_main_cdEnqueue(cdSlot, timData);
 
@@ -429,12 +429,12 @@ int _initTimeAttackStart(void)
     } else {
         vs_main_freeHeapR(timData);
 
-        _onScreenMapCompletion = 0;
-        _onScreenScore = 0;
-        _screenTimer = 0;
-        _screenState = 0;
-        _elementAnimationState = 0;
-        _buffReelSelection = 0;
+        onScreenMapCompletion = 0;
+        onScreenScore = 0;
+        screenTimer = 0;
+        screenState = 0;
+        elementAnimationState = 0;
+        buffReelSelection = 0;
         vs_battle_submenuState = 0;
         return 1;
     }
@@ -452,28 +452,28 @@ void func_80103748(void)
     }
 }
 
-static int _renderCongratulationsScreen(void);
-static int _renderTimeAttackStart(void);
-static int _renderTimeAttackEnd(void);
-static int _renderCubePuzzleStart(void);
-static int _renderCubePuzzleEnd(void);
-static int _renderCubePuzzleQuit(void);
+static int renderCongratulationsScreen(void);
+static int renderTimeAttackStart(void);
+static int renderTimeAttackEnd(void);
+static int renderCubePuzzleStart(void);
+static int renderCubePuzzleEnd(void);
+static int renderCubePuzzleQuit(void);
 
-int _execMenu(void)
+int execMenu(void)
 {
     int ret;
 
     switch (vs_main_stateFlags.menuFSubmenu) {
     case 0:
-        ret = _renderCongratulationsScreen();
+        ret = renderCongratulationsScreen();
         break;
 
     case 1:
-        ret = _renderTimeAttackStart();
+        ret = renderTimeAttackStart();
         break;
 
     case 2:
-        ret = _renderTimeAttackEnd();
+        ret = renderTimeAttackEnd();
         break;
 
     case 3:
@@ -481,15 +481,15 @@ int _execMenu(void)
         break;
 
     case 4:
-        ret = _renderCubePuzzleStart();
+        ret = renderCubePuzzleStart();
         break;
 
     case 5:
-        ret = _renderCubePuzzleEnd();
+        ret = renderCubePuzzleEnd();
         break;
 
     case 6:
-        ret = _renderCubePuzzleQuit();
+        ret = renderCubePuzzleQuit();
         break;
     }
 
@@ -567,7 +567,7 @@ enum disIndices {
     disIndexEsc0Chicken = 125,
 };
 
-static _texture_t _disMap[] = {
+static vs_Texture disMap[] = {
     { 0, 0, 14, 20, getTPage(0, 0, 832, 256), getClut(768, 511) },
     { 14, 0, 14, 20, getTPage(0, 0, 832, 256), getClut(768, 511) },
     { 28, 0, 14, 20, getTPage(0, 0, 832, 256), getClut(768, 511) },
@@ -700,8 +700,8 @@ static _texture_t _disMap[] = {
 /**
  * First element == word count, followed by indices into pages 1 and 2 of RANK.DIS
  */
-static u_char _riskbreakerRanks[][4] = { { 3, disIndexRank1Grand, disIndexRank1Master,
-                                             disIndexRank1Breaker },
+static u_char riskbreakerRanks[][4] = { { 3, disIndexRank1Grand, disIndexRank1Master,
+                                            disIndexRank1Breaker },
     { 2, disIndexRank1Grand, disIndexRank1Paladin },
     { 2, disIndexRank1Radiant, disIndexRank1Knight },
     { 2, disIndexRank1Raging, disIndexRank1Berserker },
@@ -722,7 +722,7 @@ enum BuffReelStats {
     buffReelStatMp
 };
 
-static _buffReels_t _buffReels[][16] = {
+static BuffReels buffReels[][16] = {
     { { buffReelStatHp, 5 }, { buffReelStatHp, 3 }, { buffReelStatStr, 2 },
         { buffReelStatAgi, 1 }, { buffReelStatHp, 4 }, { buffReelStatInt, 1 },
         { buffReelStatMp, 2 }, { buffReelStatHp, 3 }, { buffReelStatStr, 2 },
@@ -743,67 +743,66 @@ static _buffReels_t _buffReels[][16] = {
         { buffReelStatStr, 1 } }
 };
 
-static void _renderCongratulations(int arg0, int arg1, int arg2);
-static void _renderIncrementalScore(int arg0, int arg1, int arg2, int arg3);
-static void _renderIncrementalMapCompletion(int arg0, int arg1, int arg2, int arg3);
-static void _renderRiskbreakerRankHeader(int arg0, int arg1, int arg2);
-static void _renderRiskbreakerRank(int arg0, int arg1, int arg2);
-void _renderStatWheel(int, int, int, int);
-static void _renderPressButtonPrompt(int, int, int, int);
-static void _renderScore(int arg0, int arg1, int arg2, int arg3);
-static void _renderMapCompletion(int arg0, int arg1, int arg2, int arg3);
-static void _raiseMaxStrength(int amount);
-static void _raiseMaxIntelligence(int amount);
-static void _raiseMaxAgility(int amount);
-static void _raiseMaxHP(int amount);
-static void _raiseMaxMP(int amount);
+static void renderCongratulations(int arg0, int arg1, int arg2);
+static void renderIncrementalScore(int arg0, int arg1, int arg2, int arg3);
+static void renderIncrementalMapCompletion(int arg0, int arg1, int arg2, int arg3);
+static void renderRiskbreakerRankHeader(int arg0, int arg1, int arg2);
+static void renderRiskbreakerRank(int arg0, int arg1, int arg2);
+static void renderStatWheel(int, int, int, int);
+static void renderPressButtonPrompt(int, int, int, int);
+static void renderScore(int arg0, int arg1, int arg2, int arg3);
+static void renderMapCompletion(int arg0, int arg1, int arg2, int arg3);
+static void raiseMaxStrength(int amount);
+static void raiseMaxIntelligence(int amount);
+static void raiseMaxAgility(int amount);
+static void raiseMaxHP(int amount);
+static void raiseMaxMP(int amount);
 
-static int _incrementingScore;
-static int _incrementingMapCompletion;
+static int incrementingScore;
+static int incrementingMapCompletion;
 
-int _renderCongratulationsScreen(void)
+int renderCongratulationsScreen(void)
 {
-    static int _stateTimer;
+    static int stateTimer;
 
-    if (_screenState != 3) {
-        if (_screenTimer == 208) {
+    if (screenState != 3) {
+        if (screenTimer == 208) {
             vs_main_playSfxDefault(0x7E, 0x77);
             vs_main_playSfxDefault(0x7E, 0x78);
         }
 
-        _renderCongratulations(160, 40, _screenTimer);
-        _renderIncrementalScore(160, 80, _screenTimer - 32, _screenState);
-        _renderIncrementalMapCompletion(160, 102, _screenTimer - 112, _screenState);
-        _renderRiskbreakerRankHeader(160, 138, _screenTimer - 192);
-        _renderRiskbreakerRank(160, 154, _screenTimer - 208);
-        _renderStatWheel(130, 190, _screenTimer - 272, _screenState);
+        renderCongratulations(160, 40, screenTimer);
+        renderIncrementalScore(160, 80, screenTimer - 32, screenState);
+        renderIncrementalMapCompletion(160, 102, screenTimer - 112, screenState);
+        renderRiskbreakerRankHeader(160, 138, screenTimer - 192);
+        renderRiskbreakerRank(160, 154, screenTimer - 208);
+        renderStatWheel(130, 190, screenTimer - 272, screenState);
     }
 
-    if (_screenState == 0) {
-        _buffReelSelection = (_buffReelSelection + (_elementAnimationState >> 3)) & 0xFF;
-        if ((_screenTimer - 272) > 0) {
+    if (screenState == 0) {
+        buffReelSelection = (buffReelSelection + (elementAnimationState >> 3)) & 0xFF;
+        if ((screenTimer - 272) > 0) {
 
-            if (_elementAnimationState == 8) {
+            if (elementAnimationState == 8) {
                 vs_main_playSfxDefault(0x7E, 0x74);
                 vs_main_playSfxDefault(0x7E, 0x75);
             }
 
-            if (_elementAnimationState < 48) {
-                if (_screenTimer > 288) {
-                    ++_elementAnimationState;
+            if (elementAnimationState < 48) {
+                if (screenTimer > 288) {
+                    ++elementAnimationState;
 
-                    _renderPressButtonPrompt(
-                        214, 187, _elementAnimationState, _screenTimer);
+                    renderPressButtonPrompt(214, 187, elementAnimationState, screenTimer);
                 }
             } else {
-                if ((vs_main_buttonsPressed.all & PADRright) || _screenTimer > 2072) {
+                if ((vs_main_buttonsPressed.all & PADRright) || screenTimer > 2072) {
 
                     if (vs_main_buttonsPressed.all & PADRright) {
                         vs_main_playSfxDefault(0x7E, 0x76);
                     }
 
-                    _screenState = 1;
-                    _stateTimer = 0;
+                    screenState = 1;
+                    stateTimer = 0;
 
                     vs_main_fadeSfxVolume(0x7E, 0x74, 0x40, 0x30);
                     vs_main_fadeSfxVolume(0x7E, 0x75, 0x40, 0x30);
@@ -811,200 +810,200 @@ int _renderCongratulationsScreen(void)
                     vs_main_fadeSfxPitch(0x7E, 0x75, -0x10, 0x30);
                 }
 
-                _renderPressButtonPrompt(214, 187, 48, _screenTimer);
+                renderPressButtonPrompt(214, 187, 48, screenTimer);
             }
         } else if (vs_main_buttonsPressed.all & PADRright) {
 
             vs_main_evictSfx(0x7E, 0);
 
-            _screenTimer = 272;
-            _incrementingScore = 0;
-            _incrementingMapCompletion = 0;
-            _onScreenMapCompletion = _mapCompletion;
-            _onScreenScore = _score;
+            screenTimer = 272;
+            incrementingScore = 0;
+            incrementingMapCompletion = 0;
+            onScreenMapCompletion = mapCompletionPercent;
+            onScreenScore = score;
         }
-    } else if (_screenState == 1) {
+    } else if (screenState == 1) {
         int temp_v1;
-        int temp_a2_2 = 48 - _stateTimer;
+        int temp_a2_2 = 48 - stateTimer;
 
         if (temp_a2_2 > 0) {
-            _renderPressButtonPrompt(0xD6, 0xBB, temp_a2_2, _screenTimer);
+            renderPressButtonPrompt(0xD6, 0xBB, temp_a2_2, screenTimer);
         }
 
-        temp_v1 = _buffReelSelection + (_elementAnimationState >> 3);
-        _buffReelSelection = temp_v1 & 0xFF;
+        temp_v1 = buffReelSelection + (elementAnimationState >> 3);
+        buffReelSelection = temp_v1 & 0xFF;
 
-        if (_elementAnimationState >= 9) {
-            --_elementAnimationState;
+        if (elementAnimationState >= 9) {
+            --elementAnimationState;
         }
 
         temp_v1 &= 0xF;
 
-        if ((temp_v1 == 8) && (_elementAnimationState == temp_v1)) {
+        if ((temp_v1 == 8) && (elementAnimationState == temp_v1)) {
 
             vs_main_evictSfx(0x7E, 0x74);
             vs_main_evictSfx(0x7E, 0x75);
             vs_main_playSfxDefault(0x7E, 0x77);
             vs_main_playSfxDefault(0x7E, 0x78);
 
-            _screenState = 2;
-            _stateTimer = 0;
+            screenState = 2;
+            stateTimer = 0;
         }
-    } else if (_screenState == 2) {
-        if ((vs_main_buttonsPressed.all & PADRright) || (_stateTimer > 450)) {
-            _screenState = 3;
-            _stateTimer = 0;
+    } else if (screenState == 2) {
+        if ((vs_main_buttonsPressed.all & PADRright) || (stateTimer > 450)) {
+            screenState = 3;
+            stateTimer = 0;
         }
     } else {
 
-        _renderCongratulations(160, 40, 8 - _stateTimer);
-        _renderScore(160, 80, 8 - _stateTimer, 3);
-        _renderMapCompletion(160, 102, 8 - _stateTimer, 3);
-        _renderRiskbreakerRankHeader(160, 138, 8 - _stateTimer);
-        _renderRiskbreakerRank(160, 154, 8 - _stateTimer);
-        _renderStatWheel(130, 190, 8 - _stateTimer, 3);
+        renderCongratulations(160, 40, 8 - stateTimer);
+        renderScore(160, 80, 8 - stateTimer, 3);
+        renderMapCompletion(160, 102, 8 - stateTimer, 3);
+        renderRiskbreakerRankHeader(160, 138, 8 - stateTimer);
+        renderRiskbreakerRank(160, 154, 8 - stateTimer);
+        renderStatWheel(130, 190, 8 - stateTimer, 3);
 
-        if (_stateTimer >= 8) {
-            int amount = _buffReels[_buffReelIndex][(char)_buffReelSelection / 16].amount;
-            switch ((short)(_buffReels[_buffReelIndex][(char)_buffReelSelection / 16].stat
+        if (stateTimer >= 8) {
+            int amount = buffReels[buffReelIndex][(char)buffReelSelection / 16].amount;
+            switch ((short)(buffReels[buffReelIndex][(char)buffReelSelection / 16].stat
                             - 13)) {
             case 0:
-                _raiseMaxStrength(amount);
+                raiseMaxStrength(amount);
                 break;
 
             case 1:
-                _raiseMaxAgility(amount);
+                raiseMaxAgility(amount);
                 break;
 
             case 2:
-                _raiseMaxIntelligence(amount);
+                raiseMaxIntelligence(amount);
                 break;
 
             case 3:
-                _raiseMaxHP(amount);
+                raiseMaxHP(amount);
                 break;
 
             case 4:
-                _raiseMaxMP(amount);
+                raiseMaxMP(amount);
                 break;
             }
 
             func_8007E0A8(0x1D, 3, 5);
-            _nop2();
+            nop2();
 
             return 1;
         }
     }
 
-    ++_stateTimer;
-    ++_screenTimer;
+    ++stateTimer;
+    ++screenTimer;
     return 0;
 }
 
-static void _pulseTimeAttackEnd(int);
-static void _renderTimeAttackResultsHeader(int arg0, int arg1, int arg2);
-static void _renderHeaderAndIncrementalTime(int, int, int);
-static void _renderTimeAttackRatingWipe(int arg0, int arg1, int arg2);
-static void _renderNewRecord(int arg0, int arg1, int arg2);
-static void _renderStoredTime(int arg0, int arg1, int arg2, int arg3);
-static void _renderHeaderAndTime(int, int, int);
-static void _renderTimeAttackRating(int arg0, int arg1, int arg2);
-static void _renderAllStoredTimes(int arg0, int arg1, int arg2);
+static void pulseTimeAttackEnd(int);
+static void renderTimeAttackResultsHeader(int arg0, int arg1, int arg2);
+static void renderHeaderAndIncrementalTime(int, int, int);
+static void renderTimeAttackRatingWipe(int arg0, int arg1, int arg2);
+static void renderNewRecord(int arg0, int arg1, int arg2);
+static void renderStoredTime(int arg0, int arg1, int arg2, int arg3);
+static void renderHeaderAndTime(int, int, int);
+static void renderTimeAttackRating(int arg0, int arg1, int arg2);
+static void renderAllStoredTimes(int arg0, int arg1, int arg2);
 
-int _renderTimeAttackEnd(void)
+int renderTimeAttackEnd(void)
 {
-    int var_v0 = rsin(_elementAnimationState);
+    int var_v0 = rsin(elementAnimationState);
 
-    _pulseTimeAttackEnd(ABS(var_v0) / 256);
+    pulseTimeAttackEnd(ABS(var_v0) / 256);
 
-    _elementAnimationState = (_elementAnimationState + 64) & 0xFFF;
+    elementAnimationState = (elementAnimationState + 64) & 0xFFF;
 
-    if (_screenState == 0) {
-        if (_screenTimer == 0x30) {
+    if (screenState == 0) {
+        if (screenTimer == 0x30) {
             vs_main_playSfxDefault(0x7E, 0x72);
         }
 
-        if (_screenTimer == 0x60) {
+        if (screenTimer == 0x60) {
             vs_main_evictSfx(0x7E, 0x72);
             vs_main_playSfxDefault(0x7E, 0x73);
         }
 
-        _renderTimeAttackResultsHeader(160, 52, _screenTimer);
-        _renderHeaderAndIncrementalTime(16, 164, _screenTimer - 32);
-        _renderTimeAttackRatingWipe(16, 144, _screenTimer - 96);
+        renderTimeAttackResultsHeader(160, 52, screenTimer);
+        renderHeaderAndIncrementalTime(16, 164, screenTimer - 32);
+        renderTimeAttackRatingWipe(16, 144, screenTimer - 96);
 
-        if (_newTimeSlot == 0) {
-            _renderNewRecord(70, 184, _screenTimer - 128);
+        if (newTimeSlot == 0) {
+            renderNewRecord(70, 184, screenTimer - 128);
         }
 
-        if ((_screenTimer == 128) && (_newTimeSlot == 0)) {
+        if ((screenTimer == 128) && (newTimeSlot == 0)) {
             vs_main_playSfxDefault(0x7E, 0x76);
         }
 
-        if (_screenTimer == 160) {
+        if (screenTimer == 160) {
             vs_main_playSfxDefault(0x7E, 0x73);
         }
 
-        if (_screenTimer == 168) {
+        if (screenTimer == 168) {
             vs_main_playSfxDefault(0x7E, 0x73);
         }
 
-        if (_screenTimer == 176) {
+        if (screenTimer == 176) {
             vs_main_playSfxDefault(0x7E, 0x73);
         }
 
-        _renderStoredTime(304, 144, 0, _screenTimer - 160);
-        _renderStoredTime(304, 144, 1, _screenTimer - 168);
-        _renderStoredTime(304, 144, 2, _screenTimer - 176);
+        renderStoredTime(304, 144, 0, screenTimer - 160);
+        renderStoredTime(304, 144, 1, screenTimer - 168);
+        renderStoredTime(304, 144, 2, screenTimer - 176);
 
-        ++_screenTimer;
+        ++screenTimer;
 
-        if ((vs_main_buttonsPressed.all & PADRright) || (_screenTimer >= 192)) {
+        if ((vs_main_buttonsPressed.all & PADRright) || (screenTimer >= 192)) {
 
             vs_main_evictSfx(0x7E, 0);
 
-            _screenTimer = 0;
-            ++_screenState;
+            screenTimer = 0;
+            ++screenState;
         }
-    } else if (_screenState == 1) {
+    } else if (screenState == 1) {
 
-        _renderTimeAttackResultsHeader(160, 52, 64);
-        _renderHeaderAndTime(16, 164, 64);
-        _renderTimeAttackRating(16, 144, 64);
+        renderTimeAttackResultsHeader(160, 52, 64);
+        renderHeaderAndTime(16, 164, 64);
+        renderTimeAttackRating(16, 144, 64);
 
-        if (_newTimeSlot == 0) {
-            _renderNewRecord(70, 184, 64);
+        if (newTimeSlot == 0) {
+            renderNewRecord(70, 184, 64);
         }
 
-        _renderAllStoredTimes(304, 144, 64);
+        renderAllStoredTimes(304, 144, 64);
 
-        ++_screenTimer;
+        ++screenTimer;
 
-        if ((vs_main_buttonsPressed.all & PADRright) || (_screenTimer >= 450)) {
+        if ((vs_main_buttonsPressed.all & PADRright) || (screenTimer >= 450)) {
 
             if (vs_main_buttonsPressed.all & PADRright) {
                 vs_main_playSfxDefault(0x7E, 5);
             }
 
-            ++_screenState;
-            _screenTimer = 7;
+            ++screenState;
+            screenTimer = 7;
         }
-    } else if (_screenState == 2) {
+    } else if (screenState == 2) {
 
-        _renderTimeAttackResultsHeader(160, 52, _screenTimer);
-        _renderHeaderAndTime(16, 164, _screenTimer);
-        _renderTimeAttackRating(16, 144, _screenTimer);
+        renderTimeAttackResultsHeader(160, 52, screenTimer);
+        renderHeaderAndTime(16, 164, screenTimer);
+        renderTimeAttackRating(16, 144, screenTimer);
 
-        if (_newTimeSlot == 0) {
-            _renderNewRecord(70, 184, _screenTimer);
+        if (newTimeSlot == 0) {
+            renderNewRecord(70, 184, screenTimer);
         }
 
-        _renderAllStoredTimes(304, 144, _screenTimer);
+        renderAllStoredTimes(304, 144, screenTimer);
 
-        if (_screenTimer > 0) {
-            --_screenTimer;
+        if (screenTimer > 0) {
+            --screenTimer;
         } else {
-            ++_screenState;
+            ++screenState;
         }
     } else {
         func_8007E0A8(29, 1, 5);
@@ -1014,13 +1013,13 @@ int _renderTimeAttackEnd(void)
     return 0;
 }
 
-static void _renderTimeAttackHeader(int x, int y, int timer);
-static void _renderCourse(int arg0, int arg1, int arg2);
-static void _renderBossName(int arg0, int arg1, int arg2);
-static void _renderBestTimeHeader(int arg0, int arg1, int arg2);
-static void _renderStartCountdown(int arg0, int arg1, int arg2);
+static void renderTimeAttackHeader(int x, int y, int timer);
+static void renderCourse(int arg0, int arg1, int arg2);
+static void renderBossName(int arg0, int arg1, int arg2);
+static void renderBestTimeHeader(int arg0, int arg1, int arg2);
+static void renderStartCountdown(int arg0, int arg1, int arg2);
 
-int _renderTimeAttackStart(void)
+int renderTimeAttackStart(void)
 {
     static int countdownOffsets[] = { 121, 93, 67, 43, 25, 12, 3, 0 };
     static VECTOR D_801096F0[3] = { { 0x1029, 0x1029, 0x1000 },
@@ -1030,41 +1029,41 @@ int _renderTimeAttackStart(void)
     int temp_v1_2;
     int x;
 
-    if (_screenState == 0) {
-        if ((_screenTimer == ((_screenTimer / 15) * 0xF)) && (_screenTimer < 0x2E)) {
+    if (screenState == 0) {
+        if ((screenTimer == ((screenTimer / 15) * 0xF)) && (screenTimer < 0x2E)) {
             vs_main_playSfxDefault(0x7E, 0x7A);
             vs_main_playSfxDefault(0x7E, 0x7B);
             vs_main_playSfxDefault(0x7E, 0x7C);
         }
 
-        _renderTimeAttackHeader(160, 48, _screenTimer);
-        _renderCourse(160, 92, _screenTimer - 15);
-        _renderBossName(160, 120, _screenTimer - 30);
-        _renderBestTimeHeader(160, 156, _screenTimer - 45);
+        renderTimeAttackHeader(160, 48, screenTimer);
+        renderCourse(160, 92, screenTimer - 15);
+        renderBossName(160, 120, screenTimer - 30);
+        renderBestTimeHeader(160, 156, screenTimer - 45);
 
-        ++_screenTimer;
+        ++screenTimer;
 
         if (vs_main_buttonsPressed.all & PADRright) {
-            _screenState = 2;
-            _screenTimer = 0;
-        } else if (_screenTimer >= 90) {
-            _screenState = 1;
-            _screenTimer = 8;
+            screenState = 2;
+            screenTimer = 0;
+        } else if (screenTimer >= 90) {
+            screenState = 1;
+            screenTimer = 8;
         }
-    } else if (_screenState == 1) {
-        --_screenTimer;
+    } else if (screenState == 1) {
+        --screenTimer;
 
-        _renderTimeAttackHeader(160, 48, _screenTimer);
-        _renderCourse(160, 92, _screenTimer);
-        _renderBossName(160, 120, _screenTimer);
-        _renderBestTimeHeader(160, 156, _screenTimer);
+        renderTimeAttackHeader(160, 48, screenTimer);
+        renderCourse(160, 92, screenTimer);
+        renderBossName(160, 120, screenTimer);
+        renderBestTimeHeader(160, 156, screenTimer);
 
-        if ((vs_main_buttonsPressed.all & PADRright) || (_screenTimer == 0)) {
-            _screenState = 2;
-            _screenTimer = 0;
+        if ((vs_main_buttonsPressed.all & PADRright) || (screenTimer == 0)) {
+            screenState = 2;
+            screenTimer = 0;
         }
 
-    } else if (_screenState == 2) {
+    } else if (screenState == 2) {
         func_8007C36C(4);
         func_8007DDAC(0);
         func_8007DDB8(&D_801096F0[0]);
@@ -1075,13 +1074,13 @@ int _renderTimeAttackStart(void)
         func_8007DE5C(0);
         func_8007DD50(1);
 
-        ++_screenState;
+        ++screenState;
 
-    } else if (_screenState == 3) {
+    } else if (screenState == 3) {
 
-        temp_v1_2 = _screenTimer / 15;
+        temp_v1_2 = screenTimer / 15;
 
-        if (_screenTimer == (temp_v1_2 * 0xF)) {
+        if (screenTimer == (temp_v1_2 * 0xF)) {
 
             switch (temp_v1_2) {
             case 0:
@@ -1100,30 +1099,30 @@ int _renderTimeAttackStart(void)
             }
         }
 
-        if (_screenTimer >= 45) {
+        if (screenTimer >= 45) {
 
-            if (_screenTimer == 45) {
+            if (screenTimer == 45) {
                 func_8007DE2C(1);
                 func_8007DDB8(&D_801096F0[1]);
                 func_8007DDD4(&colors[0]);
-            } else if (_screenTimer == 0x2E) {
+            } else if (screenTimer == 0x2E) {
                 func_8007DE2C(0);
-            } else if (_screenTimer == 0x37) {
+            } else if (screenTimer == 0x37) {
                 func_8007DDD4(&colors[2]);
-            } else if (_screenTimer == 0x3C) {
+            } else if (screenTimer == 0x3C) {
                 func_8007DDB8(&D_801096F0[0]);
             }
 
-            x = 104 - _screenTimer;
+            x = 104 - screenTimer;
 
             if (x < 45) {
                 x = 45;
             }
 
-            _renderStartCountdown(160, 120, x);
+            renderStartCountdown(160, 120, x);
 
         } else {
-            x = _screenTimer % 15;
+            x = screenTimer % 15;
 
             if (x > 7) {
                 x = 7;
@@ -1131,16 +1130,16 @@ int _renderTimeAttackStart(void)
 
             x = countdownOffsets[x];
 
-            _renderStartCountdown(x + 160, 120, _screenTimer);
+            renderStartCountdown(x + 160, 120, screenTimer);
         }
 
-        ++_screenTimer;
+        ++screenTimer;
 
-        if (_screenTimer >= 62) {
-            ++_screenState;
+        if (screenTimer >= 62) {
+            ++screenState;
         }
 
-    } else if (_screenState == 4) {
+    } else if (screenState == 4) {
         func_8007C36C(2);
         func_8007DDB8(&D_801096F0[2]);
         func_8007DD50(0);
@@ -1152,7 +1151,7 @@ int _renderTimeAttackStart(void)
     return 0;
 }
 
-void _renderTimeAttackHeader(int x, int y, int timer)
+void renderTimeAttackHeader(int x, int y, int timer)
 {
     static CVECTOR colors[] = { { 128, 96, 64 }, { 200, 180, 160 }, { 128, 96, 64 } };
 
@@ -1168,20 +1167,20 @@ void _renderTimeAttackHeader(int x, int y, int timer)
 
         colors[0].cd = timer;
         colors[1].cd = timer;
-        x -= (_disMap[disIndexAttack0TimeAttack].w
-                 + _disMap[disIndexAttack0TimeAttack + 1].w)
+        x -= (disMap[disIndexAttack0TimeAttack].w
+                 + disMap[disIndexAttack0TimeAttack + 1].w)
           >> 1;
 
-        _renderTexturePopIn(x, y, 100, colors);
-        _renderTexturePopIn(x + _disMap[disIndexAttack0TimeAttack].w, y,
+        renderTexturePopIn(x, y, 100, colors);
+        renderTexturePopIn(x + disMap[disIndexAttack0TimeAttack].w, y,
             disIndexAttack0TimeAttack + 1, &colors[1]);
     }
 }
 
-static void _renderTextureFadeIn(int, int, int, int);
-static void _renderTextureFadeInClut(int, int, int, int, int);
+static void renderTextureFadeIn(int, int, int, int);
+static void renderTextureFadeInClut(int, int, int, int, int);
 
-void _renderCourse(int x, int y, int timer)
+void renderCourse(int x, int y, int timer)
 {
     int new_var;
 
@@ -1190,18 +1189,18 @@ void _renderCourse(int x, int y, int timer)
     }
 
     if (timer > 0) {
-        x -= (_disMap[disIndexAttack0Course].w + 24) >> 1;
+        x -= (disMap[disIndexAttack0Course].w + 24) >> 1;
 
-        _renderTextureFadeIn(x, y, disIndexAttack0Course, timer);
+        renderTextureFadeIn(x, y, disIndexAttack0Course, timer);
 
         new_var = x + 12;
 
-        _renderTextureFadeInClut(new_var + _disMap[disIndexAttack0Course].w, y - 1,
+        renderTextureFadeInClut(new_var + disMap[disIndexAttack0Course].w, y - 1,
             vs_main_stateFlags.timeAttackBoss + 1, timer, 0x7FF4);
     }
 }
 
-void _renderBossName(int x, int y, int timer)
+void renderBossName(int x, int y, int timer)
 {
     if (timer > 64) {
         timer = 64;
@@ -1210,29 +1209,29 @@ void _renderBossName(int x, int y, int timer)
     if (timer > 0) {
         if (vs_main_stateFlags.timeAttackBoss != 6) {
 
-            _renderTextureFadeIn(x
-                                     - (_disMap[vs_main_stateFlags.timeAttackBoss
-                                                + disIndexAttack0Minotaur]
-                                             .w
-                                         >> 1),
+            renderTextureFadeIn(
+                x
+                    - (disMap[vs_main_stateFlags.timeAttackBoss + disIndexAttack0Minotaur]
+                            .w
+                        >> 1),
                 y, vs_main_stateFlags.timeAttackBoss + disIndexAttack0Minotaur, timer);
 
         } else {
-            x -= (_disMap[disIndexAttack0Death].w + _disMap[disIndexAttack0OgreZombie].w)
+            x -= (disMap[disIndexAttack0Death].w + disMap[disIndexAttack0OgreZombie].w)
               >> 1;
 
-            _renderTextureFadeIn(x, y, disIndexAttack0Death, timer);
+            renderTextureFadeIn(x, y, disIndexAttack0Death, timer);
 
-            x += _disMap[disIndexAttack0Death].w;
+            x += disMap[disIndexAttack0Death].w;
 
-            _renderTextureFadeIn(x, y, disIndexAttack0OgreZombie, timer);
+            renderTextureFadeIn(x, y, disIndexAttack0OgreZombie, timer);
         }
     }
 }
 
-static void _renderTime(int, int, int, int, int);
+static void renderTime(int, int, int, int, int);
 
-void _renderBestTimeHeader(int x, int y, int timer)
+void renderBestTimeHeader(int x, int y, int timer)
 {
     if (timer > 64) {
         timer = 64;
@@ -1240,29 +1239,29 @@ void _renderBestTimeHeader(int x, int y, int timer)
 
     if (timer > 0) {
         int new_var;
-        x -= (_disMap[disIndexAttack0BestTime].w + 96) >> 1;
+        x -= (disMap[disIndexAttack0BestTime].w + 96) >> 1;
 
-        _renderTextureFadeIn(x, y, disIndexAttack0BestTime, timer);
+        renderTextureFadeIn(x, y, disIndexAttack0BestTime, timer);
 
         x++;
         new_var = x + 11;
 
-        _renderTime(new_var + _disMap[disIndexAttack0BestTime].w, y + 2, timer,
+        renderTime(new_var + disMap[disIndexAttack0BestTime].w, y + 2, timer,
             vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.timeAttackBoss][0]
                 .time,
             0);
     }
 }
 
-void _renderStartCountdown(int x, int y, int timer)
+void renderStartCountdown(int x, int y, int timer)
 {
     int temp_a2 = (timer / 15) + disIndexAttack0Three;
 
-    _renderTextureFadeIn(
-        x - (_disMap[temp_a2].w / 2), y - (_disMap[temp_a2].h / 2), temp_a2, timer % 15);
+    renderTextureFadeIn(
+        x - (disMap[temp_a2].w / 2), y - (disMap[temp_a2].h / 2), temp_a2, timer % 15);
 }
 
-void _pulseTimeAttackEnd(int arg0)
+void pulseTimeAttackEnd(int arg0)
 {
     RECT rect;
     int var_a1;
@@ -1275,32 +1274,32 @@ void _pulseTimeAttackEnd(int arg0)
 
     for (i = 0; i < 32; ++i) {
 
-        b = _clutBuf[128 + i];
+        b = clutBuf[128 + i];
 
-        var_a1 = ((_clutBuf[32 + i] & 0x1F) * arg0)
-               + ((_clutBuf[96 + i] & 0x1F) * (16 - arg0));
+        var_a1 =
+            ((clutBuf[32 + i] & 0x1F) * arg0) + ((clutBuf[96 + i] & 0x1F) * (16 - arg0));
 
         r = (var_a1 / 16) & 0x1F;
 
-        g = ((_clutBuf[32 + i] & 0x3E0) * arg0)
-          + ((_clutBuf[96 + i] & 0x3E0) * (16 - arg0));
+        g = ((clutBuf[32 + i] & 0x3E0) * arg0)
+          + ((clutBuf[96 + i] & 0x3E0) * (16 - arg0));
 
         new_var4 = r | ((g / 16) & 0x3E0);
 
-        b = ((_clutBuf[32 + i] & 0x7C00) * arg0)
-          + ((_clutBuf[96 + i] & 0x7C00) * (16 - arg0));
+        b = ((clutBuf[32 + i] & 0x7C00) * arg0)
+          + ((clutBuf[96 + i] & 0x7C00) * (16 - arg0));
 
         new_var3 = (b / 16) & 0x7C00;
 
-        _clutBuf[128 + i] = (new_var4 | new_var3) | (_clutBuf[32 + i] & 0x8000);
+        clutBuf[128 + i] = (new_var4 | new_var3) | (clutBuf[32 + i] & 0x8000);
     }
 
     setRECT(&rect, 768, 511, 160, 1);
 
-    LoadImage(&rect, (u_long*)_clutBuf);
+    LoadImage(&rect, (u_long*)clutBuf);
 }
 
-void _pulseCubePuzzleEnd(int arg0)
+static void pulseCubePuzzleEnd(int arg0)
 {
     RECT rect;
     int var_a1;
@@ -1313,32 +1312,32 @@ void _pulseCubePuzzleEnd(int arg0)
 
     for (i = 0; i < 32; ++i) {
 
-        b = _clutBuf[128 + i];
+        b = clutBuf[128 + i];
 
-        var_a1 = ((_clutBuf[96 + i] & 0x1F) * arg0)
-               + ((_clutBuf[64 + i] & 0x1F) * (16 - arg0));
+        var_a1 =
+            ((clutBuf[96 + i] & 0x1F) * arg0) + ((clutBuf[64 + i] & 0x1F) * (16 - arg0));
 
         r = (var_a1 / 16) & 0x1F;
 
-        var_a2 = ((_clutBuf[96 + i] & 0x3E0) * arg0)
-               + ((_clutBuf[64 + i] & 0x3E0) * (16 - arg0));
+        var_a2 = ((clutBuf[96 + i] & 0x3E0) * arg0)
+               + ((clutBuf[64 + i] & 0x3E0) * (16 - arg0));
 
         new_var4 = r | ((var_a2 / 16) & 0x3E0);
 
-        b = ((_clutBuf[96 + i] & 0x7C00) * arg0)
-          + ((_clutBuf[64 + i] & 0x7C00) * (16 - arg0));
+        b = ((clutBuf[96 + i] & 0x7C00) * arg0)
+          + ((clutBuf[64 + i] & 0x7C00) * (16 - arg0));
 
         new_var3 = (b / 16) & 0x7C00;
 
-        _clutBuf[128 + i] = (new_var4 | new_var3) | (_clutBuf[96 + i] & 0x8000);
+        clutBuf[128 + i] = (new_var4 | new_var3) | (clutBuf[96 + i] & 0x8000);
     }
 
     setRECT(&rect, 768, 511, 160, 1);
 
-    LoadImage(&rect, (u_long*)_clutBuf);
+    LoadImage(&rect, (u_long*)clutBuf);
 }
 
-void _renderCongratulations(int x, int y, int timer)
+void renderCongratulations(int x, int y, int timer)
 {
     static CVECTOR colors[] = { { 128, 96, 64 }, { 200, 180, 160 }, { 128, 96, 64 } };
 
@@ -1353,17 +1352,17 @@ void _renderCongratulations(int x, int y, int timer)
     if (timer > 0) {
         colors[0].cd = timer;
         colors[1].cd = timer;
-        x -= (_disMap[disIndexRank0Congratulations].w
-                 + _disMap[disIndexRank0Congratulations + 1].w)
+        x -= (disMap[disIndexRank0Congratulations].w
+                 + disMap[disIndexRank0Congratulations + 1].w)
           >> 1;
 
-        _renderTexturePopIn(x, y, disIndexRank0Congratulations, colors);
-        _renderTexturePopIn(x + _disMap[disIndexRank0Congratulations].w, y,
+        renderTexturePopIn(x, y, disIndexRank0Congratulations, colors);
+        renderTexturePopIn(x + disMap[disIndexRank0Congratulations].w, y,
             disIndexRank0Congratulations + 1, &colors[1]);
     }
 }
 
-void _renderScore(int x, int y, int timer, UNUSED int arg3)
+void renderScore(int x, int y, int timer, UNUSED int arg3)
 {
     static CVECTOR colors[] = { { 100, 180, 220 }, { 100, 180, 220 } };
 
@@ -1382,40 +1381,40 @@ void _renderScore(int x, int y, int timer, UNUSED int arg3)
     if (timer > 0) {
         colors[0].cd = timer;
 
-        sprintf(buf, "%09d", _score);
+        sprintf(buf, "%09d", score);
 
-        new_var = _disMap[disIndexRank0Score].w + _disMap[disIndexRank0Colon].w;
-        x -= (((_disMap[disIndexRank0Comma].w * 2)
-                  + (new_var + _disMap[disIndexRank0Pts].w))
-                 + 116)
-          >> 1;
+        new_var = disMap[disIndexRank0Score].w + disMap[disIndexRank0Colon].w;
+        x -=
+            (((disMap[disIndexRank0Comma].w * 2) + (new_var + disMap[disIndexRank0Pts].w))
+                + 116)
+            >> 1;
 
-        _renderTextureFadeInTint(x, y, disIndexRank0Score, colors);
+        renderTextureFadeInTint(x, y, disIndexRank0Score, colors);
 
-        x += _disMap[disIndexRank0Score].w;
+        x += disMap[disIndexRank0Score].w;
 
-        _renderTextureFadeInTint(x, y + 7, disIndexRank0Colon, colors);
+        renderTextureFadeInTint(x, y + 7, disIndexRank0Colon, colors);
 
         i = 2;
-        x = (x + i) + _disMap[disIndexRank0Colon].w;
+        x = (x + i) + disMap[disIndexRank0Colon].w;
 
         for (i = 0; i < 9; ++i) {
-            _renderTextureFadeInTint(x, y + 3, buf[i] - '0', colors);
+            renderTextureFadeInTint(x, y + 3, buf[i] - '0', colors);
 
             x += 0xC;
 
             if ((i == 2) || (i == 5)) {
-                _renderTextureFadeInTint(x, y + 14, 10, colors);
+                renderTextureFadeInTint(x, y + 14, 10, colors);
 
-                x += _disMap[disIndexRank0Comma].w + 3;
+                x += disMap[disIndexRank0Comma].w + 3;
             }
         }
 
-        _renderTextureFadeInTint(x, y + 8, disIndexRank0Pts, colors);
+        renderTextureFadeInTint(x, y + 8, disIndexRank0Pts, colors);
     }
 }
 
-void _renderIncrementalScore(int x, int y, int timer, UNUSED int arg3)
+void renderIncrementalScore(int x, int y, int timer, UNUSED int arg3)
 {
     static CVECTOR colors[] = { { 100, 180, 220 }, { 100, 180, 220 } };
 
@@ -1436,18 +1435,18 @@ void _renderIncrementalScore(int x, int y, int timer, UNUSED int arg3)
 
     temp_s2 = x + (timer * 8);
 
-    if ((_score != 0) && (timer >= 32)) {
+    if ((score != 0) && (timer >= 32)) {
 
-        if (_onScreenScore == 0) {
+        if (onScreenScore == 0) {
 
-            _incrementingScore = 1;
+            incrementingScore = 1;
 
             vs_main_playSfxDefault(0x7E, 0x72);
         }
 
-        if ((_onScreenScore == _score) && (_incrementingScore != 0)) {
+        if ((onScreenScore == score) && (incrementingScore != 0)) {
 
-            _incrementingScore = 0;
+            incrementingScore = 0;
 
             vs_main_evictSfx(0x7E, 0x72);
             vs_main_playSfxDefault(0x7E, 0x73);
@@ -1455,44 +1454,44 @@ void _renderIncrementalScore(int x, int y, int timer, UNUSED int arg3)
     }
 
     if (timer >= 32) {
-        _onScreenScore = (_score >> 5) * (timer - 32);
+        onScreenScore = (score >> 5) * (timer - 32);
     }
 
     if (timer == 64) {
-        _onScreenScore = _score;
+        onScreenScore = score;
     }
 
-    sprintf(buf, "%09d", _onScreenScore);
+    sprintf(buf, "%09d", onScreenScore);
 
-    v = _disMap[disIndexRank0Score].w + _disMap[disIndexRank0Colon].w
-      + _disMap[disIndexRank0Pts].w;
-    x -= (((_disMap[disIndexRank0Comma].w * 2) + v) + 116) >> 1;
+    v = disMap[disIndexRank0Score].w + disMap[disIndexRank0Colon].w
+      + disMap[disIndexRank0Pts].w;
+    x -= (((disMap[disIndexRank0Comma].w * 2) + v) + 116) >> 1;
 
-    _renderTextureWipe(x, y, disIndexRank0Score, colors, temp_s2);
+    renderTextureWipe(x, y, disIndexRank0Score, colors, temp_s2);
 
-    x += _disMap[disIndexRank0Score].w;
+    x += disMap[disIndexRank0Score].w;
 
-    _renderTextureWipe(x, y + 7, disIndexRank0Colon, colors, temp_s2);
+    renderTextureWipe(x, y + 7, disIndexRank0Colon, colors, temp_s2);
 
     i = 2;
-    x = x + i + _disMap[disIndexRank0Colon].w;
+    x = x + i + disMap[disIndexRank0Colon].w;
 
     for (i = 0; i < 9; ++i) {
-        _renderTextureWipe(x, y + 3, buf[i] - '0', colors, temp_s2);
+        renderTextureWipe(x, y + 3, buf[i] - '0', colors, temp_s2);
 
         x += 12;
 
         if ((i == 2) || (i == 5)) {
-            _renderTextureWipe(x, y + 14, disIndexRank0Comma, colors, temp_s2);
+            renderTextureWipe(x, y + 14, disIndexRank0Comma, colors, temp_s2);
 
-            x += 3 + _disMap[disIndexRank0Comma].w;
+            x += 3 + disMap[disIndexRank0Comma].w;
         }
     }
 
-    _renderTextureWipe(x, y + 8, 0x14, colors, temp_s2);
+    renderTextureWipe(x, y + 8, 0x14, colors, temp_s2);
 }
 
-void _renderMapCompletion(int x, int y, int timer, UNUSED int arg3)
+void renderMapCompletion(int x, int y, int timer, UNUSED int arg3)
 {
     static CVECTOR colors[] = { { 100, 180, 220 }, { 100, 180, 220 } };
 
@@ -1510,30 +1509,30 @@ void _renderMapCompletion(int x, int y, int timer, UNUSED int arg3)
     if (timer > 0) {
         colors[0].cd = timer;
 
-        sprintf(buf, "%03d", _mapCompletion);
+        sprintf(buf, "%03d", mapCompletionPercent);
 
-        x -= (_disMap[21].w + _disMap[26].w + _disMap[19].w + 0x26) >> 1;
+        x -= (disMap[21].w + disMap[26].w + disMap[19].w + 0x26) >> 1;
         i = 2;
 
-        _renderTextureFadeInTint(x, y, 0x15, colors);
+        renderTextureFadeInTint(x, y, 0x15, colors);
 
-        x += _disMap[21].w;
+        x += disMap[21].w;
 
-        _renderTextureFadeInTint(x, y + 7, 0x1A, colors);
+        renderTextureFadeInTint(x, y + 7, 0x1A, colors);
 
-        x = x + i + _disMap[26].w;
+        x = x + i + disMap[26].w;
 
         for (i = 0; i < 3; ++i) {
-            _renderTextureFadeInTint(x, y + 3, buf[i] - '0', colors);
+            renderTextureFadeInTint(x, y + 3, buf[i] - '0', colors);
 
             x += 0xC;
         }
 
-        _renderTextureFadeInTint(x, y + 8, 0x13, colors);
+        renderTextureFadeInTint(x, y + 8, 0x13, colors);
     }
 }
 
-void _renderIncrementalMapCompletion(int arg0, int arg1, int arg2, UNUSED int arg3)
+void renderIncrementalMapCompletion(int arg0, int arg1, int arg2, UNUSED int arg3)
 {
     static CVECTOR colors[] = { { 100, 180, 220 }, { 100, 180, 220 } };
 
@@ -1555,17 +1554,17 @@ void _renderIncrementalMapCompletion(int arg0, int arg1, int arg2, UNUSED int ar
 
     temp_s4 = arg0 + (arg2 * 8);
 
-    if ((_mapCompletion != 0) && (arg2 >= 32)) {
+    if ((mapCompletionPercent != 0) && (arg2 >= 32)) {
 
-        if (_onScreenMapCompletion == 0) {
-            _incrementingMapCompletion = 1;
+        if (onScreenMapCompletion == 0) {
+            incrementingMapCompletion = 1;
 
             vs_main_playSfxDefault(0x7E, 0x72);
         }
 
-        if ((_onScreenMapCompletion == _mapCompletion)
-            && (_incrementingMapCompletion != 0)) {
-            _incrementingMapCompletion = 0;
+        if ((onScreenMapCompletion == mapCompletionPercent)
+            && (incrementingMapCompletion != 0)) {
+            incrementingMapCompletion = 0;
 
             vs_main_evictSfx(0x7E, 0x72);
             vs_main_playSfxDefault(0x7E, 0x73);
@@ -1573,37 +1572,37 @@ void _renderIncrementalMapCompletion(int arg0, int arg1, int arg2, UNUSED int ar
     }
 
     if (arg2 >= 32) {
-        if (_mapCompletion >= 32) {
-            _onScreenMapCompletion = (_mapCompletion * (arg2 - 32)) >> 5;
-        } else if (_onScreenMapCompletion < _mapCompletion) {
-            ++_onScreenMapCompletion;
+        if (mapCompletionPercent >= 32) {
+            onScreenMapCompletion = (mapCompletionPercent * (arg2 - 32)) >> 5;
+        } else if (onScreenMapCompletion < mapCompletionPercent) {
+            ++onScreenMapCompletion;
         }
     }
 
-    sprintf(buf, "%03d", _onScreenMapCompletion);
+    sprintf(buf, "%03d", onScreenMapCompletion);
 
-    arg0 -= (_disMap[disIndexRank0MapCompleted].w + _disMap[disIndexRank0Colon].w
-                + _disMap[disIndexRank0Percent].w + 38)
+    arg0 -= (disMap[disIndexRank0MapCompleted].w + disMap[disIndexRank0Colon].w
+                + disMap[disIndexRank0Percent].w + 38)
          >> 1;
 
-    _renderTextureWipe(arg0, arg1, disIndexRank0MapCompleted, colors, temp_s4);
+    renderTextureWipe(arg0, arg1, disIndexRank0MapCompleted, colors, temp_s4);
 
-    arg0 += _disMap[disIndexRank0MapCompleted].w;
+    arg0 += disMap[disIndexRank0MapCompleted].w;
     i = 2;
 
-    _renderTextureWipe(arg0, arg1 + 7, disIndexRank0Colon, colors, temp_s4);
-    arg0 = arg0 + i + _disMap[disIndexRank0Colon].w;
+    renderTextureWipe(arg0, arg1 + 7, disIndexRank0Colon, colors, temp_s4);
+    arg0 = arg0 + i + disMap[disIndexRank0Colon].w;
 
     for (i = 0; i < 3; ++i) {
-        _renderTextureWipe(arg0, arg1 + 3, buf[i] - '0', colors, temp_s4);
+        renderTextureWipe(arg0, arg1 + 3, buf[i] - '0', colors, temp_s4);
 
         arg0 += 12;
     }
 
-    _renderTextureWipe(arg0, arg1 + 8, disIndexRank0Percent, colors, temp_s4);
+    renderTextureWipe(arg0, arg1 + 8, disIndexRank0Percent, colors, temp_s4);
 }
 
-void _renderRiskbreakerRankHeader(int x, int y, int timer)
+void renderRiskbreakerRankHeader(int x, int y, int timer)
 {
     static CVECTOR colors[] = { { 200, 80, 20 }, { 200, 80, 20 } };
 
@@ -1618,12 +1617,12 @@ void _renderRiskbreakerRankHeader(int x, int y, int timer)
     if (timer > 0) {
         colors[0].cd = timer;
 
-        _renderTextureFadeInTint(x - (_disMap[disIndexRank0RiskbreakerRank].w >> 1), y,
+        renderTextureFadeInTint(x - (disMap[disIndexRank0RiskbreakerRank].w >> 1), y,
             disIndexRank0RiskbreakerRank, colors);
     }
 }
 
-void _renderRiskbreakerRank(int x, int y, int timer)
+void renderRiskbreakerRank(int x, int y, int timer)
 {
     static CVECTOR colors[] = { { 128, 128, 128 }, { 128, 128, 128 } };
 
@@ -1644,22 +1643,22 @@ void _renderRiskbreakerRank(int x, int y, int timer)
 
         colors[0].cd = timer;
 
-        for (i = 0; i < _riskbreakerRanks[_rank][0]; ++i) {
-            xInset += _disMap[_riskbreakerRanks[_rank][i + 1]].w;
+        for (i = 0; i < riskbreakerRanks[riskbreakerRank][0]; ++i) {
+            xInset += disMap[riskbreakerRanks[riskbreakerRank][i + 1]].w;
         }
 
         xInset /= 2;
         x -= xInset;
 
-        for (i = 0; i < _riskbreakerRanks[_rank][0]; ++i) {
-            _renderTexturePopIn(x, y, _riskbreakerRanks[_rank][i + 1], colors);
+        for (i = 0; i < riskbreakerRanks[riskbreakerRank][0]; ++i) {
+            renderTexturePopIn(x, y, riskbreakerRanks[riskbreakerRank][i + 1], colors);
 
-            x += _disMap[_riskbreakerRanks[_rank][i + 1]].w;
+            x += disMap[riskbreakerRanks[riskbreakerRank][i + 1]].w;
         }
     }
 }
 
-void _renderTimeAttackResultsHeader(int x, int y, int timer)
+void renderTimeAttackResultsHeader(int x, int y, int timer)
 {
     static CVECTOR colors[] = { { 128, 128, 128 }, { 128, 128, 128 } };
 
@@ -1673,17 +1672,17 @@ void _renderTimeAttackResultsHeader(int x, int y, int timer)
 
     if (timer > 0) {
         colors[0].cd = timer;
-        x -= (_disMap[disIndexTime0TimeAttackResults].w
-                 + _disMap[disIndexTime0TimeAttackResults + 1].w)
+        x -= (disMap[disIndexTime0TimeAttackResults].w
+                 + disMap[disIndexTime0TimeAttackResults + 1].w)
           >> 1;
 
-        _renderTexturePopIn(x, y, disIndexTime0TimeAttackResults, colors);
-        _renderTexturePopIn(x + _disMap[disIndexTime0TimeAttackResults].w, y,
+        renderTexturePopIn(x, y, disIndexTime0TimeAttackResults, colors);
+        renderTexturePopIn(x + disMap[disIndexTime0TimeAttackResults].w, y,
             disIndexTime0TimeAttackResults + 1, colors);
     }
 }
 
-void _renderTimeAttackRating(int x, int y, int arg2)
+void renderTimeAttackRating(int x, int y, int arg2)
 {
     int var_a2;
 
@@ -1698,22 +1697,22 @@ void _renderTimeAttackRating(int x, int y, int arg2)
         return;
     }
 
-    if (_timeTrialTime < 7680) {
+    if (timeTrialTime < 7680) {
         var_a2 = 0;
-    } else if (_timeTrialTime <= 65535) {
+    } else if (timeTrialTime <= 65535) {
         var_a2 = 1;
-    } else if (_timeTrialTime <= 73215) {
+    } else if (timeTrialTime <= 73215) {
         var_a2 = 2;
-    } else if (_timeTrialTime <= 131071) {
+    } else if (timeTrialTime <= 131071) {
         var_a2 = 3;
     } else {
         var_a2 = 4;
     }
 
-    _renderTextureFadeIn(x, y, var_a2 + disIndexTime0Excellent, arg2);
+    renderTextureFadeIn(x, y, var_a2 + disIndexTime0Excellent, arg2);
 }
 
-void _renderTimeAttackRatingWipe(int x, int y, int arg2)
+void renderTimeAttackRatingWipe(int x, int y, int arg2)
 {
     static CVECTOR colors[] = { { 128, 128, 128 }, { 128, 128, 128 } };
 
@@ -1733,22 +1732,22 @@ void _renderTimeAttackRatingWipe(int x, int y, int arg2)
 
     arg3 = x + (arg2 * 8);
 
-    if (_timeTrialTime < 7680) {
+    if (timeTrialTime < 7680) {
         arg2 = 0;
-    } else if (_timeTrialTime <= 65535) {
+    } else if (timeTrialTime <= 65535) {
         arg2 = 1;
-    } else if (_timeTrialTime <= 73215) {
+    } else if (timeTrialTime <= 73215) {
         arg2 = 2;
-    } else if (_timeTrialTime <= 131071) {
+    } else if (timeTrialTime <= 131071) {
         arg2 = 3;
     } else {
         arg2 = 4;
     }
 
-    _renderTextureWipe(x, y, arg2 + disIndexTime0Excellent, colors, arg3);
+    renderTextureWipe(x, y, arg2 + disIndexTime0Excellent, colors, arg3);
 }
 
-void _renderHeaderAndTime(int arg0, int arg1, int arg2)
+void renderHeaderAndTime(int arg0, int arg1, int arg2)
 {
     if (arg2 < 0) {
         arg2 = 0;
@@ -1759,15 +1758,15 @@ void _renderHeaderAndTime(int arg0, int arg1, int arg2)
     }
 
     if (arg2 > 0) {
-        _renderTextureFadeIn(arg0, arg1, disIndexTime0Time, arg2);
+        renderTextureFadeIn(arg0, arg1, disIndexTime0Time, arg2);
 
-        arg0 += _disMap[disIndexTime0Time].w;
+        arg0 += disMap[disIndexTime0Time].w;
 
-        _renderTime(arg0, arg1 + 2, arg2, _timeTrialTime, 0);
+        renderTime(arg0, arg1 + 2, arg2, timeTrialTime, 0);
     }
 }
 
-void _renderHeaderAndIncrementalTime(int x, int y, int timer)
+void renderHeaderAndIncrementalTime(int x, int y, int timer)
 {
     int temp_a3;
     int var_a3;
@@ -1782,14 +1781,14 @@ void _renderHeaderAndIncrementalTime(int x, int y, int timer)
     }
 
     if (timer > 0) {
-        _renderTextureFadeIn(x, y, disIndexTime0Time, timer);
+        renderTextureFadeIn(x, y, disIndexTime0Time, timer);
 
-        x += _disMap[disIndexTime0Time].w;
+        x += disMap[disIndexTime0Time].w;
 
         if (timer >= 16) {
-            int mins = (_timeTrialTime >> 0x10) & 0xFF;
-            int secs = (_timeTrialTime >> 8) & 0xFF;
-            int ms = _timeTrialTime & 0xFF;
+            int mins = (timeTrialTime >> 0x10) & 0xFF;
+            int secs = (timeTrialTime >> 8) & 0xFF;
+            int ms = timeTrialTime & 0xFF;
             temp_a3 = ((mins * 6000) + (secs * 100)) + ms;
             var_a3 = temp_a3;
             var_a3 = ((*(new_var4 = &var_a3)) * (timer - 16)) / 48;
@@ -1802,11 +1801,11 @@ void _renderHeaderAndIncrementalTime(int x, int y, int timer)
             var_a3 = 0;
         }
 
-        _renderTime(x, y + 2, timer, var_a3, 0);
+        renderTime(x, y + 2, timer, var_a3, 0);
     }
 }
 
-void _renderNewRecord(int x, int y, int timer)
+void renderNewRecord(int x, int y, int timer)
 {
     if (timer < 0) {
         timer = 0;
@@ -1817,11 +1816,11 @@ void _renderNewRecord(int x, int y, int timer)
     }
 
     if (timer > 0) {
-        _renderTextureFadeIn(x, y, disIndexTime0NewRecord, timer);
+        renderTextureFadeIn(x, y, disIndexTime0NewRecord, timer);
     }
 }
 
-void _renderAllStoredTimes(int x, int y, int timer)
+void renderAllStoredTimes(int x, int y, int timer)
 {
     int isNewRecord;
     int i;
@@ -1838,23 +1837,23 @@ void _renderAllStoredTimes(int x, int y, int timer)
     for (i = 0; i < 3; ++i) {
 
         var_s3 = getClut(800, 511);
-        isNewRecord = _newTimeSlot == i;
+        isNewRecord = newTimeSlot == i;
 
         if (isNewRecord != 0) {
             var_s3 = getClut(896, 511);
         }
 
-        _renderTime(x - 84, y + i * 20 + 2, timer,
+        renderTime(x - 84, y + i * 20 + 2, timer,
             vs_main_scoredata
                 .bossTimeTrialScores[0][vs_main_stateFlags.timeAttackBoss * 3 + i]
                 .time,
             isNewRecord);
-        _renderTextureFadeInClut((x - _disMap[disIndexTime0First + i].w) - 88, y + i * 20,
+        renderTextureFadeInClut((x - disMap[disIndexTime0First + i].w) - 88, y + i * 20,
             disIndexTime0First + i, timer, var_s3);
     }
 }
 
-void _renderStoredTime(int x, int y, int slot, int timer)
+void renderStoredTime(int x, int y, int slot, int timer)
 {
     int isCurrentTime;
     int clut;
@@ -1867,24 +1866,24 @@ void _renderStoredTime(int x, int y, int slot, int timer)
         timer = 64;
     }
 
-    isCurrentTime = _newTimeSlot == slot;
+    isCurrentTime = newTimeSlot == slot;
     clut = getClut(800, 511);
 
     if (isCurrentTime != 0) {
         clut = getClut(896, 511);
     }
 
-    _renderTime(x - 84, y + (slot * 20) + 2, timer,
+    renderTime(x - 84, y + (slot * 20) + 2, timer,
         vs_main_scoredata.bossTimeTrialScores[vs_main_stateFlags.timeAttackBoss][slot]
             .time,
         isCurrentTime);
-    _renderTextureFadeInClut((x - _disMap[slot + disIndexTime0First].w) - 88,
+    renderTextureFadeInClut((x - disMap[slot + disIndexTime0First].w) - 88,
         y + (slot * 20), slot + disIndexTime0First, timer, clut);
 }
 
-void _renderTextureFadeIn(int x, int y, int texIndex, int brightness)
+void renderTextureFadeIn(int x, int y, int texIndex, int brightness)
 {
-    _texture_t* texture;
+    vs_Texture* texture;
     POLY_FT4* poly;
     void** scratch;
 
@@ -1893,7 +1892,7 @@ void _renderTextureFadeIn(int x, int y, int texIndex, int brightness)
     }
 
     poly = *(void**)getScratchAddr(0);
-    texture = &_disMap[texIndex];
+    texture = &disMap[texIndex];
 
     setPolyFT4(poly);
     setXY4(
@@ -1919,9 +1918,9 @@ void _renderTextureFadeIn(int x, int y, int texIndex, int brightness)
     scratch[0] = poly;
 }
 
-void _renderTextureFadeInClut(int x, int y, int texIndex, int brightness, int clut)
+void renderTextureFadeInClut(int x, int y, int texIndex, int brightness, int clut)
 {
-    _texture_t* texture;
+    vs_Texture* texture;
     POLY_FT4* poly;
     void** scratch;
 
@@ -1930,7 +1929,7 @@ void _renderTextureFadeInClut(int x, int y, int texIndex, int brightness, int cl
     }
 
     poly = *(void**)getScratchAddr(0);
-    texture = &_disMap[texIndex];
+    texture = &disMap[texIndex];
 
     setPolyFT4(poly);
     setXY4(
@@ -1956,7 +1955,7 @@ void _renderTextureFadeInClut(int x, int y, int texIndex, int brightness, int cl
     scratch[0] = poly;
 }
 
-void _renderTime(int x, int y, int timer, int time, int isNewRecord)
+void renderTime(int x, int y, int timer, int time, int isNewRecord)
 {
     char buf[16];
     int i;
@@ -1977,31 +1976,31 @@ void _renderTime(int x, int y, int timer, int time, int isNewRecord)
 
     for (i = 0; i < 6; ++i) {
         if (buf[i] == '-') {
-            _renderTextureFadeInClut(x, y, disIndexTime0Dash, timer, s2);
+            renderTextureFadeInClut(x, y, disIndexTime0Dash, timer, s2);
 
             x += 12;
         } else {
-            _renderTextureFadeInClut(x, y - 3, buf[i] - '0', timer, s2);
+            renderTextureFadeInClut(x, y - 3, buf[i] - '0', timer, s2);
 
             x += 12;
         }
 
         if (i == 1) {
-            _renderTextureFadeInClut(x, y - 2, disIndexTime0Prime, timer, s2);
+            renderTextureFadeInClut(x, y - 2, disIndexTime0Prime, timer, s2);
 
             x += 6;
 
         } else if (i == 3) {
-            _renderTextureFadeInClut(x, y - 2, disIndexTime0DoublePrime, timer, s2);
+            renderTextureFadeInClut(x, y - 2, disIndexTime0DoublePrime, timer, s2);
 
             x += 6;
         }
     }
 }
 
-void _renderAnimatedStatWheel(int x, int y, int texId);
+static void renderAnimatedStatWheel(int x, int y, int texId);
 
-void _renderStatWheel(int x, int y, int timer, int arg3)
+static void renderStatWheel(int x, int y, int timer, int arg3)
 {
     static CVECTOR colors[] = { { 128, 96, 64 }, { 200, 180, 160 } };
 
@@ -2027,15 +2026,15 @@ void _renderStatWheel(int x, int y, int timer, int arg3)
     if (timer > 0) {
 
         colors[0].cd = timer;
-        x -= (_disMap[11].w + _disMap[26].w + _disMap[14].w + _disMap[24].w + 0xE) >> 1;
+        x -= (disMap[11].w + disMap[26].w + disMap[14].w + disMap[24].w + 0xE) >> 1;
 
-        _renderTextureFadeInTint(x, y, disIndexRank0Bonus, colors);
+        renderTextureFadeInTint(x, y, disIndexRank0Bonus, colors);
 
-        x += _disMap[11].w;
+        x += disMap[11].w;
 
-        _renderTextureFadeInTint(x, y, disIndexRank0Colon, colors);
+        renderTextureFadeInTint(x, y, disIndexRank0Colon, colors);
 
-        x += 2 + _disMap[26].w;
+        x += 2 + disMap[26].w;
         new_var2 = 16;
         p = (void**)0x1F800000;
         area = p[0];
@@ -2051,37 +2050,37 @@ void _renderStatWheel(int x, int y, int timer, int arg3)
             sp18.x = 0;
         }
 
-        sp18.y = y - (_elementAnimationState >> 3);
+        sp18.y = y - (elementAnimationState >> 3);
         sp18.w = 320;
-        sp18.h = ((_elementAnimationState >> 3) * 2) + new_var2;
+        sp18.h = ((elementAnimationState >> 3) * 2) + new_var2;
 
         if (arg3 < 2) {
             int a0 = x;
             int new_var;
-            y += 8 + (_buffReelSelection & 0xF);
+            y += 8 + (buffReelSelection & 0xF);
 
             for (i = 0; i < 3; ++i) {
                 x = a0;
                 new_var = i - 1;
-                v1 = (_buffReelSelection / 16);
+                v1 = (buffReelSelection / 16);
                 v1 += new_var;
                 temp = v1 & 0xF;
 
-                _renderAnimatedStatWheel(
-                    x, y - 1, _buffReels[_buffReelIndex][v1 & 0xF].stat);
+                renderAnimatedStatWheel(
+                    x, y - 1, buffReels[buffReelIndex][v1 & 0xF].stat);
 
-                x += _disMap[_buffReels[_buffReelIndex][v1 & 0xF].stat].w;
+                x += disMap[buffReels[buffReelIndex][v1 & 0xF].stat].w;
 
-                _renderAnimatedStatWheel(x, y + 4, disIndexRank0Plus);
+                renderAnimatedStatWheel(x, y + 4, disIndexRank0Plus);
 
-                x += _disMap[24].w;
+                x += disMap[24].w;
 
-                sprintf(buf, "%d", _buffReels[_buffReelIndex][v1 & 0xF].amount);
+                sprintf(buf, "%d", buffReels[buffReelIndex][v1 & 0xF].amount);
 
                 len = strlen(buf);
 
                 for (j = 0; j < len; ++j) {
-                    _renderAnimatedStatWheel(x, y - 1, buf[j] - 0x30);
+                    renderAnimatedStatWheel(x, y - 1, buf[j] - 0x30);
                     x += 0xC;
                 }
 
@@ -2089,25 +2088,24 @@ void _renderStatWheel(int x, int y, int timer, int arg3)
             }
 
         } else {
-            temp = (char)_buffReelSelection / 16;
+            temp = (char)buffReelSelection / 16;
 
-            _renderTextureFadeInClut(x, y - 1, _buffReels[_buffReelIndex][temp].stat,
-                timer, getClut(800, 511));
+            renderTextureFadeInClut(
+                x, y - 1, buffReels[buffReelIndex][temp].stat, timer, getClut(800, 511));
 
-            x += _disMap[_buffReels[_buffReelIndex][temp].stat].w;
+            x += disMap[buffReels[buffReelIndex][temp].stat].w;
 
-            _renderTextureFadeInClut(
+            renderTextureFadeInClut(
                 x, y + 4, disIndexRank0Plus, timer, getClut(800, 511));
 
-            x += _disMap[24].w;
+            x += disMap[24].w;
 
-            sprintf(buf, "%d", _buffReels[_buffReelIndex][temp].amount);
+            sprintf(buf, "%d", buffReels[buffReelIndex][temp].amount);
 
             len = strlen(buf);
 
             for (j = 0; j < len; ++j) {
-                _renderTextureFadeInClut(
-                    x, y - 1, buf[j] - '0', timer, getClut(800, 511));
+                renderTextureFadeInClut(x, y - 1, buf[j] - '0', timer, getClut(800, 511));
                 x += 0xC;
             }
         }
@@ -2122,7 +2120,7 @@ void _renderStatWheel(int x, int y, int timer, int arg3)
     }
 }
 
-void _renderPressButtonPrompt(int x, int y, int arg2, int arg3)
+void renderPressButtonPrompt(int x, int y, int arg2, int arg3)
 {
     POLY_FT4* poly;
     void** p;
@@ -2173,21 +2171,20 @@ void _renderPressButtonPrompt(int x, int y, int arg2, int arg3)
 
 #include "src/renderTextures.h"
 
-void _renderAnimatedStatWheel(int x, int y, int texId)
+static void renderAnimatedStatWheel(int x, int y, int texId)
 {
     int i;
     int brightness;
     void** p = (void**)0x1F800000;
     POLY_FT4* poly = p[0];
-    int texY = _disMap[texId].y;
+    int texY = disMap[texId].y;
 
-    for (i = 0; i < _disMap[texId].h; ++i, ++y, ++texY) {
+    for (i = 0; i < disMap[texId].h; ++i, ++y, ++texY) {
 
         setPolyFT4(poly);
-        setXY4(
-            poly, x, y, _disMap[texId].w + x, y, x, y + 1, _disMap[texId].w + x, y + 1);
-        setUV4(poly, _disMap[texId].x, texY, _disMap[texId].x + _disMap[texId].w, texY,
-            _disMap[texId].x, texY + 1, _disMap[texId].x + _disMap[texId].w, texY + 1);
+        setXY4(poly, x, y, disMap[texId].w + x, y, x, y + 1, disMap[texId].w + x, y + 1);
+        setUV4(poly, disMap[texId].x, texY, disMap[texId].x + disMap[texId].w, texY,
+            disMap[texId].x, texY + 1, disMap[texId].x + disMap[texId].w, texY + 1);
 
         if (y < 190) {
             brightness = 128 - ((189 - y) * 16);
@@ -2199,22 +2196,21 @@ void _renderAnimatedStatWheel(int x, int y, int texId)
             setRGB0(poly, brightness, brightness, brightness);
             setSemiTrans(poly, 1);
             setClut(poly, 816, 511);
-            poly->tpage = _disMap[texId].tpage | getTPage(0, semiTransparencyFull, 0, 0);
+            poly->tpage = disMap[texId].tpage | getTPage(0, semiTransparencyFull, 0, 0);
 
             AddPrim(p[1] - 0x1C, poly++);
 
             setPolyFT4(poly);
-            setXY4(poly, x, y, _disMap[texId].w + x, y, x, y + 1, _disMap[texId].w + x,
-                y + 1);
-            setUV4(poly, _disMap[texId].x, texY, _disMap[texId].x + _disMap[texId].w,
-                texY, _disMap[texId].x, texY + 1, _disMap[texId].x + _disMap[texId].w,
-                texY + 1);
+            setXY4(
+                poly, x, y, disMap[texId].w + x, y, x, y + 1, disMap[texId].w + x, y + 1);
+            setUV4(poly, disMap[texId].x, texY, disMap[texId].x + disMap[texId].w, texY,
+                disMap[texId].x, texY + 1, disMap[texId].x + disMap[texId].w, texY + 1);
 
             setRGB0(poly, brightness, brightness, brightness);
             setSemiTrans(poly, 1);
             setClut(poly, 816, 511);
             poly->tpage =
-                _disMap[texId].tpage | getTPage(0, semiTransparencySubtract, 0, 0);
+                disMap[texId].tpage | getTPage(0, semiTransparencySubtract, 0, 0);
 
             AddPrim(p[1] - 0x1C, poly++);
 
@@ -2229,21 +2225,20 @@ void _renderAnimatedStatWheel(int x, int y, int texId)
             setRGB0(poly, brightness, brightness, brightness);
             setSemiTrans(poly, 1);
             setClut(poly, 816, 511);
-            poly->tpage = _disMap[texId].tpage | getTPage(0, semiTransparencyFull, 0, 0);
+            poly->tpage = disMap[texId].tpage | getTPage(0, semiTransparencyFull, 0, 0);
 
             AddPrim(p[1] - 0x1C, poly++);
 
             setPolyFT4(poly);
-            setXY4(poly, x, y, _disMap[texId].w + x, y, x, y + 1, _disMap[texId].w + x,
-                y + 1);
-            setUV4(poly, _disMap[texId].x, texY, _disMap[texId].x + _disMap[texId].w,
-                texY, _disMap[texId].x, texY + 1, _disMap[texId].x + _disMap[texId].w,
-                texY + 1);
+            setXY4(
+                poly, x, y, disMap[texId].w + x, y, x, y + 1, disMap[texId].w + x, y + 1);
+            setUV4(poly, disMap[texId].x, texY, disMap[texId].x + disMap[texId].w, texY,
+                disMap[texId].x, texY + 1, disMap[texId].x + disMap[texId].w, texY + 1);
             setRGB0(poly, brightness, brightness, brightness);
             setSemiTrans(poly, 1);
             setClut(poly, 816, 511);
             poly->tpage =
-                _disMap[texId].tpage | getTPage(0, semiTransparencySubtract, 0, 0);
+                disMap[texId].tpage | getTPage(0, semiTransparencySubtract, 0, 0);
 
             AddPrim(p[1] - 0x1C, poly++);
 
@@ -2251,7 +2246,7 @@ void _renderAnimatedStatWheel(int x, int y, int texId)
             setRGB0(poly, 128, 128, 128);
             setSemiTrans(poly, 1);
             setClut(poly, 800, 511);
-            poly->tpage = _disMap[texId].tpage;
+            poly->tpage = disMap[texId].tpage;
 
             AddPrim(p[1] - 0x1C, poly++);
         }
@@ -2260,17 +2255,17 @@ void _renderAnimatedStatWheel(int x, int y, int texId)
     p[0] = poly;
 }
 
-static void _nop0(void);
+static void nop0(void);
 
-static short _puzzleParTime;
-static short _puzzleRankCap;
+static short puzzleParTime;
+static short puzzleRankCap;
 
-int _initCubePuzzleStart(void)
+int initCubePuzzleStart(void)
 {
-    static vs_main_CdQueueSlot* _iqDisCdSlot;
-    static void* _iqDisData;
+    static vs_Main_CdQueueSlot* iqDisCdSlot;
+    static void* iqDisData;
 
-    vs_battle_room* room;
+    vs_Room* room;
 
     struct {
         short zoneId;
@@ -2283,20 +2278,20 @@ int _initCubePuzzleStart(void)
 
         func_8007DFF0(0x1D, 2, 5);
 
-        _iqDisData = vs_main_allocHeapR(_disFiles[iqDis].size);
-        _iqDisCdSlot = vs_main_allocateCdQueueSlot(&_disFiles[iqDis]);
+        iqDisData = vs_main_allocHeapR(disFiles[iqDis].size);
+        iqDisCdSlot = vs_main_allocateCdQueueSlot(&disFiles[iqDis]);
 
-        vs_main_cdEnqueue(_iqDisCdSlot, _iqDisData);
+        vs_main_cdEnqueue(iqDisCdSlot, iqDisData);
 
         ++vs_battle_submenuState;
 
     } else if (vs_battle_submenuState == 1) {
-        if (_iqDisCdSlot->state == vs_main_CdQueueStateLoaded) {
+        if (iqDisCdSlot->state == vs_main_CdQueueStateLoaded) {
             int i;
             TIM_IMAGE tim;
             for (i = 0; i < 2; ++i) {
 
-                vs_battle_parseTim(_iqDisData + i * 0x8220, &tim);
+                vs_battle_parseTim(iqDisData + i * 0x8220, &tim);
 
                 if (tim.paddr != NULL) {
                     tim.prect->x = 0x340 + i * 0x40;
@@ -2315,48 +2310,48 @@ int _initCubePuzzleStart(void)
                         tim.caddr[0] = 0;
 
                         LoadImage(tim.crect, tim.caddr);
-                        vs_main_memcpy(_clutBuf, tim.caddr, sizeof _clutBuf);
+                        vs_main_memcpy(clutBuf, tim.caddr, sizeof clutBuf);
                     }
                 }
             }
 
-            _puzzleParTime = 600;
-            _puzzleRankCap = 1;
+            puzzleParTime = 600;
+            puzzleRankCap = 1;
             room = vs_battle_roomData.sectionF->rooms;
-            puzzleData = _iqDisData + 0x10440;
+            puzzleData = iqDisData + 0x10440;
 
             for (i = 0; i < 64; ++i, ++puzzleData) {
                 if ((puzzleData->zoneId == room->zoneId)
                     && (puzzleData->mapId == room->mapId)) {
-                    _puzzleParTime = puzzleData->par;
-                    _puzzleRankCap = puzzleData->rankCap;
+                    puzzleParTime = puzzleData->par;
+                    puzzleRankCap = puzzleData->rankCap;
                     break;
                 }
             }
 
-            vs_main_freeCdQueueSlot(_iqDisCdSlot);
+            vs_main_freeCdQueueSlot(iqDisCdSlot);
 
             ++vs_battle_submenuState;
         }
     } else {
-        vs_main_freeHeapR(_iqDisData);
+        vs_main_freeHeapR(iqDisData);
 
-        _onScreenMapCompletion = 0;
-        _onScreenScore = 0;
-        _screenTimer = 0;
-        _screenState = 0;
-        _elementAnimationState = 0;
-        _buffReelSelection = 0;
+        onScreenMapCompletion = 0;
+        onScreenScore = 0;
+        screenTimer = 0;
+        screenState = 0;
+        elementAnimationState = 0;
+        buffReelSelection = 0;
         vs_battle_submenuState = 0;
 
-        _nop0();
+        nop0();
         return 1;
     }
 
     return 0;
 }
 
-int _initCubePuzzleEnd(void)
+int initCubePuzzleEnd(void)
 {
     if (vs_main_stateFlags.puzzleSetMaxTimer != 0) {
         vs_main_stateFlags.puzzleTimerMins = 59;
@@ -2365,13 +2360,13 @@ int _initCubePuzzleEnd(void)
         vs_main_stateFlags.puzzleTimerHundredths = 99;
     }
 
-    return _initCubePuzzleStart();
+    return initCubePuzzleStart();
 }
 
-int _initCubePuzzleQuit(void)
+int initCubePuzzleQuit(void)
 {
-    static vs_main_CdQueueSlot* _escDisCdSLot;
-    static void* _escDisData;
+    static vs_Main_CdQueueSlot* escDisCdSLot;
+    static void* escDisData;
 
     TIM_IMAGE tim;
     int i;
@@ -2380,18 +2375,18 @@ int _initCubePuzzleQuit(void)
 
         func_8007DFF0(0x1D, 1, 5);
 
-        _escDisData = vs_main_allocHeapR(_disFiles[escDis].size);
-        _escDisCdSLot = vs_main_allocateCdQueueSlot(&_disFiles[escDis]);
+        escDisData = vs_main_allocHeapR(disFiles[escDis].size);
+        escDisCdSLot = vs_main_allocateCdQueueSlot(&disFiles[escDis]);
 
-        vs_main_cdEnqueue(_escDisCdSLot, _escDisData);
+        vs_main_cdEnqueue(escDisCdSLot, escDisData);
 
         ++vs_battle_submenuState;
 
     } else if (vs_battle_submenuState == 1) {
-        if (_escDisCdSLot->state == vs_main_CdQueueStateLoaded) {
+        if (escDisCdSLot->state == vs_main_CdQueueStateLoaded) {
             for (i = 0; i <= 0; ++i) {
 
-                vs_battle_parseTim(_escDisData + i * 0x8220, &tim);
+                vs_battle_parseTim(escDisData + i * 0x8220, &tim);
 
                 if (tim.paddr != NULL) {
                     tim.prect->x = 832 + i * 64;
@@ -2409,23 +2404,23 @@ int _initCubePuzzleQuit(void)
                     *tim.caddr = 0;
 
                     LoadImage(tim.crect, tim.caddr);
-                    vs_main_memcpy(_clutBuf, tim.caddr, sizeof _clutBuf);
+                    vs_main_memcpy(clutBuf, tim.caddr, sizeof clutBuf);
                 }
             }
 
-            vs_main_freeCdQueueSlot(_escDisCdSLot);
+            vs_main_freeCdQueueSlot(escDisCdSLot);
 
             ++vs_battle_submenuState;
         }
     } else {
-        vs_main_freeHeapR(_escDisData);
+        vs_main_freeHeapR(escDisData);
 
-        _onScreenMapCompletion = 0;
-        _onScreenScore = 0;
-        _screenTimer = 0;
-        _screenState = 0;
-        _elementAnimationState = 0;
-        _buffReelSelection = 0;
+        onScreenMapCompletion = 0;
+        onScreenScore = 0;
+        screenTimer = 0;
+        screenState = 0;
+        elementAnimationState = 0;
+        buffReelSelection = 0;
         vs_battle_submenuState = 0;
         return 1;
     }
@@ -2433,35 +2428,35 @@ int _initCubePuzzleQuit(void)
     return 0;
 }
 
-static void _renderEvolveOrDie(int arg0, int arg1, int arg2);
-static void _renderAverageTimeHeader(int arg0, int arg1, int arg2);
-static void _renderCubePuzzleTime(int arg0, int arg1, int arg2);
+static void renderEvolveOrDie(int arg0, int arg1, int arg2);
+static void renderAverageTimeHeader(int arg0, int arg1, int arg2);
+static void renderCubePuzzleTime(int arg0, int arg1, int arg2);
 
-int _renderCubePuzzleStart(void)
+int renderCubePuzzleStart(void)
 {
-    if (_screenState != 0) {
+    if (screenState != 0) {
         return 0;
     }
 
-    if (_screenTimer == 0) {
+    if (screenTimer == 0) {
         vs_main_playSfxDefault(0x7E, 0x7D);
     }
 
-    if (_screenTimer == 30) {
+    if (screenTimer == 30) {
         vs_main_playSfxDefault(0x7E, 0x7D);
     }
 
-    _renderEvolveOrDie(160, 64, _screenTimer);
-    _renderAverageTimeHeader(128, 116, _screenTimer - 15);
-    _renderCubePuzzleTime(192, 144, _screenTimer - 30);
-    _renderPressButtonPrompt(214, 187, _screenTimer - 30, _screenTimer);
+    renderEvolveOrDie(160, 64, screenTimer);
+    renderAverageTimeHeader(128, 116, screenTimer - 15);
+    renderCubePuzzleTime(192, 144, screenTimer - 30);
+    renderPressButtonPrompt(214, 187, screenTimer - 30, screenTimer);
 
-    if (_screenTimer < 32767) {
-        ++_screenTimer;
+    if (screenTimer < 32767) {
+        ++screenTimer;
     }
 
     if (vs_main_buttonsPressed.all & PADRright) {
-        if (_screenTimer >= 78) {
+        if (screenTimer >= 78) {
 
             vs_main_evictSfx(126, 0);
             func_8007E0A8(29, 2, 5);
@@ -2471,41 +2466,41 @@ int _renderCubePuzzleStart(void)
 
         vs_main_evictSfx(126, 0);
 
-        _screenTimer = 78;
+        screenTimer = 78;
     }
 
     return 0;
 }
 
-static void _renderFoodchain(int arg0, int arg1, int arg2);
-static void _renderCubePuzzleRank(int arg0, int arg1, int arg2, int arg3);
-static void _renderCubePuzzleIncrementalTime(int arg0, int arg1, int arg2);
-static void _nop1(void);
+static void renderFoodchain(int arg0, int arg1, int arg2);
+static void renderCubePuzzleRank(int arg0, int arg1, int arg2, int arg3);
+static void renderCubePuzzleIncrementalTime(int arg0, int arg1, int arg2);
+static void nop1(void);
 
-int _renderCubePuzzleEnd(void)
+int renderCubePuzzleEnd(void)
 {
-    static int _puzzleModeRankPoints[] = { 100, 200, 400, 600, 800, 1000, 2000, 3000,
-        4000, 5000, 6000, 7000, 8000, 9000, 10000, 20000 };
+    static int puzzleModeRankPoints[] = { 100, 200, 400, 600, 800, 1000, 2000, 3000, 4000,
+        5000, 6000, 7000, 8000, 9000, 10000, 20000 };
 
     int var_v0;
 
-    _pulseCubePuzzleEnd((rsin(_elementAnimationState) / 512) + 8);
+    pulseCubePuzzleEnd((rsin(elementAnimationState) / 512) + 8);
 
-    _elementAnimationState = (_elementAnimationState + 64) & 0xFFF;
+    elementAnimationState = (elementAnimationState + 64) & 0xFFF;
 
-    if (_screenState == 0) {
+    if (screenState == 0) {
         int rank = ((vs_main_stateFlags.puzzleTimerMins * 6000)
                     + (vs_main_stateFlags.puzzleTimerSeconds * 100)
                     + vs_main_stateFlags.puzzleTimerHundredths);
-        rank -= (_puzzleParTime * 100);
+        rank -= (puzzleParTime * 100);
 
         if (rank <= 0) {
-            rank = 15 - _puzzleRankCap;
+            rank = 15 - puzzleRankCap;
         } else {
             --rank;
             rank = rank / 200;
             var_v0 = 1;
-            rank = 15 - (_puzzleRankCap + (rank + var_v0));
+            rank = 15 - (puzzleRankCap + (rank + var_v0));
 
             if (rank >= 16) {
                 rank = 15;
@@ -2516,98 +2511,98 @@ int _renderCubePuzzleEnd(void)
             }
         }
 
-        if (_screenTimer == 16) {
+        if (screenTimer == 16) {
             vs_main_playSfxDefault(0x7E, 0x72);
         }
 
-        if (_screenTimer == 64) {
+        if (screenTimer == 64) {
             vs_main_evictSfx(0x7E, 0x72);
             vs_main_playSfxDefault(0x7E, 0x73);
         }
 
-        if (_screenTimer == 67) {
+        if (screenTimer == 67) {
             vs_main_playSfxDefault(0x7E, 0x7D);
         }
 
-        if (_screenTimer == 75) {
+        if (screenTimer == 75) {
             vs_main_playSfxDefault(0x7E, 0x7D);
         }
 
-        if (_screenTimer == 90) {
+        if (screenTimer == 90) {
             vs_main_playSfxDefault(0x7E, 0x7D);
         }
 
-        _renderCubePuzzleIncrementalTime(88, 64, _screenTimer);
-        _renderFoodchain(160, 100, _screenTimer - 75);
-        _renderCubePuzzleRank(160, 124, _screenTimer - 90, rank);
-        _renderPressButtonPrompt(214, 187, _screenTimer - 90, _screenTimer);
+        renderCubePuzzleIncrementalTime(88, 64, screenTimer);
+        renderFoodchain(160, 100, screenTimer - 75);
+        renderCubePuzzleRank(160, 124, screenTimer - 90, rank);
+        renderPressButtonPrompt(214, 187, screenTimer - 90, screenTimer);
 
-        if (_screenTimer < 32767) {
-            ++_screenTimer;
+        if (screenTimer < 32767) {
+            ++screenTimer;
         }
 
         if (vs_main_buttonsPressed.all & PADRright) {
-            if (_screenTimer >= 138) {
+            if (screenTimer >= 138) {
 
                 vs_main_evictSfx(0x7E, 0);
                 func_8007E0A8(0x1D, 2, 5);
 
-                vs_main_scoredata.miscScore += _puzzleModeRankPoints[rank];
+                vs_main_scoredata.miscScore += puzzleModeRankPoints[rank];
 
-                _nop1();
+                nop1();
 
                 return 1;
             }
 
             vs_main_evictSfx(0x7E, 0);
 
-            _screenTimer = 138;
+            screenTimer = 138;
         }
     }
 
     return 0;
 }
 
-static void _renderGivingUp(int arg0, int arg1);
-static void _renderChicken(int arg0, int arg1);
+static void renderGivingUp(int arg0, int arg1);
+static void renderChicken(int arg0, int arg1);
 
-int _renderCubePuzzleQuit(void)
+int renderCubePuzzleQuit(void)
 {
-    _pulseCubePuzzleEnd((rsin(_elementAnimationState) / 512) + 8);
+    pulseCubePuzzleEnd((rsin(elementAnimationState) / 512) + 8);
 
-    _elementAnimationState = (_elementAnimationState + 64) & 0xFFF;
+    elementAnimationState = (elementAnimationState + 64) & 0xFFF;
 
-    if (_screenState != 0) {
+    if (screenState != 0) {
         return 0;
     }
 
-    if (_screenTimer == 0) {
+    if (screenTimer == 0) {
         vs_main_playSfxDefault(0x7E, 0x7A);
     }
 
-    if (_screenTimer == 15) {
+    if (screenTimer == 15) {
         vs_main_playSfxDefault(0x7E, 0x7A);
     }
 
-    _renderGivingUp(64, _screenTimer);
-    _renderChicken(100, _screenTimer - 15);
-    _renderPressButtonPrompt(214, 187, _screenTimer - 15, _screenTimer);
+    renderGivingUp(64, screenTimer);
+    renderChicken(100, screenTimer - 15);
+    renderPressButtonPrompt(214, 187, screenTimer - 15, screenTimer);
 
-    if (_screenTimer < 0x7FFF) {
-        ++_screenTimer;
+    if (screenTimer < 0x7FFF) {
+        ++screenTimer;
     }
 
     if (vs_main_buttonsPressed.all & PADRright) {
-        if (_screenTimer > 62) {
+        if (screenTimer > 62) {
 
             vs_main_evictSfx(0x7E, 0);
             func_8007E0A8(0x1D, 1, 5);
-            _nop1();
+            nop1();
 
             return 1;
         }
 
-        _screenTimer = 63;
+        screenTimer = 63;
 
         vs_main_evictSfx(0x7E, 0);
     }
@@ -2615,7 +2610,7 @@ int _renderCubePuzzleQuit(void)
     return 0;
 }
 
-void _renderGivingUp(int arg0, int arg1)
+void renderGivingUp(int arg0, int arg1)
 {
     if (arg1 < 0) {
         arg1 = 0;
@@ -2624,12 +2619,12 @@ void _renderGivingUp(int arg0, int arg1)
         arg1 = 64;
     }
     if (arg1 > 0) {
-        _renderTextureFadeIn(0, arg0, disIndexEsc0GivingUp, arg1);
-        _renderTextureFadeIn(160, arg0, disIndexEsc0GivingUp + 1, arg1);
+        renderTextureFadeIn(0, arg0, disIndexEsc0GivingUp, arg1);
+        renderTextureFadeIn(160, arg0, disIndexEsc0GivingUp + 1, arg1);
     }
 }
 
-void _renderChicken(int arg0, int arg1)
+void renderChicken(int arg0, int arg1)
 {
     if (arg1 < 0) {
         arg1 = 0;
@@ -2640,12 +2635,12 @@ void _renderChicken(int arg0, int arg1)
     }
 
     if (arg1 > 0) {
-        _renderTextureFadeIn(0, arg0, disIndexEsc0Chicken, arg1);
-        _renderTextureFadeIn(0xA0, arg0, disIndexEsc0Chicken + 1, arg1);
+        renderTextureFadeIn(0, arg0, disIndexEsc0Chicken, arg1);
+        renderTextureFadeIn(0xA0, arg0, disIndexEsc0Chicken + 1, arg1);
     }
 }
 
-void _renderEvolveOrDie(int x, int y, int step)
+void renderEvolveOrDie(int x, int y, int step)
 {
     static CVECTOR colors[] = { { 128, 96, 64 }, { 200, 180, 160 }, { 128, 96, 64 } };
 
@@ -2660,16 +2655,16 @@ void _renderEvolveOrDie(int x, int y, int step)
     if (step > 0) {
         colors[0].cd = step;
         colors[1].cd = step;
-        x -= (_disMap[disIndexIq0EvolveOrDie].w + _disMap[disIndexIq0EvolveOrDie + 1].w)
+        x -= (disMap[disIndexIq0EvolveOrDie].w + disMap[disIndexIq0EvolveOrDie + 1].w)
           >> 1;
 
-        _renderTexturePopIn(x, y, disIndexIq0EvolveOrDie, colors);
-        _renderTexturePopIn(x + _disMap[disIndexIq0EvolveOrDie].w, y,
+        renderTexturePopIn(x, y, disIndexIq0EvolveOrDie, colors);
+        renderTexturePopIn(x + disMap[disIndexIq0EvolveOrDie].w, y,
             disIndexIq0EvolveOrDie + 1, &colors[1]);
     }
 }
 
-void _renderFoodchain(int x, int y, int timer)
+void renderFoodchain(int x, int y, int timer)
 {
     static CVECTOR colors[] = { { 128, 96, 64 }, { 200, 180, 160 }, { 128, 96, 64 } };
 
@@ -2684,40 +2679,40 @@ void _renderFoodchain(int x, int y, int timer)
     if (timer > 0) {
         colors[0].cd = timer;
         colors[1].cd = timer;
-        x -= (_disMap[disIndexIq0Foodchain].w + _disMap[disIndexIq0Foodchain + 1].w) >> 1;
+        x -= (disMap[disIndexIq0Foodchain].w + disMap[disIndexIq0Foodchain + 1].w) >> 1;
 
-        _renderTexturePopIn(x, y, disIndexIq0Foodchain, colors);
-        _renderTexturePopIn(
-            x + _disMap[disIndexIq0Foodchain].w, y, disIndexIq0Foodchain + 1, &colors[1]);
+        renderTexturePopIn(x, y, disIndexIq0Foodchain, colors);
+        renderTexturePopIn(
+            x + disMap[disIndexIq0Foodchain].w, y, disIndexIq0Foodchain + 1, &colors[1]);
     }
 }
 
-void _renderAverageTimeHeader(int x, int y, int timer)
+void renderAverageTimeHeader(int x, int y, int timer)
 {
     if (timer > 64) {
         timer = 64;
     }
 
     if (timer > 0) {
-        _renderTextureFadeIn(x - (_disMap[disIndexIq0AverageTime].w >> 1), y,
+        renderTextureFadeIn(x - (disMap[disIndexIq0AverageTime].w >> 1), y,
             disIndexIq0AverageTime, timer);
     }
 }
 
-void _renderCubePuzzleTime(int x, int y, int timer)
+void renderCubePuzzleTime(int x, int y, int timer)
 {
     if (timer > 64) {
         timer = 64;
     }
 
     if (timer > 0) {
-        int new_var = (_puzzleParTime % 60) << 0x10;
+        int new_var = (puzzleParTime % 60) << 0x10;
 
-        _renderTime(x, y, timer, ((_puzzleParTime / 60) << 0x10) | (new_var >> 8), 0);
+        renderTime(x, y, timer, ((puzzleParTime / 60) << 0x10) | (new_var >> 8), 0);
     }
 }
 
-void _renderCubePuzzleRank(int x, int y, int timer, int rank)
+void renderCubePuzzleRank(int x, int y, int timer, int rank)
 {
     static CVECTOR colors[] = { { 128, 128, 128 }, { 128, 128, 128 } };
 
@@ -2732,12 +2727,12 @@ void _renderCubePuzzleRank(int x, int y, int timer, int rank)
     if (timer > 0) {
         colors[0].cd = timer;
 
-        _renderTexturePopIn(x - (_disMap[rank + disIndexIq1GameDesigner].w >> 1), y,
+        renderTexturePopIn(x - (disMap[rank + disIndexIq1GameDesigner].w >> 1), y,
             rank + disIndexIq1GameDesigner, colors);
     }
 }
 
-void _renderCubePuzzleIncrementalTime(int x, int y, int timer)
+void renderCubePuzzleIncrementalTime(int x, int y, int timer)
 {
     int temp_a3;
     int time;
@@ -2756,9 +2751,9 @@ void _renderCubePuzzleIncrementalTime(int x, int y, int timer)
         return;
     }
 
-    _renderTextureFadeIn(x, y, 72, timer);
+    renderTextureFadeIn(x, y, 72, timer);
 
-    x += _disMap[72].w;
+    x += disMap[72].w;
 
     if (timer >= 16) {
         temp_a3 = vs_main_stateFlags.puzzleTimerSeconds;
@@ -2776,10 +2771,10 @@ void _renderCubePuzzleIncrementalTime(int x, int y, int timer)
         time = 0;
     }
 
-    _renderTime(x, y + 2, timer, time, 0);
+    renderTime(x, y + 2, timer, time, 0);
 }
 
-void _determineRank(void)
+void determineRank(void)
 {
     static short titleThresholds[16] = { 16, 12, 8 };
     static u_int rankScores[] = { 100000000, 75000000, 60000000, 40000000, 32000000,
@@ -2798,79 +2793,79 @@ void _determineRank(void)
 
     for (i = 0; i < 16; ++i) {
         if (unlockedTitles >= titleThresholds[i]) {
-            if (_score >= rankScores[i]) {
-                _rank = i;
+            if (score >= rankScores[i]) {
+                riskbreakerRank = i;
                 return;
             }
         }
     }
 }
 
-void _calculateScore(void)
+void calculateScore(void)
 {
     short classPoints[] = { 20, 20, 40, 80, 100, 60 };
     short weaponClassPoints[] = { 20, 40, 20, 100, 60, 100, 60, 100, 80, 60 };
     int i;
 
-    _score = 0;
+    score = 0;
 
     for (i = 0; i < 6; ++i) {
-        _score += vs_main_scoredata.enemyKills[i] * classPoints[i];
+        score += vs_main_scoredata.enemyKills[i] * classPoints[i];
     }
 
     for (i = 0; i < 10; ++i) {
-        _score += vs_main_scoredata.weaponAttacks[i] * weaponClassPoints[i];
+        score += vs_main_scoredata.weaponAttacks[i] * weaponClassPoints[i];
     }
 
     for (i = 0; i < 8; ++i) {
         if ((vs_main_scoredata.bossTimeTrialScores[i][0].time) != 0x800000) {
-            _score += 20000;
+            score += 20000;
         }
     }
 
     if (vs_main_scoredata.maxChain < 6) {
-        _score += vs_main_scoredata.maxChain * 10;
+        score += vs_main_scoredata.maxChain * 10;
     } else if (vs_main_scoredata.maxChain < 11) {
-        _score += vs_main_scoredata.maxChain * 20;
+        score += vs_main_scoredata.maxChain * 20;
     } else if (vs_main_scoredata.maxChain < 16) {
-        _score += vs_main_scoredata.maxChain * 40;
+        score += vs_main_scoredata.maxChain * 40;
     } else if (vs_main_scoredata.maxChain < 21) {
-        _score += vs_main_scoredata.maxChain * 80;
+        score += vs_main_scoredata.maxChain * 80;
     } else if (vs_main_scoredata.maxChain < 26) {
-        _score += vs_main_scoredata.maxChain * 160;
+        score += vs_main_scoredata.maxChain * 160;
     } else if (vs_main_scoredata.maxChain < 31) {
-        _score += vs_main_scoredata.maxChain * 320;
+        score += vs_main_scoredata.maxChain * 320;
     } else if (vs_main_scoredata.maxChain < 51) {
-        _score += vs_main_scoredata.maxChain * 640;
+        score += vs_main_scoredata.maxChain * 640;
     } else {
-        _score += vs_main_scoredata.maxChain * 1280;
+        score += vs_main_scoredata.maxChain * 1280;
     }
 
-    _score += _clearCount * 100000;
+    score += clearCount * 100000;
 
-    if ((_clearCount != 0) && (vs_main_scoredata.completionTimeMinutes < 600)) {
+    if ((clearCount != 0) && (vs_main_scoredata.completionTimeMinutes < 600)) {
         if (vs_main_scoredata.completionTimeMinutes >= 540) {
-            _score = _score + (_score >> 2);
+            score = score + (score >> 2);
         } else if (vs_main_scoredata.completionTimeMinutes >= 300) {
-            _score = _score + (_score >> 1);
+            score = score + (score >> 1);
         } else {
-            _score = _score * 2;
+            score = score * 2;
         }
     }
 
-    _score = _score + vs_main_scoredata.streakScore;
-    _score = _score + vs_main_scoredata.miscScore;
+    score = score + vs_main_scoredata.streakScore;
+    score = score + vs_main_scoredata.miscScore;
 
-    if (_score > 999999999) {
-        _score = 999999999;
+    if (score > 999999999) {
+        score = 999999999;
     }
 }
 
-void _nop0(void) { }
+void nop0(void) { }
 
-void _nop1(void) { }
+void nop1(void) { }
 
-void _addHealBonus(void)
+void addHealBonus(void)
 {
     int new_var = vs_main_scoredata.miscScore + 100000;
 
@@ -2883,18 +2878,18 @@ void _addHealBonus(void)
     vs_main_scoredata.healCount = 0;
 }
 
-void _nop2(void) { }
+void nop2(void) { }
 
-int _getTotalStrength(void) { return vs_battle_characterState->stats->totalStrength; }
+int getTotalStrength(void) { return vs_battle_characterState->stats->totalStrength; }
 
-int _getTotalIntelligence(void)
+int getTotalIntelligence(void)
 {
     return vs_battle_characterState->stats->totalIntelligence;
 }
 
-int _getTotalAgility(void) { return vs_battle_characterState->stats->totalAgility; }
+int getTotalAgility(void) { return vs_battle_characterState->stats->totalAgility; }
 
-void _raiseMaxStrength(int amount)
+void raiseMaxStrength(int amount)
 {
     vs_battle_characterState->stats->totalStrength += amount;
 
@@ -2909,7 +2904,7 @@ void _raiseMaxStrength(int amount)
     }
 }
 
-void _raiseMaxIntelligence(int amount)
+void raiseMaxIntelligence(int amount)
 {
     vs_battle_characterState->stats->totalIntelligence += amount;
 
@@ -2924,7 +2919,7 @@ void _raiseMaxIntelligence(int amount)
     }
 }
 
-void _raiseMaxAgility(int amount)
+void raiseMaxAgility(int amount)
 {
     vs_battle_characterState->stats->totalAgility += amount;
 
@@ -2939,7 +2934,7 @@ void _raiseMaxAgility(int amount)
     }
 }
 
-void _raiseMaxHP(int amount)
+void raiseMaxHP(int amount)
 {
     vs_battle_characterState->stats->maxHP += amount;
 
@@ -2954,7 +2949,7 @@ void _raiseMaxHP(int amount)
     }
 }
 
-void _raiseMaxMP(int amount)
+void raiseMaxMP(int amount)
 {
     vs_battle_characterState->stats->maxMP += amount;
 

@@ -1,4 +1,4 @@
-$(BUILD)/data/EFFECT/%.BIN: LDFLAGS += \
+$(BUILD)/data/EFFECT/%.BIN.elf $(BUILD)/data/EFFECT/%.BIN.sym.elf: LDFLAGS += \
 	--defsym=vs_scratch=0x1F800000
 
 $(BUILD)/src/EFFECT/%.c.o: CC1VER := 2.8.1-psx
@@ -67,7 +67,7 @@ $(EMPTY_BINARIES): | $$(@D)/
 	$(ECHO) Creating empty file $@
 	$(TOUCH) $@
 
-EFFECT_LDLIBS := $(patsubst %,$(BUILD)/data/%.elf,SLUS_010.40 BATTLE/BATTLE.PRG)
-$(RELINKED_BINARIES): $(EFFECT_LDLIBS)
-$(RELINKED_BINARIES): private LDLIBS += $(EFFECT_LDLIBS)
-$(RELINKED_BINARIES) $(RELINKED_BINARIES:=.elf): private LDSCRIPT := link.ld
+EFFECT_LDLIBS := $(patsubst %,$(BUILD)/data/%.sym.elf,SLUS_010.40 BATTLE/BATTLE.PRG)
+$(RELINKED_BINARIES:=.elf): $(EFFECT_LDLIBS)
+$(RELINKED_BINARIES:=.elf): private LDLIBS += $(EFFECT_LDLIBS)
+$(RELINKED_BINARIES:=.elf) $(RELINKED_BINARIES:=.sym.elf): private LDSCRIPT := link.ld

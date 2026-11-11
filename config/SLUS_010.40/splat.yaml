@@ -2,7 +2,7 @@ sha1: fababcfd4325d42f350d95b3472874affeb0e48c
 options:
   basename: SLUS_010.40
   target_path: data/SLUS_010.40
-  elf_path: build/data/SLUS_010.40.elf
+  elf_path: build/data/SLUS_010.40.sym.elf
   asm_path: build/src/SLUS_010.40
   src_path: src/SLUS_010.40
   asset_path: build/assets/SLUS_010.40
@@ -238,7 +238,7 @@ segments:
       - [0x3264C, c, main]
       - [0x3988C, hasm]
       - [0x39938, .data, 2MBYTE.OBJ]
-      - [0x39950, rgb555Sized, _nowLoading]
+      - [0x39950, rgb555Sized, nowLoading]
       - [0x3AD04, .data, main]
       - { start: 0x3C1DC, type: vsMainActions, name: vs_main_actions, linker_entry: false }
       - { start: 0x3F5DC, type: data, linker_entry: false}

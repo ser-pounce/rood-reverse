@@ -16,7 +16,7 @@
 #include "build/assets/MENU/MENU7.PRG/container.h"
 #include "scratch.h"
 
-static char const* _memcardFilenameTemplate = "bu00:BASLUS-01040VAG0";
+static char const* memcardFilenameTemplate = "bu00:BASLUS-01040VAG0";
 
 #define PACKAGE_SAVE_PREPARE() vs_main_captureSaveState()
 #define KEYSTREAM_BITS(n) vs_battle_keystreamBits(n)
@@ -65,27 +65,27 @@ static char const* _memcardFilenameTemplate = "bu00:BASLUS-01040VAG0";
  * Actions 1 and 2 select the two bundled saves; action zero polls and applies
  * the loaded data when ready.
  */
-static int _loadIntroSaveFile(int action)
+static int loadIntroSaveFile(int action)
 {
-    static vs_main_CdQueueSlot* _opmcimgSlot;
-    static savedata_t* _opMcImg;
+    static vs_Main_CdQueueSlot* opmcimgSlot;
+    static vs_Savedata* opMcImg;
 
-    vs_main_CdFile file;
+    vs_Main_CdFile file;
     void* new_var2;
-    vs_Gametime_t gametime;
+    vs_Gametime gametime;
     int lba;
-    vs_Gametime_t* new_var;
+    vs_Gametime* new_var;
 
     switch (action) {
     case 0:
         new_var = &gametime;
-        if (_opmcimgSlot->state == vs_main_CdQueueStateLoaded) {
-            vs_main_freeCdQueueSlot(_opmcimgSlot);
+        if (opmcimgSlot->state == vs_main_CdQueueStateLoaded) {
+            vs_main_freeCdQueueSlot(opmcimgSlot);
             gametime.t = vs_main_gametime.t;
-            _spmcimg = (char*)(_opMcImg - 1);
-            _applyLoadedSaveFile(1);
+            mcImageBuf = (char*)(opMcImg - 1);
+            applyLoadedSaveFile(1);
             vs_main_gametime.t = gametime.t;
-            new_var2 = _opMcImg;
+            new_var2 = opMcImg;
             vs_main_freeHeapR(new_var2);
             return 1;
         }
@@ -102,14 +102,14 @@ static int _loadIntroSaveFile(int action)
 
     file.lba = lba;
     file.size = VS_OPMCIMG1_BIN_SIZE;
-    _opmcimgSlot = vs_main_allocateCdQueueSlot(&file);
-    new_var2 = vs_main_allocHeapR(sizeof *_opMcImg);
-    _opMcImg = new_var2;
-    vs_main_cdEnqueue(_opmcimgSlot, _opMcImg);
+    opmcimgSlot = vs_main_allocateCdQueueSlot(&file);
+    new_var2 = vs_main_allocHeapR(sizeof *opMcImg);
+    opMcImg = new_var2;
+    vs_main_cdEnqueue(opmcimgSlot, opMcImg);
     return 0;
 }
 
-static u_short _menuItemTextClut[][16] = {
+static u_short menuItemTextClut[][16] = {
     { vs_getRGB5551(0, 0, 0, 0), vs_getRGB5551(1, 1, 1, 1), vs_getRGB5551(1, 1, 3, 1),
         vs_getRGB5551(3, 1, 0, 1), vs_getRGB5551(1, 0, 6, 1), vs_getRGB5551(6, 1, 1, 1),
         vs_getRGB5551(11, 2, 0, 1), vs_getRGB5551(16, 5, 0, 1),
@@ -145,15 +145,15 @@ static u_short _menuItemTextClut[][16] = {
  *
  * A nonzero arg0 starts loading; zero polls until the assets are uploaded.
  */
-static int _initGameOver(int arg0)
+static int initGameOver(int arg0)
 {
 
-    static vs_main_CdQueueSlot* queueSlot;
+    static vs_Main_CdQueueSlot* queueSlot;
     static u_int* gameOverBin;
     static int state;
     static UNUSED char _[8];
 
-    vs_main_CdFile cdFile;
+    vs_Main_CdFile cdFile;
 
     if (arg0 != 0) {
         cdFile.lba = VS_GAMEOVER_BIN_LBA;
@@ -169,7 +169,7 @@ static int _initGameOver(int arg0)
         if (queueSlot->state == 4) {
             vs_main_freeCdQueueSlot(queueSlot);
             vs_battle_renderImage(vs_getXY(832, 256), gameOverBin, vs_getWH(24, 128));
-            vs_battle_renderImage(vs_getXY(832, 384), _menuItemTextClut, vs_getWH(48, 1));
+            vs_battle_renderImage(vs_getXY(832, 384), menuItemTextClut, vs_getWH(48, 1));
             state = 1;
         }
         return 0;
@@ -184,7 +184,7 @@ static int _initGameOver(int arg0)
 /**
  * Interpolates the 16-entry 5-bit RGB palette between two menu item palettes.
  */
-static void _setMenuItemClut(
+static void setMenuItemClut(
     short* clut, int textBlendFactor, u_short* clut0, u_short* clut1)
 {
     int r0;
@@ -225,7 +225,7 @@ static void _setMenuItemClut(
  * A nonzero init resets the animation. The completed selection is one for
  * continue/load and two for return to title.
  */
-static int _displayGameOverScreen(int init)
+static int displayGameOverScreen(int init)
 {
     static short clut[2][16];
     static int color1;
@@ -324,8 +324,8 @@ static int _displayGameOverScreen(int init)
         }
     }
 
-    _setMenuItemClut(clut[0], blendFactor1, _menuItemTextClut[0], _menuItemTextClut[3]);
-    _setMenuItemClut(clut[1], blendFactor2, _menuItemTextClut[0], _menuItemTextClut[3]);
+    setMenuItemClut(clut[0], blendFactor1, menuItemTextClut[0], menuItemTextClut[3]);
+    setMenuItemClut(clut[1], blendFactor2, menuItemTextClut[0], menuItemTextClut[3]);
     vs_battle_renderImage(vs_getXY(832, 384), &clut, vs_getWH(32, 1));
 
     prim = vs_battle_setSprite(color1, vs_getXY(112, 128), vs_getWH(96, 32), nextPrim);
@@ -359,7 +359,7 @@ int vs_menu7_gameOver(u_char* state)
         init,
         loadAssets,
         displayGameOver,
-        initFileMenu,
+        initFileMenuState,
         displayFileMenu,
         selectFile,
         restartIntro,
@@ -367,9 +367,9 @@ int vs_menu7_gameOver(u_char* state)
     };
 
     static u_short clutBuf[256];
-    static vs_main_settings_t settingsBackup;
+    static vs_Settings settingsBackup;
     static int resetDelay;
-    static int _difficulty;
+    static int difficulty;
 
     RECT rect;
     int option;
@@ -379,19 +379,19 @@ int vs_menu7_gameOver(u_char* state)
         func_8007E0A8(0x1F, 1, 6);
         func_8008A4DC(0);
         settingsBackup = vs_main_settings;
-        _difficulty = vs_main_stateFlags.difficulty;
-        _initGameOver(1);
+        difficulty = vs_main_stateFlags.difficulty;
+        initGameOver(1);
         *state = loadAssets;
         break;
     case loadAssets:
-        if (_initGameOver(0) == 0) {
+        if (initGameOver(0) == 0) {
             break;
         }
         *state = displayGameOver;
-        _displayGameOverScreen(1);
+        displayGameOverScreen(1);
         // Fallthrough
     case displayGameOver:
-        option = _displayGameOverScreen(0);
+        option = displayGameOverScreen(0);
         if (option == 0) {
             break;
         }
@@ -399,18 +399,18 @@ int vs_menu7_gameOver(u_char* state)
         if (option != 2) {
             option = vs_main_stateFlags.introState;
             if (((option - 1) < 2U) && (vs_main_stateFlags.clearCount == 0)) {
-                _loadIntroSaveFile(option);
+                loadIntroSaveFile(option);
                 *state = restartIntro;
             } else {
-                *state = initFileMenu;
+                *state = initFileMenuState;
             }
         } else {
             *state = returnToTitle;
         }
         break;
-    case initFileMenu:
-        _initMemcard(1);
-        _initFileMenu();
+    case initFileMenuState:
+        initMemcard(1);
+        initFileMenu();
         setRECT(&rect, 640, 511, 256, 1);
         StoreImage(&rect, (u_long*)clutBuf);
         DrawSync(0);
@@ -418,18 +418,18 @@ int vs_menu7_gameOver(u_char* state)
         *state = displayFileMenu;
         break;
     case displayFileMenu:
-        if (_initMemcard(0) != 0) {
-            _loadFileMenu(2);
+        if (initMemcard(0) != 0) {
+            loadFileMenu(2);
             *state = selectFile;
-            _drawFileMenuBg();
-            _drawFileMenu(vs_main_frameBuf);
+            drawFileMenuBg();
+            drawFileMenu(vs_main_frameBuf);
         }
         break;
     case selectFile:
         SetDispMask(1);
-        option = _loadFileMenu(0);
+        option = loadFileMenu(0);
         if (option != 0) {
-            _shutdownMemcard();
+            shutdownMemcard();
             SetDispMask(0);
             if (option < 0) {
                 resetDelay = 1;
@@ -440,14 +440,14 @@ int vs_menu7_gameOver(u_char* state)
             vs_main_stateFlags.gameOver = 0;
             vs_main_jumpToBattle();
         } else {
-            _drawFileMenuBg();
-            _drawFileMenu(vs_main_frameBuf);
+            drawFileMenuBg();
+            drawFileMenu(vs_main_frameBuf);
         }
         break;
     case restartIntro:
-        if (_loadIntroSaveFile(0) != 0) {
+        if (loadIntroSaveFile(0) != 0) {
             vs_main_settings = settingsBackup;
-            vs_main_stateFlags.difficulty = _difficulty;
+            vs_main_stateFlags.difficulty = difficulty;
             vs_main_freeMusic(1);
             vs_main_setMonoSound(vs_main_settings.monoSound);
             vs_main_stateFlags.gameOver = 0;
@@ -467,7 +467,7 @@ int vs_menu7_gameOver(u_char* state)
     return 0;
 }
 
-static u_short _containerStrings[] = {
+static u_short containerStrings[] = {
 #include "build/assets/MENU/MENU7.PRG/container.vsString"
 };
 
@@ -477,7 +477,7 @@ static u_short _containerStrings[] = {
  * initParams selects the initial option in bit 0 and whether the menu button
  * may cancel in bit 2; polling returns 1 for Yes, -1 for No, or zero pending.
  */
-static int _promptYesNo(int initParams)
+static int promptYesNo(int initParams)
 {
     enum state { init, animWait, handleInput, returnSelection };
 
@@ -487,12 +487,12 @@ static int _promptYesNo(int initParams)
     static char cancelWithMenuButton;
     static UNUSED char _[34];
 
-    vs_battle_menuItem_t* menuItem;
+    vs_MenuItem* menuItem;
     u_int buttons;
 
     if (initParams != 0) {
         menuItem = vs_battle_setMenuItem(0x1E, 320, 146, 0x7E, 0,
-            (char*)&_containerStrings[VS_container_OFFSET_yesOption]);
+            (char*)&containerStrings[VS_container_OFFSET_yesOption]);
         menuItem->state = 2;
         menuItem->targetPosition0 = 194;
         state = init;
@@ -503,7 +503,7 @@ static int _promptYesNo(int initParams)
     switch (state) {
     case init:
         menuItem = vs_battle_setMenuItem(0x1F, 320, 162, 0x7E, 0,
-            (char*)&_containerStrings[VS_container_OFFSET_noOption]);
+            (char*)&containerStrings[VS_container_OFFSET_noOption]);
         menuItem->state = 2;
         menuItem->targetPosition0 = 194;
         state = animWait;
@@ -549,19 +549,19 @@ static int _promptYesNo(int initParams)
     return 0;
 }
 
-static u_short _containerItemCapacities[] = { 32, 64, 64, 32, 64, 192, 256, 2 };
+static u_short containerItemCapacities[] = { 32, 64, 64, 32, 64, 192, 256, 2 };
 
 /**
  * Returns a pointer to the start of a container index section.
  */
-static void* _getContainerIndexOffset(int section, vs_menu_containerIndices* indices)
+static void* getContainerIndexOffset(int section, vs_ContainerIndices* indices)
 {
     int i = 0;
     int offset = 0;
 
     if (section > 0) {
         do {
-            offset += _containerItemCapacities[i++];
+            offset += containerItemCapacities[i++];
         } while (i < section);
     }
     return (u_short*)indices + offset;
@@ -571,12 +571,12 @@ static void* _getContainerIndexOffset(int section, vs_menu_containerIndices* ind
  * Copies selected container inventory entries and remaps their cross-item
  * references into the target's compacted indices.
  */
-void _copyContainer(vs_menu_containerData* target, vs_menu_containerData* source,
-    vs_menu_containerIndices* toCopy)
+static void copyContainer(
+    vs_ContainerData* target, vs_ContainerData* source, vs_ContainerIndices* toCopy)
 {
     int i;
     int j;
-    vs_menu_containerIndices* targetIndices;
+    vs_ContainerIndices* targetIndices;
     int sourceIndex;
 
     targetIndices = vs_main_allocHeapR(sizeof *targetIndices);
@@ -584,9 +584,9 @@ void _copyContainer(vs_menu_containerData* target, vs_menu_containerData* source
     vs_battle_rMemzero(target, sizeof *target);
 
     for (i = 0; i < 7; ++i) {
-        u_short* sourceOffset = _getContainerIndexOffset(i, toCopy);
-        u_short* targetOffset = _getContainerIndexOffset(i, targetIndices);
-        for (j = 0; j < _containerItemCapacities[i]; ++j) {
+        u_short* sourceOffset = getContainerIndexOffset(i, toCopy);
+        u_short* targetOffset = getContainerIndexOffset(i, targetIndices);
+        for (j = 0; j < containerItemCapacities[i]; ++j) {
             if (sourceOffset[j] != 0) {
                 targetOffset[sourceOffset[j] - 1] = j + 1;
             }
@@ -596,7 +596,7 @@ void _copyContainer(vs_menu_containerData* target, vs_menu_containerData* source
     for (i = 0; i < 32; ++i) {
         sourceIndex = toCopy->weapons[i];
         if (sourceIndex != 0) {
-            vs_main_inventoryWeapon* weapon = &target->weapons[i];
+            vs_InventoryWeapon* weapon = &target->weapons[i];
             vs_battle_copyAligned(
                 weapon, &source->weapons[sourceIndex - 1], sizeof *weapon);
             weapon->index = i + 1;
@@ -614,7 +614,7 @@ void _copyContainer(vs_menu_containerData* target, vs_menu_containerData* source
     for (i = 0; i < 64; ++i) {
         sourceIndex = toCopy->blades[i];
         if (sourceIndex != 0) {
-            vs_main_inventoryBlade* blade = &target->blades[i];
+            vs_InventoryBlade* blade = &target->blades[i];
             vs_battle_copyAligned(blade, &source->blades[sourceIndex - 1], sizeof *blade);
             blade->index = i + 1;
             if (blade->assembledWeaponIndex != 0) {
@@ -627,7 +627,7 @@ void _copyContainer(vs_menu_containerData* target, vs_menu_containerData* source
     for (i = 0; i < 64; ++i) {
         sourceIndex = toCopy->grips[i];
         if (sourceIndex != 0) {
-            vs_main_inventoryGrip* grip = &target->grips[i];
+            vs_InventoryGrip* grip = &target->grips[i];
             vs_battle_copyAligned(grip, &source->grips[sourceIndex - 1], sizeof *grip);
             grip->index = i + 1;
             if (grip->assembledWeaponIndex != 0) {
@@ -640,7 +640,7 @@ void _copyContainer(vs_menu_containerData* target, vs_menu_containerData* source
     for (i = 0; i < 32; ++i) {
         sourceIndex = toCopy->shields[i];
         if (sourceIndex != 0) {
-            vs_main_inventoryShield* shield = &target->shields[i];
+            vs_InventoryShield* shield = &target->shields[i];
             vs_battle_copyAligned(
                 shield, &source->shields[sourceIndex - 1], sizeof *shield);
             shield->index = i + 1;
@@ -655,7 +655,7 @@ void _copyContainer(vs_menu_containerData* target, vs_menu_containerData* source
     for (i = 0; i < 64; ++i) {
         sourceIndex = toCopy->armor[i];
         if (sourceIndex != 0) {
-            vs_main_inventoryArmor* armor = &target->armor[i];
+            vs_InventoryArmor* armor = &target->armor[i];
             vs_battle_copyAligned(armor, &source->armor[sourceIndex - 1], sizeof *armor);
             armor->index = i + 1;
         }
@@ -664,7 +664,7 @@ void _copyContainer(vs_menu_containerData* target, vs_menu_containerData* source
     for (i = 0; i < 192; ++i) {
         sourceIndex = toCopy->gems[i];
         if (sourceIndex != 0) {
-            vs_main_inventoryGem* gem = &target->gems[i];
+            vs_InventoryGem* gem = &target->gems[i];
             vs_battle_copyAligned(gem, &source->gems[sourceIndex - 1], sizeof *gem);
             gem->index = i + 1;
             if (gem->setItemIndex != 0) {
@@ -682,7 +682,7 @@ void _copyContainer(vs_menu_containerData* target, vs_menu_containerData* source
     for (i = 0; i < 256; ++i) {
         sourceIndex = toCopy->misc[i];
         if (sourceIndex != 0) {
-            vs_main_inventoryMisc* item = &target->misc[i];
+            vs_InventoryMisc* item = &target->misc[i];
             vs_battle_rMemcpy(item, &source->misc[sourceIndex - 1], sizeof *item);
             item->index = i + 1;
         }
@@ -712,21 +712,21 @@ int vs_menu7_saveContainerMenu(u_char* state)
         vs_battle_rMemzero(vs_menu_inventoryStorage, sizeof *vs_menu_inventoryStorage);
         vs_mainMenu_populateBaseStats(16);
         vs_battle_initInformationTextBox(1);
-        _promptYesNo(5);
+        promptYesNo(5);
         vs_mainmenu_setInformationMessage(
-            (char*)&_containerStrings[VS_container_OFFSET_checkContainer]);
+            (char*)&containerStrings[VS_container_OFFSET_checkContainer]);
         *state = 1;
         break;
     case 1:
-        option = _promptYesNo(0);
+        option = promptYesNo(0);
         if (option != 0) {
             if (option >= 0) {
-                vs_battle_menuItem_t* menuItem;
-                _initMemcard(1);
+                vs_MenuItem* menuItem;
+                initMemcard(1);
                 vs_mainMenu_toggleBackgroundFade(1);
                 vs_mainMenu_setMenuCommand(menuActionMenu);
                 menuItem = vs_battle_setMenuItem(0, 0x140, 0x12, 0x7E, 8,
-                    (char*)&_containerStrings[VS_container_OFFSET_container]);
+                    (char*)&containerStrings[VS_container_OFFSET_container]);
                 menuItem->state = 2;
                 menuItem->targetPosition0 = 180;
                 menuItem->selected = 1;
@@ -737,35 +737,35 @@ int vs_menu7_saveContainerMenu(u_char* state)
         }
         break;
     case 2:
-        if ((vs_mainmenu_ready() != 0) && (_initMemcard(0) != 0)) {
+        if ((vs_mainmenu_ready() != 0) && (initMemcard(0) != 0)) {
             func_8008A4DC(0);
             func_800CB654(1);
             D_800EB9B0 = 0x200000;
             vs_mainMenu_setBackgroundRenderPriority(2046, 128);
-            _initFileMenu();
+            initFileMenu();
             if (vs_main_settings.containerEmpty) {
-                vs_battle_rMemzero(&((savedata_t*)_spmcimg + 1)->containerData,
-                    sizeof((savedata_t*)_spmcimg + 1)->containerData);
+                vs_battle_rMemzero(&((vs_Savedata*)mcImageBuf + 1)->containerData,
+                    sizeof((vs_Savedata*)mcImageBuf + 1)->containerData);
                 *state = 7;
             } else {
-                _findCurrentSave(1);
+                findCurrentSave(1);
                 *state = 3;
             }
         }
         break;
     case 3:
-        option = _findCurrentSave(0);
+        option = findCurrentSave(0);
         if (option != 0) {
             if (option < 0) {
                 if (option == -2) {
-                    message = _textTable + VS_MCMAN_BIN_OFFSET_insertError;
+                    message = textTable + VS_MCMAN_BIN_OFFSET_insertError;
                 } else {
-                    message = _textTable + VS_MCMAN_BIN_OFFSET_emptyCard;
+                    message = textTable + VS_MCMAN_BIN_OFFSET_emptyCard;
                 }
                 vs_mainmenu_setInformationMessage((char*)message);
                 *state = 4;
             } else {
-                _loadSaveData((option & 7) | ((option & 0x10) << 0xC));
+                loadSaveData((option & 7) | ((option & 0x10) << 0xC));
                 *state = 6;
             }
         }
@@ -773,32 +773,32 @@ int vs_menu7_saveContainerMenu(u_char* state)
     case 4:
         if (vs_main_buttonsPressed.pad[0].low != 0) {
             vs_mainmenu_setInformationMessage(
-                (char*)(_textTable + VS_MCMAN_BIN_OFFSET_containerWarn));
-            _promptYesNo(2);
+                (char*)(textTable + VS_MCMAN_BIN_OFFSET_containerWarn));
+            promptYesNo(2);
             *state = 5;
         }
         break;
     case 5:
-        option = _promptYesNo(0);
+        option = promptYesNo(0);
         if (option != 0) {
             if (option < 0) {
                 *state = 14;
             } else {
                 vs_main_settings.containerEmpty = 1;
-                vs_battle_rMemzero(&((savedata_t*)_spmcimg + 1)->containerData,
-                    sizeof((savedata_t*)_spmcimg + 1)->containerData);
+                vs_battle_rMemzero(&((vs_Savedata*)mcImageBuf + 1)->containerData,
+                    sizeof((vs_Savedata*)mcImageBuf + 1)->containerData);
                 *state = 7;
             }
         }
         break;
     case 6:
-        option = _loadSaveData(0);
+        option = loadSaveData(0);
         if (option != 0) {
-            if ((option > 0) && (_applyLoadedSaveFile(0) == 0)) {
+            if ((option > 0) && (applyLoadedSaveFile(0) == 0)) {
                 *state = 7;
                 break;
             }
-            message = _textTable + VS_MCMAN_BIN_OFFSET_emptyCard;
+            message = textTable + VS_MCMAN_BIN_OFFSET_emptyCard;
             vs_mainmenu_setInformationMessage((char*)message);
             *state = 4;
         }
@@ -809,28 +809,28 @@ int vs_menu7_saveContainerMenu(u_char* state)
         vs_battle_memcpy(&vs_menu_inventoryStorage->unkF00, &vs_main_inventoryIndices,
             sizeof vs_menu_inventoryStorage->unkF00);
         vs_battle_memcpy(&vs_menu_inventoryStorage->unkFB0,
-            &((savedata_t*)_spmcimg + 1)->containerData,
+            &((vs_Savedata*)mcImageBuf + 1)->containerData,
             sizeof vs_menu_inventoryStorage->unkFB0);
-        _shutdownMemcard();
+        shutdownMemcard();
         *state = 8;
         vs_battle_menuState.returnState = vs_battle_menuState.currentMenu;
         vs_battle_menuState.currentMenu = 14;
         break;
     case 8:
         if (vs_mainmenu_ready() != 0) {
-            _initMemcard(1);
+            initMemcard(1);
             *state = 9;
         }
         break;
     case 9:
-        if (_initMemcard(0) != 0) {
+        if (initMemcard(0) != 0) {
             option = vs_battle_menuState.returnState;
             if (option != 0) {
                 vs_battle_initInformationTextBox(1);
                 if (option == 1) {
-                    _promptYesNo(1);
+                    promptYesNo(1);
                     vs_mainmenu_setInformationMessage(
-                        (char*)&_containerStrings[VS_container_OFFSET_cancelWarning]);
+                        (char*)&containerStrings[VS_container_OFFSET_cancelWarning]);
                     *state = 12;
                 } else {
                     *state = 10;
@@ -841,29 +841,29 @@ int vs_menu7_saveContainerMenu(u_char* state)
         }
         break;
     case 10:
-        _copyContainer(&((savedata_t*)_spmcimg + 1)->containerData,
+        copyContainer(&((vs_Savedata*)mcImageBuf + 1)->containerData,
             &vs_menu_inventoryStorage->unkC430.data,
             &vs_menu_inventoryStorage->unkC430.indices);
-        _showSaveMenu(2);
+        showSaveMenu(2);
         *state = 11;
         break;
     case 11:
-        option = _showSaveMenu(0);
+        option = showSaveMenu(0);
         if (option != 0) {
-            if ((_dataNotSaved == 0) && (option < 0)) {
+            if ((dataNotSaved == 0) && (option < 0)) {
                 vs_battle_initInformationTextBox(1);
-                _promptYesNo(1);
+                promptYesNo(1);
                 vs_mainmenu_setInformationMessage(
-                    (char*)&_containerStrings[VS_container_OFFSET_cancelWarning]);
+                    (char*)&containerStrings[VS_container_OFFSET_cancelWarning]);
                 *state = 12;
             } else {
                 *state = 14;
             }
         }
-        _drawFileMenu(vs_main_frameBuf);
+        drawFileMenu(vs_main_frameBuf);
         break;
     case 12:
-        option = _promptYesNo(0);
+        option = promptYesNo(0);
         if (option != 0) {
             if (option == 1) {
                 *state = 10;
@@ -892,7 +892,7 @@ int vs_menu7_saveContainerMenu(u_char* state)
         vs_mainMenu_dismissInformationBox();
         vs_mainMenu_toggleBackgroundFade(0);
         if (vs_mainmenu_ready() != 0) {
-            _shutdownMemcard();
+            shutdownMemcard();
             *state = 16;
         }
         break;
@@ -910,9 +910,9 @@ int vs_menu7_saveContainerMenu(u_char* state)
 /**
  * Renders the current play time in the data menu.
  */
-static void _drawPlayTime(void)
+static void drawPlayTime(void)
 {
-    static char* _playTime = "00:00:00:00";
+    static char* playTime = "00:00:00:00";
 
     char time[4];
     int digits;
@@ -929,10 +929,10 @@ static void _drawPlayTime(void)
     for (i = 0; i < 4; ++i) {
         digits = vs_battle_toBCD(time[i]);
         // BUG: invalid write to .rodata
-        _playTime[9 - i * 3] = (digits >> 4) + 48;
-        _playTime[10 - i * 3] = (digits & 0xF) + 48;
+        playTime[9 - i * 3] = (digits >> 4) + 48;
+        playTime[10 - i * 3] = (digits & 0xF) + 48;
     }
-    vs_battle_renderTextRaw(_playTime, 0xC800E0, vs_scratch.unk4 - 0x14);
+    vs_battle_renderTextRaw(playTime, 0xC800E0, vs_scratch.unk4 - 0x14);
     vs_battle_renderTextRaw("PLAY    TIME", 0xBC00E0, vs_scratch.unk4 - 0x14);
 }
 
@@ -947,7 +947,7 @@ int vs_menu7_dataMenu(u_char* state)
         init = 3,
         loadWait,
         initSaveMenu = 7,
-        showSaveMenu,
+        showSaveMenuState,
         initLoadMenu,
         handleInput
     };
@@ -958,25 +958,25 @@ int vs_menu7_dataMenu(u_char* state)
     int row;
 
     if (*state < 11) {
-        _drawPlayTime();
+        drawPlayTime();
     }
 
     switch (*state) {
     case init:
-        _initMemcard(1);
+        initMemcard(1);
         *state = loadWait;
         break;
 
     case loadWait:
-        if ((vs_mainmenu_ready() == 0) || (_initMemcard(0) == 0)) {
+        if ((vs_mainmenu_ready() == 0) || (initMemcard(0) == 0)) {
             break;
         }
     // Fallthrough
     case 5:
         for (row = 0; row < 2; ++row) {
-            menuStrings[row * 2] = (char*)(&_textTable[_textTable[row * 2]]);
+            menuStrings[row * 2] = (char*)(&textTable[textTable[row * 2]]);
             menuStrings[row * 2 + 1] =
-                (char*)(&_textTable[VS_MCMAN_BIN_OFFSET_saveDisabled]);
+                (char*)(&textTable[VS_MCMAN_BIN_OFFSET_saveDisabled]);
             rowTypes[row] = 0;
         }
 
@@ -1000,7 +1000,7 @@ int vs_menu7_dataMenu(u_char* state)
         if (row != 0) {
             if (row > 0) {
                 vs_mainMenu_clearMenuExcept(6);
-                _initFileMenu();
+                initFileMenu();
                 switch (row) {
                 case 1:
                     *state = initSaveMenu;
@@ -1033,27 +1033,27 @@ int vs_menu7_dataMenu(u_char* state)
 
     case initSaveMenu:
         if (vs_mainmenu_ready() != 0) {
-            _showSaveMenu(1);
-            *state = showSaveMenu;
+            showSaveMenu(1);
+            *state = showSaveMenuState;
         }
         break;
 
-    case showSaveMenu:
-        if (_showSaveMenu(0) != 0) {
+    case showSaveMenuState:
+        if (showSaveMenu(0) != 0) {
             *state = 5;
         }
-        _drawFileMenu(vs_main_frameBuf);
+        drawFileMenu(vs_main_frameBuf);
         break;
 
     case initLoadMenu:
         if (vs_mainmenu_ready() != 0) {
-            _loadFileMenu(1);
+            loadFileMenu(1);
             *state = handleInput;
         }
         break;
 
     case handleInput:
-        row = _loadFileMenu(0);
+        row = loadFileMenu(0);
         if (row != 0) {
             if (row < 0) {
                 *state = 5;
@@ -1062,13 +1062,13 @@ int vs_menu7_dataMenu(u_char* state)
             setRECT(&rect, 0, 0, 640, 240);
             DrawSync(0);
             ClearImage(&rect, 0, 0, 0);
-            _shutdownMemcard();
+            shutdownMemcard();
             *state = 0;
             DrawSync(0);
             vs_main_jumpToBattle();
             break;
         }
-        _drawFileMenu(vs_main_frameBuf);
+        drawFileMenu(vs_main_frameBuf);
         break;
 
     case 11:
@@ -1090,7 +1090,7 @@ int vs_menu7_dataMenu(u_char* state)
         if (vs_mainMenu_backgroundFadeStep != 0) {
             break;
         }
-        _shutdownMemcard();
+        shutdownMemcard();
         if (*state == 14) {
             vs_battle_menuState.currentMenu = 7;
         }

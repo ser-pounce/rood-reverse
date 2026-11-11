@@ -2,7 +2,7 @@ sha1: c2e91aec2752468155c4a8a4406bc2282ec7cd52
 options:
   basename: MENU/MENU7.PRG
   target_path: data/MENU/MENU7.PRG
-  elf_path: build/data/MENU/MENU7.PRG.elf
+  elf_path: build/data/MENU/MENU7.PRG.sym.elf
   asm_path: build/src/MENU/MENU7.PRG
   src_path: src/MENU/MENU7.PRG
   asset_path: build/assets/MENU/MENU7.PRG

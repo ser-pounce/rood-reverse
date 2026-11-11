@@ -22,12 +22,12 @@ typedef struct {
     int age;
     func_800D6CF_t texture;
     SVECTOR rotation;
-} vs_mesh10State;
+} vs_Mesh10State;
 typedef struct {
     int tag;
     POLY_GT3 poly;
     int drawMode;
-} vs_mesh10Prim;
+} vs_Mesh10Prim;
 
 #define VS_MESH10_VERTICES VS_CAT(VS_MESH10_FUNCTION, _vertices)
 #define VS_MESH10_FACES VS_CAT(VS_MESH10_FUNCTION, _faces)
@@ -55,16 +55,16 @@ int VS_MESH10_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
     int screen[10];
     int depths[10];
     CVECTOR colors[2];
-    vs_uv uv[6];
+    vs_Uv uv[6];
     func_800D2904_t child;
-    vs_mesh10State* state = arg0->unk8;
+    vs_Mesh10State* state = arg0->unk8;
     func_800FA098_arg1* scratch = (func_800FA098_arg1*)0x1F8001D0;
     func_800FA098_arg0* effect;
     D_800F53B8_t* battle = D_800F53BC;
     int alive = 1;
     MATRIX* actorMatrix;
     int i;
-    pFileTexture* texture;
+    vs_PFileTexture* texture;
 
     switch (arg1) {
     case 1:
@@ -200,7 +200,7 @@ int VS_MESH10_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
                             + depths[VS_MESH10_FACES[i][2]])
                       / 3;
 
-            vs_mesh10Prim* prim;
+            vs_Mesh10Prim* prim;
 
             if (depth >= ONE / 2 || depth <= vs_main_nearClip) {
                 continue;

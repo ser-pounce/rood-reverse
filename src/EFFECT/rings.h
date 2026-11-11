@@ -31,7 +31,7 @@ int VS_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
     u_char columnUV[9];
     u_char rowUV[3];
     func_800D2904_t child;
-    vs_ringState* state = arg0->unk8;
+    vs_RingState* state = arg0->unk8;
     func_800FA098_arg1* scratch = (func_800FA098_arg1*)0x1F8001D0;
     func_800FA098_arg0* effect;
     D_800F53B8_t* battle = D_800F53BC;
@@ -47,7 +47,7 @@ int VS_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
     int column;
     int drawRow;
     int drawColumn;
-    pFileTexture* texture;
+    vs_PFileTexture* texture;
 
     switch (arg1) {
     case 1:
@@ -227,7 +227,7 @@ int VS_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
                                 + depths[drawRow + 1][drawColumn]
                                 + depths[drawRow + 1][drawColumn + 1])
                           / 4;
-                vs_gt4Prim* prim;
+                vs_Gt4Prim* prim;
 
                 if (depth >= 0x800 || depth <= vs_main_nearClip) {
                     continue;

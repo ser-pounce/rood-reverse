@@ -64,12 +64,12 @@ $(BUILD)/src/MENU/%.c.o: ASFLAGS += -no-pad-sections
 
 MENUS           := $(patsubst %,MENU/%.PRG, $(addprefix MENU,0 1 2 3 4 5 7 8 9 B C D E F) MAINMENU)
 MENU_BINTARGETS := $(MENUS:%=$(BUILD)/data/%)
-MENU_LDLIBS     := $(patsubst %,$(BUILD)/data/%.elf,SLUS_010.40 BATTLE/BATTLE.PRG MENU/MAINMENU.PRG)
+MENU_LDLIBS     := $(patsubst %,$(BUILD)/data/%.sym.elf,SLUS_010.40 BATTLE/BATTLE.PRG MENU/MAINMENU.PRG)
 
-$(MENU_BINTARGETS): $(MENU_LDLIBS)
-$(MENU_BINTARGETS): private LDLIBS += $(MENU_LDLIBS)
-$(MENU_BINTARGETS): private LDFLAGS += --defsym=vs_scratch=0x1F800000
-$(MENU_BINTARGETS) $(MENU_BINTARGETS:.PRG=.PRG.elf): private LDSCRIPT := link.ld
+$(MENU_BINTARGETS:=.elf): $(MENU_LDLIBS)
+$(MENU_BINTARGETS:=.elf): private LDLIBS += $(MENU_LDLIBS)
+$(MENU_BINTARGETS:=.elf): private LDFLAGS += --defsym=vs_scratch=0x1F800000
+$(MENU_BINTARGETS:=.elf) $(MENU_BINTARGETS:.PRG=.PRG.sym.elf): private LDSCRIPT := link.ld
 
 BINARIES += $(MENUS)
 TARGETS  += $(addprefix $(BUILD)/data/MENU/,MENUA.PRG $(addsuffix .BIN, ITEMNAME ITEMHELP GAMEOVER MAPBG MCMAN MENU12 MENUBG SPMCIMG) $(addsuffix .SYD, BLADE ARMOR SHIELD))

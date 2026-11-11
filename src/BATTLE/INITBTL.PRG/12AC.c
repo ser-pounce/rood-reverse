@@ -67,7 +67,7 @@ static int (*D_800FAF7C[])(u_char*, short) = { vs_battle_invalidOpcode,
     vs_battle_invalidOpcode, vs_battle_invalidOpcode, vs_battle_invalidOpcode,
     vs_battle_invalidOpcode, vs_battle_invalidOpcode, func_800BB604, func_800BB604 };
 
-void _initScriptFunctionTable(void)
+void initScriptFunctionTable(void)
 {
     D_800F4C08 = 0;
     D_800F4BE2 = 0;
@@ -76,3 +76,5 @@ void _initScriptFunctionTable(void)
     D_800F4C28 = vs_main_allocHeap(0x400);
     vs_main_memcpy(D_800F4C28, D_800FAF7C, 0x400);
 }
+
+VS_HIDDEN(initScriptFunctionTable);

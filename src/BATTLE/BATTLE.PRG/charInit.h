@@ -7,7 +7,7 @@ typedef struct {
     u_short id;
     char unk2;
     char index;
-} _actions;
+} Actions;
 
 typedef struct {
     u_short hp;
@@ -15,11 +15,11 @@ typedef struct {
     char chainEvasion;
     signed char types[4];
     signed char affinities[8];
-    _actions actions[4];
-    _armorIntermediate unk20;
+    Actions actions[4];
+    ArmorIntermediate unk20;
     char dpSplash[6];
     char unk5A[2];
-} _limbInit;
+} LimbInit;
 
 typedef struct {
     u_short subType;
@@ -43,9 +43,9 @@ typedef struct {
     char unk31;
     char unk32;
     char unk33;
-    vs_battle_weaponIntermediate weapon;
-    vs_battle_shieldIntermediate shield;
-    _accessoryIntermediate accessory;
-    _limbInit limbs[6];
+    vs_WeaponIntermediate weapon;
+    vs_ShieldIntermediate shield;
+    AccessoryIntermediate accessory;
+    LimbInit limbs[6];
     int mpdIdentifer;
-} vs_battle_charInitData;
+} vs_CharInitData;

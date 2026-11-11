@@ -2,7 +2,7 @@ sha1: f74a76e6215edebf607d0c2af56481050edb139a
 options:
   basename: TITLE/TITLE.PRG
   target_path: data/TITLE/TITLE.PRG
-  elf_path: build/data/TITLE/TITLE.PRG.elf
+  elf_path: build/data/TITLE/TITLE.PRG.sym.elf
   asm_path: build/src/TITLE/TITLE.PRG
   src_path: src/TITLE/TITLE.PRG
   asset_path: build/assets/TITLE/TITLE.PRG
@@ -30,12 +30,12 @@ segments:
       - [0xD344, .data, libpress/LIBPRESS]
       - [0xD494, .data, libpress/VLC_C]
       - [0xD4C4, .data, libpress/BUILD]
-      - [0xE2D4, rleRgb555, _titleScreenBg, 544, 576]
-      - [0x449A8, rgb555, _menuCopyright, 180, 24]
-      - {start: 0x46B68, type: indexed, name: _fontTable, width: 256, height: 220, num_cluts: 16, cluts_after: true, plte_clut: 14 }
-      - {start: 0x4DB68, type: indexed, name: _fontTable1, width: 256, height: 220, num_cluts: 16, cluts_after: true }
-      - {start: 0x54B68, type: indexed, name: _debugFont, width: 256, height: 154, num_cluts: 0, cluts_after: true }
-      - {start: 0x59868, type: indexed, name: _uiTable, width: 256, height: 480, num_cluts: 16 }
-      - {start: 0x68A68, type: indexed, name: _saveMenuBg, width: 192, height: 240, plte_clut: 0, bitdepth: 8 }
+      - [0xE2D4, rleRgb555, titleScreenBg, 544, 576]
+      - [0x449A8, rgb555, menuCopyright, 180, 24]
+      - {start: 0x46B68, type: indexed, name: fontTable, width: 256, height: 220, num_cluts: 16, cluts_after: true, plte_clut: 14 }
+      - {start: 0x4DB68, type: indexed, name: fontTable1, width: 256, height: 220, num_cluts: 16, cluts_after: true }
+      - {start: 0x54B68, type: indexed, name: debugFont, width: 256, height: 154, num_cluts: 0, cluts_after: true }
+      - {start: 0x59868, type: indexed, name: uiTable, width: 256, height: 480, num_cluts: 16 }
+      - {start: 0x68A68, type: indexed, name: saveMenuBg, width: 192, height: 240, plte_clut: 0, bitdepth: 8 }
       - [0x74068, .bss, 22C]
   - [0x87648]

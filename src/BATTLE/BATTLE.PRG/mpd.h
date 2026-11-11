@@ -9,7 +9,7 @@ typedef struct {
     short height;
     short unk4;
     short unk6;
-} _mpdRoomCollisionMapSection;
+} MpdRoomCollisionMapSection;
 
 typedef struct {
     u_int unk0_0 : 5;
@@ -26,7 +26,7 @@ typedef struct {
     u_int unk0_17 : 1;
     u_int unk0_18 : 2;
     u_int unk0_20 : 12;
-} _mpdRoomSection3;
+} MpdRoomSection3;
 
 typedef struct {
     short unk0;
@@ -42,16 +42,16 @@ typedef struct {
     } unk8;
     char unkA;
     char unkB;
-} _mpdRoomSection9;
+} MpdRoomSection9;
 
 typedef struct {
-    _mpdRoomSection9 unk0;
+    MpdRoomSection9 unk0;
     short keyOrSigil;
     short unkE;
     short unk10;
     char unk12;
     char unk13;
-} _mpdRoomSectionA;
+} MpdRoomSectionA;
 
 typedef struct {
     int unk0[5];
@@ -81,7 +81,7 @@ typedef struct {
     short unk52;
     short unk54;
     short unk56;
-} _mpdRoomSectionB;
+} MpdRoomSectionB;
 
 typedef struct {
     int unk0;
@@ -90,19 +90,19 @@ typedef struct {
     int* unkC;
     int* unk10;
     int unk14[0];
-} _mpdRoomSectionE;
+} MpdRoomSectionE;
 
 typedef struct {
     int visited;
     void* dataAddress;
     short zoneId;
     short mapId;
-} vs_battle_room;
+} vs_Room;
 
 typedef struct {
     int roomCount;
-    vs_battle_room rooms[0];
-} vs_battle_scene;
+    vs_Room rooms[0];
+} vs_Scene;
 
 typedef struct {
     u_short unk0_0 : 5;
@@ -113,7 +113,7 @@ typedef struct {
     u_short unk0_15 : 1;
     u_short unk2;
     char unk4[0];
-} _mpdRoomSection11;
+} MpdRoomSection11;
 
 typedef struct {
     u_int unk0_0 : 8;
@@ -137,8 +137,8 @@ typedef struct {
     int unkA8;
     int unkAC;
     int unkB0;
-    _mpdRoomSection3 unkB4;
-} _mpdRoomSection12;
+    MpdRoomSection3 unkB4;
+} MpdRoomSection12;
 
 typedef struct {
     short unk0;
@@ -151,15 +151,15 @@ typedef struct {
     short unkE;
     short unk10;
     short unk12;
-    vs_battle_loot unk14;
-} _mpdRoomSection13;
+    vs_Loot unk14;
+} MpdRoomSection13;
 
 typedef struct {
     short minX;
     short minZ;
     short maxX;
     short maxZ;
-} _zoneContextBounds;
+} ZoneContextBounds;
 
 typedef struct {
     char unk0;
@@ -192,41 +192,41 @@ typedef struct {
         u_int section18Len;
     } header;
     int* geometrySection;
-    _mpdRoomCollisionMapSection* collisionMapSection;
-    _mpdRoomSection3* section3;
-    vs_main_warp_t* doorSection;
+    MpdRoomCollisionMapSection* collisionMapSection;
+    MpdRoomSection3* section3;
+    vs_Warp* doorSection;
     int lightingSection;
     int section6;
     int section7;
     int section8;
-    _mpdRoomSection9* section9;
-    _mpdRoomSectionA* sectionA;
-    _mpdRoomSectionB* sectionB;
+    MpdRoomSection9* section9;
+    MpdRoomSectionA* sectionA;
+    MpdRoomSectionB* sectionB;
     void* textureEffectsSection;
     void* sectionD;
-    _mpdRoomSectionE* sectionE;
-    vs_battle_scene* sectionF;
+    MpdRoomSectionE* sectionE;
+    vs_Scene* sectionF;
     u_short* section10;
-    _mpdRoomSection11* section11;
-    _mpdRoomSection12* section12;
-    _mpdRoomSection13* section13;
+    MpdRoomSection11* section11;
+    MpdRoomSection12* section12;
+    MpdRoomSection13* section13;
     u_int* section14;
     int section15;
     int section16;
     int section17;
-    _zoneContextBounds* section18;
-} _mpdRoomSection;
+    ZoneContextBounds* section18;
+} MpdRoomSection;
 
 typedef struct {
     int vertexCount;
     SVECTOR vertices[0];
-} vs_battle_roomVertices;
+} vs_RoomVertices;
 
 typedef struct {
     char name[32];
     short prev;
     short next;
-} vs_battle_roomName;
+} vs_RoomName;
 
 /**
  * Retrieves room ID, only used for teleporting.
@@ -234,16 +234,15 @@ typedef struct {
  * @return Unique room ID from 0-511.
  */
 int vs_battle_getCurrentRoomId(void);
-_mpdRoomSection3* func_8008B764(u_int arg0, u_int arg1, int arg2);
-void vs_battle_setRoomsUnk0(vs_battle_scene*);
+void vs_battle_setRoomsUnk0(vs_Scene*);
 int vs_battle_getCurrentSceneId(void);
-extern _mpdRoomSection vs_battle_roomData;
+extern MpdRoomSection vs_battle_roomData;
 
 void vs_battle_setDoorEntered(void);
 int vs_battle_inWorkshop(void);
 int vs_battle_getMapCompletion(void);
 int func_8008E7BC(int, int, u_int);
 extern int vs_battle_mapCompletionFlags[];
-extern vs_main_warp_t vs_battle_spawnPoint;
+extern vs_Warp vs_battle_spawnPoint;
 extern short vs_battle_doorEntered;
 extern void* vs_battle_sceneBuffer;

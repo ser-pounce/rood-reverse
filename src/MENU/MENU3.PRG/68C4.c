@@ -7,10 +7,10 @@
 #include "src/BATTLE/BATTLE.PRG/objectData.h"
 #include "src/MENU/MAINMENU.PRG/224.h"
 
-int func_80109320(int);
-void _populateDataSlot(int wepId, int material);
+static int func_80109320(int);
+static void populateDataSlot(int wepId, int material);
 
-int _loadObjectData(int category, int wepId, int material)
+int loadObjectData(int category, int wepId, int material)
 {
     UNUSED int _[6];
     int i;
@@ -38,7 +38,7 @@ int _loadObjectData(int category, int wepId, int material)
             }
         }
 
-        _populateDataSlot(wepId, material);
+        populateDataSlot(wepId, material);
         func_8009D934(1, 0, 1);
 
         ++vs_battle_loadObjectDataState;
@@ -85,7 +85,9 @@ int _loadObjectData(int category, int wepId, int material)
     return 1;
 }
 
-int func_80109320(int category)
+VS_HIDDEN(loadObjectData);
+
+static int func_80109320(int category)
 {
     if (category < 3) {
         return 0;
@@ -98,9 +100,9 @@ int func_80109320(int category)
     return category & 1;
 }
 
-void _populateDataSlot(int wepId, int material)
+static void populateDataSlot(int wepId, int material)
 {
-    vs_battle_objectData objData;
+    vs_ObjectData objData;
     int index;
     int var_a3;
 

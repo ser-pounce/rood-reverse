@@ -67,7 +67,7 @@ int VS_CLOSED_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
     int factors[3];
     CVECTOR colors[3];
 #if defined(VS_CLOSED_RING_TILED)
-    vs_uv uv[2][4];
+    vs_Uv uv[2][4];
 #elif defined(VS_CLOSED_RING_TRANSPOSED)
     u_char u[3];
     u_char v[17];
@@ -77,7 +77,7 @@ int VS_CLOSED_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
 #endif
     MATRIX _;
     func_800D2904_t child;
-    vs_ringState* state = arg0->unk8;
+    vs_RingState* state = arg0->unk8;
     func_800FA098_arg1* scratch = (func_800FA098_arg1*)0x1F8001D0;
     func_800FA098_arg0* effect;
     D_800F53B8_t* battle = D_800F53BC;
@@ -94,7 +94,7 @@ int VS_CLOSED_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
     int column;
     int drawRow;
     int drawColumn;
-    pFileTexture* texture;
+    vs_PFileTexture* texture;
 
     switch (arg1) {
     case 1:
@@ -273,7 +273,7 @@ int VS_CLOSED_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
 
         for (drawRow = 0; drawRow < 2; ++drawRow) {
             int depth;
-            vs_gt4Prim* prim;
+            vs_Gt4Prim* prim;
 
             for (drawColumn = 0; drawColumn < 15; ++drawColumn) {
                 depth = (depths[drawRow][drawColumn] + depths[drawRow][drawColumn + 1]

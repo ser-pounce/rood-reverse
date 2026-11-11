@@ -8,7 +8,7 @@ typedef struct {
     u_short tickInterval;
     u_int replacesMask;
     u_int blockedByMask;
-} vs_main_statusEffectParams_t;
+} vs_StatusEffectParams;
 
 typedef struct {
     signed char phys;
@@ -19,7 +19,7 @@ typedef struct {
     signed char light;
     signed char dark;
     UNUSED signed char _;
-} material_modifiers_affinities_t;
+} MaterialModifiersAffinities;
 
 typedef struct {
     signed char human;
@@ -28,13 +28,13 @@ typedef struct {
     signed char phantom;
     signed char dragon;
     signed char evil;
-    material_modifiers_affinities_t attackAffinities;
-    material_modifiers_affinities_t defenseAffinities;
+    MaterialModifiersAffinities attackAffinities;
+    MaterialModifiersAffinities defenseAffinities;
     u_short maxDp;
     short strength;
     short intelligence;
     short agility;
-} material_modifiers_t;
+} MaterialModifiers;
 
-extern material_modifiers_t vs_main_materialModifiers[8];
-extern vs_main_statusEffectParams_t vs_main_statusEffectParams[];
+extern MaterialModifiers vs_main_materialModifiers[8];
+extern vs_StatusEffectParams vs_main_statusEffectParams[];

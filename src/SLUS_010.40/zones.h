@@ -7,5 +7,5 @@
  */
 extern u_char vs_main_locationZoneMapIds[];
 
-extern vs_main_CdFile vs_main_zndFiles[256];
+extern vs_Main_CdFile vs_main_zndFiles[256];
 extern u_char vs_main_zndMusicMap[];

@@ -6,9 +6,9 @@
 typedef struct {
     vs_battle_tilePosition unk0;
     SVECTOR unk4;
-} vs_battle_actorLocation;
+} vs_ActorLocation;
 
 typedef struct {
-    vs_battle_actorLocation unk0;
+    vs_ActorLocation unk0;
     int unkC;
-} vs_battle_actorPosition;
+} vs_ActorPosition;

@@ -26,7 +26,7 @@
 /**
  * Animates and renders the small "OK" confirmation prompt.
  */
-static void _drawOk(int row, int brightness)
+static void drawOk(int row, int brightness)
 {
     vs_battle_renderTextRawColor("OK", vs_getXY(175, row * 16 + 32),
         ((rsin(brightness * 8) >> 5) + 64) * vs_getRGB888(1, 1, 1),
@@ -36,9 +36,9 @@ static void _drawOk(int row, int brightness)
 /**
  * Configures the target menuItem as a title element.
  */
-static void _setMenuTitle(int id, int textTableOffset)
+static void setMenuTitle(int id, int textTableOffset)
 {
-    vs_battle_menuItem_t* menuItem;
+    vs_MenuItem* menuItem;
 
     int y = 18;
 
@@ -53,17 +53,17 @@ static void _setMenuTitle(int id, int textTableOffset)
     menuItem->selected = 1;
 }
 
-static u_char _currentWorkshop;
-static u_char _combiningItem;
+static u_char currentWorkshop;
+static u_char combiningItem;
 static UNUSED char _[2];
-static u_int _slotSelectionHistory[5];
+static u_int slotSelectionHistory[5];
 
 /**
  * Records the selection order for a slot, or clears the history when index is
  * outside the five tracked slots.
  * @param index Zero-based slot to record; values of five or more clear history.
  */
-static void _pushSelectionHistory(int index)
+static void pushSelectionHistory(int index)
 {
     u_int i;
     u_int max = 0;
@@ -71,17 +71,17 @@ static void _pushSelectionHistory(int index)
     if (index < 5) {
 
         for (i = 0; i < 5; ++i) {
-            if (max < _slotSelectionHistory[i]) {
-                max = _slotSelectionHistory[i];
+            if (max < slotSelectionHistory[i]) {
+                max = slotSelectionHistory[i];
             }
         }
 
-        _slotSelectionHistory[index] = max + 1;
+        slotSelectionHistory[index] = max + 1;
 
         return;
     }
 
-    vs_battle_rMemzero(_slotSelectionHistory, sizeof _slotSelectionHistory);
+    vs_battle_rMemzero(slotSelectionHistory, sizeof slotSelectionHistory);
 }
 
 /**
@@ -90,23 +90,23 @@ static void _pushSelectionHistory(int index)
  * @return Zero when clearing or when history is empty; otherwise the popped
  *         slot number (one-based).
  */
-static int _popSelectionHistory(int index)
+static int popSelectionHistory(int index)
 {
     int i;
     int max = 0;
 
     if (index < 5) {
-        _slotSelectionHistory[index] = 0;
+        slotSelectionHistory[index] = 0;
     } else {
 
         for (i = 0; i < 5; ++i) {
-            if (_slotSelectionHistory[max] < _slotSelectionHistory[i]) {
+            if (slotSelectionHistory[max] < slotSelectionHistory[i]) {
                 max = i;
             }
         }
 
-        if (_slotSelectionHistory[max] != 0) {
-            _slotSelectionHistory[max] = 0;
+        if (slotSelectionHistory[max] != 0) {
+            slotSelectionHistory[max] = 0;
             return max + 1;
         }
     }
@@ -117,11 +117,11 @@ static int _popSelectionHistory(int index)
 /**
  * Creates the menu header and refreshes equipment statistics.
  */
-static void _initMenuItem(int textOffset, int icon)
+static void initMenuItem(int TextOffset, int icon)
 {
     int a0;
-    vs_battle_menuItem_t* menuItem = vs_battle_setMenuItem(
-        32, -164, 18, 164, 8, (char*)&vs_mainMenu_menu12Text[textOffset]);
+    vs_MenuItem* menuItem = vs_battle_setMenuItem(
+        32, -164, 18, 164, 8, (char*)&vs_mainMenu_menu12Text[TextOffset]);
     menuItem->state = 5;
     menuItem->targetPosition0 = 16;
     menuItem->selected = 1;
@@ -148,7 +148,7 @@ static void _initMenuItem(int textOffset, int icon)
 /**
  * Copies one menu row into another and deactivates the source row.
  */
-static void _copyMenuItem(int source, int target)
+static void copyMenuItem(int source, int target)
 {
     if (source != target) {
         vs_battle_copyAligned(&vs_battle_menuItems[target], &vs_battle_menuItems[source],
@@ -162,14 +162,14 @@ static void _copyMenuItem(int source, int target)
  * @param arg0 Nonzero initializes the prompt; zero advances its state.
  * @return Zero while pending, one for Yes, two for No, or three for cancel.
  */
-static int _confirmationPrompt(int arg0)
+static int confirmationPrompt(int arg0)
 {
     static char cursorState = 0;
     static char state;
     static char selectedOption;
 
     int i;
-    vs_battle_menuItem_t* menuItem;
+    vs_MenuItem* menuItem;
 
     int action = 0;
 
@@ -232,7 +232,7 @@ static int _confirmationPrompt(int arg0)
  *             combine-cancellation choice; zero advances its state.
  * @return Zero while pending, one for Yes, two for No, or three for cancel.
  */
-static int _confirmCombine(int arg0)
+static int confirmCombine(int arg0)
 {
     static char cursorState = 0;
     static char state;
@@ -242,7 +242,7 @@ static int _confirmCombine(int arg0)
 
     int i;
     u_short* text;
-    vs_battle_menuItem_t* menuItem;
+    vs_MenuItem* menuItem;
 
     int action = 0;
 
@@ -317,11 +317,11 @@ static int _confirmCombine(int arg0)
  * Disassembles a weapon into its constituent blade, grip, and gems.
  * @param weaponIndex Zero-based weapon inventory index.
  */
-static void _disassembleWeapon(int weaponIndex)
+static void disassembleWeapon(int weaponIndex)
 {
     int i;
     int index;
-    vs_main_inventoryWeapon* weapon = &vs_main_inventory.weapons[weaponIndex];
+    vs_InventoryWeapon* weapon = &vs_main_inventory.weapons[weaponIndex];
 
     if (weapon->blade == 0) {
         return;
@@ -352,17 +352,17 @@ static void _disassembleWeapon(int weaponIndex)
  * @param gemInfo Packed gem inventory indices, one byte per grip slot; zero is
  *                an empty slot.
  */
-static void _assembleWeapon(int bladeIndex, int gripIndex, int gemInfo)
+static void assembleWeapon(int bladeIndex, int gripIndex, int gemInfo)
 {
     int i;
     int weaponIndex;
 
-    vs_main_inventoryWeapon* weapon = &vs_main_inventory.weapons[_combiningItem];
-    vs_main_inventoryBlade* blade = &vs_main_inventory.blades[bladeIndex];
-    vs_main_inventoryGrip* grip = &vs_main_inventory.grips[gripIndex];
+    vs_InventoryWeapon* weapon = &vs_main_inventory.weapons[combiningItem];
+    vs_InventoryBlade* blade = &vs_main_inventory.blades[bladeIndex];
+    vs_InventoryGrip* grip = &vs_main_inventory.grips[gripIndex];
     int gemSlots = grip->gemSlots;
 
-    _disassembleWeapon(_combiningItem);
+    disassembleWeapon(combiningItem);
 
     weapon->blade = bladeIndex + 1;
     weapon->grip = gripIndex + 1;
@@ -372,7 +372,7 @@ static void _assembleWeapon(int bladeIndex, int gripIndex, int gemInfo)
         gemInfo >>= 8;
     }
 
-    weaponIndex = _combiningItem + 1;
+    weaponIndex = combiningItem + 1;
     blade->assembledWeaponIndex = weaponIndex;
     grip->assembledWeaponIndex = weaponIndex;
 
@@ -391,10 +391,10 @@ static void _assembleWeapon(int bladeIndex, int gripIndex, int gemInfo)
  * Detaches all installed gems from a shield.
  * @param index Zero-based shield inventory index.
  */
-static void _disassembleShield(int index)
+static void disassembleShield(int index)
 {
     int i;
-    vs_main_inventoryShield* shield = &vs_main_inventory.shields[index];
+    vs_InventoryShield* shield = &vs_main_inventory.shields[index];
     int slots = shield->base.gemSlots;
 
     for (i = 0; i < slots; ++i) {
@@ -410,14 +410,14 @@ static void _disassembleShield(int index)
  * Checks whether a blade category is supported by a grip category.
  * @return Nonzero when compatible; null components are treated as compatible.
  */
-static int _isValidGrip(vs_main_inventoryBlade* blade, vs_main_inventoryGrip* grip)
+static int isValidGrip(vs_InventoryBlade* blade, vs_InventoryGrip* grip)
 {
-    static u_short _validGripFlags[] = { 0, 0xE, 0xF0, 0x100, 0x200 };
+    static u_short validGripFlags[] = { 0, 0xE, 0xF0, 0x100, 0x200 };
 
     if ((blade == NULL) || (grip == NULL)) {
         return 1;
     }
-    return (1 << blade->category) & _validGripFlags[grip->category];
+    return (1 << blade->category) & validGripFlags[grip->category];
 }
 
 /**
@@ -426,7 +426,7 @@ static int _isValidGrip(vs_main_inventoryBlade* blade, vs_main_inventoryGrip* gr
  * @return -2 when the right-side up button requests return to battle; otherwise
  *         -1.
  */
-static int _leaveItemSlotSelection(int arg0)
+static int leaveItemSlotSelection(int arg0)
 {
 
     vs_battle_playMenuLeaveSfx();
@@ -444,12 +444,12 @@ static int _leaveItemSlotSelection(int arg0)
     return vs_main_buttonsPressed.all & PADRup ? -2 : -1;
 }
 
-static u_short* _itemsList;
-static int _itemsListSelection;
-static char _itemsListState;
-static char _itemCount;
-static char _itemsListWindow;
-static char _rowInfoUnused;
+static u_short* itemsList;
+static int itemsListSelection;
+static char itemsListState;
+static char listItemCount;
+static char itemsListWindow;
+static char rowInfoUnused;
 
 /**
  * Builds the shared scrollable item list from paired title/description strings.
@@ -457,75 +457,75 @@ static char _rowInfoUnused;
  * @param text Title and description pointers, two entries per row.
  * @param rowTypes Packed row flags and display metadata, one value per row.
  */
-static void _populateItemsList(int count, char** text, int* rowTypes)
+static void populateItemsList(int count, char** text, int* rowTypes)
 {
     int j;
     int i;
     u_short* temp_v1;
-    vs_battle_menuItem_t* menuItem;
+    vs_MenuItem* menuItem;
 
-    _itemCount = count;
-    _itemsListWindow = 0;
-    _itemsListSelection = 0;
-    _itemsListState = 1;
+    listItemCount = count;
+    itemsListWindow = 0;
+    itemsListSelection = 0;
+    itemsListState = 1;
     /* Actually something along the lines of an array of
-        struct _itemInfo{
+        struct ItemInfo{
             u_short title[14];
             int     rowType;
             u_short description[48];
         };
     but this doesn't match */
-    _itemsList = vs_main_allocHeapR(count << 7);
+    itemsList = vs_main_allocHeapR(count << 7);
 
     for (i = 0; i < count; ++i) {
 
-        *((int*)(&(&_itemsList[i * 0x40])[14])) = rowTypes[i];
+        *((int*)(&(&itemsList[i * 0x40])[14])) = rowTypes[i];
 
         temp_v1 = (u_short*)text[i * 2];
 
         if (temp_v1 != NULL) {
             for (j = 0; j < 13; ++j) {
-                _itemsList[(i * 0x40) + j] = temp_v1[j];
+                itemsList[(i * 0x40) + j] = temp_v1[j];
             }
-            _itemsList[(i * 0x40) + 13] = 0xE7E7;
+            itemsList[(i * 0x40) + 13] = 0xE7E7;
         } else {
-            _itemsList[i * 0x40] = 0xE7E7;
+            itemsList[i * 0x40] = 0xE7E7;
         }
 
         temp_v1 = (u_short*)text[i * 2 + 1];
 
         if (temp_v1 != NULL) {
-            _itemsList[(i * 0x40) + 16] = 0xF8;
+            itemsList[(i * 0x40) + 16] = 0xF8;
             for (j = 0; j < 46; ++j) {
-                _itemsList[(i * 0x40) + j + 17] = temp_v1[j];
+                itemsList[(i * 0x40) + j + 17] = temp_v1[j];
             }
-            _itemsList[(i * 0x40) + 63] = 0xE7E7;
+            itemsList[(i * 0x40) + 63] = 0xE7E7;
         } else {
-            _itemsList[(i * 0x40) + 16] = 0xE7E7;
+            itemsList[(i * 0x40) + 16] = 0xE7E7;
         }
     }
 
     j = rowTypes[0];
-    menuItem = vs_battle_setMenuItem(20, 155, 18, 165, 0, (char*)_itemsList);
+    menuItem = vs_battle_setMenuItem(20, 155, 18, 165, 0, (char*)itemsList);
     menuItem->unselectable = j & 1;
     menuItem->rowIcon = j >> 26;
     menuItem->material = (j >> 16) & 7;
     menuItem->selected = 1;
-    _rowInfoUnused = (j >> 19) & 0x7F;
+    rowInfoUnused = (j >> 19) & 0x7F;
 }
 
 /**
  * Returns the active list row once the shared list has been closed.
  * @return -1 while the shared list is open; otherwise the stored row/result.
  */
-static int _getSelectedRow(void) { return _itemsList == NULL ? _itemsListSelection : -1; }
+static int getSelectedRow(void) { return itemsList == NULL ? itemsListSelection : -1; }
 
 /**
  * Advances list animations and handles scrolling, selection, and cancel.
  * @param arg0 Nonzero enables the selection sound; bit 1 suppresses the
  *             back-navigation sound.
  */
-static void _navigateItemsList(int arg0)
+static void navigateItemsList(int arg0)
 {
     static char cursorAnimState = 0;
 
@@ -535,18 +535,18 @@ static void _navigateItemsList(int arg0)
     int v1;
     int i;
     int previousWindow;
-    vs_battle_menuItem_t* menuItem;
+    vs_MenuItem* menuItem;
 
-    if (_itemsListState < 6) {
-        if (_itemsListState == _itemCount) {
-            _itemsListState = 16;
+    if (itemsListState < 6) {
+        if (itemsListState == listItemCount) {
+            itemsListState = 16;
         } else {
-            menuItem = vs_battle_setMenuItem(_itemsListState + 20, 320,
-                (_itemsListState * 16) + 18, 151, 0,
-                (char*)&_itemsList[_itemsListState * 64]);
+            menuItem = vs_battle_setMenuItem(itemsListState + 20, 320,
+                (itemsListState * 16) + 18, 151, 0,
+                (char*)&itemsList[itemsListState * 64]);
             menuItem->state = 2;
             menuItem->targetPosition0 = 169;
-            itemInfo = *(int*)&_itemsList[_itemsListState * 64 + 14];
+            itemInfo = *(int*)&itemsList[itemsListState * 64 + 14];
             menuItem->unselectable = itemInfo & 1;
             menuItem->rowIcon = (itemInfo >> 0x1A);
             v0 = (itemInfo >> 9) & 0x7F;
@@ -554,26 +554,25 @@ static void _navigateItemsList(int arg0)
                 menuItem->outsetIcon = v0 - 100;
             }
             menuItem->material = (itemInfo >> 0x10) & 7;
-            ++_itemsListState;
-            if (_itemsListState == 6) {
-                if (_itemCount >= 7) {
+            ++itemsListState;
+            if (itemsListState == 6) {
+                if (listItemCount >= 7) {
                     menuItem->isScrollable = 2;
                 }
-                _itemsListState = 16;
+                itemsListState = 16;
             }
         }
     } else {
-        previousWindow = _itemsListWindow;
-        previousSelection = _itemsListSelection + previousWindow;
+        previousWindow = itemsListWindow;
+        previousSelection = itemsListSelection + previousWindow;
 
-        menuItem = vs_battle_getMenuItem(_itemsListSelection + 20);
-        vs_mainmenu_setInformationMessage(
-            (char*)&_itemsList[previousSelection * 64 + 16]);
+        menuItem = vs_battle_getMenuItem(itemsListSelection + 20);
+        vs_mainmenu_setInformationMessage((char*)&itemsList[previousSelection * 64 + 16]);
 
-        switch (_itemsListState) {
+        switch (itemsListState) {
         case 16:
             if (vs_mainmenu_ready() != 0) {
-                _itemsListState = 17;
+                itemsListState = 17;
                 return;
             }
             return;
@@ -584,10 +583,10 @@ static void _navigateItemsList(int arg0)
                     vs_battle_playMenuLeaveSfx();
                 }
 
-                vs_main_freeHeapR(_itemsList);
+                vs_main_freeHeapR(itemsList);
 
-                _itemsList = NULL;
-                _itemsListSelection = -3;
+                itemsList = NULL;
+                itemsListSelection = -3;
                 return;
             }
 
@@ -595,10 +594,10 @@ static void _navigateItemsList(int arg0)
                 if (menuItem->unselectable != 0) {
                     vs_battle_playInvalidSfx();
                 } else {
-                    vs_main_freeHeapR(_itemsList);
+                    vs_main_freeHeapR(itemsList);
 
-                    _itemsList = NULL;
-                    _itemsListSelection = previousSelection;
+                    itemsList = NULL;
+                    itemsListSelection = previousSelection;
 
                     if (arg0 != 0) {
                         if (previousSelection == 0) {
@@ -616,58 +615,58 @@ static void _navigateItemsList(int arg0)
             if (vs_main_buttonsPressed.all & PADRdown) {
 
                 vs_battle_playMenuLeaveSfx();
-                vs_main_freeHeapR(_itemsList);
+                vs_main_freeHeapR(itemsList);
 
-                _itemsList = NULL;
-                _itemsListSelection = -2;
+                itemsList = NULL;
+                itemsListSelection = -2;
                 return;
             }
 
             if (vs_main_buttonRepeat & PADLup) {
-                if (_itemCount < 7 || _itemsListWindow == 0) {
-                    if (_itemsListSelection != 0) {
-                        --_itemsListSelection;
+                if (listItemCount < 7 || itemsListWindow == 0) {
+                    if (itemsListSelection != 0) {
+                        --itemsListSelection;
                     }
                 } else {
-                    if (_itemsListSelection == 2) {
-                        --_itemsListWindow;
+                    if (itemsListSelection == 2) {
+                        --itemsListWindow;
                     } else {
-                        --_itemsListSelection;
+                        --itemsListSelection;
                     }
                 }
             }
 
             if (vs_main_buttonRepeat & PADLdown) {
-                if (_itemCount < 7) {
-                    if (_itemsListSelection < (_itemCount - 1)) {
-                        ++_itemsListSelection;
+                if (listItemCount < 7) {
+                    if (itemsListSelection < (listItemCount - 1)) {
+                        ++itemsListSelection;
                     }
                 } else {
-                    if (_itemsListWindow == (_itemCount - 6)) {
-                        if (_itemsListSelection < 5) {
-                            ++_itemsListSelection;
+                    if (itemsListWindow == (listItemCount - 6)) {
+                        if (itemsListSelection < 5) {
+                            ++itemsListSelection;
                         }
-                    } else if (_itemsListSelection == 4) {
-                        ++_itemsListWindow;
+                    } else if (itemsListSelection == 4) {
+                        ++itemsListWindow;
                     } else {
-                        ++_itemsListSelection;
+                        ++itemsListSelection;
                     }
                 }
             }
 
-            if (previousSelection != (_itemsListSelection + _itemsListWindow)) {
+            if (previousSelection != (itemsListSelection + itemsListWindow)) {
 
                 vs_battle_playMenuChangeSfx();
 
-                if (_itemsListWindow != previousWindow) {
+                if (itemsListWindow != previousWindow) {
 
-                    char unksp18[_itemCount];
+                    char unksp18[listItemCount];
 
-                    for (i = 0; i < _itemCount; ++i) {
+                    for (i = 0; i < listItemCount; ++i) {
                         unksp18[i] = 0;
                     }
 
-                    itemInfo = _itemCount;
+                    itemInfo = listItemCount;
 
                     if (itemInfo >= 7u) {
                         itemInfo = 6;
@@ -681,11 +680,11 @@ static void _navigateItemsList(int arg0)
                     for (i = 1;;) {
                         int v0;
                         menuItem = vs_battle_setMenuItem(i + 20, 169, i * 16 + 18, 151, 0,
-                            (char*)&_itemsList[(i + _itemsListWindow) * 64]);
-                        menuItem->gradientState = *(unksp18 + (i + _itemsListWindow));
-                        v0 = _itemsListWindow;
-                        v0 = i + _itemsListWindow;
-                        itemInfo = *(int*)&_itemsList[v0 * 64 + 14];
+                            (char*)&itemsList[(i + itemsListWindow) * 64]);
+                        menuItem->gradientState = *(unksp18 + (i + itemsListWindow));
+                        v0 = itemsListWindow;
+                        v0 = i + itemsListWindow;
+                        itemInfo = *(int*)&itemsList[v0 * 64 + 14];
                         menuItem->unselectable = itemInfo & 1;
                         menuItem->rowIcon = (itemInfo >> 0x1A);
                         v1 = (itemInfo >> 9) & 0x7F;
@@ -697,33 +696,33 @@ static void _navigateItemsList(int arg0)
                         menuItem->material = (itemInfo >> 0x10) & 7;
                         ++i;
 
-                        if (i == _itemCount) {
+                        if (i == listItemCount) {
                             break;
                         }
 
                         if (i == 6) {
-                            if ((_itemsListWindow + 6) < _itemCount) {
+                            if ((itemsListWindow + 6) < listItemCount) {
                                 menuItem->isScrollable = 2;
                             }
                             break;
                         }
                     }
 
-                    if (_itemsListWindow != 0) {
+                    if (itemsListWindow != 0) {
                         vs_battle_getMenuItem(21)->isScrollable = 1;
                     }
                 }
 
-                itemInfo = *(
-                    int*)&_itemsList[(_itemsListSelection + _itemsListWindow) * 64 + 14];
-                _rowInfoUnused = (itemInfo >> 0x13) & 0x7F;
+                itemInfo =
+                    *(int*)&itemsList[(itemsListSelection + itemsListWindow) * 64 + 14];
+                rowInfoUnused = (itemInfo >> 0x13) & 0x7F;
             }
 
-            vs_battle_getMenuItem(_itemsListSelection + 20)->selected = 1;
+            vs_battle_getMenuItem(itemsListSelection + 20)->selected = 1;
 
-            i = (((_itemsListSelection * 16) + 10) << 0x10) | 155;
+            i = (((itemsListSelection * 16) + 10) << 0x10) | 155;
 
-            if (_itemsListSelection == 0) {
+            if (itemsListSelection == 0) {
                 i -= 14;
             }
 
@@ -737,7 +736,7 @@ static void _navigateItemsList(int arg0)
  * Resets the stat display and shows stats for the specified blade, grip, or assembled
  * weapon (when both parameters are provided).
  */
-static void _setUiStats(int blade, int grip)
+static void setUiStats(int blade, int grip)
 {
     int var_v1;
 
@@ -758,7 +757,7 @@ static void _setUiStats(int blade, int grip)
         vs_mainMenu_setStatsFromGrip(grip);
         break;
     case 3:
-        vs_mainMenu_setStatsFromWeapon(_combiningItem + 1);
+        vs_mainMenu_setStatsFromWeapon(combiningItem + 1);
         break;
     }
 
@@ -771,9 +770,9 @@ static void _setUiStats(int blade, int grip)
  * @param arg0 Low four bits specify the header; bits 4-9 and 10-15 carry the
  *             blade and grip indices used to update the preview.
  */
-static void _assembleBladeMenuHeader(int bladeGrip)
+static void assembleBladeMenuHeader(int bladeGrip)
 {
-    vs_battle_menuItem_t* menuItem;
+    vs_MenuItem* menuItem;
 
     int blade = (bladeGrip >> 4) & 0x3F;
     int grip = (bladeGrip >> 10) & 0x3F;
@@ -784,22 +783,22 @@ static void _assembleBladeMenuHeader(int bladeGrip)
     menuItem->rowIcon = 24;
     menuItem->selected = 1;
     if (bladeGrip == 0) {
-        _setUiStats(blade, grip);
+        setUiStats(blade, grip);
     }
 }
 
 /**
  * Starts the slide-in animation for a menu header row.
  */
-static void _initMenuHeader(int arg0)
+static void initMenuHeader(int arg0)
 {
-    vs_battle_menuItem_t* menuItem = vs_battle_getMenuItem(arg0);
+    vs_MenuItem* menuItem = vs_battle_getMenuItem(arg0);
     menuItem->state = 4;
     menuItem->targetPosition0 = 155;
     menuItem->targetPosition1 = 18;
 }
 
-static char _availableItems[64];
+static char availableItems[64];
 
 /**
  * Lists candidate blades while assembling a weapon.
@@ -809,7 +808,7 @@ static char _availableItems[64];
  * @return Zero while pending, -2 when cancelled to battle, or the selected
  *         one-based blade index (zero may represent the empty placeholder).
  */
-static int _assembleBladeMenu(int params)
+static int assembleBladeMenu(int params)
 {
     static int selectedRow;
     static char state;
@@ -822,13 +821,13 @@ static int _assembleBladeMenu(int params)
     void* textBuf;
     char** menuText;
     int itemId;
-    vs_main_inventoryBlade* blade = NULL;
-    vs_main_inventoryGrip* grip = NULL;
+    vs_InventoryBlade* blade = NULL;
+    vs_InventoryGrip* grip = NULL;
 
     if (params != 0) {
         bladeToAssemble = params & 0x7F;
         gripToAssemble = (params >> 8);
-        _initMenuHeader(11);
+        initMenuHeader(11);
         state = 0;
         return 0;
     }
@@ -855,7 +854,7 @@ static int _assembleBladeMenu(int params)
             }
 
             bladeCount = 1;
-            _availableItems[0] = bladeToAssemble;
+            availableItems[0] = bladeToAssemble;
 
             for (i = 0; i < 16; ++i) {
                 itemId = vs_main_inventoryIndices.blades[i];
@@ -869,25 +868,25 @@ static int _assembleBladeMenu(int params)
                         vs_mainMenu_setBladeRow(blade, menuText + bladeCount * 2,
                             &vs_battle_rowTypeBuf[bladeCount], textBuf + bladeCount * 96);
 
-                        if (_isValidGrip(blade, grip) == 0) {
+                        if (isValidGrip(blade, grip) == 0) {
                             menuText[bladeCount * 2 + 1] = (char*)&vs_mainMenu_menu12Text
                                 [VS_MENU12_BIN_OFFSET_invalidBlade];
                             vs_battle_rowTypeBuf[bladeCount] |= 1;
                         }
 
-                        _availableItems[bladeCount] = itemId;
+                        availableItems[bladeCount] = itemId;
                         ++bladeCount;
                     }
                 }
             }
 
-            _populateItemsList(bladeCount, menuText, vs_battle_rowTypeBuf);
+            populateItemsList(bladeCount, menuText, vs_battle_rowTypeBuf);
             vs_main_freeHeapR(textBuf);
             state = 1;
         }
         break;
     case 1:
-        itemId = _availableItems[_itemsListWindow + _itemsListSelection];
+        itemId = availableItems[itemsListWindow + itemsListSelection];
         if (itemId != 0) {
             vs_mainMenu_setStatsFromBlade(itemId);
         } else {
@@ -897,10 +896,10 @@ static int _assembleBladeMenu(int params)
         }
 
         vs_mainMenu_printInformation(
-            _itemsListSelection + _itemsListWindow, _itemsListState);
-        _navigateItemsList(2);
+            itemsListSelection + itemsListWindow, itemsListState);
+        navigateItemsList(2);
 
-        selectedRow = _getSelectedRow() + 1;
+        selectedRow = getSelectedRow() + 1;
 
         if (selectedRow != 0) {
             vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
@@ -908,7 +907,7 @@ static int _assembleBladeMenu(int params)
                 return -2;
             }
             if (selectedRow > 0) {
-                selectedRow = _availableItems[selectedRow - 1];
+                selectedRow = availableItems[selectedRow - 1];
             }
             state = 2;
         }
@@ -930,7 +929,7 @@ static int _assembleBladeMenu(int params)
  * @return Zero while pending, -2 when cancelled to battle, or the selected
  *         one-based grip index (zero may represent the empty placeholder).
  */
-static int _assembleGripMenu(int params)
+static int assembleGripMenu(int params)
 {
     static int D_8010BC04;
     static char state;
@@ -944,13 +943,13 @@ static int _assembleGripMenu(int params)
     char** menuText;
     int itemId;
 
-    vs_main_inventoryGrip* grip = NULL;
-    vs_main_inventoryBlade* blade = NULL;
+    vs_InventoryGrip* grip = NULL;
+    vs_InventoryBlade* blade = NULL;
 
     if (params != 0) {
         gripToAssemble = params & 0x7F;
         bladeToAssemble = params >> 8;
-        _initMenuHeader(0xC);
+        initMenuHeader(0xC);
         state = 0;
         return 0;
     }
@@ -976,7 +975,7 @@ static int _assembleGripMenu(int params)
             }
 
             gripCount = 1;
-            _availableItems[0] = gripToAssemble;
+            availableItems[0] = gripToAssemble;
 
             for (i = 0; i < 16; ++i) {
 
@@ -991,25 +990,25 @@ static int _assembleGripMenu(int params)
                         vs_mainMenu_setGripRow(grip, menuText + gripCount * 2,
                             &vs_battle_rowTypeBuf[gripCount], textBuf + gripCount * 0x60);
 
-                        if (_isValidGrip(blade, grip) == 0) {
+                        if (isValidGrip(blade, grip) == 0) {
                             menuText[gripCount * 2 + 1] = (char*)&vs_mainMenu_menu12Text
                                 [VS_MENU12_BIN_OFFSET_invalidGrip];
                             vs_battle_rowTypeBuf[gripCount] |= 1;
                         }
 
-                        _availableItems[gripCount] = itemId;
+                        availableItems[gripCount] = itemId;
                         ++gripCount;
                     }
                 }
             }
 
-            _populateItemsList(gripCount, menuText, vs_battle_rowTypeBuf);
+            populateItemsList(gripCount, menuText, vs_battle_rowTypeBuf);
             vs_main_freeHeapR(textBuf);
             state = 1;
         }
         break;
     case 1:
-        itemId = _availableItems[_itemsListWindow + _itemsListSelection];
+        itemId = availableItems[itemsListWindow + itemsListSelection];
         vs_mainMenu_renderDpPpBars(8);
 
         if (itemId != 0) {
@@ -1020,10 +1019,10 @@ static int _assembleGripMenu(int params)
         }
 
         vs_mainMenu_printInformation(
-            _itemsListSelection + _itemsListWindow, _itemsListState);
-        _navigateItemsList(2);
+            itemsListSelection + itemsListWindow, itemsListState);
+        navigateItemsList(2);
 
-        D_8010BC04 = _getSelectedRow() + 1;
+        D_8010BC04 = getSelectedRow() + 1;
 
         if (D_8010BC04 != 0) {
             vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
@@ -1031,7 +1030,7 @@ static int _assembleGripMenu(int params)
                 return -2;
             }
             if (D_8010BC04 > 0) {
-                D_8010BC04 = _availableItems[D_8010BC04 - 1];
+                D_8010BC04 = availableItems[D_8010BC04 - 1];
             }
             state = 2;
         }
@@ -1052,7 +1051,7 @@ static int _assembleGripMenu(int params)
  * @return Zero while pending, -2 when cancelled to battle, or the selected
  *         one-based gem index (zero clears the slot).
  */
-static int _attachGem(int params)
+static int attachGem(int params)
 {
     static int D_8010BC0C;
     static char state;
@@ -1064,13 +1063,13 @@ static int _attachGem(int params)
     void* textBuf;
     char** menuText;
 
-    vs_main_inventoryGem* gem = NULL;
+    vs_InventoryGem* gem = NULL;
 
     if (params != 0) {
         i = params & 0x7;
         gemCount = params & 0xF8;
         gemToAttach = params >> gemCount;
-        _initMenuHeader(i + 10);
+        initMenuHeader(i + 10);
         state = 0;
         return 0;
     }
@@ -1095,7 +1094,7 @@ static int _attachGem(int params)
             }
 
             gemCount = 1;
-            _availableItems[0] = gemToAttach;
+            availableItems[0] = gemToAttach;
 
             for (i = 0; i < 48; ++i) {
 
@@ -1108,18 +1107,18 @@ static int _attachGem(int params)
                     if (gem->setItemIndex == 0) {
                         vs_mainMenu_setGemRow(gem, menuText + gemCount * 2,
                             &vs_battle_rowTypeBuf[gemCount], textBuf + gemCount * 96);
-                        _availableItems[gemCount] = itemId;
+                        availableItems[gemCount] = itemId;
                         ++gemCount;
                     }
                 }
             }
-            _populateItemsList(gemCount, menuText, vs_battle_rowTypeBuf);
+            populateItemsList(gemCount, menuText, vs_battle_rowTypeBuf);
             vs_main_freeHeapR(textBuf);
             state = 1;
         }
         break;
     case 1:
-        itemId = _availableItems[_itemsListWindow + _itemsListSelection];
+        itemId = availableItems[itemsListWindow + itemsListSelection];
         vs_mainMenu_renderDpPpBars(8);
         if (itemId != 0) {
             vs_mainMenu_setStatsFromGem(itemId);
@@ -1129,10 +1128,10 @@ static int _attachGem(int params)
         }
 
         vs_mainMenu_printInformation(
-            _itemsListSelection + _itemsListWindow, _itemsListState);
-        _navigateItemsList(2);
+            itemsListSelection + itemsListWindow, itemsListState);
+        navigateItemsList(2);
 
-        D_8010BC0C = _getSelectedRow() + 1;
+        D_8010BC0C = getSelectedRow() + 1;
 
         if (D_8010BC0C != 0) {
             vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
@@ -1140,7 +1139,7 @@ static int _attachGem(int params)
                 return -2;
             }
             if (D_8010BC0C > 0) {
-                D_8010BC0C = _availableItems[D_8010BC0C - 1];
+                D_8010BC0C = availableItems[D_8010BC0C - 1];
             }
             state = 2;
         }
@@ -1157,13 +1156,13 @@ static int _attachGem(int params)
 /**
  * Disassembles the in-progress weapon and exits assembly selection.
  */
-static int _leaveAssembleMenu(void)
+static int leaveAssembleMenu(void)
 {
-    _disassembleWeapon(_combiningItem);
-    return _leaveItemSlotSelection(1);
+    disassembleWeapon(combiningItem);
+    return leaveItemSlotSelection(1);
 }
 
-static char _workshopMaterials[] = { 0, 0xE, 0x18, 0x38, 0xC0, 0x3E, 0xFE };
+static char workshopMaterials[] = { 0, 0xE, 0x18, 0x38, 0xC0, 0x3E, 0xFE };
 
 /**
  * Runs the weapon assembly screen.
@@ -1171,9 +1170,9 @@ static char _workshopMaterials[] = { 0, 0xE, 0x18, 0x38, 0xC0, 0x3E, 0xFE };
  * @return Zero while active, -2 when returning to battle, or a nonzero
  *         completion result.
  */
-static int _assembleMenu(int arg0)
+static int assembleMenu(int arg0)
 {
-    static int _cursorPositions[] = { vs_getXY(141, 10), vs_getXY(148, 26),
+    static int cursorPositions[] = { vs_getXY(141, 10), vs_getXY(148, 26),
         vs_getXY(148, 42), vs_getXY(155, 58), vs_getXY(155, 74), vs_getXY(155, 90),
         vs_getXY(155, 106) };
 
@@ -1195,15 +1194,15 @@ static int _assembleMenu(int arg0)
     int temp_v1;
     int i;
     int gemSlots;
-    vs_main_inventoryBlade* blade;
-    vs_main_inventoryGrip* grip;
-    vs_battle_menuItem_t* menuItem;
+    vs_InventoryBlade* blade;
+    vs_InventoryGrip* grip;
+    vs_MenuItem* menuItem;
 
     if (arg0 != 0) {
         vs_battle_initInformationTextBox(1);
-        _pushSelectionHistory(5);
+        pushSelectionHistory(5);
         vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-        _combiningItem = vs_mainMenu_getFirstEmptyItemSlot(0, NULL);
+        combiningItem = vs_mainMenu_getFirstEmptyItemSlot(0, NULL);
         bladeToAssemble = 0;
         gripToAssemble = 0;
         *(int*)gemInfo = 0;
@@ -1240,7 +1239,7 @@ static int _assembleMenu(int arg0)
     switch (state) {
     case 0:
         if (vs_mainmenu_ready() != 0) {
-            _initMenuItem(VS_MENU12_BIN_OFFSET_assemble, 0x18);
+            initMenuItem(VS_MENU12_BIN_OFFSET_assemble, 0x18);
             vs_mainMenu_equipmentSubtype = 0;
             state = 1;
         }
@@ -1296,19 +1295,19 @@ static int _assembleMenu(int arg0)
             if (!(vs_main_buttonsPressed.all & PADRup)) {
 
                 if (itemInfo != 0) {
-                    _assembleWeapon(
+                    assembleWeapon(
                         bladeToAssemble - 1, gripToAssemble - 1, *(int*)gemInfo);
-                    _drawOk(gemSlots + 2, D_8010BB55);
+                    drawOk(gemSlots + 2, D_8010BB55);
                 }
 
                 if (vs_main_buttonsPressed.all & PADRdown) {
 
-                    itemSlot = _popSelectionHistory(5);
-                    _disassembleWeapon(_combiningItem);
+                    itemSlot = popSelectionHistory(5);
+                    disassembleWeapon(combiningItem);
 
                     switch (itemSlot) {
                     case 0:
-                        return _leaveAssembleMenu();
+                        return leaveAssembleMenu();
                     case 1:
                         bladeToAssemble = 0;
                         *(int*)gemInfo = 0;
@@ -1327,7 +1326,7 @@ static int _assembleMenu(int arg0)
                         break;
                     default:
                         gemInfo[itemSlot - 3] = 0;
-                        _assembleWeapon(
+                        assembleWeapon(
                             bladeToAssemble - 1, gripToAssemble - 1, *(int*)gemInfo);
                         itemInfo = VS_MENU12_BIN_OFFSET_gems;
                         break;
@@ -1340,7 +1339,7 @@ static int _assembleMenu(int arg0)
                         (char*)&vs_mainMenu_menu12Text[itemInfo]);
                     menuItem->selected = 1;
                     menuItem->fontColor = 1;
-                    _setUiStats(bladeToAssemble, gripToAssemble);
+                    setUiStats(bladeToAssemble, gripToAssemble);
                     break;
                 }
 
@@ -1364,22 +1363,22 @@ static int _assembleMenu(int arg0)
                         vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
                         switch (i) {
                         case 0:
-                            _assembleBladeMenuHeader(1);
+                            assembleBladeMenuHeader(1);
                             a0 = gripToAssemble << 8;
                             a0 += 128;
-                            _assembleBladeMenu(bladeToAssemble + a0);
+                            assembleBladeMenu(bladeToAssemble + a0);
                             state = 3;
                             break;
                         case 1:
-                            _assembleBladeMenuHeader(2);
+                            assembleBladeMenuHeader(2);
                             a0_2 = bladeToAssemble << 8;
                             a0_2 += 128;
-                            _assembleGripMenu(gripToAssemble + a0_2);
+                            assembleGripMenu(gripToAssemble + a0_2);
                             state = 4;
                             break;
                         default:
-                            _assembleBladeMenuHeader(3);
-                            _attachGem((i + 1) | ((i - 1) * 8) | (*(int*)gemInfo << 8));
+                            assembleBladeMenuHeader(3);
+                            attachGem((i + 1) | ((i - 1) * 8) | (*(int*)gemInfo << 8));
                             state = 5;
                             break;
                         }
@@ -1459,7 +1458,7 @@ static int _assembleMenu(int arg0)
 
                 vs_mainmenu_setInformationMessage(menuText[1]);
 
-                i = _cursorPositions[selectedOption + 1];
+                i = cursorPositions[selectedOption + 1];
 
                 if (selectedOption == (gemSlots + 2)) {
                     i += 0xFFFC0000;
@@ -1468,14 +1467,14 @@ static int _assembleMenu(int arg0)
                 D_8010BB54 = vs_mainMenu_renderCursor(D_8010BB54, i);
 
             } else {
-                return _leaveAssembleMenu();
+                return leaveAssembleMenu();
             }
         } else {
             D_8010BB55 = 0;
         }
         break;
     case 3:
-        submenuResult = _assembleBladeMenu(0);
+        submenuResult = assembleBladeMenu(0);
         if (submenuResult == 0) {
             break;
         }
@@ -1490,25 +1489,25 @@ static int _assembleMenu(int arg0)
 
                 if (submenuResult == bladeToAssemble) {
                     bladeToAssemble = 0;
-                    _popSelectionHistory(0);
-                    _disassembleWeapon(_combiningItem);
+                    popSelectionHistory(0);
+                    disassembleWeapon(combiningItem);
                 } else {
                     bladeToAssemble = submenuResult;
-                    _pushSelectionHistory(0);
+                    pushSelectionHistory(0);
                     selectedOption = 1;
                     if (gripToAssemble != 0) {
-                        _assembleWeapon(
+                        assembleWeapon(
                             bladeToAssemble - 1, gripToAssemble - 1, *(int*)gemInfo);
                     }
                 }
             }
-            _assembleBladeMenuHeader(bladeToAssemble * 0x10 | (gripToAssemble << 0xA));
+            assembleBladeMenuHeader(bladeToAssemble * 0x10 | (gripToAssemble << 0xA));
             state = 1;
             break;
         }
-        return _leaveAssembleMenu();
+        return leaveAssembleMenu();
     case 4:
-        submenuResult = _assembleGripMenu(0);
+        submenuResult = assembleGripMenu(0);
         if (submenuResult == 0) {
             break;
         }
@@ -1520,25 +1519,25 @@ static int _assembleMenu(int arg0)
                 }
                 if (submenuResult == gripToAssemble) {
                     gripToAssemble = 0;
-                    _popSelectionHistory(1);
-                    _disassembleWeapon(_combiningItem);
+                    popSelectionHistory(1);
+                    disassembleWeapon(combiningItem);
                 } else {
                     gripToAssemble = submenuResult;
-                    _pushSelectionHistory(1);
+                    pushSelectionHistory(1);
                     selectedOption = ((bladeToAssemble != 0) * 2);
                     if (bladeToAssemble != 0) {
-                        _assembleWeapon(
+                        assembleWeapon(
                             bladeToAssemble - 1, gripToAssemble - 1, *(int*)gemInfo);
                     }
                 }
             }
-            _assembleBladeMenuHeader(bladeToAssemble * 0x10 | (gripToAssemble << 0xA));
+            assembleBladeMenuHeader(bladeToAssemble * 0x10 | (gripToAssemble << 0xA));
             state = 1;
             break;
         }
-        return _leaveAssembleMenu();
+        return leaveAssembleMenu();
     case 5:
-        submenuResult = _attachGem(0);
+        submenuResult = attachGem(0);
         if (submenuResult == 0) {
             break;
         }
@@ -1546,28 +1545,28 @@ static int _assembleMenu(int arg0)
             if (submenuResult > 0) {
                 if (submenuResult == gemInfo[selectedOption - 2]) {
                     gemInfo[selectedOption - 2] = 0;
-                    _popSelectionHistory(selectedOption);
+                    popSelectionHistory(selectedOption);
                 } else {
                     gemInfo[selectedOption - 2] = submenuResult;
-                    _pushSelectionHistory(selectedOption);
+                    pushSelectionHistory(selectedOption);
                     ++selectedOption;
                 }
             }
-            _assembleWeapon(bladeToAssemble - 1, gripToAssemble - 1, *(int*)gemInfo);
-            _assembleBladeMenuHeader(bladeToAssemble * 0x10 | (gripToAssemble << 0xA));
+            assembleWeapon(bladeToAssemble - 1, gripToAssemble - 1, *(int*)gemInfo);
+            assembleBladeMenuHeader(bladeToAssemble * 0x10 | (gripToAssemble << 0xA));
             state = 1;
             break;
         }
-        return _leaveAssembleMenu();
+        return leaveAssembleMenu();
     case 6:
         vs_mainMenu_renderEquipStats(2);
-        _confirmCombine(3);
+        confirmCombine(3);
         vs_mainmenu_setInformationMessage(
             (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_attachmentConfirm]);
         state = 7;
         break;
     case 7:
-        itemSlot = _confirmCombine(0);
+        itemSlot = confirmCombine(0);
 
         if (itemSlot == 0) {
             break;
@@ -1586,15 +1585,15 @@ static int _assembleMenu(int arg0)
             state = itemSlot;
             break;
         case 3:
-            return _leaveAssembleMenu();
+            return leaveAssembleMenu();
         }
         break;
     case 8:
         if (vs_mainmenu_ready() != 0) {
             vs_mainMenu_cursorColor = 0;
             vs_battle_stringBuf[0] = 0;
-            vs_battle_stringBuf[1] = _combiningItem;
-            _assembleBladeMenuHeader(4);
+            vs_battle_stringBuf[1] = combiningItem;
+            assembleBladeMenuHeader(4);
             vs_mainMenu_setMenuCommand(menuActionMenu);
             return 1;
         }
@@ -1606,11 +1605,10 @@ static int _assembleMenu(int arg0)
 /**
  * Adds one gem selector row to the item detail display.
  */
-static void _addGemSelector(UNUSED int arg0, int arg1)
+static void addGemSelector(UNUSED int arg0, int arg1)
 {
-    vs_battle_menuItem_t* temp_v0 =
-        vs_battle_setMenuItem(arg1 + 10, 320, (arg1 * 16) + 18, 320 - 169, 0,
-            (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_gems]);
+    vs_MenuItem* temp_v0 = vs_battle_setMenuItem(arg1 + 10, 320, (arg1 * 16) + 18,
+        320 - 169, 0, (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_gems]);
     temp_v0->state = 2;
     temp_v0->targetPosition0 = 169;
     temp_v0->fontColor = 1;
@@ -1623,16 +1621,16 @@ static void _addGemSelector(UNUSED int arg0, int arg1)
  *                 combining-item slot.
  * @return The item-slot selection exit result.
  */
-static int _attachGems(char* gems, int isShield)
+static int attachGems(char* gems, int isShield)
 {
     int i;
     int gem;
     u_char* attachedGems;
-    vs_main_inventoryShield* shield;
-    vs_main_inventoryWeapon* weapon;
+    vs_InventoryShield* shield;
+    vs_InventoryWeapon* weapon;
 
-    weapon = &vs_main_inventory.weapons[_combiningItem];
-    shield = &vs_main_inventory.shields[_combiningItem];
+    weapon = &vs_main_inventory.weapons[combiningItem];
+    shield = &vs_main_inventory.shields[combiningItem];
 
     if (isShield != 0) {
         attachedGems = shield->gems;
@@ -1652,7 +1650,7 @@ static int _attachGems(char* gems, int isShield)
         gem = gems[i];
         if (gem != 0) {
             vs_main_inventory.gems[gem - 1].setItemIndex =
-                _combiningItem + ((isShield << 7) + 1);
+                combiningItem + ((isShield << 7) + 1);
             attachedGems[i] = gem;
         }
     }
@@ -1663,7 +1661,7 @@ static int _attachGems(char* gems, int isShield)
     } else if (weapon->isEquipped != 0) {
         vs_battle_equipWeapon(weapon);
     }
-    return _leaveItemSlotSelection(1);
+    return leaveItemSlotSelection(1);
 }
 
 /**
@@ -1673,7 +1671,7 @@ static int _attachGems(char* gems, int isShield)
  * @return Zero while active, -1 when returning to the parent menu, or another
  *         nonzero completion/cancel result.
  */
-static int _attachGemsMenu(int arg0)
+static int attachGemsMenu(int arg0)
 {
     static char D_8010BB56 = 0;
     static char D_8010BB57 = 0;
@@ -1697,9 +1695,9 @@ static int _attachGemsMenu(int arg0)
     int i;
     int var_a2;
     int itemInfo;
-    vs_main_inventoryShield* shield;
-    vs_main_inventoryWeapon* weapon;
-    vs_battle_menuItem_t* menuItem;
+    vs_InventoryShield* shield;
+    vs_InventoryWeapon* weapon;
+    vs_MenuItem* menuItem;
 
     if (arg0 != 0) {
         vs_battle_initInformationTextBox(1);
@@ -1711,7 +1709,7 @@ static int _attachGemsMenu(int arg0)
     switch (state) {
     case 0:
         if (vs_mainmenu_ready() != 0) {
-            _setMenuTitle(0, vs_mainMenu_menu12Text[isShield + 32]);
+            setMenuTitle(0, vs_mainMenu_menu12Text[isShield + 32]);
             state = 1;
         }
         break;
@@ -1754,7 +1752,7 @@ static int _attachGemsMenu(int arg0)
                 menuText[i * 2 + 1] = new_var + i * 96;
                 rowTypes[i] |= itemInfo == 0;
                 ++i;
-                _availableItems[i] = var_s2;
+                availableItems[i] = var_s2;
             }
         }
 
@@ -1781,7 +1779,7 @@ static int _attachGemsMenu(int arg0)
         break;
     case 3:
         if (vs_mainmenu_ready() != 0) {
-            vs_battle_menuItem_t* menuItem = vs_battle_getMenuItem(0);
+            vs_MenuItem* menuItem = vs_battle_getMenuItem(0);
 
             var_a2 = 24;
             if (isShield != 0) {
@@ -1789,11 +1787,11 @@ static int _attachGemsMenu(int arg0)
             }
             menuItem->rowIcon = var_a2;
 
-            _copyMenuItem(0, 32);
-            _copyMenuItem(selectedRow + 9, 10);
+            copyMenuItem(0, 32);
+            copyMenuItem(selectedRow + 9, 10);
 
-            var_s2 = _availableItems[selectedRow];
-            _combiningItem = var_s2 - 1;
+            var_s2 = availableItems[selectedRow];
+            combiningItem = var_s2 - 1;
 
             if (isShield != 0) {
                 vs_mainMenu_setStatsFromShield(var_s2);
@@ -1825,14 +1823,14 @@ static int _attachGemsMenu(int arg0)
             ++D_8010BC21;
             if (isShield != 0) {
                 menuItem =
-                    vs_mainMenu_initShieldDetailsRow(D_8010BC21, _combiningItem + 1, 1);
+                    vs_mainMenu_initShieldDetailsRow(D_8010BC21, combiningItem + 1, 1);
             } else {
                 menuItem =
-                    vs_mainMenu_initWeaponDetailsRow(D_8010BC21, _combiningItem + 1, 1);
+                    vs_mainMenu_initWeaponDetailsRow(D_8010BC21, combiningItem + 1, 1);
             }
             if (menuItem != NULL) {
                 if (menuItem->unselectable != 0) {
-                    _addGemSelector(D_8010BC21 - ((1 - isShield) * 2), D_8010BC21);
+                    addGemSelector(D_8010BC21 - ((1 - isShield) * 2), D_8010BC21);
                     break;
                 }
             }
@@ -1844,9 +1842,9 @@ static int _attachGemsMenu(int arg0)
         if (vs_mainmenu_ready() != 0) {
             if (!(vs_main_buttonsPressed.all & PADRup)) {
                 D_8010BB57 += 16;
-                _drawOk(gemSlots + ((1 - isShield) * 2), D_8010BB57);
+                drawOk(gemSlots + ((1 - isShield) * 2), D_8010BB57);
                 if (vs_main_buttonsPressed.all & PADRdown) {
-                    _attachGems(targetGems, isShield);
+                    attachGems(targetGems, isShield);
                     state = 0;
                 } else if (vs_main_buttonsPressed.all & PADstart) {
                     int new_var2 = 11;
@@ -1865,8 +1863,8 @@ static int _attachGemsMenu(int arg0)
                             int new_var3;
                             vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
                             new_var3 = ((1 - isShield) * 2) + 1;
-                            _attachGem((itemInfo + new_var3) | ((itemInfo + 1) * 8)
-                                       | (*(int*)D_8010BC28 << 8));
+                            attachGem((itemInfo + new_var3) | ((itemInfo + 1) * 8)
+                                      | (*(int*)D_8010BC28 << 8));
                             state = 6;
                         }
                     } else {
@@ -1920,17 +1918,17 @@ static int _attachGemsMenu(int arg0)
                     }
                 }
             } else {
-                return _attachGems(targetGems, isShield);
+                return attachGems(targetGems, isShield);
             }
         } else {
             D_8010BB57 = 0;
         }
         break;
     case 6:
-        itemInfo = _attachGem(0);
+        itemInfo = attachGem(0);
         if (itemInfo != 0) {
             if (itemInfo != -2) {
-                var_s2 = _combiningItem + 1;
+                var_s2 = combiningItem + 1;
                 weapon = &vs_main_inventory.weapons[var_s2 - 1];
                 shield = &vs_main_inventory.shields[var_s2 - 1];
                 attachedGems = isShield != 0 ? shield->gems : weapon->gems;
@@ -1979,19 +1977,19 @@ static int _attachGemsMenu(int arg0)
                 D_8010BC21 = 0;
                 state = 4;
             } else {
-                return _attachGems(targetGems, isShield);
+                return attachGems(targetGems, isShield);
             }
         }
         break;
     case 7:
         vs_mainMenu_renderEquipStats(2);
-        _confirmCombine(3);
+        confirmCombine(3);
         vs_mainmenu_setInformationMessage(
             (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_attachmentConfirm]);
         state = 8;
         break;
     case 8:
-        itemInfo = _confirmCombine(0);
+        itemInfo = confirmCombine(0);
         if (itemInfo == 0) {
             break;
         }
@@ -2010,7 +2008,7 @@ static int _attachGemsMenu(int arg0)
             state = 5;
             break;
         case 3:
-            return _attachGems(targetGems, isShield);
+            return attachGems(targetGems, isShield);
             break;
         }
         break;
@@ -2023,7 +2021,7 @@ static int _attachGemsMenu(int arg0)
  * @param arg0 Nonzero initializes the top-level menu; zero advances it.
  * @return Zero while active, a negative cancellation code, or the child result.
  */
-static int _attachGemsTopMenu(int arg0)
+static int attachGemsTopMenu(int arg0)
 {
     static char state;
     static char noForceCursorMemory;
@@ -2075,12 +2073,12 @@ static int _attachGemsTopMenu(int arg0)
                 return i;
             }
             vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-            _attachGemsMenu(i);
+            attachGemsMenu(i);
             state = 2;
         }
         break;
     case 2:
-        i = _attachGemsMenu(0);
+        i = attachGemsMenu(0);
         if (i != 0) {
             if (i != -1) {
                 return i;
@@ -2091,8 +2089,8 @@ static int _attachGemsTopMenu(int arg0)
     case 3:
         if (vs_mainmenu_ready() != 0) {
             vs_mainMenu_initInformationBox();
-            _setMenuTitle(0, VS_MENU12_BIN_OFFSET_setup);
-            _setMenuTitle(11, VS_MENU12_BIN_OFFSET_attachGems);
+            setMenuTitle(0, VS_MENU12_BIN_OFFSET_setup);
+            setMenuTitle(11, VS_MENU12_BIN_OFFSET_attachGems);
             state = 0;
         }
         break;
@@ -2107,7 +2105,7 @@ static int _attachGemsTopMenu(int arg0)
  * @return Zero while active, -1 after successful disassembly, -2 when returning
  *         to battle, or another negative exit code.
  */
-static int _disassembleMenu(int arg0)
+static int disassembleMenu(int arg0)
 {
     static int selectedRow;
     static char state;
@@ -2122,8 +2120,8 @@ static int _disassembleMenu(int arg0)
     int j;
     int selectedItem;
     int itemInfo;
-    vs_main_inventoryShield* shield;
-    vs_battle_menuItem_t* menuItem;
+    vs_InventoryShield* shield;
+    vs_MenuItem* menuItem;
 
     if (arg0 != 0) {
         vs_battle_initInformationTextBox(1);
@@ -2135,7 +2133,7 @@ static int _disassembleMenu(int arg0)
     switch (state) {
     case 0:
         if (vs_mainmenu_ready() != 0) {
-            _setMenuTitle(0,
+            setMenuTitle(0,
                 vs_mainMenu_menu12Text[isShield + VS_MENU12_BIN_INDEX_disassembleWeapon]);
             state = 1;
         }
@@ -2163,7 +2161,7 @@ static int _disassembleMenu(int arg0)
                             rowTypes[count] |= 1;
                         }
                         ++count;
-                        _availableItems[count] = selectedItem;
+                        availableItems[count] = selectedItem;
                     }
                 } else {
                     selectedItem = vs_main_inventoryIndices.weapons[i];
@@ -2174,7 +2172,7 @@ static int _disassembleMenu(int arg0)
                         menuText[count * 2 + 1] = (char*)&vs_mainMenu_menu12Text
                             [VS_MENU12_BIN_OFFSET_chooseWeaponDisassemble];
                         ++count;
-                        _availableItems[count] = selectedItem;
+                        availableItems[count] = selectedItem;
                     }
                 }
             }
@@ -2206,10 +2204,10 @@ static int _disassembleMenu(int arg0)
             break;
         }
         vs_battle_getMenuItem(0)->rowIcon = isShield != 0 ? 27 : 24;
-        _copyMenuItem(0, 0x20);
-        _copyMenuItem(selectedRow + 9, 10);
-        selectedItem = _availableItems[selectedRow];
-        _combiningItem = selectedItem - 1;
+        copyMenuItem(0, 0x20);
+        copyMenuItem(selectedRow + 9, 10);
+        selectedItem = availableItems[selectedRow];
+        combiningItem = selectedItem - 1;
         if (isShield != 0) {
             vs_mainMenu_setStatsFromShield(selectedItem);
         } else {
@@ -2224,18 +2222,18 @@ static int _disassembleMenu(int arg0)
         if (D_8010BC3D < 5) {
             ++D_8010BC3D;
             if (isShield != 0) {
-                vs_mainMenu_initShieldDetailsRow(D_8010BC3D, _combiningItem + 1, 1);
+                vs_mainMenu_initShieldDetailsRow(D_8010BC3D, combiningItem + 1, 1);
             } else {
-                vs_mainMenu_initWeaponDetailsRow(D_8010BC3D, _combiningItem + 1, 1);
+                vs_mainMenu_initWeaponDetailsRow(D_8010BC3D, combiningItem + 1, 1);
             }
             break;
         }
         if (isShield != 0) {
-            itemInfo = vs_main_inventory.shields[_combiningItem].isEquipped;
+            itemInfo = vs_main_inventory.shields[combiningItem].isEquipped;
         } else {
-            itemInfo = vs_main_inventory.weapons[_combiningItem].isEquipped;
+            itemInfo = vs_main_inventory.weapons[combiningItem].isEquipped;
         }
-        _confirmationPrompt(1);
+        confirmationPrompt(1);
         vs_mainmenu_setInformationMessage(
             (char*)&vs_mainMenu_menu12Text[vs_mainMenu_menu12Text
                     [isShield * 4 + VS_MENU12_BIN_INDEX_disassembleWeaponConfirm
@@ -2244,7 +2242,7 @@ static int _disassembleMenu(int arg0)
         break;
     case 5:
     case 6:
-        confirmation = _confirmationPrompt(0);
+        confirmation = confirmationPrompt(0);
         if (confirmation == 0) {
             break;
         }
@@ -2257,9 +2255,9 @@ static int _disassembleMenu(int arg0)
         case 1:
             vs_main_playSfxDefault(0x7E, 0x19);
             if (isShield != 0) {
-                _disassembleShield(_combiningItem);
+                disassembleShield(combiningItem);
             } else {
-                _disassembleWeapon(_combiningItem);
+                disassembleWeapon(combiningItem);
             }
             if (state == 5) {
                 return -1;
@@ -2275,11 +2273,11 @@ static int _disassembleMenu(int arg0)
             state = 0;
             break;
         case 3:
-            return _leaveItemSlotSelection(0);
+            return leaveItemSlotSelection(0);
         }
         break;
     case 7:
-        if (_loadObject(isShield) == 0) {
+        if (loadObject(isShield) == 0) {
             return -1;
         }
         break;
@@ -2292,7 +2290,7 @@ static int _disassembleMenu(int arg0)
  * @param arg0 Nonzero initializes the top-level menu; zero advances it.
  * @return Zero while active, or the child menu's completion/cancellation code.
  */
-static int _disassembleTopMenu(int arg0)
+static int disassembleTopMenu(int arg0)
 {
     static char state;
     static UNUSED char _0;
@@ -2350,11 +2348,11 @@ static int _disassembleTopMenu(int arg0)
             return selection;
         }
         vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-        _disassembleMenu(selection);
+        disassembleMenu(selection);
         state = 2;
         break;
     case 2:
-        selection = _disassembleMenu(0);
+        selection = disassembleMenu(0);
         if (selection == 0) {
             break;
         }
@@ -2366,8 +2364,8 @@ static int _disassembleTopMenu(int arg0)
     case 3:
         if (vs_mainmenu_ready() != 0) {
             vs_mainMenu_initInformationBox();
-            _setMenuTitle(0, VS_MENU12_BIN_OFFSET_setup);
-            _setMenuTitle(12, VS_MENU12_BIN_OFFSET_disassemble);
+            setMenuTitle(0, VS_MENU12_BIN_OFFSET_setup);
+            setMenuTitle(12, VS_MENU12_BIN_OFFSET_disassemble);
             state = 0;
         }
         break;
@@ -2381,7 +2379,7 @@ static int _disassembleTopMenu(int arg0)
  * @return Zero while active, one when text entry is ready, -2 when returning to
  *         battle, or the list's negative cancellation result.
  */
-static int _renameWeaponMenu(int arg0)
+static int renameWeaponMenu(int arg0)
 {
     static int selectedRow;
     static char state;
@@ -2392,7 +2390,7 @@ static int _renameWeaponMenu(int arg0)
     int rowTypes[8];
     int i;
     int itemId;
-    vs_battle_menuItem_t* menuItem;
+    vs_MenuItem* menuItem;
 
     if (arg0 != 0) {
         vs_battle_initInformationTextBox(1);
@@ -2406,7 +2404,7 @@ static int _renameWeaponMenu(int arg0)
     switch (state) {
     case 0:
         if (vs_mainmenu_ready() != 0) {
-            _setMenuTitle(0, VS_MENU12_BIN_OFFSET_rename);
+            setMenuTitle(0, VS_MENU12_BIN_OFFSET_rename);
             state = 1;
         }
         break;
@@ -2422,7 +2420,7 @@ static int _renameWeaponMenu(int arg0)
                     menuText[(count * 2) + 1] = (char*)&vs_mainMenu_menu12Text
                         [VS_MENU12_BIN_OFFSET_chooseWeaponRename];
                     ++count;
-                    _availableItems[count] = itemId;
+                    availableItems[count] = itemId;
                 }
             }
             vs_mainmenu_setMenuRows(count, 0x1913C, menuText, rowTypes);
@@ -2453,10 +2451,10 @@ static int _renameWeaponMenu(int arg0)
     case 3:
         if (vs_mainmenu_ready() != 0) {
             vs_battle_getMenuItem(0)->rowIcon = 24;
-            _copyMenuItem(0, 32);
-            _copyMenuItem(selectedRow + 9, 10);
-            itemId = _availableItems[selectedRow];
-            _combiningItem = itemId - 1;
+            copyMenuItem(0, 32);
+            copyMenuItem(selectedRow + 9, 10);
+            itemId = availableItems[selectedRow];
+            combiningItem = itemId - 1;
             vs_mainMenu_setStatsFromWeapon(itemId);
             vs_mainMenu_drawClassAffinityType(7);
             vs_mainMenu_renderDpPpBars(3);
@@ -2467,16 +2465,16 @@ static int _renameWeaponMenu(int arg0)
     case 4:
         if (D_8010BC49 < 5) {
             ++D_8010BC49;
-            vs_mainMenu_initWeaponDetailsRow(D_8010BC49, _combiningItem + 1, 1);
+            vs_mainMenu_initWeaponDetailsRow(D_8010BC49, combiningItem + 1, 1);
             return 0;
         }
-        _confirmationPrompt(1);
+        confirmationPrompt(1);
         vs_mainmenu_setInformationMessage(
             (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_renamePrompt]);
         state = 5;
         break;
     case 5:
-        i = _confirmationPrompt(0);
+        i = confirmationPrompt(0);
         if (i != 0) {
             vs_mainMenu_drawClassAffinityType(-1);
             vs_mainMenu_renderDpPpBars(4);
@@ -2493,7 +2491,7 @@ static int _renameWeaponMenu(int arg0)
                 state = 0;
                 break;
             case 3:
-                return _leaveItemSlotSelection(0);
+                return leaveItemSlotSelection(0);
             }
         }
         break;
@@ -2501,7 +2499,7 @@ static int _renameWeaponMenu(int arg0)
         if (vs_mainmenu_ready() != 0) {
             vs_mainMenu_cursorColor = 0;
             vs_battle_stringBuf[0] = 1;
-            vs_battle_stringBuf[1] = _combiningItem;
+            vs_battle_stringBuf[1] = combiningItem;
             vs_mainMenu_setMenuCommand(menuActionMenu);
             return 1;
         }
@@ -2516,7 +2514,7 @@ static int _renameWeaponMenu(int arg0)
  * @return Zero while active, -1 after repair or declining, or -2 when returning
  *         to battle.
  */
-static int _repairMenu(int arg0)
+static int repairMenu(int arg0)
 {
     static int returnedFromPrompt;
     static char state;
@@ -2535,14 +2533,14 @@ static int _repairMenu(int arg0)
     switch (state) {
     case 0:
         if (vs_mainmenu_ready() != 0) {
-            _confirmationPrompt(1);
+            confirmationPrompt(1);
             vs_mainmenu_setInformationMessage(
                 (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_repairConfirm]);
             state = 1;
         }
         break;
     case 1:
-        i = _confirmationPrompt(0);
+        i = confirmationPrompt(0);
         if (i == 0) {
             break;
         }
@@ -2568,7 +2566,7 @@ static int _repairMenu(int arg0)
         for (i = 0; i < 16; ++i) {
             new_var = vs_main_inventoryIndices.blades[i];
             if (new_var != 0) {
-                vs_main_inventoryBlade* blade = &vs_main_inventory.blades[new_var - 1];
+                vs_InventoryBlade* blade = &vs_main_inventory.blades[new_var - 1];
 
                 ppCost = blade->maxDp - blade->currentDp;
                 ppCost = blade->currentPp - (ppCost / 100);
@@ -2585,7 +2583,7 @@ static int _repairMenu(int arg0)
         for (i = 0; i < 8; ++i) {
             new_var = vs_main_inventoryIndices.weapons[i];
             if (new_var != 0) {
-                vs_main_inventoryWeapon* weapon = &vs_main_inventory.weapons[new_var - 1];
+                vs_InventoryWeapon* weapon = &vs_main_inventory.weapons[new_var - 1];
                 if (weapon->isEquipped != 0) {
                     vs_battle_equipWeapon(weapon);
                 }
@@ -2595,7 +2593,7 @@ static int _repairMenu(int arg0)
         for (i = 0; i < 8; ++i) {
             new_var = vs_main_inventoryIndices.shields[i];
             if (new_var != 0) {
-                vs_main_inventoryShield* shield = &vs_main_inventory.shields[new_var - 1];
+                vs_InventoryShield* shield = &vs_main_inventory.shields[new_var - 1];
 
                 ppCost = shield->base.maxDp - shield->base.currentDp;
                 ppCost = shield->base.currentPp - (ppCost / 100);
@@ -2616,7 +2614,7 @@ static int _repairMenu(int arg0)
         for (i = 0; i < 16; ++i) {
             new_var = vs_main_inventoryIndices.armor[i];
             if (new_var != 0) {
-                vs_main_inventoryArmor* armor = &vs_main_inventory.armor[new_var - 1];
+                vs_InventoryArmor* armor = &vs_main_inventory.armor[new_var - 1];
                 if (armor->category != 7) {
 
                     ppCost = armor->maxDp - armor->currentDp;
@@ -2657,7 +2655,7 @@ static int _repairMenu(int arg0)
     return 0;
 }
 
-static void* _sydData = NULL;
+static void* sydDataBuf = NULL;
 
 /**
  * Loads the combination data file for blades, shields, or armor.
@@ -2665,34 +2663,34 @@ static void* _sydData = NULL;
  *           the active asynchronous load.
  * @return Zero while loading; one when complete or when no load is active.
  */
-static int _loadSyd(int id)
+static int loadSyd(int id)
 {
-    static int _sydLbas[] = { VS_BLADE_SYD_LBA, VS_SHIELD_SYD_LBA, VS_ARMOR_SYD_LBA };
-    static int _sydSizes[] = { VS_BLADE_SYD_SIZE, VS_SHIELD_SYD_SIZE, VS_ARMOR_SYD_SIZE };
+    static int sydLbas[] = { VS_BLADE_SYD_LBA, VS_SHIELD_SYD_LBA, VS_ARMOR_SYD_LBA };
+    static int sydSizes[] = { VS_BLADE_SYD_SIZE, VS_SHIELD_SYD_SIZE, VS_ARMOR_SYD_SIZE };
 
-    static vs_main_CdQueueSlot* _sydCdQueueSlot;
-    static char _sydFileLoading;
+    static vs_Main_CdQueueSlot* sydCdQueueSlot;
+    static char sydFileLoading;
     static UNUSED char _[3];
 
-    vs_main_CdFile cdFile;
+    vs_Main_CdFile cdFile;
 
     if (id != 0) {
         --id;
-        _sydData = vs_main_allocHeapR(_sydSizes[id]);
-        cdFile.lba = _sydLbas[id];
-        cdFile.size = _sydSizes[id];
-        _sydCdQueueSlot = vs_main_allocateCdQueueSlot(&cdFile);
-        vs_main_cdEnqueue(_sydCdQueueSlot, _sydData);
-        _sydFileLoading = 1;
+        sydDataBuf = vs_main_allocHeapR(sydSizes[id]);
+        cdFile.lba = sydLbas[id];
+        cdFile.size = sydSizes[id];
+        sydCdQueueSlot = vs_main_allocateCdQueueSlot(&cdFile);
+        vs_main_cdEnqueue(sydCdQueueSlot, sydDataBuf);
+        sydFileLoading = 1;
         return 0;
     }
-    if (_sydFileLoading == 0) {
+    if (sydFileLoading == 0) {
         return 1;
     }
 
-    if (_sydCdQueueSlot->state == 4) {
-        vs_main_freeCdQueueSlot(_sydCdQueueSlot);
-        _sydFileLoading = 0;
+    if (sydCdQueueSlot->state == 4) {
+        vs_main_freeCdQueueSlot(sydCdQueueSlot);
+        sydFileLoading = 0;
         return 1;
     }
     return 0;
@@ -2703,9 +2701,9 @@ static int _loadSyd(int id)
  * @param itemType Menu text category for the empty placeholder.
  * @param index Item name index, or zero for the placeholder.
  */
-static vs_battle_menuItem_t* _setItemRow(int itemType, int index)
+static vs_MenuItem* setItemRow(int itemType, int index)
 {
-    vs_battle_menuItem_t* menuItem = vs_battle_setMenuItem(0, 155, 18, 165, 0,
+    vs_MenuItem* menuItem = vs_battle_setMenuItem(0, 155, 18, 165, 0,
         (index == 0
                 ? (char*)&vs_mainMenu_menu12Text
                       [vs_mainMenu_menu12Text[itemType + VS_MENU12_BIN_INDEX_newBlade]]
@@ -2717,11 +2715,11 @@ static vs_battle_menuItem_t* _setItemRow(int itemType, int index)
 /**
  * Creates and starts the slide-in animation for a combination result row.
  */
-static vs_battle_menuItem_t* _initItemRow(int itemType, int index)
+static vs_MenuItem* initItemRow(int itemType, int index)
 {
-    vs_battle_menuItem_t* menuItem;
+    vs_MenuItem* menuItem;
 
-    menuItem = _setItemRow(itemType, index);
+    menuItem = setItemRow(itemType, index);
     menuItem->state = 2;
     menuItem->targetPosition0 = 155;
     menuItem->x = 320;
@@ -2729,11 +2727,11 @@ static vs_battle_menuItem_t* _initItemRow(int itemType, int index)
     return menuItem;
 }
 
-static vs_main_inventoryBlade* _combineBlades(
-    vs_main_inventoryBlade*, vs_main_inventoryBlade*, vs_main_inventoryBlade*, void*);
+static vs_InventoryBlade* combineBlades(
+    vs_InventoryBlade*, vs_InventoryBlade*, vs_InventoryBlade*, void*);
 
-static vs_main_inventoryBlade _bladeBuf;
-static char _combiningBladeIds[2];
+static vs_InventoryBlade bladeBuf;
+static char combiningBladeIds[2];
 static UNUSED char _1[2];
 
 /**
@@ -2742,16 +2740,16 @@ static UNUSED char _1[2];
  * @param arg0 One-based selected component (one/two), three for the combined
  *             preview, or zero to clear the preview.
  */
-static void _setCombineBladeUi(int arg0)
+static void setCombineBladeUi(int arg0)
 {
     int i;
     int var_s3;
     u_int temp_v1;
     int temp_s2;
-    vs_main_inventoryBlade* blade;
+    vs_InventoryBlade* blade;
 
-    i = _combiningBladeIds[0];
-    temp_s2 = _combiningBladeIds[1];
+    i = combiningBladeIds[0];
+    temp_s2 = combiningBladeIds[1];
 
     var_s3 = i != 0;
     if (temp_s2 != 0) {
@@ -2760,23 +2758,23 @@ static void _setCombineBladeUi(int arg0)
 
     switch (var_s3) {
     case 0:
-        vs_battle_rMemzero(&_bladeBuf, sizeof _bladeBuf);
+        vs_battle_rMemzero(&bladeBuf, sizeof bladeBuf);
         break;
 
     case 1:
     case 2:
         vs_battle_copyAligned(
-            &_bladeBuf, &vs_main_inventory.blades[i + temp_s2 - 1], sizeof _bladeBuf);
+            &bladeBuf, &vs_main_inventory.blades[i + temp_s2 - 1], sizeof bladeBuf);
         break;
 
     case 3:
-        vs_battle_rMemzero(&_bladeBuf, sizeof _bladeBuf);
-        _combineBlades(&vs_main_inventory.blades[i - 1],
-            &vs_main_inventory.blades[temp_s2 - 1], &_bladeBuf, _sydData);
+        vs_battle_rMemzero(&bladeBuf, sizeof bladeBuf);
+        combineBlades(&vs_main_inventory.blades[i - 1],
+            &vs_main_inventory.blades[temp_s2 - 1], &bladeBuf, sydDataBuf);
         break;
     }
 
-    blade = &_bladeBuf;
+    blade = &bladeBuf;
     blade->assembledWeaponIndex = 0;
 
     vs_mainMenu_resetStats();
@@ -2785,7 +2783,7 @@ static void _setCombineBladeUi(int arg0)
     temp_v1 = arg0 - 1;
 
     if (temp_v1 >= 2) {
-        if (_bladeBuf.id != 0) {
+        if (bladeBuf.id != 0) {
             for (i = 0; i < 16; ++i) {
                 vs_mainMenu_equipmentStats[i] = blade->classes[i & 7];
                 vs_mainMenu_equipmentStats[16 + i] = blade->affinities[i & 7];
@@ -2798,7 +2796,7 @@ static void _setCombineBladeUi(int arg0)
             vs_mainMenu_equipmentSubtype = 2;
         }
     } else if (var_s3 & arg0) {
-        vs_mainMenu_setStatsFromBlade(_combiningBladeIds[temp_v1]);
+        vs_mainMenu_setStatsFromBlade(combiningBladeIds[temp_v1]);
     }
 }
 
@@ -2808,7 +2806,7 @@ static void _setCombineBladeUi(int arg0)
  * @return Zero while pending, -2 when cancelled to battle, or the selected
  *         one-based blade index.
  */
-static int _selectBlade(int arg0)
+static int selectBlade(int arg0)
 {
     static int selectedRow;
     static char state;
@@ -2820,16 +2818,16 @@ static int _selectBlade(int arg0)
     char** menuText;
     int temp_a0;
     int itemId;
-    vs_main_inventoryBlade* blade = NULL;
+    vs_InventoryBlade* blade = NULL;
 
     if (arg0 != 0) {
         D_8010BC61 = arg0;
-        _initMenuHeader(arg0 + 10);
+        initMenuHeader(arg0 + 10);
         state = 0;
         return 0;
     }
 
-    itemId = _combiningBladeIds[D_8010BC61 - 1];
+    itemId = combiningBladeIds[D_8010BC61 - 1];
     if (itemId != 0) {
         blade = &vs_main_inventory.blades[itemId - 1];
     }
@@ -2852,15 +2850,15 @@ static int _selectBlade(int arg0)
             vs_mainMenu_setBladeRow(blade, menuText, vs_battle_rowTypeBuf, textBuf);
         }
 
-        _availableItems[0] = itemId;
+        availableItems[0] = itemId;
         count = 1;
 
         for (i = 0; i < 16; ++i) {
 
             itemId = vs_main_inventoryIndices.blades[i];
 
-            if ((itemId != 0) && (itemId != _combiningBladeIds[0])
-                && (itemId != _combiningBladeIds[1])) {
+            if ((itemId != 0) && (itemId != combiningBladeIds[0])
+                && (itemId != combiningBladeIds[1])) {
 
                 int new_var = itemId;
                 blade = &vs_main_inventory.blades[itemId - 1];
@@ -2868,7 +2866,7 @@ static int _selectBlade(int arg0)
                 vs_mainMenu_setBladeRow(blade, menuText + count * 2,
                     &vs_battle_rowTypeBuf[count], textBuf + count * 96);
 
-                if (!((_workshopMaterials[_currentWorkshop] >> blade->material) & 1)) {
+                if (!((workshopMaterials[currentWorkshop] >> blade->material) & 1)) {
                     menuText[count * 2 + 1] = (char*)&vs_mainMenu_menu12Text
                         [VS_MENU12_BIN_OFFSET_invalidBladeMaterial];
                     vs_battle_rowTypeBuf[count] |= 1;
@@ -2882,17 +2880,17 @@ static int _selectBlade(int arg0)
                                                                                 : 0xCA00);
                 }
 
-                _availableItems[count] = new_var;
+                availableItems[count] = new_var;
                 ++count;
             }
         }
 
-        _populateItemsList(count, menuText, vs_battle_rowTypeBuf);
+        populateItemsList(count, menuText, vs_battle_rowTypeBuf);
         vs_main_freeHeapR(textBuf);
         state = 1;
         break;
     case 1:
-        itemId = _availableItems[_itemsListWindow + _itemsListSelection];
+        itemId = availableItems[itemsListWindow + itemsListSelection];
         if (itemId != 0) {
             vs_mainMenu_setStatsFromBlade(itemId);
         } else {
@@ -2900,16 +2898,16 @@ static int _selectBlade(int arg0)
             vs_mainMenu_setRangeRisk(0, 0, 0, 1);
         }
         vs_mainMenu_printInformation(
-            _itemsListSelection + _itemsListWindow, _itemsListState);
-        _navigateItemsList(2);
-        selectedRow = _getSelectedRow() + 1;
+            itemsListSelection + itemsListWindow, itemsListState);
+        navigateItemsList(2);
+        selectedRow = getSelectedRow() + 1;
         if (selectedRow != 0) {
             vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
             if (selectedRow == -2) {
                 return -2;
             }
             if (selectedRow > 0) {
-                selectedRow = _availableItems[selectedRow - 1];
+                selectedRow = availableItems[selectedRow - 1];
             }
             state = 2;
         }
@@ -2926,8 +2924,7 @@ static int _selectBlade(int arg0)
 /**
  * Sets the blade row's category, material, and equipped-state icon.
  */
-static void _setBladeMenuItem(
-    vs_battle_menuItem_t* menuItem, vs_main_inventoryBlade* blade)
+static void setBladeMenuItem(vs_MenuItem* menuItem, vs_InventoryBlade* blade)
 {
     int assembledWeapon;
 
@@ -2946,7 +2943,7 @@ static void _setBladeMenuItem(
  * @return Zero while active, -1 while waiting for the result object load,
  *         -2 when returning to battle, or a nonzero completion result.
  */
-static int _combineBladeMenu(int arg0)
+static int combineBladeMenu(int arg0)
 {
     static char D_8010BB74 = 0;
 
@@ -2963,15 +2960,15 @@ static int _combineBladeMenu(int arg0)
     int i;
     char* var_a0_2;
     int i_2;
-    vs_main_inventoryBlade* blade;
-    vs_battle_menuItem_t* menuItem;
+    vs_InventoryBlade* blade;
+    vs_MenuItem* menuItem;
 
     if (arg0 != 0) {
-        _pushSelectionHistory(5);
+        pushSelectionHistory(5);
 
-        *(u_short*)&_combiningBladeIds = 0;
+        *(u_short*)&combiningBladeIds = 0;
 
-        _setCombineBladeUi(0);
+        setCombineBladeUi(0);
 
         D_8010BC63 = 1;
         state = 0;
@@ -2980,8 +2977,8 @@ static int _combineBladeMenu(int arg0)
 
     var_s1 = 0;
 
-    if (_combiningBladeIds[0] != 0) {
-        var_s1 = _combiningBladeIds[1] > 0;
+    if (combiningBladeIds[0] != 0) {
+        var_s1 = combiningBladeIds[1] > 0;
     }
 
     D_8010BC64 += 16;
@@ -2996,20 +2993,20 @@ static int _combineBladeMenu(int arg0)
             break;
         }
 
-        _initMenuItem(VS_MENU12_BIN_OFFSET_combineBlade, 24);
+        initMenuItem(VS_MENU12_BIN_OFFSET_combineBlade, 24);
         // Fallthrough
 
     case 1:
-        var_s1 = _bladeBuf.id;
-        menuItem = _initItemRow(0, var_s1);
+        var_s1 = bladeBuf.id;
+        menuItem = initItemRow(0, var_s1);
 
         if (var_s1 != 0) {
-            _setBladeMenuItem(menuItem, &_bladeBuf);
+            setBladeMenuItem(menuItem, &bladeBuf);
         }
 
         for (i = 0; i < 2; ++i) {
 
-            var_s1 = _combiningBladeIds[i];
+            var_s1 = combiningBladeIds[i];
 
             if (var_s1 != 0) {
                 blade = &vs_main_inventory.blades[var_s1 - 1];
@@ -3024,7 +3021,7 @@ static int _combineBladeMenu(int arg0)
             if (var_s1 == 0) {
                 menuItem->fontColor = 1;
             } else {
-                _setBladeMenuItem(menuItem, blade);
+                setBladeMenuItem(menuItem, blade);
             }
         }
 
@@ -3035,25 +3032,25 @@ static int _combineBladeMenu(int arg0)
         if (vs_mainmenu_ready()) {
 
             if (vs_main_buttonsPressed.all & PADRup) {
-                return _leaveItemSlotSelection(1);
+                return leaveItemSlotSelection(1);
             }
 
             if (var_s1 != 0) {
-                _drawOk(2, D_8010BC64);
+                drawOk(2, D_8010BC64);
             }
 
             if (vs_main_buttonsPressed.all & PADRdown) {
 
-                temp_v0_2 = _popSelectionHistory(5);
+                temp_v0_2 = popSelectionHistory(5);
 
                 if (temp_v0_2 != 0) {
 
                     vs_battle_playMenuLeaveSfx();
 
                     D_8010BC63 = temp_v0_2;
-                    _combiningBladeIds[temp_v0_2 - 1] = 0;
+                    combiningBladeIds[temp_v0_2 - 1] = 0;
 
-                    _setCombineBladeUi(temp_v0_2);
+                    setCombineBladeUi(temp_v0_2);
 
                     menuItem = vs_battle_setMenuItem(temp_v0_2 + 10, 169,
                         (temp_v0_2 * 16) + 18, 151, 0,
@@ -3061,18 +3058,18 @@ static int _combineBladeMenu(int arg0)
                     menuItem->selected = 1;
                     menuItem->fontColor = 1;
 
-                    var_s1 = _bladeBuf.id;
+                    var_s1 = bladeBuf.id;
 
-                    menuItem = _setItemRow(0, var_s1);
+                    menuItem = setItemRow(0, var_s1);
 
                     if (var_s1 != 0) {
-                        _setBladeMenuItem(menuItem, &_bladeBuf);
+                        setBladeMenuItem(menuItem, &bladeBuf);
                     }
 
                     break;
                 }
 
-                return _leaveItemSlotSelection(1);
+                return leaveItemSlotSelection(1);
             }
 
             if ((vs_main_buttonsPressed.all & PADstart) && (var_s1 != 0)) {
@@ -3083,7 +3080,7 @@ static int _combineBladeMenu(int arg0)
                 D_8010BC63 = 3;
                 state = 4;
 
-                _setCombineBladeUi(3);
+                setCombineBladeUi(3);
                 return 0;
             }
 
@@ -3100,7 +3097,7 @@ static int _combineBladeMenu(int arg0)
                         state = 4;
                     } else {
                         vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-                        _selectBlade(i_2);
+                        selectBlade(i_2);
                         state = 3;
                     }
 
@@ -3130,16 +3127,16 @@ static int _combineBladeMenu(int arg0)
 
                 D_8010BC63 = i_2;
 
-                _setCombineBladeUi(D_8010BC63);
+                setCombineBladeUi(D_8010BC63);
             }
 
-            vs_battle_rowTypeBuf[0] = _bladeBuf.id < 1;
+            vs_battle_rowTypeBuf[0] = bladeBuf.id < 1;
 
             for (var_s1 = 1; var_s1 < 3; ++var_s1) {
 
                 vs_battle_getMenuItem(var_s1 + 10)->selected = var_s1 == D_8010BC63;
 
-                vs_battle_rowTypeBuf[var_s1] = _combiningBladeIds[var_s1 - 1] == 0;
+                vs_battle_rowTypeBuf[var_s1] = combiningBladeIds[var_s1 - 1] == 0;
             }
 
             vs_battle_rowTypeBuf[3] = 1;
@@ -3151,15 +3148,15 @@ static int _combineBladeMenu(int arg0)
 
             switch (i_2) {
             case 0:
-                if (_bladeBuf.id != 0) {
+                if (bladeBuf.id != 0) {
                     vs_mainMenu_setBladeRow(
-                        &_bladeBuf, menuText, &rowType, vs_battle_stringBuf);
+                        &bladeBuf, menuText, &rowType, vs_battle_stringBuf);
                 }
                 break;
 
             case 1:
             case 2:
-                var_s1 = _combiningBladeIds[i_2 - 1];
+                var_s1 = combiningBladeIds[i_2 - 1];
                 if (var_s1 != 0) {
                     vs_mainMenu_setBladeRow(&vs_main_inventory.blades[var_s1 - 1],
                         menuText, &rowType, vs_battle_stringBuf);
@@ -3191,42 +3188,42 @@ static int _combineBladeMenu(int arg0)
         break;
 
     case 3:
-        itemId = _selectBlade(0);
+        itemId = selectBlade(0);
 
         if (itemId == 0) {
             break;
         }
 
         if (itemId == -2) {
-            return _leaveItemSlotSelection(1);
+            return leaveItemSlotSelection(1);
         }
 
         if (itemId > 0) {
 
             var_s1 = D_8010BC63 - 1;
 
-            if (itemId == _combiningBladeIds[D_8010BC63 - 1]) {
+            if (itemId == combiningBladeIds[D_8010BC63 - 1]) {
 
-                _combiningBladeIds[D_8010BC63 - 1] = 0;
+                combiningBladeIds[D_8010BC63 - 1] = 0;
 
-                _popSelectionHistory(var_s1);
+                popSelectionHistory(var_s1);
 
             } else {
 
-                _combiningBladeIds[D_8010BC63 - 1] = itemId;
+                combiningBladeIds[D_8010BC63 - 1] = itemId;
 
-                _pushSelectionHistory(var_s1);
+                pushSelectionHistory(var_s1);
 
                 D_8010BC63 = (D_8010BC63 + 1);
 
                 if (var_s1 == 1) {
-                    if (_combiningBladeIds[0] == 0) {
+                    if (combiningBladeIds[0] == 0) {
                         D_8010BC63 = var_s1;
                     }
                 }
             }
 
-            _setCombineBladeUi(D_8010BC63);
+            setCombineBladeUi(D_8010BC63);
         }
 
         state = 1;
@@ -3234,13 +3231,13 @@ static int _combineBladeMenu(int arg0)
 
     case 4:
         vs_mainMenu_renderEquipStats(2);
-        _confirmCombine(2);
+        confirmCombine(2);
 
         var_s1 = 0;
 
         for (i = 0; i < 2; ++i) {
             var_s1 |=
-                vs_main_inventory.blades[_combiningBladeIds[i] - 1].assembledWeaponIndex;
+                vs_main_inventory.blades[combiningBladeIds[i] - 1].assembledWeaponIndex;
         }
 
         if (var_s1 == 0) {
@@ -3257,7 +3254,7 @@ static int _combineBladeMenu(int arg0)
         break;
 
     case 5:
-        temp_v0_2 = _confirmCombine(0);
+        temp_v0_2 = confirmCombine(0);
 
         if (temp_v0_2 == 0) {
             break;
@@ -3274,7 +3271,7 @@ static int _combineBladeMenu(int arg0)
 
             for (i = 0; i < 2; ++i) {
 
-                blade = &vs_main_inventory.blades[_combiningBladeIds[i] - 1];
+                blade = &vs_main_inventory.blades[combiningBladeIds[i] - 1];
                 var_s1 = blade->assembledWeaponIndex;
 
                 if (var_s1 != 0) {
@@ -3282,16 +3279,16 @@ static int _combineBladeMenu(int arg0)
                         vs_mainMenu_unequipWeapon();
                         state = 6;
                     }
-                    _disassembleWeapon(var_s1 - 1);
+                    disassembleWeapon(var_s1 - 1);
                 }
 
-                vs_mainMenu_initItem(itemCategoryBlade, _combiningBladeIds[i]);
+                vs_mainMenu_initItem(itemCategoryBlade, combiningBladeIds[i]);
             }
 
-            itemId = _combiningBladeIds[0];
+            itemId = combiningBladeIds[0];
             blade = &vs_main_inventory.blades[itemId - 1];
 
-            vs_battle_copyAligned(blade, &_bladeBuf, sizeof *blade);
+            vs_battle_copyAligned(blade, &bladeBuf, sizeof *blade);
 
             blade->index = itemId;
 
@@ -3307,12 +3304,12 @@ static int _combineBladeMenu(int arg0)
             break;
 
         case 3:
-            return _leaveItemSlotSelection(1);
+            return leaveItemSlotSelection(1);
         }
         break;
 
     case 6:
-        if (_loadObject(0) == 0) {
+        if (loadObject(0) == 0) {
             return -1;
         }
         break;
@@ -3324,10 +3321,10 @@ static int _combineBladeMenu(int arg0)
 /**
  * Populates stat display from a shield.
  */
-static void _setShieldUi(vs_main_inventoryShield* shield)
+static void setShieldUi(vs_InventoryShield* shield)
 {
     int i;
-    vs_main_inventoryArmor* base = &shield->base;
+    vs_InventoryArmor* base = &shield->base;
 
     vs_mainMenu_resetStats();
 
@@ -3348,11 +3345,11 @@ static void _setShieldUi(vs_main_inventoryShield* shield)
     vs_mainMenu_equipmentSubtype = 8;
 }
 
-static vs_main_inventoryArmor* _combineShields(
-    vs_main_inventoryArmor*, vs_main_inventoryArmor*, vs_main_inventoryArmor*, void*);
+static vs_InventoryArmor* combineShields(
+    vs_InventoryArmor*, vs_InventoryArmor*, vs_InventoryArmor*, void*);
 
-static vs_main_inventoryShield _shieldBuf;
-static u_char _itemsToCombine[16];
+static vs_InventoryShield shieldBuf;
+static u_char itemsToCombine[16];
 
 /**
  * Rebuilds the shield combination preview and displays the selected item's
@@ -3360,13 +3357,13 @@ static u_char _itemsToCombine[16];
  * @param arg0 One-based selected component (one/two), three for the combined
  *             preview, or zero to clear the preview.
  */
-static void _initCombineShields(int arg0)
+static void initCombineShields(int arg0)
 {
     u_int temp_v1;
-    vs_main_inventoryShield* shield;
+    vs_InventoryShield* shield;
 
-    int first = _itemsToCombine[0];
-    int second = _itemsToCombine[1];
+    int first = itemsToCombine[0];
+    int second = itemsToCombine[1];
 
     int var_s2 = first > 0;
 
@@ -3376,23 +3373,23 @@ static void _initCombineShields(int arg0)
 
     switch (var_s2) {
     case 0:
-        vs_battle_rMemzero(&_shieldBuf, sizeof _shieldBuf);
+        vs_battle_rMemzero(&shieldBuf, sizeof shieldBuf);
         break;
 
     case 1:
     case 2:
-        vs_battle_copyAligned(&_shieldBuf, &vs_main_inventory.shields[first + second - 1],
-            sizeof _shieldBuf);
+        vs_battle_copyAligned(
+            &shieldBuf, &vs_main_inventory.shields[first + second - 1], sizeof shieldBuf);
         break;
 
     case 3:
-        vs_battle_rMemzero(&_shieldBuf, sizeof _shieldBuf);
-        _combineShields(&vs_main_inventory.shields[first - 1].base,
-            &vs_main_inventory.shields[second - 1].base, &_shieldBuf.base, _sydData);
+        vs_battle_rMemzero(&shieldBuf, sizeof shieldBuf);
+        combineShields(&vs_main_inventory.shields[first - 1].base,
+            &vs_main_inventory.shields[second - 1].base, &shieldBuf.base, sydDataBuf);
         break;
     }
 
-    shield = &_shieldBuf;
+    shield = &shieldBuf;
     shield->isEquipped = 0;
 
     vs_mainMenu_resetStats();
@@ -3401,18 +3398,18 @@ static void _initCombineShields(int arg0)
 
     if (temp_v1 > 1) {
         if (shield->base.id != 0) {
-            _setShieldUi(shield);
+            setShieldUi(shield);
         }
     } else if (var_s2 & arg0) {
-        _setShieldUi(&vs_main_inventory.shields[_itemsToCombine[temp_v1] - 1]);
+        setShieldUi(&vs_main_inventory.shields[itemsToCombine[temp_v1] - 1]);
     }
 }
 
 /**
  * Builds a shield list row while temporarily hiding its installed gems.
  */
-static void _initUiShield(
-    vs_main_inventoryShield* shield, char** menuText, int* rowTypes, char* stringBuf)
+static void initUiShield(
+    vs_InventoryShield* shield, char** menuText, int* rowTypes, char* stringBuf)
 {
     int gems = *(int*)shield->gems;
     *(int*)shield->gems = 0;
@@ -3428,7 +3425,7 @@ static void _initUiShield(
  * @return Zero while pending, -2 when cancelled to battle, or the selected
  *         one-based shield index.
  */
-static int _selectShields(int arg0)
+static int selectShields(int arg0)
 {
     static int D_8010BC68;
     static char state;
@@ -3439,7 +3436,7 @@ static int _selectShields(int arg0)
     int i;
     void* stringBuf;
     int itemId;
-    vs_main_inventoryShield* shield;
+    vs_InventoryShield* shield;
 
     shield = NULL;
 
@@ -3447,12 +3444,12 @@ static int _selectShields(int arg0)
 
         D_8010BC6D = arg0;
 
-        _initMenuHeader(arg0 + 10);
+        initMenuHeader(arg0 + 10);
         state = 0;
         return 0;
     }
 
-    itemId = _itemsToCombine[D_8010BC6D - 1];
+    itemId = itemsToCombine[D_8010BC6D - 1];
 
     if (itemId != 0) {
         shield = &vs_main_inventory.shields[itemId - 1];
@@ -3472,25 +3469,25 @@ static int _selectShields(int arg0)
                     (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_selectShield];
                 *vs_battle_rowTypeBuf = 1;
             } else {
-                _initUiShield(shield, menuText, vs_battle_rowTypeBuf, stringBuf);
+                initUiShield(shield, menuText, vs_battle_rowTypeBuf, stringBuf);
             }
 
-            _availableItems[0] = itemId;
+            availableItems[0] = itemId;
             rowType = 1;
 
             for (i = 0; i < 8; ++i) {
 
                 itemId = vs_main_inventoryIndices.shields[i];
 
-                if ((itemId != 0) && (itemId != _itemsToCombine[0])
-                    && (itemId != _itemsToCombine[1])) {
+                if ((itemId != 0) && (itemId != itemsToCombine[0])
+                    && (itemId != itemsToCombine[1])) {
 
                     shield = &vs_main_inventory.shields[itemId - 1];
 
-                    _initUiShield(shield, menuText + rowType * 2,
+                    initUiShield(shield, menuText + rowType * 2,
                         &vs_battle_rowTypeBuf[rowType], stringBuf + rowType * 0x60);
 
-                    if (!((_workshopMaterials[_currentWorkshop] >> shield->base.material)
+                    if (!((workshopMaterials[currentWorkshop] >> shield->base.material)
                             & 1)) {
                         menuText[rowType * 2 + 1] = (char*)&vs_mainMenu_menu12Text
                             [VS_MENU12_BIN_OFFSET_invalidShieldMaterial];
@@ -3501,12 +3498,12 @@ static int _selectShields(int arg0)
                         vs_battle_rowTypeBuf[rowType] |= 0xCA00;
                     }
 
-                    _availableItems[rowType] = itemId;
+                    availableItems[rowType] = itemId;
                     ++rowType;
                 }
             }
 
-            _populateItemsList(rowType, menuText, vs_battle_rowTypeBuf);
+            populateItemsList(rowType, menuText, vs_battle_rowTypeBuf);
             vs_main_freeHeapR(stringBuf);
 
             state = 1;
@@ -3514,19 +3511,19 @@ static int _selectShields(int arg0)
         break;
 
     case 1:
-        itemId = _availableItems[_itemsListWindow + _itemsListSelection];
+        itemId = availableItems[itemsListWindow + itemsListSelection];
 
         if (itemId != 0) {
-            _setShieldUi(&vs_main_inventory.shields[itemId - 1]);
+            setShieldUi(&vs_main_inventory.shields[itemId - 1]);
         } else {
             vs_mainMenu_resetStats();
         }
 
         vs_mainMenu_printInformation(
-            _itemsListSelection + _itemsListWindow, _itemsListState);
-        _navigateItemsList(2);
+            itemsListSelection + itemsListWindow, itemsListState);
+        navigateItemsList(2);
 
-        D_8010BC68 = _getSelectedRow() + 1;
+        D_8010BC68 = getSelectedRow() + 1;
 
         if (D_8010BC68 != 0) {
 
@@ -3536,7 +3533,7 @@ static int _selectShields(int arg0)
                 return -2;
             }
             if (D_8010BC68 > 0) {
-                D_8010BC68 = _availableItems[D_8010BC68 - 1];
+                D_8010BC68 = availableItems[D_8010BC68 - 1];
             }
             state = 2;
         }
@@ -3555,8 +3552,7 @@ static int _selectShields(int arg0)
 /**
  * Sets a shield row's icon, material, and equipped state indicator.
  */
-static void _setShieldMenuItem(
-    vs_battle_menuItem_t* menuItem, vs_main_inventoryShield* shield)
+static void setShieldMenuItem(vs_MenuItem* menuItem, vs_InventoryShield* shield)
 {
     menuItem->rowIcon = 15;
     menuItem->material = shield->base.material;
@@ -3569,7 +3565,7 @@ static void _setShieldMenuItem(
  * @return Zero while active, -1 while waiting for the result object load,
  *         -2 when returning to battle, or a nonzero completion result.
  */
-static int _combineShieldMenu(int arg0)
+static int combineShieldMenu(int arg0)
 {
     static char D_8010BB75 = 0;
 
@@ -3588,17 +3584,17 @@ static int _combineShieldMenu(int arg0)
     int temp_s1;
     int temp_s2;
     int temp_v1_2;
-    vs_main_inventoryShield* shield1;
-    vs_main_inventoryShield* shield0;
-    vs_battle_menuItem_t* temp_v0;
+    vs_InventoryShield* shield1;
+    vs_InventoryShield* shield0;
+    vs_MenuItem* temp_v0;
 
     if (arg0 != 0) {
 
-        _pushSelectionHistory(5);
+        pushSelectionHistory(5);
 
-        *(u_short*)_itemsToCombine = 0;
+        *(u_short*)itemsToCombine = 0;
 
-        _initCombineShields(0);
+        initCombineShields(0);
 
         D_8010BC6F = 1;
         state = 0;
@@ -3607,8 +3603,8 @@ static int _combineShieldMenu(int arg0)
 
     var_s1 = 0;
 
-    if (_itemsToCombine[0] != 0) {
-        var_s1 = _itemsToCombine[1] > 0;
+    if (itemsToCombine[0] != 0) {
+        var_s1 = itemsToCombine[1] > 0;
     }
 
     D_8010BC70 += 0x10;
@@ -3622,20 +3618,20 @@ static int _combineShieldMenu(int arg0)
         if (vs_mainmenu_ready() == 0) {
             break;
         }
-        _initMenuItem(VS_MENU12_BIN_OFFSET_combineShield, 0x1B);
+        initMenuItem(VS_MENU12_BIN_OFFSET_combineShield, 0x1B);
         // Fallthrough
 
     case 1:
-        temp_s1 = _shieldBuf.base.id;
-        temp_v0 = _initItemRow(1, temp_s1);
+        temp_s1 = shieldBuf.base.id;
+        temp_v0 = initItemRow(1, temp_s1);
 
         if (temp_s1 != 0) {
-            _setShieldMenuItem(temp_v0, &_shieldBuf);
+            setShieldMenuItem(temp_v0, &shieldBuf);
         }
 
         for (i = 0; i < 2; ++i) {
 
-            temp_s1 = _itemsToCombine[i];
+            temp_s1 = itemsToCombine[i];
 
             if (temp_s1 != 0) {
                 shield0 = &vs_main_inventory.shields[temp_s1 - 1];
@@ -3651,7 +3647,7 @@ static int _combineShieldMenu(int arg0)
             if (temp_s1 == 0) {
                 temp_v0->fontColor = 1;
             } else {
-                _setShieldMenuItem(temp_v0, shield0);
+                setShieldMenuItem(temp_v0, shield0);
             }
         }
 
@@ -3663,39 +3659,39 @@ static int _combineShieldMenu(int arg0)
             if (!(vs_main_buttonsPressed.all & PADRup)) {
 
                 if (var_s1 != 0) {
-                    _drawOk(2, D_8010BC70);
+                    drawOk(2, D_8010BC70);
                 }
 
                 if (vs_main_buttonsPressed.all & PADRdown) {
 
-                    temp_s2 = _popSelectionHistory(5);
+                    temp_s2 = popSelectionHistory(5);
 
                     if (temp_s2 != 0) {
 
                         vs_battle_playMenuLeaveSfx();
 
                         D_8010BC6F = temp_s2;
-                        _itemsToCombine[temp_s2 - 1] = 0;
+                        itemsToCombine[temp_s2 - 1] = 0;
 
-                        _initCombineShields(temp_s2);
+                        initCombineShields(temp_s2);
                         temp_v0 = vs_battle_setMenuItem(temp_s2 + 0xA, 0xA9,
                             (temp_s2 * 0x10) + 0x12, 0x97, 0,
                             (char*)(vs_mainMenu_menu12Text + 0x439));
 
                         temp_v0->selected = 1;
                         temp_v0->fontColor = 1;
-                        var_s1 = _shieldBuf.base.id;
-                        temp_v0 = _setItemRow(1, var_s1);
+                        var_s1 = shieldBuf.base.id;
+                        temp_v0 = setItemRow(1, var_s1);
 
                         if (var_s1 != 0) {
-                            _setShieldMenuItem(temp_v0, &_shieldBuf);
+                            setShieldMenuItem(temp_v0, &shieldBuf);
                             return 0;
                         }
 
                         break;
                     }
 
-                    return _leaveItemSlotSelection(1);
+                    return leaveItemSlotSelection(1);
                 }
 
                 if ((vs_main_buttonsPressed.all & PADstart) && (var_s1 != 0)) {
@@ -3705,7 +3701,7 @@ static int _combineShieldMenu(int arg0)
                     D_8010BC6F = 3;
                     state = 4;
 
-                    _initCombineShields(3);
+                    initCombineShields(3);
                     return 0;
                 }
 
@@ -3723,7 +3719,7 @@ static int _combineShieldMenu(int arg0)
                             state = 4;
                         } else {
                             vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-                            _selectShields(temp_s2);
+                            selectShields(temp_s2);
                             state = 3;
                         }
 
@@ -3752,14 +3748,14 @@ static int _combineShieldMenu(int arg0)
 
                     D_8010BC6F = temp_s2;
 
-                    _initCombineShields(D_8010BC6F);
+                    initCombineShields(D_8010BC6F);
                 }
 
-                vs_battle_rowTypeBuf[0] = _shieldBuf.base.id < 1;
+                vs_battle_rowTypeBuf[0] = shieldBuf.base.id < 1;
 
                 for (var_s1 = 1; var_s1 < 3; ++var_s1) {
                     vs_battle_getMenuItem(var_s1 + 0xA)->selected = var_s1 == D_8010BC6F;
-                    vs_battle_rowTypeBuf[var_s1] = _itemsToCombine[var_s1 - 1] == 0;
+                    vs_battle_rowTypeBuf[var_s1] = itemsToCombine[var_s1 - 1] == 0;
                 }
 
                 vs_battle_rowTypeBuf[3] = 1;
@@ -3771,15 +3767,14 @@ static int _combineShieldMenu(int arg0)
 
                 switch (temp_s2) {
                 case 0:
-                    if (_shieldBuf.base.id != 0) {
-                        _initUiShield(
-                            &_shieldBuf, menuText, &rowType, vs_battle_stringBuf);
+                    if (shieldBuf.base.id != 0) {
+                        initUiShield(&shieldBuf, menuText, &rowType, vs_battle_stringBuf);
                     }
                     break;
 
                 case 1:
                 case 2:
-                    var_s1 = _itemsToCombine[temp_s2 - 1];
+                    var_s1 = itemsToCombine[temp_s2 - 1];
 
                     if (var_s1 != 0) {
 
@@ -3787,7 +3782,7 @@ static int _combineShieldMenu(int arg0)
                         var_s1 = *(int*)shield1->gems;
                         *(int*)shield1->gems = 0;
 
-                        _initUiShield(shield1, menuText, &rowType, vs_battle_stringBuf);
+                        initUiShield(shield1, menuText, &rowType, vs_battle_stringBuf);
 
                         *(int*)shield1->gems = var_s1;
                     }
@@ -3814,14 +3809,14 @@ static int _combineShieldMenu(int arg0)
                 break;
             }
 
-            return _leaveItemSlotSelection(1);
+            return leaveItemSlotSelection(1);
         }
 
         D_8010BC70 = 0;
         break;
 
     case 3:
-        temp_s2 = _selectShields(0);
+        temp_s2 = selectShields(0);
 
         if (temp_s2 == 0) {
             break;
@@ -3830,35 +3825,35 @@ static int _combineShieldMenu(int arg0)
         if (temp_s2 != -2) {
             if (temp_s2 > 0) {
                 var_s1 = D_8010BC6F - 1;
-                if (temp_s2 == _itemsToCombine[D_8010BC6F - 1]) {
-                    _itemsToCombine[D_8010BC6F - 1] = 0;
-                    _popSelectionHistory(var_s1);
+                if (temp_s2 == itemsToCombine[D_8010BC6F - 1]) {
+                    itemsToCombine[D_8010BC6F - 1] = 0;
+                    popSelectionHistory(var_s1);
                 } else {
-                    _itemsToCombine[D_8010BC6F - 1] = temp_s2;
-                    _pushSelectionHistory(var_s1);
+                    itemsToCombine[D_8010BC6F - 1] = temp_s2;
+                    pushSelectionHistory(var_s1);
                     D_8010BC6F = (D_8010BC6F + 1);
                     if (var_s1 == 1) {
-                        if (_itemsToCombine[0] == 0) {
+                        if (itemsToCombine[0] == 0) {
                             D_8010BC6F = var_s1;
                         }
                     }
                 }
-                _initCombineShields(D_8010BC6F);
+                initCombineShields(D_8010BC6F);
             }
             state = 1;
             break;
         }
-        return _leaveItemSlotSelection(1);
+        return leaveItemSlotSelection(1);
 
     case 4:
         vs_mainMenu_renderEquipStats(2);
-        _confirmCombine(2);
+        confirmCombine(2);
 
         var_s1 = 0;
 
         for (i = 0; i < 2; ++i) {
 
-            shield0 = &vs_main_inventory.shields[_itemsToCombine[i] - 1];
+            shield0 = &vs_main_inventory.shields[itemsToCombine[i] - 1];
             temp_v1_2 = shield0->base.gemSlots;
             var_s1 |= shield0->isEquipped;
 
@@ -3879,7 +3874,7 @@ static int _combineShieldMenu(int arg0)
         break;
 
     case 5:
-        temp_s2 = _confirmCombine(0);
+        temp_s2 = confirmCombine(0);
 
         if (temp_s2 == 0) {
             break;
@@ -3896,7 +3891,7 @@ static int _combineShieldMenu(int arg0)
 
             for (i = 0; i < 2; ++i) {
 
-                temp_s1 = _itemsToCombine[i];
+                temp_s1 = itemsToCombine[i];
                 itemId_3 = temp_s1 - 1;
 
                 if (vs_main_inventory.shields[itemId_3].isEquipped != 0) {
@@ -3904,14 +3899,14 @@ static int _combineShieldMenu(int arg0)
                     state = 6;
                 }
 
-                _disassembleShield(itemId_3);
+                disassembleShield(itemId_3);
                 vs_mainMenu_initItem(itemCategoryShield, temp_s1);
             }
 
-            temp_s2 = _itemsToCombine[0];
+            temp_s2 = itemsToCombine[0];
             shield1 = &vs_main_inventory.shields[temp_s2 - 1];
 
-            vs_battle_copyAligned(shield1, &_shieldBuf, 0x30);
+            vs_battle_copyAligned(shield1, &shieldBuf, 0x30);
 
             shield1->index = temp_s2;
 
@@ -3927,12 +3922,12 @@ static int _combineShieldMenu(int arg0)
             break;
 
         case 3:
-            return _leaveItemSlotSelection(1);
+            return leaveItemSlotSelection(1);
         }
         break;
 
     case 6:
-        if (_loadObject(1) == 0) {
+        if (loadObject(1) == 0) {
             return -1;
         }
         break;
@@ -3941,11 +3936,11 @@ static int _combineShieldMenu(int arg0)
     return 0;
 }
 
-static vs_main_inventoryArmor* _combineArmor(
-    vs_main_inventoryArmor*, vs_main_inventoryArmor*, vs_main_inventoryArmor*, void*);
+static vs_InventoryArmor* combineArmor(
+    vs_InventoryArmor*, vs_InventoryArmor*, vs_InventoryArmor*, void*);
 
-static vs_main_inventoryArmor _armorBuf;
-static char _combiningArmorIds[2];
+static vs_InventoryArmor armorBuf;
+static char combiningArmorIds[2];
 static UNUSED char _2[2];
 
 /**
@@ -3954,14 +3949,14 @@ static UNUSED char _2[2];
  * @param arg0 One-based selected component (one/two), three for the combined
  *             preview, or zero to clear the preview.
  */
-static void _initCombineArmor(int arg0)
+static void initCombineArmor(int arg0)
 {
     int var_a0;
     u_int temp_v1;
-    vs_main_inventoryArmor* armor;
+    vs_InventoryArmor* armor;
 
-    int i = _combiningArmorIds[0];
-    int temp_s3 = _combiningArmorIds[1];
+    int i = combiningArmorIds[0];
+    int temp_s3 = combiningArmorIds[1];
     int var_s2 = i != 0;
 
     if (temp_s3 != 0) {
@@ -3970,23 +3965,23 @@ static void _initCombineArmor(int arg0)
 
     switch (var_s2) {
     case 0:
-        vs_battle_rMemzero(&_armorBuf, sizeof _armorBuf);
+        vs_battle_rMemzero(&armorBuf, sizeof armorBuf);
         break;
 
     case 1:
     case 2:
         vs_battle_copyAligned(
-            &_armorBuf, &vs_main_inventory.armor[i + temp_s3 - 1], sizeof _armorBuf);
+            &armorBuf, &vs_main_inventory.armor[i + temp_s3 - 1], sizeof armorBuf);
         break;
 
     case 3:
-        vs_battle_rMemzero(&_armorBuf, sizeof _armorBuf);
-        _combineArmor(&vs_main_inventory.armor[i - 1],
-            &vs_main_inventory.armor[temp_s3 - 1], &_armorBuf, _sydData);
+        vs_battle_rMemzero(&armorBuf, sizeof armorBuf);
+        combineArmor(&vs_main_inventory.armor[i - 1],
+            &vs_main_inventory.armor[temp_s3 - 1], &armorBuf, sydDataBuf);
         break;
     }
 
-    armor = &_armorBuf;
+    armor = &armorBuf;
     armor->limb = 0;
 
     vs_mainMenu_resetStats();
@@ -3994,7 +3989,7 @@ static void _initCombineArmor(int arg0)
     temp_v1 = arg0 - 1;
 
     if (temp_v1 >= 2) {
-        if (_armorBuf.id != 0) {
+        if (armorBuf.id != 0) {
 
             for (i = 0; i < 16; ++i) {
                 vs_mainMenu_equipmentStats[i] = armor->classes[i & 7];
@@ -4016,7 +4011,7 @@ static void _initCombineArmor(int arg0)
             vs_mainMenu_strIntAgi[6] = armor->agility;
         }
     } else if (var_s2 & arg0) {
-        vs_mainMenu_setStatsFromArmor(_combiningArmorIds[temp_v1]);
+        vs_mainMenu_setStatsFromArmor(combiningArmorIds[temp_v1]);
     }
 }
 
@@ -4026,7 +4021,7 @@ static void _initCombineArmor(int arg0)
  * @return Zero while pending, -2 when cancelled to battle, or the selected
  *         one-based armor index.
  */
-static int _initUiArmor(int arg0)
+static int initUiArmor(int arg0)
 {
     static int D_8010BC74;
     static char D_8010BC78;
@@ -4038,17 +4033,17 @@ static int _initUiArmor(int arg0)
     char* temp_v0;
     int itemId;
     int s0_2;
-    vs_main_inventoryArmor* var_s2;
+    vs_InventoryArmor* var_s2;
 
     var_s2 = NULL;
     if (arg0 != 0) {
         D_8010BC79 = arg0;
-        _initMenuHeader(arg0 + 0xA);
+        initMenuHeader(arg0 + 0xA);
         D_8010BC78 = 0;
         return 0;
     }
 
-    itemId = _combiningArmorIds[D_8010BC79 - 1];
+    itemId = combiningArmorIds[D_8010BC79 - 1];
     if (itemId != 0) {
         var_s2 = &vs_main_inventory.armor[itemId - 1];
     }
@@ -4069,18 +4064,18 @@ static int _initUiArmor(int arg0)
                     var_s2, sp10, vs_battle_rowTypeBuf, temp_v0);
             }
 
-            *_availableItems = s0_2;
+            *availableItems = s0_2;
             var_s4 = 1;
 
             for (i = 0; i < 16; ++i) {
                 itemId = vs_main_inventoryIndices.armor[i];
-                if ((itemId != 0) && (itemId != _combiningArmorIds[0])
-                    && (itemId != _combiningArmorIds[1])) {
+                if ((itemId != 0) && (itemId != combiningArmorIds[0])
+                    && (itemId != combiningArmorIds[1])) {
                     var_s2 = &vs_main_inventory.armor[itemId - 1];
                     if (var_s2->category != 7) {
                         vs_mainMenu_setArmorRowFromInventory(var_s2, sp10 + var_s4 * 2,
                             &vs_battle_rowTypeBuf[var_s4], temp_v0 + var_s4 * 0x60);
-                        if (!((_workshopMaterials[_currentWorkshop] >> var_s2->material)
+                        if (!((workshopMaterials[currentWorkshop] >> var_s2->material)
                                 & 1)) {
                             sp10[var_s4 * 2 + 1] = (char*)&vs_mainMenu_menu12Text
                                 [VS_MENU12_BIN_OFFSET_invalidArmorMaterial];
@@ -4089,34 +4084,34 @@ static int _initUiArmor(int arg0)
                         if (var_s2->limb != 0) {
                             vs_battle_rowTypeBuf[var_s4] |= 0xCA00;
                         }
-                        _availableItems[var_s4] = itemId;
+                        availableItems[var_s4] = itemId;
                         ++var_s4;
                     }
                 }
             }
-            _populateItemsList(var_s4, sp10, vs_battle_rowTypeBuf);
+            populateItemsList(var_s4, sp10, vs_battle_rowTypeBuf);
             vs_main_freeHeapR(temp_v0);
             D_8010BC78 = 1;
         }
         break;
     case 1:
-        itemId = _availableItems[_itemsListWindow + _itemsListSelection];
+        itemId = availableItems[itemsListWindow + itemsListSelection];
         if (itemId != 0) {
             vs_mainMenu_setStatsFromArmor(itemId);
         } else {
             vs_mainMenu_resetStats();
         }
         vs_mainMenu_printInformation(
-            _itemsListSelection + _itemsListWindow, _itemsListState);
-        _navigateItemsList(2);
-        D_8010BC74 = _getSelectedRow() + 1;
+            itemsListSelection + itemsListWindow, itemsListState);
+        navigateItemsList(2);
+        D_8010BC74 = getSelectedRow() + 1;
         if (D_8010BC74 != 0) {
             vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
             if (D_8010BC74 == -2) {
                 return -2;
             }
             if (D_8010BC74 > 0) {
-                D_8010BC74 = _availableItems[D_8010BC74 - 1];
+                D_8010BC74 = availableItems[D_8010BC74 - 1];
             }
             D_8010BC78 = 2;
         }
@@ -4133,8 +4128,7 @@ static int _initUiArmor(int arg0)
 /**
  * Sets an armor row's category icon, material, and equipped-state indicator.
  */
-static void _setArmorMenuItem(
-    vs_battle_menuItem_t* menuItem, vs_main_inventoryArmor* armor)
+static void setArmorMenuItem(vs_MenuItem* menuItem, vs_InventoryArmor* armor)
 {
     menuItem->rowIcon = armor->category + 14;
     menuItem->material = armor->material;
@@ -4147,7 +4141,7 @@ static void _setArmorMenuItem(
  * @return Zero while active, -1 while waiting for the result object load,
  *         -2 when returning to battle, or a nonzero completion result.
  */
-static int _combineArmorMenu(int arg0)
+static int combineArmorMenu(int arg0)
 {
     static char D_8010BB76 = 0;
 
@@ -4163,22 +4157,22 @@ static int _combineArmorMenu(int arg0)
     int var_s1;
     char* var_a0_2;
     int i_2;
-    vs_main_inventoryArmor* armor;
-    vs_battle_menuItem_t* temp_a0;
-    vs_battle_menuItem_t* temp_v0;
+    vs_InventoryArmor* armor;
+    vs_MenuItem* temp_a0;
+    vs_MenuItem* temp_v0;
 
     if (arg0 != 0) {
-        _pushSelectionHistory(5);
-        *(u_short*)_combiningArmorIds = 0;
-        _initCombineArmor(0);
+        pushSelectionHistory(5);
+        *(u_short*)combiningArmorIds = 0;
+        initCombineArmor(0);
         D_8010BC7B = 1;
         state = 0;
         return 0;
     }
 
     var_s1 = 0;
-    if (_combiningArmorIds[0] != 0) {
-        var_s1 = _combiningArmorIds[1] > 0;
+    if (combiningArmorIds[0] != 0) {
+        var_s1 = combiningArmorIds[1] > 0;
     }
 
     D_8010BC7C += 16;
@@ -4192,17 +4186,17 @@ static int _combineArmorMenu(int arg0)
         if (vs_mainmenu_ready() == 0) {
             break;
         }
-        _initMenuItem(VS_MENU12_BIN_OFFSET_combineArmor, 0x1C);
+        initMenuItem(VS_MENU12_BIN_OFFSET_combineArmor, 0x1C);
         // Fallthrough
     case 1:
-        var_s1 = _armorBuf.id;
-        temp_a0 = _initItemRow(2, var_s1);
+        var_s1 = armorBuf.id;
+        temp_a0 = initItemRow(2, var_s1);
         if (var_s1 != 0) {
-            _setArmorMenuItem(temp_a0, &_armorBuf);
+            setArmorMenuItem(temp_a0, &armorBuf);
         }
 
         for (i = 0; i < 2; ++i) {
-            var_s1 = _combiningArmorIds[i];
+            var_s1 = combiningArmorIds[i];
             if (var_s1 != 0) {
                 armor = &vs_main_inventory.armor[var_s1 - 1];
             }
@@ -4215,7 +4209,7 @@ static int _combineArmorMenu(int arg0)
             if (var_s1 == 0) {
                 temp_v0->fontColor = 1;
             } else {
-                _setArmorMenuItem(temp_v0, armor);
+                setArmorMenuItem(temp_v0, armor);
             }
         }
 
@@ -4225,28 +4219,28 @@ static int _combineArmorMenu(int arg0)
         if (vs_mainmenu_ready() != 0) {
             if (!(vs_main_buttonsPressed.all & PADRup)) {
                 if (var_s1 != 0) {
-                    _drawOk(2, D_8010BC7C);
+                    drawOk(2, D_8010BC7C);
                 }
                 if (vs_main_buttonsPressed.all & PADRdown) {
-                    int temp_v0_2 = _popSelectionHistory(5);
+                    int temp_v0_2 = popSelectionHistory(5);
                     if (temp_v0_2 != 0) {
                         vs_battle_playMenuLeaveSfx();
                         D_8010BC7B = temp_v0_2;
-                        _combiningArmorIds[temp_v0_2 - 1] = 0;
-                        _initCombineArmor(temp_v0_2);
+                        combiningArmorIds[temp_v0_2 - 1] = 0;
+                        initCombineArmor(temp_v0_2);
                         temp_v0 = vs_battle_setMenuItem(temp_v0_2 + 10, 169,
                             (temp_v0_2 * 16) + 18, 151, 0,
                             (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_armor]);
                         temp_v0->selected = 1;
                         temp_v0->fontColor = 1;
-                        var_s1 = _armorBuf.id;
-                        temp_a0 = _setItemRow(2, var_s1);
+                        var_s1 = armorBuf.id;
+                        temp_a0 = setItemRow(2, var_s1);
                         if (var_s1 != 0) {
-                            _setArmorMenuItem(temp_a0, &_armorBuf);
+                            setArmorMenuItem(temp_a0, &armorBuf);
                         }
                         break;
                     }
-                    return _leaveItemSlotSelection(1);
+                    return leaveItemSlotSelection(1);
                 }
                 if (vs_main_buttonsPressed.all & PADstart) {
                     if (var_s1 != 0) {
@@ -4254,7 +4248,7 @@ static int _combineArmorMenu(int arg0)
                         vs_battle_getMenuItem(D_8010BC7B + 10)->selected = 0;
                         D_8010BC7B = 3;
                         state = 4;
-                        _initCombineArmor(3);
+                        initCombineArmor(3);
                         return 0;
                     }
                 }
@@ -4268,7 +4262,7 @@ static int _combineArmorMenu(int arg0)
                             state = 4;
                         } else {
                             vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
-                            _initUiArmor(i_2);
+                            initUiArmor(i_2);
                             state = 3;
                         }
                         break;
@@ -4292,13 +4286,13 @@ static int _combineArmorMenu(int arg0)
                 if (i_2 != D_8010BC7B) {
                     vs_battle_playMenuChangeSfx();
                     D_8010BC7B = i_2;
-                    _initCombineArmor(D_8010BC7B);
+                    initCombineArmor(D_8010BC7B);
                 }
-                vs_battle_rowTypeBuf[0] = _armorBuf.id < 1;
+                vs_battle_rowTypeBuf[0] = armorBuf.id < 1;
 
                 for (var_s1 = 1; var_s1 < 3; ++var_s1) {
                     vs_battle_getMenuItem(var_s1 + 10)->selected = var_s1 == D_8010BC7B;
-                    vs_battle_rowTypeBuf[var_s1] = _combiningArmorIds[var_s1 - 1] == 0;
+                    vs_battle_rowTypeBuf[var_s1] = combiningArmorIds[var_s1 - 1] == 0;
                 }
 
                 vs_battle_rowTypeBuf[3] = 1;
@@ -4307,14 +4301,14 @@ static int _combineArmorMenu(int arg0)
                     (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_selectArmor];
                 switch (i_2) {
                 case 0:
-                    if (_armorBuf.id != 0) {
+                    if (armorBuf.id != 0) {
                         vs_mainMenu_setArmorRowFromInventory(
-                            &_armorBuf, menuText, &rowType, vs_battle_stringBuf);
+                            &armorBuf, menuText, &rowType, vs_battle_stringBuf);
                     }
                     break;
                 case 1:
                 case 2:
-                    var_s1 = _combiningArmorIds[i_2 - 1];
+                    var_s1 = combiningArmorIds[i_2 - 1];
                     if (var_s1 != 0) {
                         vs_mainMenu_setArmorRowFromInventory(
                             &vs_main_inventory.armor[var_s1 - 1], menuText, &rowType,
@@ -4337,45 +4331,45 @@ static int _combineArmorMenu(int arg0)
                 D_8010BB76 = vs_mainMenu_renderCursor(D_8010BB76, var_s1);
                 break;
             }
-            return _leaveItemSlotSelection(1);
+            return leaveItemSlotSelection(1);
         }
         D_8010BC7C = 0;
         break;
     case 3:
-        itemId = _initUiArmor(0);
+        itemId = initUiArmor(0);
         if (itemId == 0) {
             break;
         }
         if (itemId == -2) {
-            return _leaveItemSlotSelection(1);
+            return leaveItemSlotSelection(1);
         }
         if (itemId > 0) {
             var_s1 = D_8010BC7B - 1;
-            if (itemId == _combiningArmorIds[D_8010BC7B - 1]) {
-                _combiningArmorIds[D_8010BC7B - 1] = 0;
-                _popSelectionHistory(var_s1);
+            if (itemId == combiningArmorIds[D_8010BC7B - 1]) {
+                combiningArmorIds[D_8010BC7B - 1] = 0;
+                popSelectionHistory(var_s1);
             } else {
-                _combiningArmorIds[D_8010BC7B - 1] = itemId;
-                _pushSelectionHistory(var_s1);
+                combiningArmorIds[D_8010BC7B - 1] = itemId;
+                pushSelectionHistory(var_s1);
                 D_8010BC7B = (D_8010BC7B + 1);
                 if (var_s1 == 1) {
-                    if (_combiningArmorIds[0] == 0) {
+                    if (combiningArmorIds[0] == 0) {
                         D_8010BC7B = var_s1;
                     }
                 }
             }
-            _initCombineArmor(D_8010BC7B);
+            initCombineArmor(D_8010BC7B);
         }
         state = 1;
         break;
     case 4:
         vs_mainMenu_renderEquipStats(2);
-        _confirmCombine(2);
+        confirmCombine(2);
 
         var_s1 = 0;
 
         for (i = 0; i < 2; ++i) {
-            var_s1 |= vs_main_inventory.armor[_combiningArmorIds[i] - 1].limb;
+            var_s1 |= vs_main_inventory.armor[combiningArmorIds[i] - 1].limb;
         }
         if (var_s1 == 0) {
             var_a0_2 =
@@ -4388,7 +4382,7 @@ static int _combineArmorMenu(int arg0)
         state = 5;
         break;
     case 5:
-        temp_v0_6 = _confirmCombine(0);
+        temp_v0_6 = confirmCombine(0);
 
         if (temp_v0_6 == 0) {
             break;
@@ -4404,17 +4398,17 @@ static int _combineArmorMenu(int arg0)
             vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
             vs_mainMenu_menuItemFlyoutLeft(0);
             for (i = 0; i < 2; ++i) {
-                armor = &vs_main_inventory.armor[_combiningArmorIds[i] - 1];
+                armor = &vs_main_inventory.armor[combiningArmorIds[i] - 1];
                 var_s1 = armor->limb;
                 if (var_s1 != 0) {
                     vs_battle_equipArmor(var_s1 - 1, NULL);
                     armor->limb = 0;
                 }
-                vs_mainMenu_initItem(itemCategoryArmor, _combiningArmorIds[i]);
+                vs_mainMenu_initItem(itemCategoryArmor, combiningArmorIds[i]);
             }
-            itemId = _combiningArmorIds[0];
+            itemId = combiningArmorIds[0];
             armor = &vs_main_inventory.armor[itemId - 1];
-            vs_battle_copyAligned(armor, &_armorBuf, sizeof *armor);
+            vs_battle_copyAligned(armor, &armorBuf, sizeof *armor);
             armor->index = itemId;
             vs_mainMenu_rebuildInventory(4);
             return 1;
@@ -4424,7 +4418,7 @@ static int _combineArmorMenu(int arg0)
             state = temp_v0_6;
             break;
         case 3:
-            return _leaveItemSlotSelection(1);
+            return leaveItemSlotSelection(1);
         }
         break;
     }
@@ -4435,11 +4429,11 @@ static int _combineArmorMenu(int arg0)
  * Counts inventory items available to the corresponding combination screen.
  * @param arg0 Zero for blades, one for shields, or two for armor.
  */
-static int _countItems(int category)
+static int countItems(int category)
 {
     int i;
 
-    vs_main_inventoryArmor* armor = vs_main_inventory.armor;
+    vs_InventoryArmor* armor = vs_main_inventory.armor;
     int count = 0;
 
     if (category == 2) {
@@ -4462,10 +4456,10 @@ static int _countItems(int category)
  * @param arg0 Nonzero initializes the top-level menu; zero advances it.
  * @return Positive values indicate completion, negative cancellation, zero otherwise.
  */
-static int _combineTopMenu(int arg0)
+static int combineTopMenu(int arg0)
 {
     static int (*combineMenus[])(
-        int) = { _combineBladeMenu, _combineShieldMenu, _combineArmorMenu };
+        int) = { combineBladeMenu, combineShieldMenu, combineArmorMenu };
 
     static char state;
     static char forceNoCursorMemory;
@@ -4486,7 +4480,7 @@ static int _combineTopMenu(int arg0)
     case 0:
         if (vs_mainmenu_ready() != 0) {
             for (i = 0; i < 3; ++i) {
-                int count = _countItems(i);
+                int count = countItems(i);
                 text[i * 2] = (char*)&vs_mainMenu_menu12Text
                     [vs_mainMenu_menu12Text[i + VS_MENU12_BIN_INDEX_blade]];
                 text[i * 2 + 1] =
@@ -4519,18 +4513,18 @@ static int _combineTopMenu(int arg0)
             }
             vs_mainMenu_clearMenuExcept(vs_mainMenu_menuItemIds_none);
             combineMenus[selectedRow](1);
-            _loadSyd(i);
+            loadSyd(i);
             state = selectedRow + 2;
         }
         break;
     case 2:
     case 3:
     case 4:
-        if (_loadSyd(0) != 0) {
+        if (loadSyd(0) != 0) {
             i = combineMenus[state - 2](0);
             if (i != 0) {
-                vs_main_freeHeapR(_sydData);
-                _sydData = NULL;
+                vs_main_freeHeapR(sydDataBuf);
+                sydDataBuf = NULL;
                 if (i == -1) {
                     state = 5;
                     break;
@@ -4542,8 +4536,8 @@ static int _combineTopMenu(int arg0)
     case 5:
         if (vs_mainmenu_ready() != 0) {
             vs_mainMenu_initInformationBox();
-            _setMenuTitle(0, VS_MENU12_BIN_OFFSET_setup);
-            _setMenuTitle(15, VS_MENU12_BIN_OFFSET_combine);
+            setMenuTitle(0, VS_MENU12_BIN_OFFSET_setup);
+            setMenuTitle(15, VS_MENU12_BIN_OFFSET_combine);
             state = 0U;
         }
         break;
@@ -4564,7 +4558,7 @@ int vs_menuC_exec(u_char* state)
     char* menuText[12];
     int i;
     int selectedRow;
-    vs_battle_menuItem_t* menuItem;
+    vs_MenuItem* menuItem;
 
     switch (*state) {
     case 0:
@@ -4578,7 +4572,7 @@ int vs_menuC_exec(u_char* state)
         vs_mainMenu_setBackgroundRenderPriority(2046, 128);
         menuItem = vs_battle_getMenuItem(0);
         if ((menuItem->state != 1) || (menuItem->x != 180)) {
-            _setMenuTitle(0, VS_MENU12_BIN_OFFSET_setup);
+            setMenuTitle(0, VS_MENU12_BIN_OFFSET_setup);
         }
         *state = 2;
         break;
@@ -4604,8 +4598,8 @@ int vs_menuC_exec(u_char* state)
                     (char*)&vs_mainMenu_menu12Text[VS_MENU12_BIN_OFFSET_noWeapons];
                 vs_battle_rowTypeBuf[3] = 1;
             }
-            _currentWorkshop = vs_battle_inWorkshop();
-            if (!_currentWorkshop) {
+            currentWorkshop = vs_battle_inWorkshop();
+            if (!currentWorkshop) {
                 for (i = 3; i != 0;) {
                     if (++i == 6) {
                         i = 0;
@@ -4645,27 +4639,27 @@ int vs_menuC_exec(u_char* state)
             } else {
                 switch (selectedRow) {
                 case 0:
-                    _assembleMenu(1);
+                    assembleMenu(1);
                     *state = 4;
                     break;
                 case 1:
-                    _attachGemsTopMenu(1);
+                    attachGemsTopMenu(1);
                     *state = 5;
                     break;
                 case 2:
-                    _disassembleTopMenu(1);
+                    disassembleTopMenu(1);
                     *state = 6;
                     break;
                 case 3:
-                    _renameWeaponMenu(1);
+                    renameWeaponMenu(1);
                     *state = 7;
                     break;
                 case 4:
-                    _repairMenu(1);
+                    repairMenu(1);
                     *state = 8;
                     break;
                 case 5:
-                    _combineTopMenu(1);
+                    combineTopMenu(1);
                     *state = 9;
                     break;
                 }
@@ -4673,7 +4667,7 @@ int vs_menuC_exec(u_char* state)
         }
         break;
     case 4:
-        i = _assembleMenu(0);
+        i = assembleMenu(0);
         if (i != 0) {
             if (i != -2) {
                 *state = 0xA;
@@ -4689,7 +4683,7 @@ int vs_menuC_exec(u_char* state)
         }
         break;
     case 5:
-        i = _attachGemsTopMenu(0);
+        i = attachGemsTopMenu(0);
         if (i != 0) {
             if (i == -2) {
                 *state = 0xB;
@@ -4699,7 +4693,7 @@ int vs_menuC_exec(u_char* state)
         }
         break;
     case 6:
-        i = _disassembleTopMenu(0);
+        i = disassembleTopMenu(0);
         if (i != 0) {
             if (i == -2) {
                 *state = 0xB;
@@ -4709,7 +4703,7 @@ int vs_menuC_exec(u_char* state)
         }
         break;
     case 7:
-        i = _renameWeaponMenu(0);
+        i = renameWeaponMenu(0);
         if (i != 0) {
             if (i != -2) {
                 *state = 0xA;
@@ -4722,7 +4716,7 @@ int vs_menuC_exec(u_char* state)
         }
         break;
     case 8:
-        i = _repairMenu(0);
+        i = repairMenu(0);
         if (i != 0) {
             if (i == -2) {
                 *state = 0xB;
@@ -4732,7 +4726,7 @@ int vs_menuC_exec(u_char* state)
         }
         break;
     case 9:
-        i = _combineTopMenu(0);
+        i = combineTopMenu(0);
         if (i != 0) {
             if (i == -2) {
                 *state = 0xB;
@@ -4766,19 +4760,19 @@ int vs_menuC_exec(u_char* state)
  * @param setAffinities Nonzero processes seven affinity values; zero processes
  *                      six class values.
  */
-static void _setClassAffinities(signed char* first, signed char* second,
+static void setClassAffinities(signed char* first, signed char* second,
     signed char* result, int materialsDifferent, int setAffinities)
 {
-    static char _classFactorLookup[][6] = { { 2, 0, 1, 1, 1, 0 }, { 0, 2, 0, 1, 1, 1 },
+    static char classFactorLookup[][6] = { { 2, 0, 1, 1, 1, 0 }, { 0, 2, 0, 1, 1, 1 },
         { 1, 0, 2, 0, 1, 1 }, { 1, 1, 0, 2, 0, 1 }, { 1, 1, 1, 0, 2, 0 },
         { 0, 1, 1, 1, 0, 2 } };
 
-    static char _affinityFactorLookup[][7] = { { 2, 1, 1, 1, 1, 1, 1 },
+    static char affinityFactorLookup[][7] = { { 2, 1, 1, 1, 1, 1, 1 },
         { 1, 2, 1, 0, 1, 1, 1 }, { 1, 1, 2, 1, 0, 1, 1 }, { 1, 0, 1, 2, 1, 1, 1 },
         { 1, 1, 0, 1, 2, 1, 1 }, { 1, 1, 1, 1, 1, 2, 0 }, { 1, 1, 1, 1, 1, 0, 2 } };
 
-    static short _sameMaterialStatFactors[] = { 4, 6, 8 };
-    static short _differentMaterialStatFactors[] = { 3, 5, 7 };
+    static short sameMaterialStatFactors[] = { 4, 6, 8 };
+    static short differentMaterialStatFactors[] = { 3, 5, 7 };
 
     short statSum;
     short statValue;
@@ -4843,16 +4837,16 @@ static void _setClassAffinities(signed char* first, signed char* second,
             result[i] = minStatVal;
         } else {
             if (setAffinities == 0) {
-                factorLookup = _classFactorLookup[firstMaxStat][secondMaxStat];
+                factorLookup = classFactorLookup[firstMaxStat][secondMaxStat];
             } else {
-                factorLookup = _affinityFactorLookup[firstMaxStat][secondMaxStat];
+                factorLookup = affinityFactorLookup[firstMaxStat][secondMaxStat];
             }
             statSum = first[i] + second[i];
             if (materialsDifferent == 0) {
-                statValue = (statSum * _sameMaterialStatFactors[factorLookup]) / 10;
+                statValue = (statSum * sameMaterialStatFactors[factorLookup]) / 10;
             } else {
                 statValue =
-                    (statSum * *(factorLookup + _differentMaterialStatFactors)) / 10;
+                    (statSum * *(factorLookup + differentMaterialStatFactors)) / 10;
             }
             if (statValue > 100) {
                 statValue = 100;
@@ -4871,11 +4865,11 @@ static void _setClassAffinities(signed char* first, signed char* second,
  * @param result Receives the combined type values.
  * @param materialsDifferent Nonzero selects the different-material factors.
  */
-static void _setTypeValues(
+static void setTypeValues(
     signed char* first, signed char* second, signed char* result, int materialsDifferent)
 {
-    static short _sameMaterialTypeFactors[] = { 6, 8 };
-    static short _differentMaterialTypeFactors[] = { 4, 6 };
+    static short sameMaterialTypeFactors[] = { 6, 8 };
+    static short differentMaterialTypeFactors[] = { 4, 6 };
 
     short typeValue;
     short typeValueSum;
@@ -4909,9 +4903,9 @@ static void _setTypeValues(
         sameMaxType = firstMaxType == secondMaxType;
         typeValueSum = first[i] + second[i];
         if (materialsDifferent == 0) {
-            typeValue = (typeValueSum * _sameMaterialTypeFactors[sameMaxType]) / 10;
+            typeValue = (typeValueSum * sameMaterialTypeFactors[sameMaxType]) / 10;
         } else {
-            typeValue = (typeValueSum * _differentMaterialTypeFactors[sameMaxType]) / 10;
+            typeValue = (typeValueSum * differentMaterialTypeFactors[sameMaxType]) / 10;
         }
         if (typeValue > 100) {
             typeValue = 100;
@@ -4927,11 +4921,11 @@ typedef struct {
     u_long materialsOffset;
     u_long initDataOffset;
     char data[0];
-} _syd;
+} Syd;
 
-static char* _combinationResults;
-static char* _materialResults;
-static void* _bladeCombinationInitData;
+static char* combinationResults;
+static char* materialResults;
+static void* bladeCombinationInitData;
 
 /**
  * Produces a blade combination according to the table and two source blades.
@@ -4941,8 +4935,8 @@ static void* _bladeCombinationInitData;
  * @param sydData Loaded blade combination data.
  * @return result.
  */
-static vs_main_inventoryBlade* _combineBlades(vs_main_inventoryBlade* first,
-    vs_main_inventoryBlade* second, vs_main_inventoryBlade* result, void* sydData)
+static vs_InventoryBlade* combineBlades(vs_InventoryBlade* first,
+    vs_InventoryBlade* second, vs_InventoryBlade* result, void* sydData)
 {
     struct {
         char subId;
@@ -4957,20 +4951,20 @@ static vs_main_inventoryBlade* _combineBlades(vs_main_inventoryBlade* first,
         char intelligence;
         char agility;
         char _;
-        vs_battle_range_t range;
+        vs_Range range;
     }* info;
 
-    _combinationResults = sydData + ((_syd*)sydData)->combinationsOffset;
-    _materialResults = sydData + ((_syd*)sydData)->materialsOffset;
-    _bladeCombinationInitData = sydData + ((_syd*)sydData)->initDataOffset;
+    combinationResults = sydData + ((Syd*)sydData)->combinationsOffset;
+    materialResults = sydData + ((Syd*)sydData)->materialsOffset;
+    bladeCombinationInitData = sydData + ((Syd*)sydData)->initDataOffset;
 
     vs_main_memcpy(result, first, sizeof *result);
 
-    result->material = _materialResults[(first->material - 3) * 500 + first->category * 50
-                                        + (second->material - 3) * 10 + second->category];
-    result->subId = _combinationResults[(first->id * 96) + second->id];
+    result->material = materialResults[(first->material - 3) * 500 + first->category * 50
+                                       + (second->material - 3) * 10 + second->category];
+    result->subId = combinationResults[(first->id * 96) + second->id];
     result->id = result->subId;
-    info = _bladeCombinationInitData + (result->id * 16);
+    info = bladeCombinationInitData + (result->id * 16);
     result->wepId = info->wepId;
     result->category = info->category;
     result->cost = info->cost;
@@ -4988,12 +4982,12 @@ static vs_main_inventoryBlade* _combineBlades(vs_main_inventoryBlade* first,
     result->currentPp = (first->currentPp + second->currentPp) >> 1;
 
     if (first->material == second->material) {
-        _setClassAffinities(first->classes, second->classes, result->classes, 0, 0);
-        _setClassAffinities(
+        setClassAffinities(first->classes, second->classes, result->classes, 0, 0);
+        setClassAffinities(
             first->affinities, second->affinities, result->affinities, 0, 1);
     } else {
-        _setClassAffinities(first->classes, second->classes, result->classes, 1, 0);
-        _setClassAffinities(
+        setClassAffinities(first->classes, second->classes, result->classes, 1, 0);
+        setClassAffinities(
             first->affinities, second->affinities, result->affinities, 1, 1);
     }
     return result;
@@ -5008,9 +5002,9 @@ typedef struct {
     char intelligence;
     char agility;
     char _;
-} _armorInfo;
+} ArmorInfo;
 
-static _armorInfo* _shieldCombinationInitData;
+static ArmorInfo* shieldCombinationInitData;
 
 /**
  * Produces a shield combination according to the table and two source shields.
@@ -5020,21 +5014,21 @@ static _armorInfo* _shieldCombinationInitData;
  * @param sydData Loaded shield combination data.
  * @return result.
  */
-static vs_main_inventoryArmor* _combineShields(vs_main_inventoryArmor* first,
-    vs_main_inventoryArmor* second, vs_main_inventoryArmor* result, void* sydData)
+static vs_InventoryArmor* combineShields(vs_InventoryArmor* first,
+    vs_InventoryArmor* second, vs_InventoryArmor* result, void* sydData)
 {
-    _armorInfo* info;
+    ArmorInfo* info;
 
-    _combinationResults = sydData + ((_syd*)sydData)->combinationsOffset;
-    _materialResults = sydData + ((_syd*)sydData)->materialsOffset;
-    _shieldCombinationInitData = sydData + ((_syd*)sydData)->initDataOffset;
+    combinationResults = sydData + ((Syd*)sydData)->combinationsOffset;
+    materialResults = sydData + ((Syd*)sydData)->materialsOffset;
+    shieldCombinationInitData = sydData + ((Syd*)sydData)->initDataOffset;
 
     vs_main_memcpy(result, first, sizeof *result);
 
-    result->material = _materialResults[(first->material * 8) + second->material];
-    result->subId = _combinationResults[(first->subId * 17) + second->subId];
+    result->material = materialResults[(first->material * 8) + second->material];
+    result->subId = combinationResults[(first->subId * 17) + second->subId];
     result->id = result->subId + 126;
-    info = &_shieldCombinationInitData[result->subId];
+    info = &shieldCombinationInitData[result->subId];
     result->wepId = info->wepId;
     result->category = info->category;
     result->gemSlots = info->gemSlots;
@@ -5047,20 +5041,20 @@ static vs_main_inventoryArmor* _combineShields(vs_main_inventoryArmor* first,
     result->maxPp = ((first->maxPp + second->maxPp) >> 1);
     result->currentPp = ((first->currentPp + second->currentPp) >> 1);
     if (first->material == second->material) {
-        _setClassAffinities(first->classes, second->classes, result->classes, 0, 0);
-        _setClassAffinities(
+        setClassAffinities(first->classes, second->classes, result->classes, 0, 0);
+        setClassAffinities(
             first->affinities, second->affinities, result->affinities, 0, 1);
-        _setTypeValues(first->types, second->types, result->types, 0);
+        setTypeValues(first->types, second->types, result->types, 0);
     } else {
-        _setClassAffinities(first->classes, second->classes, result->classes, 1, 0);
-        _setClassAffinities(
+        setClassAffinities(first->classes, second->classes, result->classes, 1, 0);
+        setClassAffinities(
             first->affinities, second->affinities, result->affinities, 1, 1);
-        _setTypeValues(first->types, second->types, result->types, 1);
+        setTypeValues(first->types, second->types, result->types, 1);
     }
     return result;
 }
 
-static _armorInfo* _combinationInitData;
+static ArmorInfo* combinationInitData;
 
 /**
  * Produces an armor combination according to the table and two source items.
@@ -5070,22 +5064,22 @@ static _armorInfo* _combinationInitData;
  * @param sydData Loaded armor combination data.
  * @return result.
  */
-static vs_main_inventoryArmor* _combineArmor(vs_main_inventoryArmor* first,
-    vs_main_inventoryArmor* second, vs_main_inventoryArmor* result, void* sydData)
+static vs_InventoryArmor* combineArmor(vs_InventoryArmor* first,
+    vs_InventoryArmor* second, vs_InventoryArmor* result, void* sydData)
 {
-    _armorInfo* info;
+    ArmorInfo* info;
 
-    _combinationResults = sydData + ((_syd*)sydData)->combinationsOffset;
-    _materialResults = sydData + ((_syd*)sydData)->materialsOffset;
-    _combinationInitData = sydData + ((_syd*)sydData)->initDataOffset;
+    combinationResults = sydData + ((Syd*)sydData)->combinationsOffset;
+    materialResults = sydData + ((Syd*)sydData)->materialsOffset;
+    combinationInitData = sydData + ((Syd*)sydData)->initDataOffset;
 
     vs_main_memcpy(result, first, sizeof *result);
 
-    result->material = _materialResults[first->material * 128 + (first->category - 2) * 32
-                                        + second->material * 4 + (second->category - 2)];
-    result->subId = _combinationResults[(first->subId - 16) * 65 + (second->subId - 16)];
+    result->material = materialResults[first->material * 128 + (first->category - 2) * 32
+                                       + second->material * 4 + (second->category - 2)];
+    result->subId = combinationResults[(first->subId - 16) * 65 + (second->subId - 16)];
     result->id = result->subId + 126;
-    info = &_combinationInitData[result->subId];
+    info = &combinationInitData[result->subId];
     result->category = info->category;
     result->strength =
         info->strength + vs_main_materialModifiers[result->material].strength;
@@ -5094,15 +5088,15 @@ static vs_main_inventoryArmor* _combineArmor(vs_main_inventoryArmor* first,
     result->agility = info->agility + vs_main_materialModifiers[result->material].agility;
     result->maxDp = result->currentDp = (first->maxDp + second->maxDp) / 2;
     if (first->material == second->material) {
-        _setClassAffinities(first->classes, second->classes, result->classes, 0, 0);
-        _setClassAffinities(
+        setClassAffinities(first->classes, second->classes, result->classes, 0, 0);
+        setClassAffinities(
             first->affinities, second->affinities, result->affinities, 0, 1);
-        _setTypeValues(first->types, second->types, result->types, 0);
+        setTypeValues(first->types, second->types, result->types, 0);
     } else {
-        _setClassAffinities(first->classes, second->classes, result->classes, 1, 0);
-        _setClassAffinities(
+        setClassAffinities(first->classes, second->classes, result->classes, 1, 0);
+        setClassAffinities(
             first->affinities, second->affinities, result->affinities, 1, 1);
-        _setTypeValues(first->types, second->types, result->types, 1);
+        setTypeValues(first->types, second->types, result->types, 1);
     }
     return result;
 }

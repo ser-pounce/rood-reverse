@@ -1,15 +1,16 @@
 #include "common.h"
-#include "44F14.h"
-#include "146C.h"
-#include "30DB0.h"
+#include "mpdPrivate.h"
+#include "44F14Private.h"
+#include "146CPrivate.h"
+#include "30DB0Private.h"
 #include "38C1C.h"
 #include "3A1A0.h"
-#include "40564.h"
+#include "40564Private.h"
 #include "48C7C.h"
-#include "49268.h"
-#include "4DEA8.h"
-#include "5BF94.h"
-#include "6E4CC.h"
+#include "49268Private.h"
+#include "4DEA8Private.h"
+#include "5BF94Private.h"
+#include "6E4CCPrivate.h"
 #include "battleUnk.h"
 #include "src/SLUS_010.40/31724.h"
 #include "src/SLUS_010.40/32154.h"
@@ -176,7 +177,7 @@ loop:
         sfx[0] = script[1];
 
         for (; arg < 20; ++arg) {
-            vs_battle_wepModels_t* weapon = vs_battle_wepModels[arg];
+            vs_WepModels* weapon = vs_battle_wepModels[arg];
 
             if (weapon == NULL || weapon->nBones == 0 || weapon->unkD == 0
                 || weapon->actorId != id) {
@@ -720,7 +721,7 @@ void func_800AE828(int arg0, D_800F4538_t* arg1, int arg2)
     int sp14;
     int id;
     int floor;
-    _mpdRoomSection3* room;
+    MpdRoomSection3* room;
 
     if ((u_char)(arg1->animationId - 0xCA) < 18) {
         return;
@@ -832,7 +833,7 @@ void func_800AECA0(MATRIX* source)
 {
     MATRIX roll;
     D_1F80035C_t* scratch = (void*)0x1F80035C;
-    vs_scratch_t* view = (void*)0x1F800000;
+    vs_Scratch* view = (void*)0x1F800000;
     int i;
 
     for (i = 0; i < 3; ++i) {
@@ -900,7 +901,7 @@ void func_800AEF94(MATRIX* camera)
 {
     D_1F80035C_t* scratch;
     D_800F4538_t* actor;
-    vs_scratch_t* view;
+    vs_Scratch* view;
     int i;
     int j;
     UNUSED int _[10];
@@ -1005,7 +1006,7 @@ void func_800AEF94(MATRIX* camera)
     }
 
     for (i = 0; i < 20; ++i) {
-        vs_battle_wepModels_t* weapon = vs_battle_wepModels[i];
+        vs_WepModels* weapon = vs_battle_wepModels[i];
 
         if (weapon == NULL || !weapon->unk8_4 || weapon->unkD == 0) {
             continue;

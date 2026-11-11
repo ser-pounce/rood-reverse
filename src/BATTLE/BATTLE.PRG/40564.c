@@ -1,10 +1,11 @@
 #include "common.h"
-#include "40564.h"
-#include "146C.h"
-#include "30DB0.h"
+#include "mpdPrivate.h"
+#include "40564Private.h"
+#include "146CPrivate.h"
+#include "30DB0Private.h"
 #include "38C1C.h"
 #include "3A1A0.h"
-#include "44F14.h"
+#include "44F14Private.h"
 #include "battleUnk.h"
 #include "entity.h"
 #include "src/SLUS_010.40/32154.h"
@@ -42,11 +43,11 @@ extern u_char D_800E8F2C;
 
 static inline DR_MOVE* vs_battlePacketBegin(void)
 {
-    return ((vs_scratch_t*)0x1F800000)->unk0;
+    return ((vs_Scratch*)0x1F800000)->unk0;
 }
 static inline void vs_battlePacketEnd(DR_MOVE* p)
 {
-    ((vs_scratch_t*)0x1F800000)->unk0 = p + 1;
+    ((vs_Scratch*)0x1F800000)->unk0 = p + 1;
 }
 
 // Inlined copy of 3A1A0 func_800A4A24
@@ -71,11 +72,11 @@ static inline SVECTOR* func_800A4A24(int id)
     return NULL;
 }
 
-_mpdRoomSection3* func_800A8D64(SVECTOR* arg0, int arg1)
+MpdRoomSection3* func_800A8D64(SVECTOR* arg0, int arg1)
 {
     int temp_s1 = arg0->vx / 128;
     int temp_s0 = arg0->vz / 128;
-    _mpdRoomSection3* temp_v0 = func_8008B764(temp_s1, temp_s0, arg1);
+    MpdRoomSection3* temp_v0 = func_8008B764(temp_s1, temp_s0, arg1);
 
     if (temp_v0 == NULL) {
         return NULL;
@@ -1350,11 +1351,11 @@ int func_800AAE9C(D_800F4538_t* actor)
 
 void func_800AB098(D_800F4538_t* actor, int index, int frame)
 {
-    texMapAnimation_t fallback;
+    TexMapAnimation fallback;
     RECT rect;
     DR_MOVE* packet;
-    texMapAnimation_t* animation;
-    texMapOverlay_t* overlay;
+    TexMapAnimation* animation;
+    TexMapOverlay* overlay;
     int srcX;
     int srcY;
     int dstX;
@@ -1438,7 +1439,7 @@ void func_800AB358(int index, u_char* script)
     RECT rect;
     DR_MOVE* packet;
     D_800F4538_t* actor = D_800F4538[index];
-    texMapOverlay_t* overlay;
+    TexMapOverlay* overlay;
     int srcX;
     int srcY;
     int dstX;
@@ -1494,7 +1495,7 @@ void func_800AB4F0(D_800F4538_t* actor)
     for (i = 0; i < 4; ++i) {
         D_800F4538_unk61C* bounds = &actor->unk61C[i];
         D_800F4538_unk181C* scroll;
-        texMapOverlay_t* overlay;
+        TexMapOverlay* overlay;
         RECT rect;
         DR_MOVE* packet;
         int x;
@@ -1902,7 +1903,7 @@ void func_800AC440(D_800F4538_t* arg0, int arg1, int arg2)
 {
     int sp10;
     int i;
-    _armature_t* temp_s2 = &arg0->unk0.unk68->armatures[arg1];
+    Armature* temp_s2 = &arg0->unk0.unk68->armatures[arg1];
 
     for (i = 0; i < 2; ++i) {
         if (arg2 == 0) {

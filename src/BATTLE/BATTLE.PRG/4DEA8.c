@@ -1,16 +1,17 @@
 #include "common.h"
-#include "4DEA8.h"
-#include "146C.h"
-#include "2842C.h"
-#include "2EA3C.h"
-#include "30DB0.h"
+#include "actorPrivate.h"
+#include "4DEA8Private.h"
+#include "146CPrivate.h"
+#include "2842CPrivate.h"
+#include "2EA3CPrivate.h"
+#include "30DB0Private.h"
 #include "38C1C.h"
-#include "40564.h"
+#include "40564Private.h"
 #include "44F14.h"
-#include "573B8.h"
-#include "5BF94.h"
+#include "573B8Private.h"
+#include "5BF94Private.h"
 #include "battleUnk.h"
-#include "camera.h"
+#include "cameraPrivate.h"
 #include "entity.h"
 #include "src/SLUS_010.40/main.h"
 #include "src/SLUS_010.40/32154.h"
@@ -133,7 +134,7 @@ typedef struct {
     short unk1C8;
     short unk1CA;
     int unk1CC;
-    vs_battle_actorPosition unk1D0;
+    vs_ActorPosition unk1D0;
     int unk1E0[2];
     u_short unk1E8;
     u_short unk1EA;
@@ -201,11 +202,11 @@ typedef struct {
 } func_800BB68C_t;
 
 typedef struct {
-    textOffset offset;
+    TextOffset offset;
     short x;
     short y;
     int distance;
-} textPlacement;
+} TextPlacement;
 
 typedef struct {
     int value;
@@ -219,7 +220,7 @@ typedef struct {
     SVECTOR rotation2;
     char unk60[16];
     MATRIX matrix;
-} cameraScratch;
+} CameraScratch;
 
 typedef struct {
     int distance;
@@ -230,22 +231,22 @@ typedef struct {
     VECTOR direction;
     char unk40[0x30];
     MATRIX matrix;
-} cameraMotionScratch;
+} CameraMotionScratch;
 
 typedef struct {
     char unk0[0x50];
     SVECTOR a;
     SVECTOR b;
     SVECTOR c;
-} cameraShakeScratch;
+} CameraShakeScratch;
 
 typedef struct {
     u_char low;
     u_char high;
-} scriptBytePair;
+} ScriptBytePair;
 
 int func_800B6B98(
-    SVECTOR* origin, u_char* script, textPlacement* result, u_char direction);
+    SVECTOR* origin, u_char* script, TextPlacement* result, u_char direction);
 void func_800BB68C(u_short, func_800BB68C_t*);
 u_short func_800BB788(func_800BB68C_t* arg0);
 int func_800BB7C4(int arg0, SVECTOR* arg1);
@@ -265,18 +266,18 @@ void func_800BE36C(int, int);
 void func_800BE3A0(void);
 void func_800BE3D0(char arg0);
 void func_800BE5A4(short arg0);
-VECTOR* _vectorAdd(VECTOR* arg0, VECTOR* arg1, VECTOR* arg2);
-VECTOR* _vectorSubtract(VECTOR* arg0, VECTOR* arg1, VECTOR* arg2);
-VECTOR* _setVectorImm(VECTOR*, u_char*);
-VECTOR* _vectorFixedPointMult(VECTOR*, VECTOR*, int);
-void _vecToRotMatrix(VECTOR*, MATRIX*);
-int _atan2FixedPoint(int arg0, int arg1);
-static int _fixedPointMult(int a, int b);
+VECTOR* vectorAdd(VECTOR* arg0, VECTOR* arg1, VECTOR* arg2);
+VECTOR* vectorSubtract(VECTOR* arg0, VECTOR* arg1, VECTOR* arg2);
+VECTOR* setVectorImm(VECTOR*, u_char*);
+VECTOR* vectorFixedPointMult(VECTOR*, VECTOR*, int);
+void vecToRotMatrix(VECTOR*, MATRIX*);
+int atan2FixedPoint(int arg0, int arg1);
+static int fixedPointMult(int a, int b);
 int vs_main_getcurrentMusicSlot(void);
-static int _vectorMagnitude(VECTOR*);
-static VECTOR* _copyVector(VECTOR* arg0, VECTOR* arg1);
-static VECTOR* _sVectorToFixedPointVector(VECTOR* arg0, SVECTOR* arg1);
-static void _toNormalIntegerVector(VECTOR*, VECTOR*);
+static int vectorMagnitude(VECTOR*);
+static VECTOR* vectorCopy(VECTOR* arg0, VECTOR* arg1);
+static VECTOR* sVectorToFixedPointVector(VECTOR* arg0, SVECTOR* arg1);
+static void toNormalIntegerVector(VECTOR*, VECTOR*);
 
 extern int D_800E9B34[];
 extern int D_800E9B4C[];
@@ -300,8 +301,8 @@ extern char D_800F4B8B;
 extern char D_800F4BA0;
 extern D_800F4BA4_t* D_800F4BA4;
 extern char D_800F4BA8;
-extern void* _mpdClearedSection;
-extern u_short* _scriptStrings;
+extern void* mpdClearedSection;
+extern u_short* scriptStrings;
 extern char D_800F4BB4;
 extern short D_800F4BB6;
 extern char D_800F4BB8;
@@ -309,7 +310,7 @@ extern u_char D_800F4BB9;
 extern char* D_800F4BC0[];
 extern short D_800F4BE0;
 extern char D_800F4BE4;
-extern void* _mpdRoomDoorSection;
+extern void* mpdRoomDoorSection;
 extern char D_800F4BF8;
 extern char D_800F4C10[];
 extern short D_800F4C22;
@@ -318,9 +319,9 @@ extern char D_800F4C34;
 extern u_char* D_800F4C38[];
 extern short D_800F4C4C;
 extern char D_800F4C4E;
-extern short _mpdScriptSection;
+extern short mpdScriptSection;
 extern short D_800F4C54;
-extern char _textBoxSelectionPending;
+extern char textBoxSelectionPending;
 extern int D_800F4C64;
 extern char D_800F4C69;
 extern char D_800F4C6A;
@@ -415,7 +416,7 @@ int func_800B68C4(u_char* arg0, short arg1)
 // script[10]   = ?
 int vs_battle_script_initTextBox(u_char* script, UNUSED short arg1)
 {
-    vs_battle_textBox* box;
+    vs_TextBox* box;
     short temp_v0_4;
     short centerY;
     short centerX;
@@ -453,8 +454,7 @@ int vs_battle_script_showTextBox(u_char* script, UNUSED short arg1)
     int temp_v0;
 
     if (vs_battle_textBoxStatuses[script[1]] == 0) {
-        vs_battle_setTextBox(
-            script[1], (char*)&_scriptStrings[_scriptStrings[script[2]]]);
+        vs_battle_setTextBox(script[1], (char*)&scriptStrings[scriptStrings[script[2]]]);
         if (script[3] == 0) {
             vs_battle_textBoxStatuses[script[1]] = 1;
             return 1;
@@ -482,7 +482,7 @@ int vs_battle_script_dismissTextBox(u_char* arg0, UNUSED short arg1)
 }
 
 int func_800B6B98(
-    SVECTOR* origin, u_char* script, textPlacement* result, u_char direction)
+    SVECTOR* origin, u_char* script, TextPlacement* result, u_char direction)
 {
     short dx = 0;
     short dy = 0;
@@ -533,10 +533,10 @@ int func_800B6B98(
 // script[8]   = ?
 int func_800B6D48(u_char* script, UNUSED short arg1)
 {
-    textPlacement placements[4];
+    TextPlacement placements[4];
     SVECTOR origin;
-    vs_battle_textBox* box;
-    textPlacement* best = NULL;
+    vs_TextBox* box;
+    TextPlacement* best = NULL;
     u_int width;
     u_int height;
     int texture;
@@ -690,16 +690,16 @@ int vs_battle_script_selectTextBox(u_char* script, UNUSED short arg1)
         return 0;
     }
 
-    if (_textBoxSelectionPending != 0) {
+    if (textBoxSelectionPending != 0) {
         short temp_v0 = vs_battle_selectTextBox(script[1]);
         if ((temp_v0 << 0x10) != 0) {
             vs_battle_setStateFlag(0x10, temp_v0);
-            _textBoxSelectionPending = 0;
+            textBoxSelectionPending = 0;
             return 0;
         }
     } else {
         vs_battle_selectTextBox(script[1]);
-        _textBoxSelectionPending = 1;
+        textBoxSelectionPending = 1;
     }
     return 1;
 }
@@ -721,7 +721,7 @@ int func_800B7428(u_char* arg0, short arg1)
 
 int func_800B7490(u_char* arg0, short arg1)
 {
-    vs_battle_actorPosition position;
+    vs_ActorPosition position;
     u_short actor = vs_battle_getShort(arg0 + 1);
     u_short flag = vs_battle_getShort(arg0 + 3);
 
@@ -754,7 +754,7 @@ int func_800B7574(u_char* arg0, short arg1)
     sp10[2] = arg0[7];
     sp10[3] = arg0[8];
     func_8007C928(func_800BFE50(vs_battle_getShort(arg0 + 1)),
-        vs_battle_getShort(arg0 + 3), (vs_battle_objectData_flags*)(sp10));
+        vs_battle_getShort(arg0 + 3), (vs_ObjectData_flags*)(sp10));
     return 0;
 }
 
@@ -854,7 +854,7 @@ int func_800B784C(u_char* arg0, short arg1)
 
 int func_800B792C(u_char* arg0, short arg1)
 {
-    vs_battle_actorPosition sp10;
+    vs_ActorPosition sp10;
 
     u_short temp_s4 = func_800BFE50(vs_battle_getShort(arg0 + 1));
     int temp_s1 = vs_battle_getShort(arg0 + 3) >> 1;
@@ -904,7 +904,7 @@ int func_800B7A98(u_char* arg0, short arg1)
 
 int func_800B7B58(u_char* arg0, short arg1)
 {
-    vs_battle_actorPosition sp10;
+    vs_ActorPosition sp10;
     short temp_s3;
     short temp_s4;
     int temp_s1;
@@ -967,7 +967,7 @@ int func_800B7D10(u_char* arg0, short arg1)
 
 int func_800B7DC4(u_char* arg0, short arg1)
 {
-    vs_battle_actorPosition sp10;
+    vs_ActorPosition sp10;
     u_short temp_s1 = func_800BFE50(vs_battle_getShort(arg0 + 1));
     short var_s2 = arg0[5] != 0xFF ? arg0[5] : -1;
     int var_a1;
@@ -1003,7 +1003,7 @@ int func_800B7DC4(u_char* arg0, short arg1)
 
 int func_800B7EF0(u_char* arg0, short arg1)
 {
-    vs_battle_actorPosition sp10;
+    vs_ActorPosition sp10;
     int temp_s0;
     int temp_s0_2;
     int var_a2;
@@ -1652,7 +1652,7 @@ int func_800B94D8(u_char* arg0, short arg1)
 
 int func_800B9564(u_char* arg0, short arg1)
 {
-    vs_battle_textBox* temp_s1;
+    vs_TextBox* temp_s1;
     u_short temp_s0;
     int var_a0;
 
@@ -1773,7 +1773,7 @@ int func_800B988C(u_char* arg0, short arg1)
 
 int func_800B98C0(u_char* arg0, short arg1)
 {
-    vs_main_warp_t sp10;
+    vs_Warp sp10;
 
     if (D_800F4BE2 == 0) {
 
@@ -2365,8 +2365,8 @@ int func_800BAC38(u_char* arg0, short arg1)
 
 int func_800BAC5C(u_char* arg0, short arg1)
 {
-    vs_battle_actorPosition sp10;
-    vs_battle_actorPosition sp20;
+    vs_ActorPosition sp10;
+    vs_ActorPosition sp20;
     short temp_s3;
     short temp_v0;
     short temp_v0_2;
@@ -2422,8 +2422,8 @@ int func_800BAE74(u_char* arg0, short arg1)
 
 int func_800BAEA0(u_char* arg0, short arg1)
 {
-    vs_battle_actorPosition sp10;
-    vs_battle_actorPosition sp20;
+    vs_ActorPosition sp10;
+    vs_ActorPosition sp20;
     short temp_s0;
     int temp_s0_2;
     short temp_s1;
@@ -2655,9 +2655,9 @@ int func_800BB5A4(u_char* arg0, short arg1) { return 3; }
 
 int func_800BB5AC(u_char* arg0, short arg1)
 {
-    _evtFile = vs_battle_getShort(arg0 + 1);
+    evtFile = vs_battle_getShort(arg0 + 1);
     D_800F4C24 = vs_main_allocHeapR(0x1800);
-    func_800C00E8(_evtFile, D_800F4C24);
+    func_800C00E8(evtFile, D_800F4C24);
     D_800F4C54 = 1;
     return 0;
 }
@@ -2690,7 +2690,7 @@ int vs_battle_script_playMenuSelectSfx(UNUSED u_char* arg0, UNUSED short arg1)
 
 void func_800BB68C(u_short arg0, func_800BB68C_t* arg1)
 {
-    vs_battle_actor* temp_v0;
+    vs_Actor* temp_v0;
     short var_s3 = 0;
     arg1->unk0 = 0;
     arg1->unk1 = 0;
@@ -2833,10 +2833,10 @@ void func_800BBBE8(void)
 
     vs_battle_getCameraPosition(&sp20);
     vs_battle_getCameraLookAt(&sp30);
-    _copyVector(&D_800F4BA4->eye.current, &sp20);
-    _copyVector(&D_800F4BA4->lookAt.target, &sp20);
-    _copyVector(&D_800F4BA4->lookAt.current, &sp30);
-    _copyVector(&D_800F4BA4->eye.target, &sp30);
+    vectorCopy(&D_800F4BA4->eye.current, &sp20);
+    vectorCopy(&D_800F4BA4->lookAt.target, &sp20);
+    vectorCopy(&D_800F4BA4->lookAt.current, &sp30);
+    vectorCopy(&D_800F4BA4->eye.target, &sp30);
 
     D_800F4BA4->lookAt.mode = 0xF;
     D_800F4BA4->lookAt.follow = D_800F4BA4->lookAt.following = 0;
@@ -2899,9 +2899,9 @@ void func_800BBE10(u_short arg0)
     int _[4];
     if (arg0 == 0x2000) {
         if (D_800F4BA4->unk1E8 != arg0) {
-            _vectorAdd(
+            vectorAdd(
                 &D_800F4BA4->eye.current, &D_800F4BA4->eye.current, &D_800F4BA4->unk1EC);
-            _vectorAdd(&D_800F4BA4->lookAt.current, &D_800F4BA4->lookAt.current,
+            vectorAdd(&D_800F4BA4->lookAt.current, &D_800F4BA4->lookAt.current,
                 &D_800F4BA4->unk1EC);
         }
     }
@@ -2911,7 +2911,7 @@ void func_800BBE10(u_short arg0)
 
 void func_800BBE94(void)
 {
-    vs_battle_actorPosition sp10;
+    vs_ActorPosition sp10;
 
     if (D_800F4BA4->unk1E8 == 0x2000) {
         D_800F4BA4->unk1EC.vz = 0;
@@ -2933,29 +2933,29 @@ void vs_battle_applyCameraState(void)
 
     if (D_800F4BA0 != 0) {
         vs_battle_initialiseCameraFromSpherical(&cameraPos, &cameraLookAt, -1, -1);
-        _copyVector(&D_800F4BA4->lookAt.current, &cameraLookAt);
-        _copyVector(&D_800F4BA4->eye.current, &cameraPos);
+        vectorCopy(&D_800F4BA4->lookAt.current, &cameraLookAt);
+        vectorCopy(&D_800F4BA4->eye.current, &cameraPos);
     } else {
-        _copyVector(&cameraLookAt, &D_800F4BA4->lookAt.current);
-        _copyVector(&cameraPos, &D_800F4BA4->eye.current);
+        vectorCopy(&cameraLookAt, &D_800F4BA4->lookAt.current);
+        vectorCopy(&cameraPos, &D_800F4BA4->eye.current);
         if (D_800F4BA4->unk1E8 != 0x2000) {
-            _vectorAdd(&cameraLookAt, &cameraLookAt, &D_800F4BA4->unk1EC);
-            _vectorAdd(&cameraPos, &cameraPos, &D_800F4BA4->unk1EC);
+            vectorAdd(&cameraLookAt, &cameraLookAt, &D_800F4BA4->unk1EC);
+            vectorAdd(&cameraPos, &cameraPos, &D_800F4BA4->unk1EC);
         }
     }
     if (*(short*)&D_800F4BA4->unk1A4.unk0 != 0) {
-        _sVectorToFixedPointVector((VECTOR*)0x1F800098, (SVECTOR*)&D_800F4BA4->unk1BE);
-        _sVectorToFixedPointVector((VECTOR*)0x1F8000A8, (SVECTOR*)&D_800F4BA4->unk1C6);
+        sVectorToFixedPointVector((VECTOR*)0x1F800098, (SVECTOR*)&D_800F4BA4->unk1BE);
+        sVectorToFixedPointVector((VECTOR*)0x1F8000A8, (SVECTOR*)&D_800F4BA4->unk1C6);
         vec = (SVECTOR*)0x1F800088;
         vec[10].vz = 0;
         vec[10].vx = 0;
-        vec[10].vy = _atan2FixedPoint(
+        vec[10].vy = atan2FixedPoint(
             cameraLookAt.vx - cameraPos.vx, cameraLookAt.vz - cameraPos.vz);
         RotMatrix_gte((SVECTOR*)0x1F8000D8, (MATRIX*)0x1F8000F8);
         ApplyMatrixLV((MATRIX*)0x1F8000F8, (VECTOR*)0x1F800098, (VECTOR*)0x1F800098);
         ApplyMatrixLV((MATRIX*)0x1F8000F8, (VECTOR*)0x1F8000A8, (VECTOR*)0x1F8000A8);
-        _vectorAdd(&cameraLookAt, &cameraLookAt, (VECTOR*)0x1F800098);
-        _vectorAdd(&cameraPos, &cameraPos, (VECTOR*)0x1F8000A8);
+        vectorAdd(&cameraLookAt, &cameraLookAt, (VECTOR*)0x1F800098);
+        vectorAdd(&cameraPos, &cameraPos, (VECTOR*)0x1F8000A8);
     }
     vs_battle_setCameraLookAt(&cameraLookAt);
     vs_battle_setCameraPosition(&cameraPos);
@@ -2993,12 +2993,12 @@ void func_800BC1CC(short arg0, int arg1)
         return;
     }
     vs_battle_initialiseCameraFromSpherical(&sp10, &sp20, arg0, (short)arg1);
-    _copyVector(&D_800F4BA4->eye.position, &sp10);
-    _copyVector(&D_800F4BA4->lookAt.position, &sp20);
-    temp_s0 = _vectorMagnitude(_vectorSubtract(
+    vectorCopy(&D_800F4BA4->eye.position, &sp10);
+    vectorCopy(&D_800F4BA4->lookAt.position, &sp20);
+    temp_s0 = vectorMagnitude(vectorSubtract(
         (VECTOR*)0x1F800098, &D_800F4BA4->eye.current, &D_800F4BA4->eye.position));
     temp_v0 = (temp_s0
-                  + _vectorMagnitude(_vectorSubtract((VECTOR*)0x1F800098,
+                  + vectorMagnitude(vectorSubtract((VECTOR*)0x1F800098,
                       &D_800F4BA4->lookAt.current, &D_800F4BA4->lookAt.position)))
             / 0x28000;
     if ((temp_v0 << 0x10) != 0) {
@@ -3021,48 +3021,48 @@ int func_800BC2E8(u_char* script, short unused)
     }
     switch (script[0] & 15) {
     case 0:
-        _setVectorImm(&c->position, script + 1);
+        setVectorImm(&c->position, script + 1);
         return 0;
     case 1:
         c->mode = 15;
-        _copyVector(&c->current, &c->position);
-        _copyVector(&other->target, &c->position);
+        vectorCopy(&c->current, &c->position);
+        vectorCopy(&other->target, &c->position);
         return 0;
     case 2:
         c->mode = 2;
         c->time = 0;
         c->ease1 = script[1];
         c->duration = script[2];
-        _copyVector(&c->start, &c->current);
-        _vectorSubtract(&c->velocity, &c->position, &c->current);
+        vectorCopy(&c->start, &c->current);
+        vectorSubtract(&c->velocity, &c->position, &c->current);
         return 0;
     case 3:
         c->mode = 3;
         c->time = 0;
         c->ease1 = script[1];
         c->duration = script[2];
-        _copyVector(&c->start, &c->current);
-        _vectorSubtract(&c->velocity, &c->position, &c->current);
-        c->value = _vectorMagnitude(
-            _vectorSubtract((VECTOR*)0x1F800098, &c->target, &c->current));
+        vectorCopy(&c->start, &c->current);
+        vectorSubtract(&c->velocity, &c->position, &c->current);
+        c->value =
+            vectorMagnitude(vectorSubtract((VECTOR*)0x1F800098, &c->target, &c->current));
         return 0;
     case 4: {
-        cameraScratch* s;
+        CameraScratch* s;
         c->mode = 4;
         c->time = 0;
         c->duration = script[3];
         c->ease1 = script[1] >> 4;
         c->ease2 = script[2] & 15;
         c->ease3 = script[2] >> 4;
-        _copyVector(&c->start, &c->target);
-        s = (cameraScratch*)0x1F800088;
+        vectorCopy(&c->start, &c->target);
+        s = (CameraScratch*)0x1F800088;
         setVector(&s->v1, c->current.vx - c->target.vx, 0, c->current.vz - c->target.vz);
-        c->value = _vectorMagnitude((VECTOR*)0x1F800098);
-        c->angle = _atan2FixedPoint(s->v1.vx, s->v1.vz) & 4095;
+        c->value = vectorMagnitude((VECTOR*)0x1F800098);
+        c->angle = atan2FixedPoint(s->v1.vx, s->v1.vz) & 4095;
         setVector(
             &s->v2, c->position.vx - c->target.vx, 0, c->position.vz - c->target.vz);
-        c->delta = _vectorMagnitude((VECTOR*)0x1F8000A8) - c->value;
-        s->value = (_atan2FixedPoint(s->v2.vx, s->v2.vz) & 4095) - c->angle;
+        c->delta = vectorMagnitude((VECTOR*)0x1F8000A8) - c->value;
+        s->value = (atan2FixedPoint(s->v2.vx, s->v2.vz) & 4095) - c->angle;
         if (s->value < -ONE / 2) {
             s->value += ONE;
         }
@@ -3085,13 +3085,13 @@ int func_800BC2E8(u_char* script, short unused)
             }
             break;
         }
-        c->angleDelta = ((cameraScratch*)0x1F800088)->value;
+        c->angleDelta = ((CameraScratch*)0x1F800088)->value;
         c->aux.vy = c->current.vy - c->target.vy;
         c->velocity.vy = c->position.vy - c->target.vy - c->aux.vy;
         return 0;
     }
     case 5: {
-        cameraScratch* s;
+        CameraScratch* s;
         int height;
         c->mode = 5;
         c->time = 0;
@@ -3099,12 +3099,12 @@ int func_800BC2E8(u_char* script, short unused)
         c->ease1 = script[6] & 15;
         c->ease2 = script[6] >> 4;
         c->ease3 = script[7] & 15;
-        _copyVector(&c->position, &c->target);
-        s = (cameraScratch*)0x1F800088;
+        vectorCopy(&c->position, &c->target);
+        s = (CameraScratch*)0x1F800088;
         setVector(&s->v1, c->current.vx - c->target.vx, 0, c->current.vz - c->target.vz);
-        c->value = _vectorMagnitude((VECTOR*)0x1F800098);
+        c->value = vectorMagnitude((VECTOR*)0x1F800098);
         c->delta = ((c->value * script[5]) >> 6) - c->value;
-        c->angle = _atan2FixedPoint(s->v1.vx, s->v1.vz);
+        c->angle = atan2FixedPoint(s->v1.vx, s->v1.vz);
         c->angleDelta = vs_battle_getShort(script + 1);
         height = vs_battle_getShort(script + 3) * ONE;
         c->start.vy = c->current.vy;
@@ -3114,11 +3114,11 @@ int func_800BC2E8(u_char* script, short unused)
     case 7:
         func_800A190C(func_800BFE50(vs_battle_getShort(script + 1)), script[3],
             (SVECTOR*)0x1F8000D8, 2);
-        _sVectorToFixedPointVector((VECTOR*)0x1F800098, (SVECTOR*)0x1F8000D8);
-        _setVectorImm((VECTOR*)0x1F8000A8, script + 4);
-        _vectorAdd(&c->position, (VECTOR*)0x1F800098, (VECTOR*)0x1F8000A8);
+        sVectorToFixedPointVector((VECTOR*)0x1F800098, (SVECTOR*)0x1F8000D8);
+        setVectorImm((VECTOR*)0x1F8000A8, script + 4);
+        vectorAdd(&c->position, (VECTOR*)0x1F800098, (VECTOR*)0x1F8000A8);
         if (D_800F4BA4->unk1E8 != 0x2000) {
-            _vectorSubtract(&c->position, &c->position, &D_800F4BA4->unk1EC);
+            vectorSubtract(&c->position, &c->position, &D_800F4BA4->unk1EC);
         }
         return 0;
     case 8:
@@ -3127,50 +3127,50 @@ int func_800BC2E8(u_char* script, short unused)
         c->delta = script[3];
         c->time = 0;
         c->duration = script[10];
-        _setVectorImm(&c->velocity, script + 4);
+        setVectorImm(&c->velocity, script + 4);
         return 0;
     case 9:
         c->mode = 9;
         c->time = 0;
         c->duration = script[1];
-        _vectorSubtract(&c->velocity, &c->current, &c->target);
+        vectorSubtract(&c->velocity, &c->current, &c->target);
         return 0;
     case 10: {
         int id = func_800BFE50(vs_battle_getShort(script + 1));
-        cameraScratch* s = (cameraScratch*)0x1F800088;
+        CameraScratch* s = (CameraScratch*)0x1F800088;
         s->value = id;
         func_800A1108(id, &D_800F4BA4->unk1D0);
         s->rotation2.vz = 0;
         s->rotation2.vx = 0;
         s->rotation2.vy = D_800F4BA4->unk1D0.unk0.unk4.pad;
         RotMatrix_gte((SVECTOR*)0x1F8000E0, (MATRIX*)0x1F8000F8);
-        _setVectorImm((VECTOR*)0x1F800098, script + 4);
+        setVectorImm((VECTOR*)0x1F800098, script + 4);
         ApplyMatrixLV((MATRIX*)0x1F8000F8, (VECTOR*)0x1F800098, (VECTOR*)0x1F800098);
         func_800A190C(s->value, script[3], (SVECTOR*)0x1F8000E0, 2);
-        _vectorAdd(&c->position,
-            _sVectorToFixedPointVector((VECTOR*)0x1F8000A8, (SVECTOR*)0x1F8000E0),
+        vectorAdd(&c->position,
+            sVectorToFixedPointVector((VECTOR*)0x1F8000A8, (SVECTOR*)0x1F8000E0),
             (VECTOR*)0x1F800098);
         if (D_800F4BA4->unk1E8 != 0x2000) {
-            _vectorSubtract(&c->position, &c->position, &D_800F4BA4->unk1EC);
+            vectorSubtract(&c->position, &c->position, &D_800F4BA4->unk1EC);
         }
         return 0;
     }
     case 11: {
-        cameraScratch* s;
+        CameraScratch* s;
         c->mode = 11;
         c->time = 0;
         c->ease1 = 0;
         c->duration = script[2];
-        _vectorSubtract((VECTOR*)0x1F800098, &c->target, &c->current);
-        _vecToRotMatrix((VECTOR*)0x1F800098, (MATRIX*)0x1F8000F8);
-        s = (cameraScratch*)0x1F800088;
+        vectorSubtract((VECTOR*)0x1F800098, &c->target, &c->current);
+        vecToRotMatrix((VECTOR*)0x1F800098, (MATRIX*)0x1F8000F8);
+        s = (CameraScratch*)0x1F800088;
         s->matrix.t[0] = c->current.vx >> 12;
         s->matrix.t[1] = c->current.vy >> 12;
         s->matrix.t[2] = c->current.vz >> 12;
         c->current.vy = func_800BD2B8((MATRIX*)0x1F8000F8);
-        _copyVector(&c->computed, &c->current);
-        c->delta = _vectorMagnitude(
-            _vectorSubtract((VECTOR*)0x1F800098, &c->position, &c->computed));
+        vectorCopy(&c->computed, &c->current);
+        c->delta = vectorMagnitude(
+            vectorSubtract((VECTOR*)0x1F800098, &c->position, &c->computed));
         c->value = c->delta / script[2];
         D_800F4BA4->unk27C.vx = D_800F4BA4->unk27C.vy = D_800F4BA4->unk27C.vz =
             0x80000000;
@@ -3210,30 +3210,30 @@ void func_800BCA8C(D_800F4BA4_t2* c, D_800F4BA4_t2* other)
     }
     switch (c->mode) {
     case 2:
-        ((cameraScratch*)0x1F800088)->value =
+        ((CameraScratch*)0x1F800088)->value =
             func_800BFEBC(c->ease1, c->time, c->duration);
-        _vectorFixedPointMult(
-            (VECTOR*)0x1F800098, &c->velocity, ((cameraScratch*)0x1F800088)->value);
-        _vectorAdd(&c->computed, &c->start, (VECTOR*)0x1F800098);
+        vectorFixedPointMult(
+            (VECTOR*)0x1F800098, &c->velocity, ((CameraScratch*)0x1F800088)->value);
+        vectorAdd(&c->computed, &c->start, (VECTOR*)0x1F800098);
         break;
     case 3: {
-        cameraScratch* s = (cameraScratch*)0x1F800088;
+        CameraScratch* s = (CameraScratch*)0x1F800088;
         s->value = func_800BFEBC(c->ease1, c->time, c->duration);
-        _vectorFixedPointMult((VECTOR*)0x1F800098, &c->velocity, s->value);
-        _vectorAdd((VECTOR*)0x1F8000A8, &c->start, (VECTOR*)0x1F800098);
-        _vectorSubtract((VECTOR*)0x1F800098, (VECTOR*)0x1F8000A8, &c->target);
-        _toNormalIntegerVector((VECTOR*)0x1F800098, (VECTOR*)0x1F800098);
-        s->distance = _vectorMagnitude(
-            _vectorSubtract((VECTOR*)0x1F8000A8, &c->target, &c->position));
+        vectorFixedPointMult((VECTOR*)0x1F800098, &c->velocity, s->value);
+        vectorAdd((VECTOR*)0x1F8000A8, &c->start, (VECTOR*)0x1F800098);
+        vectorSubtract((VECTOR*)0x1F800098, (VECTOR*)0x1F8000A8, &c->target);
+        toNormalIntegerVector((VECTOR*)0x1F800098, (VECTOR*)0x1F800098);
+        s->distance = vectorMagnitude(
+            vectorSubtract((VECTOR*)0x1F8000A8, &c->target, &c->position));
         s->value = c->value
-                 + _fixedPointMult(s->distance - c->value,
+                 + fixedPointMult(s->distance - c->value,
                      func_800BFEBC(c->ease1, c->time, c->duration));
-        _vectorFixedPointMult((VECTOR*)0x1F800098, (VECTOR*)0x1F800098, s->value);
-        _vectorAdd(&c->computed, &c->target, (VECTOR*)0x1F800098);
+        vectorFixedPointMult((VECTOR*)0x1F800098, (VECTOR*)0x1F800098, s->value);
+        vectorAdd(&c->computed, &c->target, (VECTOR*)0x1F800098);
         break;
     }
     case 4: {
-        cameraScratch* s = (cameraScratch*)0x1F800088;
+        CameraScratch* s = (CameraScratch*)0x1F800088;
         s->rotation.vz = 0;
         s->rotation.vx = 0;
         s->rotation.vy =
@@ -3242,18 +3242,18 @@ void func_800BCA8C(D_800F4BA4_t2* c, D_800F4BA4_t2* other)
         RotMatrix_gte((SVECTOR*)0x1F8000D8, (MATRIX*)0x1F8000F8);
         s->v1.vz =
             c->value
-            + _fixedPointMult(c->delta, func_800BFEBC(c->ease2, c->time, c->duration));
+            + fixedPointMult(c->delta, func_800BFEBC(c->ease2, c->time, c->duration));
         s->v1.vx = 0;
         s->v1.vy = 0;
         ApplyMatrixLV((MATRIX*)0x1F8000F8, (VECTOR*)0x1F800098, (VECTOR*)0x1F800098);
         s->v1.vy = c->aux.vy
-                 + _fixedPointMult(
+                 + fixedPointMult(
                      c->velocity.vy, func_800BFEBC(c->ease3, c->time, c->duration));
-        _vectorAdd(&c->computed, &c->start, (VECTOR*)0x1F800098);
+        vectorAdd(&c->computed, &c->start, (VECTOR*)0x1F800098);
         break;
     }
     case 5: {
-        cameraScratch* s = (cameraScratch*)0x1F800088;
+        CameraScratch* s = (CameraScratch*)0x1F800088;
         s->rotation.vz = 0;
         s->rotation.vx = 0;
         s->rotation.vy =
@@ -3262,84 +3262,84 @@ void func_800BCA8C(D_800F4BA4_t2* c, D_800F4BA4_t2* other)
         RotMatrix_gte((SVECTOR*)0x1F8000D8, (MATRIX*)0x1F8000F8);
         s->v1.vz =
             c->value
-            + _fixedPointMult(c->delta, func_800BFEBC(c->ease2, c->time, c->duration));
+            + fixedPointMult(c->delta, func_800BFEBC(c->ease2, c->time, c->duration));
         s->v1.vx = 0;
         s->v1.vy = 0;
         ApplyMatrixLV((MATRIX*)0x1F8000F8, (VECTOR*)0x1F800098, (VECTOR*)0x1F800098);
         c->computed.vx = c->position.vx + s->v1.vx;
         c->computed.vz = c->position.vz + s->v1.vz;
         c->computed.vy = c->start.vy
-                       + _fixedPointMult(
+                       + fixedPointMult(
                            c->velocity.vy, func_800BFEBC(c->ease3, c->time, c->duration));
         break;
     }
     case 8:
         func_800A190C(c->value, c->delta, (SVECTOR*)0x1F8000D8, 2);
-        _vectorAdd(&c->computed,
-            _sVectorToFixedPointVector((VECTOR*)0x1F800098, (SVECTOR*)0x1F8000D8),
+        vectorAdd(&c->computed,
+            sVectorToFixedPointVector((VECTOR*)0x1F800098, (SVECTOR*)0x1F8000D8),
             &c->velocity);
         break;
     case 9:
-        _vectorAdd(&c->computed, &c->velocity, &c->target);
+        vectorAdd(&c->computed, &c->velocity, &c->target);
         break;
     case 11:
         func_800BCFB4(c);
         break;
     }
-    _copyVector(&c->previousCamera, &c->current);
+    vectorCopy(&c->previousCamera, &c->current);
     if (c->follow & c->following) {
         int fraction;
-        cameraScratch* s;
-        _vectorAdd(&c->followPosition, &c->followPosition, &c->followDelta);
+        CameraScratch* s;
+        vectorAdd(&c->followPosition, &c->followPosition, &c->followDelta);
         fraction = func_800BFEBC(1, c->time, c->duration);
-        s = (cameraScratch*)0x1F800088;
+        s = (CameraScratch*)0x1F800088;
         s->value = fraction;
-        _vectorSubtract((VECTOR*)0x1F800098, &c->computed, &c->followPosition);
-        _vectorFixedPointMult((VECTOR*)0x1F800098, (VECTOR*)0x1F800098, s->value);
-        _vectorAdd(&c->current, &c->followPosition, (VECTOR*)0x1F800098);
+        vectorSubtract((VECTOR*)0x1F800098, &c->computed, &c->followPosition);
+        vectorFixedPointMult((VECTOR*)0x1F800098, (VECTOR*)0x1F800098, s->value);
+        vectorAdd(&c->current, &c->followPosition, (VECTOR*)0x1F800098);
     } else {
-        _copyVector(&c->current, &c->computed);
+        vectorCopy(&c->current, &c->computed);
     }
     if (c->time == c->duration) {
         c->mode = 15;
         if (c->follow) {
             c->following = 1;
-            _copyVector(&c->followPosition, &c->current);
-            _vectorSubtract(&c->followDelta, &c->current, &c->previousCamera);
+            vectorCopy(&c->followPosition, &c->current);
+            vectorSubtract(&c->followDelta, &c->current, &c->previousCamera);
         }
     }
 }
 
 void func_800BCFB4(D_800F4BA4_t2* c)
 {
-    cameraMotionScratch* scratch;
-    cameraMotionScratch* finalScratch;
+    CameraMotionScratch* scratch;
+    CameraMotionScratch* finalScratch;
     short i;
     int height;
-    _vectorSubtract((VECTOR*)0x1F800098, &c->target, &c->position);
-    _vecToRotMatrix((VECTOR*)0x1F800098, (MATRIX*)0x1F8000F8);
-    scratch = (cameraMotionScratch*)0x1F800088;
+    vectorSubtract((VECTOR*)0x1F800098, &c->target, &c->position);
+    vecToRotMatrix((VECTOR*)0x1F800098, (MATRIX*)0x1F8000F8);
+    scratch = (CameraMotionScratch*)0x1F800088;
     scratch->matrix.t[0] = c->position.vx >> 12;
     scratch->matrix.t[1] = c->position.vy >> 12;
     scratch->matrix.t[2] = c->position.vz >> 12;
     setVector(&scratch->delta, c->position.vx - c->computed.vx,
         func_800BD2B8((MATRIX*)0x1F8000F8) - c->computed.vy,
         c->position.vz - c->computed.vz);
-    scratch->distance = _vectorMagnitude((VECTOR*)0x1F800098);
+    scratch->distance = vectorMagnitude((VECTOR*)0x1F800098);
     scratch->steps = scratch->distance / c->value;
     if (scratch->steps < 2) {
         c->time = c->duration;
     } else if (scratch->steps > 10) {
         scratch->steps = 10;
     }
-    _toNormalIntegerVector((VECTOR*)0x1F800098, (VECTOR*)0x1F800098);
-    _vectorFixedPointMult((VECTOR*)0x1F800098, (VECTOR*)0x1F800098, c->value);
-    _copyVector((VECTOR*)0x1F8000A8, &c->computed);
-    for (i = 1; i <= ((cameraMotionScratch*)0x1F800088)->steps; ++i) {
-        scratch = (cameraMotionScratch*)0x1F800088;
-        _vectorAdd((VECTOR*)0x1F8000A8, (VECTOR*)0x1F8000A8, (VECTOR*)0x1F800098);
-        _vectorSubtract((VECTOR*)0x1F8000B8, &c->target, (VECTOR*)0x1F8000A8);
-        _vecToRotMatrix((VECTOR*)0x1F8000B8, (MATRIX*)0x1F8000F8);
+    toNormalIntegerVector((VECTOR*)0x1F800098, (VECTOR*)0x1F800098);
+    vectorFixedPointMult((VECTOR*)0x1F800098, (VECTOR*)0x1F800098, c->value);
+    vectorCopy((VECTOR*)0x1F8000A8, &c->computed);
+    for (i = 1; i <= ((CameraMotionScratch*)0x1F800088)->steps; ++i) {
+        scratch = (CameraMotionScratch*)0x1F800088;
+        vectorAdd((VECTOR*)0x1F8000A8, (VECTOR*)0x1F8000A8, (VECTOR*)0x1F800098);
+        vectorSubtract((VECTOR*)0x1F8000B8, &c->target, (VECTOR*)0x1F8000A8);
+        vecToRotMatrix((VECTOR*)0x1F8000B8, (MATRIX*)0x1F8000F8);
         scratch->matrix.t[0] = scratch->candidate.vx >> 12;
         scratch->matrix.t[1] = scratch->candidate.vy >> 12;
         scratch->matrix.t[2] = scratch->candidate.vz >> 12;
@@ -3347,20 +3347,20 @@ void func_800BCFB4(D_800F4BA4_t2* c)
         if (height < scratch->candidate.vy) {
             setVector(&scratch->delta, scratch->candidate.vx - c->computed.vx,
                 height - c->computed.vy, scratch->candidate.vz - c->computed.vz);
-            _toNormalIntegerVector((VECTOR*)0x1F800098, (VECTOR*)0x1F800098);
-            _vectorFixedPointMult((VECTOR*)0x1F800098, (VECTOR*)0x1F800098, c->value);
+            toNormalIntegerVector((VECTOR*)0x1F800098, (VECTOR*)0x1F800098);
+            vectorFixedPointMult((VECTOR*)0x1F800098, (VECTOR*)0x1F800098, c->value);
             break;
         }
     }
-    _vectorAdd((VECTOR*)0x1F8000A8, (VECTOR*)0x1F800098, &c->computed);
-    finalScratch = (cameraMotionScratch*)0x1F800088;
+    vectorAdd((VECTOR*)0x1F8000A8, (VECTOR*)0x1F800098, &c->computed);
+    finalScratch = (CameraMotionScratch*)0x1F800088;
     if (finalScratch->candidate.vx == D_800F4BA4->unk27C.vx
         && finalScratch->candidate.vy == D_800F4BA4->unk27C.vy
         && finalScratch->candidate.vz == D_800F4BA4->unk27C.vz) {
         c->time = c->duration;
     } else {
-        _copyVector(&D_800F4BA4->unk27C, &c->computed);
-        _copyVector(&c->computed, (VECTOR*)0x1F8000A8);
+        vectorCopy(&D_800F4BA4->unk27C, &c->computed);
+        vectorCopy(&c->computed, (VECTOR*)0x1F8000A8);
     }
 }
 
@@ -3794,13 +3794,13 @@ int func_800BE01C(func_800BDF6C_t* arg0)
 void func_800BE180(void)
 {
     short count = 0;
-    cameraShakeScratch* clear = (cameraShakeScratch*)0x1F800088;
+    CameraShakeScratch* clear = (CameraShakeScratch*)0x1F800088;
     short i = 0;
     int x, y, z;
-    cameraShakeScratch* scratch;
+    CameraShakeScratch* scratch;
     func_800BDF6C_t* entry = (func_800BDF6C_t*)&D_800F4BA4->unk1A4.unk2;
     clear->a.vx = clear->a.vy = clear->a.vz = clear->b.vx = clear->b.vy = clear->b.vz = 0;
-    scratch = (cameraShakeScratch*)0x1F800088;
+    scratch = (CameraShakeScratch*)0x1F800088;
     for (; i < 2; ++entry, ++i) {
         if (func_800BE01C(entry)) {
             setVector(&scratch->c, x = entry->unk2 * (((entry->unkA >> 2) & 3) - 1),
@@ -3866,17 +3866,17 @@ void func_800BE3D0(char arg0)
     sp30.vy += D_800E9C24[temp_s0] << 0xC;
     sp10.vy += D_800E9C24[temp_s0] << 0xC;
 
-    _copyVector(&D_800F4BA4->lookAt.current, &sp10);
-    _copyVector(&D_800F4BA4->lookAt.target, &sp30);
-    _copyVector(&D_800F4BA4->eye.target, &sp10);
-    _copyVector(&D_800F4BA4->eye.current, &sp30);
+    vectorCopy(&D_800F4BA4->lookAt.current, &sp10);
+    vectorCopy(&D_800F4BA4->lookAt.target, &sp30);
+    vectorCopy(&D_800F4BA4->eye.target, &sp10);
+    vectorCopy(&D_800F4BA4->eye.current, &sp30);
 
     D_800F4BA4->lookAt.mode = 0xF;
 
     vs_battle_initialiseCameraFromSpherical(&sp40, &sp20, temp_s3, temp_s0 + 1);
 
-    _copyVector(&D_800F4BA4->eye.position, &sp40);
-    _copyVector(&D_800F4BA4->lookAt.position, &sp20);
+    vectorCopy(&D_800F4BA4->eye.position, &sp40);
+    vectorCopy(&D_800F4BA4->lookAt.position, &sp20);
 
     func_800BC2E8(&D_800E9C28, 0);
     func_800BC2E8(&D_800E9C2C, 0);
@@ -3886,8 +3886,8 @@ void func_800BE53C(D_800F4BA4_t2* arg0)
 {
     VECTOR sp10;
 
-    _vectorSubtract(&sp10, &arg0->current, &arg0->position);
-    arg0->duration = ((_vectorMagnitude(&sp10) >> 0xC) * arg0->duration) / 1000;
+    vectorSubtract(&sp10, &arg0->current, &arg0->position);
+    arg0->duration = ((vectorMagnitude(&sp10) >> 0xC) * arg0->duration) / 1000;
 }
 
 void func_800BE5A4(short arg0)
@@ -3914,39 +3914,39 @@ void func_800BE5A4(short arg0)
     func_800BE53C(var_a0);
 }
 
-VECTOR* _vectorAdd(VECTOR* arg0, VECTOR* arg1, VECTOR* arg2)
+VECTOR* vectorAdd(VECTOR* arg0, VECTOR* arg1, VECTOR* arg2)
 {
     setVector(arg0, arg1->vx + arg2->vx, arg1->vy + arg2->vy, arg1->vz + arg2->vz);
     return arg0;
 }
 
-VECTOR* _vectorSubtract(VECTOR* arg0, VECTOR* arg1, VECTOR* arg2)
+VECTOR* vectorSubtract(VECTOR* arg0, VECTOR* arg1, VECTOR* arg2)
 {
     setVector(arg0, arg1->vx - arg2->vx, arg1->vy - arg2->vy, arg1->vz - arg2->vz);
     return arg0;
 }
 
-VECTOR* _vectorFixedPointMult(VECTOR* arg0, VECTOR* arg1, int arg2)
+VECTOR* vectorFixedPointMult(VECTOR* arg0, VECTOR* arg1, int arg2)
 {
-    setVector(arg0, _fixedPointMult(arg1->vx, arg2), _fixedPointMult(arg1->vy, arg2),
-        _fixedPointMult(arg1->vz, arg2));
+    setVector(arg0, fixedPointMult(arg1->vx, arg2), fixedPointMult(arg1->vy, arg2),
+        fixedPointMult(arg1->vz, arg2));
     return arg0;
 }
 
-static VECTOR* _copyVector(VECTOR* arg0, VECTOR* arg1)
+static VECTOR* vectorCopy(VECTOR* arg0, VECTOR* arg1)
 {
     copyVector(arg0, arg1);
     return arg0;
 }
 
-static int _vectorMagnitude(VECTOR* arg0)
+static int vectorMagnitude(VECTOR* arg0)
 {
     VECTOR sp10;
     int temp_lo;
     int temp_lo_2;
     int temp_v0;
 
-    _copyVector(&sp10, arg0);
+    vectorCopy(&sp10, arg0);
     temp_lo = (sp10.vx >> 0xC) * (sp10.vx >> 0xC);
     temp_lo_2 = (sp10.vy >> 0xC) * (sp10.vy >> 0xC);
     temp_v0 = (sp10.vz >> 0xC) * (sp10.vz >> 0xC);
@@ -3956,14 +3956,14 @@ static int _vectorMagnitude(VECTOR* arg0)
     return vs_gte_rsqrt(temp_lo + temp_lo_2 + temp_v0) * ONE;
 }
 
-VECTOR* _setVectorImm(VECTOR* arg0, u_char* arg1)
+VECTOR* setVectorImm(VECTOR* arg0, u_char* arg1)
 {
     setVector(arg0, vs_battle_getShort(arg1) * ONE, vs_battle_getShort(arg1 + 2) * ONE,
         vs_battle_getShort(arg1 + 4) * ONE);
     return arg0;
 }
 
-static VECTOR* _sVectorToFixedPointVector(VECTOR* arg0, SVECTOR* arg1)
+static VECTOR* sVectorToFixedPointVector(VECTOR* arg0, SVECTOR* arg1)
 {
     arg0->vx = arg1->vx * ONE;
     arg0->vy = arg1->vy * ONE;
@@ -3971,7 +3971,7 @@ static VECTOR* _sVectorToFixedPointVector(VECTOR* arg0, SVECTOR* arg1)
     return arg0;
 }
 
-static int _fixedPointMult(int a, int b)
+static int fixedPointMult(int a, int b)
 {
     int result;
     __asm__("mult       %1, %2;"
@@ -3985,9 +3985,9 @@ static int _fixedPointMult(int a, int b)
     return result;
 }
 
-int _atan2FixedPoint(int arg0, int arg1) { return ratan2(arg0 >> 6, arg1 >> 6); }
+int atan2FixedPoint(int arg0, int arg1) { return ratan2(arg0 >> 6, arg1 >> 6); }
 
-void _vecToRotMatrix(VECTOR* arg0, MATRIX* arg1)
+void vecToRotMatrix(VECTOR* arg0, MATRIX* arg1)
 {
     SVECTOR sp10;
     SVECTOR sp18;
@@ -4001,7 +4001,7 @@ void _vecToRotMatrix(VECTOR* arg0, MATRIX* arg1)
     RotMatrix_gte(&sp10, arg1);
 }
 
-static void _toNormalIntegerVector(VECTOR* arg0, VECTOR* arg1)
+static void toNormalIntegerVector(VECTOR* arg0, VECTOR* arg1)
 {
     VECTOR sp10;
 
@@ -4009,7 +4009,7 @@ static void _toNormalIntegerVector(VECTOR* arg0, VECTOR* arg1)
     VectorNormal(&sp10, arg1);
 }
 
-int _loadMpdClearedScriptDoorSections(void* clearedSection, u_short clearedSectionLen,
+int loadMpdClearedScriptDoorSections(void* clearedSection, u_short clearedSectionLen,
     void* scriptSection, u_short scriptSectionLen, void* doorSection,
     u_short doorSectionLen, int startState)
 {
@@ -4022,17 +4022,17 @@ int _loadMpdClearedScriptDoorSections(void* clearedSection, u_short clearedSecti
     }
 
     if (clearedSectionLen != 0) {
-        _mpdClearedSection = vs_main_allocHeap(clearedSectionLen);
-        memcpy(_mpdClearedSection, clearedSection, clearedSectionLen);
+        mpdClearedSection = vs_main_allocHeap(clearedSectionLen);
+        memcpy(mpdClearedSection, clearedSection, clearedSectionLen);
     } else {
-        _mpdClearedSection = NULL;
+        mpdClearedSection = NULL;
     }
 
     if (doorSectionLen != 0) {
-        _mpdRoomDoorSection = vs_main_allocHeap(doorSectionLen);
-        memcpy(_mpdRoomDoorSection, doorSection, doorSectionLen);
+        mpdRoomDoorSection = vs_main_allocHeap(doorSectionLen);
+        memcpy(mpdRoomDoorSection, doorSection, doorSectionLen);
     } else {
-        _mpdRoomDoorSection = NULL;
+        mpdRoomDoorSection = NULL;
     }
 
     if (D_800F4BE2 == 1) {
@@ -4046,9 +4046,9 @@ int _loadMpdClearedScriptDoorSections(void* clearedSection, u_short clearedSecti
         D_800F4BB8 = 0;
     }
 
-    _mpdScriptSection = scriptSectionLen != 0;
+    mpdScriptSection = scriptSectionLen != 0;
 
-    if (_mpdScriptSection != 0) {
+    if (mpdScriptSection != 0) {
         memcpy(D_800F4C30, scriptSection, scriptSectionLen);
     }
     return 0;
@@ -4056,18 +4056,18 @@ int _loadMpdClearedScriptDoorSections(void* clearedSection, u_short clearedSecti
 
 short func_800BEB00(void) { return D_800F4C34; }
 
-short func_800BEB10(void) { return (D_800F4BE0 << 0xC) | _evtFile; }
+short func_800BEB10(void) { return (D_800F4BE0 << 0xC) | evtFile; }
 
 void func_800BEB34(void)
 {
     if (D_800F4BE2 == 3) {
         func_800BFD9C();
     }
-    if (_mpdClearedSection != 0) {
-        vs_main_freeHeap(_mpdClearedSection);
+    if (mpdClearedSection != 0) {
+        vs_main_freeHeap(mpdClearedSection);
     }
-    if (_mpdRoomDoorSection != 0) {
-        vs_main_freeHeap(_mpdRoomDoorSection);
+    if (mpdRoomDoorSection != 0) {
+        vs_main_freeHeap(mpdRoomDoorSection);
     }
 }
 
@@ -4107,7 +4107,7 @@ int func_800BEC30(void)
 short func_800BEC58(short type, int arg1, int arg2, short mode)
 {
     char buf[64];
-    vs_battle_actorPosition position;
+    vs_ActorPosition position;
     short i;
     short otherActorId;
     short flagId;
@@ -4129,10 +4129,10 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
     }
 
     if (type == 1) {
-        int scriptSection = _mpdScriptSection;
+        int scriptSection = mpdScriptSection;
 
         if (scriptSection & 1) {
-            _mpdScriptSection = 0;
+            mpdScriptSection = 0;
             D_800F4C34 = 1;
             D_800F4BE0 = 1;
             D_800F4BA8 = 1;
@@ -4141,7 +4141,7 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
     }
 
     if (type == 64) {
-        _evtFile = arg1;
+        evtFile = arg1;
         D_800F4BE0 = 0;
         D_800F4C34 = 1;
         D_800F4BA8 = 1;
@@ -4153,13 +4153,13 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
     }
 
     for (i = 0; i < 16; ++i) {
-        u_short offset = ((u_short*)_mpdClearedSection)[i];
+        u_short offset = ((u_short*)mpdClearedSection)[i];
 
         if (offset == 0xFFFF) {
             return 0;
         }
 
-        p = _mpdClearedSection + offset;
+        p = mpdClearedSection + offset;
 
         if (!(*p & type)) {
             continue;
@@ -4176,10 +4176,10 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
             switch (*p) {
             case 0xFF:
                 if (eventId & 0x8000) {
-                    _evtFile = eventId & 0xF;
+                    evtFile = eventId & 0xF;
                     D_800F4BE0 = 2;
                 } else {
-                    _evtFile = eventId;
+                    evtFile = eventId;
                     D_800F4BE0 = 0;
                 }
 
@@ -4449,12 +4449,12 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
     }
 }
 
-void _parseEvt(u_char* data)
+void parseEvt(u_char* data)
 {
     short i;
     u_char* table;
 
-    _scriptStrings = (u_short*)(data + *(u_short*)(data + 2));
+    scriptStrings = (u_short*)(data + *(u_short*)(data + 2));
     table = data + *(u_short*)(data + 4);
 
     for (i = 9; i < 16; ++i) {
@@ -4477,7 +4477,7 @@ void _parseEvt(u_char* data)
     D_800F4C58[1] = D_800F4C58[2] = D_800F4C58[3] = 0;
     D_800F4BB9 = 0;
     D_800F4C4E = 0;
-    _textBoxSelectionPending = 0;
+    textBoxSelectionPending = 0;
     D_800F4BE4 = 0;
     D_800F4BF8 = 0;
     D_800F4BE2 = 0;
@@ -4490,7 +4490,7 @@ void _parseEvt(u_char* data)
     }
 
     for (i = 0; i < 4; ++i) {
-        ((scriptBytePair*)D_800F4B28)[i].low = ((scriptBytePair*)D_800F4B28)[i].high = 0;
+        ((ScriptBytePair*)D_800F4B28)[i].low = ((ScriptBytePair*)D_800F4B28)[i].high = 0;
     }
 
     D_800F4B8B = 0;
@@ -4535,17 +4535,17 @@ int func_800BF850(void)
 
         switch (D_800F4BE0) {
         case 1:
-            _parseEvt(D_800F4C30);
+            parseEvt(D_800F4C30);
             D_800F4C34 = 4;
             break;
 
         case 2:
-            _parseEvt(_mpdRoomDoorSection + ((short*)_mpdRoomDoorSection)[_evtFile]);
+            parseEvt(mpdRoomDoorSection + ((short*)mpdRoomDoorSection)[evtFile]);
             D_800F4C34 = 4;
             break;
 
         case 0:
-            func_800C00E8(_evtFile, D_800F4C30);
+            func_800C00E8(evtFile, D_800F4C30);
             D_800F4C34 = 3;
             break;
         }
@@ -4563,7 +4563,7 @@ int func_800BF850(void)
                 D_800F4C54 = 0;
             }
 
-            _parseEvt(D_800F4C30);
+            parseEvt(D_800F4C30);
             D_800F4C34 = 4;
         }
 

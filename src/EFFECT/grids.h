@@ -29,13 +29,13 @@ typedef struct {
     short xPhase;
     short zPhase;
     int age;
-} vs_gridState;
+} vs_GridState;
 typedef struct {
     int tag;
     POLY_FT4 poly;
     int drawMode;
     int pad[3];
-} vs_gridPrim;
+} vs_GridPrim;
 
 int VS_GRID_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
 {
@@ -61,7 +61,7 @@ int VS_GRID_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
     int zAcceleration;
     int uvBase;
     int sample;
-    vs_gridState* state = arg0->unk8;
+    vs_GridState* state = arg0->unk8;
     func_800FA098_arg0* effect;
     MATRIX* matrix;
 
@@ -216,7 +216,7 @@ int VS_GRID_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
 
         for (row = 0; row < 8; ++row) {
             for (column = 0; column < 8; ++column) {
-                vs_gridPrim* prim;
+                vs_GridPrim* prim;
                 int depth = (depths[row][column] + depths[row][column + 1]
                                 + depths[row + 1][column] + depths[row + 1][column + 1])
                               / 4

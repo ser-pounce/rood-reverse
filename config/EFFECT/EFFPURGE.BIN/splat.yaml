@@ -2,7 +2,7 @@ sha1: 670a22661d68bc700c3d52125f38a0ec42daeb1c
 options:
   basename: EFFECT/EFFPURGE.BIN
   target_path: data/EFFECT/EFFPURGE.BIN
-  elf_path: build/data/EFFECT/EFFPURGE.BIN.elf
+  elf_path: build/data/EFFECT/EFFPURGE.BIN.sym.elf
   asm_path: build/src/EFFECT/EFFPURGE.BIN
   src_path: src/EFFECT/EFFPURGE.BIN
   asset_path: build/assets/EFFECT/EFFPURGE.BIN

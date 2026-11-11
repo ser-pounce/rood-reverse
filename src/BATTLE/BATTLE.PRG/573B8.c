@@ -1,7 +1,8 @@
 #include "common.h"
-#include "573B8.h"
-#include "146C.h"
-#include "4DEA8.h"
+#include "actorPrivate.h"
+#include "573B8Private.h"
+#include "146CPrivate.h"
+#include "4DEA8Private.h"
 #include "battleUi.h"
 #include "src/SLUS_010.40/cd.h"
 #include "src/SLUS_010.40/pad.h"
@@ -14,8 +15,8 @@ typedef struct {
     signed char power;
 } D_800F4B28_t;
 
-extern int (*_opcodeFunctionTable[])(u_char*, short);
-extern vs_main_CdFile D_800F4BF0;
+extern int (*opcodeFunctionTable[])(u_char*, short);
+extern vs_Main_CdFile D_800F4BF0;
 
 int func_800BFE34(u_char*);
 void func_800C0150(void);
@@ -55,7 +56,7 @@ short func_800BFBB8(u_char** arg0, short arg1)
 
     while (1) {
         if (D_800F4C2C != 2) {
-            ret = _opcodeFunctionTable[*script](script, arg1);
+            ret = opcodeFunctionTable[*script](script, arg1);
         } else {
             ret = D_800F4C28[*script](script, arg1);
         }
@@ -182,7 +183,7 @@ int func_800BFEBC(short mode, short frame, short duration)
 void func_800C00E8(int arg0, void* arg1)
 {
     D_800F4BF0.size = VS_0000_EVT_SIZE;
-    D_800F4BF0.lba = (_evtFile * 3) + VS_0000_EVT_LBA; // .EVT files must be sequential
+    D_800F4BF0.lba = (evtFile * 3) + VS_0000_EVT_LBA; // .EVT files must be sequential
     D_800F4BBC = vs_main_allocateCdQueueSlot(&D_800F4BF0);
     vs_main_cdEnqueue(D_800F4BBC, arg1);
 }

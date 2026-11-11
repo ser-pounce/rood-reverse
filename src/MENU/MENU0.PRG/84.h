@@ -1,13 +1,13 @@
 #pragma once
 #include <stddef.h>
 
-void _setMPCostDirect(int costDecimal, int disabled);
-int _getTeleportCost(int targetSavePointId);
-int _warlockMagicMenu(u_int initCursorMemory);
-int _shamanMagicMenu(u_int initCursorMemory);
-int _sorcererMagicMenu(u_int initCursorMemory);
-int _enchanterMagicMenu(u_int initCursorMemory);
+void setMPCostDirect(int costDecimal, int disabled);
+int getTeleportCost(int targetSavePointId);
+int warlockMagicMenu(u_int initCursorMemory);
+int shamanMagicMenu(u_int initCursorMemory);
+int sorcererMagicMenu(u_int initCursorMemory);
+int enchanterMagicMenu(u_int initCursorMemory);
 
-extern u_short _magicStrings[];
-extern u_short _teleportationStrings[];
-extern int _savePointData[];
+extern u_short magicStrings[];
+extern u_short teleportationStrings[];
+extern int savePointData[];

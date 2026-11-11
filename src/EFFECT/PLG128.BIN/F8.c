@@ -33,7 +33,7 @@ typedef struct {
 
 #include "src/EFFECT/surfaces.h"
 
-void func_800FD9A4(func_800FD9A4_t* arg0, VECTOR* arg1)
+static void func_800FD9A4(func_800FD9A4_t* arg0, VECTOR* arg1)
 {
     vs_battle_lookAt(&arg0->unk98, &arg0->unk88, &arg0->unkA8);
     arg0->unkA8.t[0] = arg1->vx;
@@ -41,8 +41,8 @@ void func_800FD9A4(func_800FD9A4_t* arg0, VECTOR* arg1)
     arg0->unkA8.t[2] = arg1->vz;
 }
 
-void func_800FDA04(func_800FD9A4_t* arg0, func_800FA098_arg1* arg1, D_800F53B8_t* arg2,
-    func_800FA098_arg0* arg3)
+static void func_800FDA04(func_800FD9A4_t* arg0, func_800FA098_arg1* arg1,
+    D_800F53B8_t* arg2, func_800FA098_arg0* arg3)
 {
     switch (arg1->flags & 7) {
     case 0:
@@ -78,8 +78,8 @@ void func_800FDA04(func_800FD9A4_t* arg0, func_800FA098_arg1* arg1, D_800F53B8_t
     arg0->unk98.vz = arg1->unk13C.vz;
 }
 
-void func_800FDC80(func_800FD9A4_t* arg0, func_800FA098_arg1* arg1, D_800F53B8_t* arg2,
-    func_800FA098_arg0* arg3)
+static void func_800FDC80(func_800FD9A4_t* arg0, func_800FA098_arg1* arg1,
+    D_800F53B8_t* arg2, func_800FA098_arg0* arg3)
 {
     switch (arg1->flags & 7) {
     case 0:
@@ -105,7 +105,7 @@ void func_800FDC80(func_800FD9A4_t* arg0, func_800FA098_arg1* arg1, D_800F53B8_t
     arg0->unk88.vy = arg1->unk98.vy;
 }
 
-void func_800FDE78(func_800FD9A4_t* arg0, func_800FA098_arg1* scratch)
+static void func_800FDE78(func_800FD9A4_t* arg0, func_800FA098_arg1* scratch)
 {
     arg0->endCamera.position.vx = arg0->unk88.vx << 12;
     arg0->endCamera.position.vy = arg0->unk88.vy << 12;

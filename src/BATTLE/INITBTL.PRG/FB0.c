@@ -1,3 +1,4 @@
+#include "common.h"
 #include "src/BATTLE/BATTLE.PRG/146C.h"
 #include "src/BATTLE/BATTLE.PRG/2842C.h"
 #include "src/BATTLE/BATTLE.PRG/30DB0.h"
@@ -5,10 +6,10 @@
 #include <libgte.h>
 
 extern char D_800E8F29;
-extern char _loadShpState;
+extern char loadShpState;
 extern char D_800E8F2B;
 extern char D_800E8F2C;
-extern char _loadEtmState;
+extern char loadEtmState;
 extern short D_800E8F30[][2];
 extern char D_800E8FC0;
 extern char D_800F2450[];
@@ -82,11 +83,11 @@ void func_800FA7B0(void)
     D_800F4528[1] = 0;
     D_800F4528[2] = 0;
     D_800E8F2B = 0;
-    _loadEtmState = 0;
+    loadEtmState = 0;
     D_800E8FC0 = 0;
     D_800E8F29 = 0;
     vs_battle_loadObjectDataState = 0;
-    _loadShpState = 0;
+    loadShpState = 0;
     D_800E8F2C = 0;
     sp10.vx = 0x1000;
     sp10.vy = 0x1000;
@@ -95,3 +96,5 @@ void func_800FA7B0(void)
     D_800F4B19 = 0;
     D_800F4B18 = 0;
 }
+
+VS_HIDDEN(func_800FA7B0);

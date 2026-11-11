@@ -30,12 +30,12 @@ static void playMenuLeaveSfx(void) { vs_main_playSfxDefault(0x7E, VS_SFX_MENULEA
 
 static char const* memcardFilenameTemplate = "bu00:BASLUS-01040VAG0";
 
-static u_int keystreamBits(int value)
+static u_int getRandBits(int value)
 {
-    static u_int keystreamState = 0x19660D;
-    u_int seed = keystreamState;
+    static u_int randState = 0x19660D;
+    u_int seed = randState;
 
-    keystreamState = seed * 0x19660D;
+    randState = seed * 0x19660D;
     return seed >> (32 - value);
 }
 
@@ -43,7 +43,7 @@ static u_int keystreamBits(int value)
     vs_main_gametime.all = 0; \
     vs_main_settings.menuFlags &= 0xFFDF; \
     vs_main_stateFlags.puzzleMode = 1 - vs_main_settings.puzzleModeOff
-#define KEYSTREAM_BITS(n) keystreamBits(n)
+#define KEYSTREAM_BITS(n) getRandBits(n)
 #define PACKAGE_SAVE_CLEAR_CONTAINER() \
     memset(&savedata2->containerData, 0, sizeof savedata2->containerData)
 #define PACKAGE_SAVE_UPDATE_SAVE_COUNT() vs_main_settings.currentGameSaveCount = 0
@@ -352,7 +352,7 @@ static void gameSaveScreen(void)
         vs_main_gametimeUpdate(2);
         saveScreenSwapBuf();
         vs_main_processPadState();
-        keystreamBits(0);
+        getRandBits(0);
 
         switch (state) {
         case init:

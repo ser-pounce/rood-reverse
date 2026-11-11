@@ -843,8 +843,7 @@ void func_800DE3E4(func_800E78F4_t* arg0)
 
     self = (vs_Actor*)arg0->unk54;
 
-    if (vs_battle_getStateFlag(0xA6) == 4 && self->unk9 == 24
-        && self->commandArgs.s32[0] == 4) {
+    if (getStateFlag(0xA6) == 4 && self->unk9 == 24 && self->commandArgs.s32[0] == 4) {
         vs_battle_setStateFlag(0xA6, 5);
     }
 

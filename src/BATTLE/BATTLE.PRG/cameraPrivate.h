@@ -2,32 +2,32 @@
 #include "common.h"
 #include "camera.h"
 
-int vs_battle_getCameraRoll(void);
-VS_HIDDEN(vs_battle_getCameraRoll);
+int getCameraRoll(void);
+VS_HIDDEN(getCameraRoll);
 
-int vs_battle_syncCameraAnglesFromPosition(SphericalCamera*);
-VS_HIDDEN(vs_battle_syncCameraAnglesFromPosition);
+int syncCameraAnglesFromPosition(SphericalCamera*);
+VS_HIDDEN(syncCameraAnglesFromPosition);
 
-void vs_battle_setCameraRoll(int arg0);
-VS_HIDDEN(vs_battle_setCameraRoll);
+void setCameraRoll(int arg0);
+VS_HIDDEN(setCameraRoll);
 
-void vs_battle_setFarClip(int arg0, int arg1);
-VS_HIDDEN(vs_battle_setFarClip);
+void setFarClip(int arg0, int arg1);
+VS_HIDDEN(setFarClip);
 
-void vs_battle_initialiseCameraFromSpherical(VECTOR*, VECTOR*, int, int);
-VS_HIDDEN(vs_battle_initialiseCameraFromSpherical);
+void initialiseCameraFromSpherical(VECTOR*, VECTOR*, int, int);
+VS_HIDDEN(initialiseCameraFromSpherical);
 
-void vs_battle_getCameraPosition(VECTOR* outPosition);
-VS_HIDDEN(vs_battle_getCameraPosition);
+void getCameraPosition(VECTOR* outPosition);
+VS_HIDDEN(getCameraPosition);
 
-void vs_battle_setCameraPosition(VECTOR* inPosition);
-VS_HIDDEN(vs_battle_setCameraPosition);
+void setCameraPosition(VECTOR* inPosition);
+VS_HIDDEN(setCameraPosition);
 
-void vs_battle_getCameraLookAt(VECTOR* outLookAt);
-VS_HIDDEN(vs_battle_getCameraLookAt);
+void getCameraLookAt(VECTOR* outLookAt);
+VS_HIDDEN(getCameraLookAt);
 
-void vs_battle_setCameraLookAt(VECTOR* inLookAt);
-VS_HIDDEN(vs_battle_setCameraLookAt);
+void setCameraLookAt(VECTOR* inLookAt);
+VS_HIDDEN(setCameraLookAt);
 
-void vs_battle_setNearClip(int arg0);
-VS_HIDDEN(vs_battle_setNearClip);
+void setNearClip(int arg0);
+VS_HIDDEN(setNearClip);

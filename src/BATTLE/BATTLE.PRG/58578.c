@@ -918,7 +918,7 @@ void* func_800C282C(void)
     int temp_s2;
     int yaw;
     short* p = (short*)0x1F800350;
-    vs_battle_syncCameraAnglesFromPosition(&camera);
+    syncCameraAnglesFromPosition(&camera);
     yaw = camera.values.yaw;
     temp_s2 = rcos(yaw);
     temp_a0 = rsin(yaw);

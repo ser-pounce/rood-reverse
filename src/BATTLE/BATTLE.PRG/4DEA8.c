@@ -147,33 +147,33 @@ typedef struct {
 } D_800F4BA4_t;
 
 typedef struct {
-    u_int unk0_0 : 1;
+    u_int visible : 1;
     u_int loading : 1;
     u_int unk0_2 : 1;
-    u_int unk0_3 : 3;
+    u_int drawMode : 3;
     u_int unk0_6 : 18;
-    u_int unk0_24 : 8;
+    u_int brightness : 8;
     int unk4;
-    short unk8;
-    short unkA;
-    short unkC;
+    short x;
+    short y;
+    short scale;
     int unk10[0xFA];
 } Gim;
 
 typedef struct {
     char unk0;
-    char unk1;
-    char unk2;
-    char unk3;
-    short unk4;
-    short unk6;
-    short unk8;
-    short unkA;
-    short unkC;
-    short unkE;
-    short unk10;
-    short unk12;
-} D_800F4B30_t;
+    char curve;
+    char elapsed;
+    char duration;
+    short startX;
+    short startY;
+    short deltaX;
+    short deltaY;
+    short startScale;
+    short deltaScale;
+    short startBrightness;
+    short deltaBrightness;
+} GimTween;
 
 typedef struct {
     char unk0;
@@ -297,7 +297,8 @@ extern short D_800E9C24[];
 extern u_char D_800E9C28;
 extern u_char D_800E9C2C;
 extern u_short D_800F4B20;
-extern D_800F4B30_t D_800F4B30[];
+extern GimTween gimTweens[];
+VS_HIDDEN(gimTweens);
 extern D_800F4B88_t D_800F4B88;
 extern char D_800F4B8B;
 extern char D_800F4BA0;
@@ -419,7 +420,7 @@ int vs_battle_script_0E_endSkippableBody(u_char* script, UNUSED short arg1)
         return vs_battle_scriptYield;
     }
 
-    return (int)&script[vs_battle_getShort(script + 1)];
+    return (int)&script[getShort(script + 1)];
 }
 
 int vs_battle_script_0F_endSkipHandler(u_char* arg0, UNUSED short arg1)
@@ -464,13 +465,13 @@ int vs_battle_script_10_initTextBox(u_char* script, UNUSED short arg1)
         centerY = box->y + (((box->lineCount * 13) + 4) >> 1);
     }
 
-    vs_battle_initTextBox(script[1] & 0xF, vs_battle_getShort(script + 2),
-        (script[4] * 2) - 32, script[5] - 32, script[6], script[7], centerX, centerY);
+    vs_battle_initTextBox(script[1] & 0xF, getShort(script + 2), (script[4] * 2) - 32,
+        script[5] - 32, script[6], script[7], centerX, centerY);
 
     box = vs_battle_getTextBox(script[1] & 0xF);
     box->speakerAnimation = script[10];
 
-    speakerSelector = vs_battle_getShort(&script[8]);
+    speakerSelector = getShort(&script[8]);
 
     if (speakerSelector < 0x2000) {
         box->unk0.speakerActor = resolveActorId(speakerSelector);
@@ -489,12 +490,12 @@ int vs_battle_script_11_showTextBox(u_char* script, UNUSED short arg1)
 {
     int printStatus;
 
-    if (vs_battle_textBoxStatuses[script[1]] == 0) {
+    if (textBoxStatuses[script[1]] == 0) {
 
         vs_battle_setTextBox(script[1], (char*)&scriptStrings[scriptStrings[script[2]]]);
 
         if (script[3] == 0) {
-            vs_battle_textBoxStatuses[script[1]] = 1;
+            textBoxStatuses[script[1]] = 1;
             return vs_battle_scriptRepeat;
         }
 
@@ -510,7 +511,7 @@ int vs_battle_script_11_showTextBox(u_char* script, UNUSED short arg1)
             vs_main_stateFlags.textBoxSelection = printStatus;
         }
 
-        vs_battle_textBoxStatuses[script[1]] = 0;
+        textBoxStatuses[script[1]] = 0;
 
         return vs_battle_scriptNext;
     }
@@ -595,7 +596,7 @@ int vs_battle_script_13_initTextBoxNearActor(u_char* script, UNUSED short arg1)
     int speakerActor;
     short i;
 
-    getActorScreenPosition(resolveActorId(vs_battle_getShort(script + 2)), &origin);
+    getActorScreenPosition(resolveActorId(getShort(script + 2)), &origin);
 
     origin.vz = ((origin.vz - ONE / 4) & 0xC00) >> 10;
 
@@ -618,8 +619,8 @@ int vs_battle_script_13_initTextBoxNearActor(u_char* script, UNUSED short arg1)
     width = script[6] * 12 + 8;
     height = script[7] * 13 + 4;
 
-    vs_battle_initTextBox(script[1], vs_battle_getShort(script + 4), best->x, best->y,
-        script[6], script[7], best->x + (width >> 1), best->y + (height >> 1));
+    vs_battle_initTextBox(script[1], getShort(script + 4), best->x, best->y, script[6],
+        script[7], best->x + (width >> 1), best->y + (height >> 1));
 
     box = vs_battle_getTextBox(script[1]);
     // BUG: speakerActor is never initialized, this overwrites the "none" (32) default
@@ -632,71 +633,108 @@ int vs_battle_script_13_initTextBoxNearActor(u_char* script, UNUSED short arg1)
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_14(u_char* arg0, UNUSED short arg1)
+/**
+ * @param script Opcode bytes:
+ *   - [1] = boxId
+ */
+int vs_battle_script_14_dismissTextBoxAndWait(u_char* script, UNUSED short arg1)
 {
-    return vs_battle_dismissTextBox(arg0[1]) != 0 ? vs_battle_scriptRepeat
-                                                  : vs_battle_scriptNext;
+    return vs_battle_dismissTextBox(script[1]) != 0 ? vs_battle_scriptRepeat
+                                                    : vs_battle_scriptNext;
 }
 
-int vs_battle_script_15_buttonPressed(u_char* arg0, UNUSED short arg1)
+/**
+ * @param script Opcode bytes:
+ *   - [1] = mask of pad buttons, only the low byte (L2, R2, L1, R1 and the face buttons)
+ */
+int vs_battle_script_15_waitButtonPressed(u_char* script, UNUSED short arg1)
 {
-    if (vs_main_buttonsPressed.all & arg0[1]) {
+    if (vs_main_buttonsPressed.all & script[1]) {
         return vs_battle_scriptYield;
     }
+
     return vs_battle_scriptRepeat;
 }
 
-int vs_battle_script_16_loadGim(u_char* arg0, UNUSED short arg1)
+/**
+ * @param script Opcode bytes:
+ *   - [1-2] = GIM index
+ *   - [3] = first VRAM page slot
+ */
+int vs_battle_script_16_loadGim(u_char* script, UNUSED short arg1)
 {
-    vs_battle_loadGim(vs_battle_getShort(arg0 + 1), arg0[3]);
+    loadGim(getShort(script + 1), script[3]);
+
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_17(u_char* arg0, UNUSED short arg1)
+/**
+ * @param script Opcode bytes:
+ *   - [1] = (image << 6) | mode, image is 0-2 within the GIM and mode selects the draw
+ *     function
+ *   - [2] = x offset from the screen centre, signed, in units of 2 pixels
+ *   - [3] = y offset from the screen centre, signed, in units of 2 pixels
+ *   - [4] = scale, 0x20 is full size
+ *   - [5] = brightness, 0x80 is normal
+ */
+int vs_battle_script_17_showGimImage(u_char* script, UNUSED short arg1)
 {
-    D_800F4B30_t* new_var;
+    GimTween* tween;
 
-    Gim* temp_a1 = gims;
+    Gim* gim = gims;
 
-    if (temp_a1 == NULL) {
+    if (gim == NULL) {
         return vs_battle_scriptNext;
     }
 
-    new_var = &D_800F4B30[arg0[1] >> 6];
-    new_var->unk3 = 0;
-    temp_a1 = temp_a1 + ((arg0[1] >> 6));
-    temp_a1->unk0_3 = arg0[1] & 3;
-    temp_a1->unk8 = (signed char)arg0[2] * 2;
-    temp_a1->unkA = (signed char)arg0[3] * 2;
-    temp_a1->unkC = arg0[4] << 7;
-    temp_a1->unk0_24 = arg0[5];
-    func_800C8550(arg0[1] >> 6, temp_a1, arg0);
+    tween = &gimTweens[script[1] >> 6];
+    tween->duration = 0;
+
+    gim += script[1] >> 6;
+
+    gim->drawMode = script[1] & 3;
+    gim->x = (signed char)script[2] * 2;
+    gim->y = (signed char)script[3] * 2;
+    gim->scale = script[4] << 7;
+    gim->brightness = script[5];
+
+    activateGimImage(script[1] >> 6, gim, script);
+
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_18(u_char* arg0, UNUSED short arg1)
+/**
+ * @param script Opcode bytes:
+ *   - [1] = x offset from the screen centre, signed, in units of 2 pixels
+ *   - [2] = y offset from the screen centre, signed, in units of 2 pixels
+ *   - [3] = target scale, 0x20 is full size
+ *   - [4] = target brightness
+ *   - [5] = (image << 6) | curve, curve 0-3 are built in and 4-7 are set up by script
+ *   - [6] = duration
+ */
+int vs_battle_script_18_tweenGimImage(u_char* script, UNUSED short arg1)
 {
-    Gim* temp_a3 = gims;
-    int temp_a2 = arg0[5] >> 6;
-    D_800F4B30_t* temp_a1 = &D_800F4B30[temp_a2];
+    Gim* gim = gims;
+    GimTween* tween = &gimTweens[script[5] >> 6];
 
-    if (temp_a3 == NULL) {
+    if (gim == NULL) {
         return vs_battle_scriptNext;
     }
 
-    temp_a3 += temp_a2;
+    gim += script[5] >> 6;
 
-    if (temp_a1->unk3 != 0) {
+    if (tween->duration != 0) {
         return vs_battle_scriptRepeat;
     }
 
-    temp_a1->unk8 = (((signed char)arg0[1] * 2) - (temp_a1->unk4 = temp_a3->unk8));
-    temp_a1->unkA = (((signed char)arg0[2] * 2) - (temp_a1->unk6 = temp_a3->unkA));
-    temp_a1->unkE = ((arg0[3] << 7) - (temp_a1->unkC = temp_a3->unkC));
-    temp_a1->unk12 = arg0[4] - (temp_a1->unk10 = ((char*)temp_a3)[3]);
-    temp_a1->unk1 = arg0[5] & 7;
-    temp_a1->unk3 = arg0[6];
-    temp_a1->unk2 = 0;
+    tween->deltaX = (((signed char)script[1] * 2) - (tween->startX = gim->x));
+    tween->deltaY = (((signed char)script[2] * 2) - (tween->startY = gim->y));
+    tween->deltaScale = ((script[3] << 7) - (tween->startScale = gim->scale));
+    tween->deltaBrightness = script[4] - (tween->startBrightness = gim->brightness);
+    tween->curve = script[5] & 7;
+    tween->duration = script[6];
+    tween->elapsed = 0;
+
     return vs_battle_scriptNext;
 }
 
@@ -709,31 +747,28 @@ int vs_battle_script_19(UNUSED u_char* arg0, UNUSED short arg1)
 
 int vs_battle_script_1A(UNUSED u_char* arg0, UNUSED short arg1)
 {
-    return (D_800F4B30[2].unk3 | (D_800F4B30[0].unk3 | D_800F4B30[1].unk3)) != 0
+    return (gimTweens[2].duration | (gimTweens[0].duration | gimTweens[1].duration)) != 0
              ? vs_battle_scriptRepeat
              : vs_battle_scriptNext;
 }
 
 int vs_battle_script_1B_setStringContextInt(u_char* arg0, UNUSED short arg1)
 {
-    int temp_s0 = vs_battle_getShort(arg0 + 2) & 0x3FF;
+    int temp_s0 = getShort(arg0 + 2) & 0x3FF;
     switch (arg0[3] >> 6) {
     case 0:
-        vs_battle_stringContext.integers[arg0[1]] = vs_battle_getStateFlag(temp_s0);
+        vs_battle_stringContext.integers[arg0[1]] = getStateFlag(temp_s0);
         break;
     case 1:
-        vs_battle_stringContext.integers[arg0[1]] =
-            (signed char)vs_battle_getStateFlag(temp_s0);
+        vs_battle_stringContext.integers[arg0[1]] = (signed char)getStateFlag(temp_s0);
         break;
     case 2:
         vs_battle_stringContext.integers[arg0[1]] =
-            vs_battle_getStateFlag(temp_s0)
-            | ((vs_battle_getStateFlag(temp_s0 + 1)) << 8);
+            getStateFlag(temp_s0) | ((getStateFlag(temp_s0 + 1)) << 8);
         break;
     case 3:
         vs_battle_stringContext.integers[arg0[1]] =
-            (short)(vs_battle_getStateFlag(temp_s0)
-                    | ((vs_battle_getStateFlag(temp_s0 + 1)) << 8));
+            (short)(getStateFlag(temp_s0) | ((getStateFlag(temp_s0 + 1)) << 8));
         break;
     }
     return vs_battle_scriptNext;
@@ -752,14 +787,14 @@ int vs_battle_script_1C_selectTextBox(u_char* script, UNUSED short arg1)
     }
 
     if (textBoxSelectionPending != 0) {
-        short temp_v0 = vs_battle_selectTextBox(script[1]);
+        short temp_v0 = selectTextBox(script[1]);
         if ((temp_v0 << 0x10) != 0) {
             vs_battle_setStateFlag(0x10, temp_v0);
             textBoxSelectionPending = 0;
             return vs_battle_scriptNext;
         }
     } else {
-        vs_battle_selectTextBox(script[1]);
+        selectTextBox(script[1]);
         textBoxSelectionPending = 1;
     }
     return vs_battle_scriptRepeat;
@@ -769,7 +804,7 @@ int vs_battle_script_1E(u_char* arg0, UNUSED short arg1)
 {
     func_800BB68C_t sp10;
 
-    func_800BB68C(vs_battle_getShort(arg0 + 1), &sp10);
+    func_800BB68C(getShort(arg0 + 1), &sp10);
     while (1) {
         int temp_a0 = func_800BB788(&sp10);
         if (temp_a0 == 1) {
@@ -783,12 +818,12 @@ int vs_battle_script_1E(u_char* arg0, UNUSED short arg1)
 int vs_battle_script_1F(u_char* arg0, UNUSED short arg1)
 {
     vs_ActorPosition position;
-    u_short actor = vs_battle_getShort(arg0 + 1);
-    u_short flag = vs_battle_getShort(arg0 + 3);
+    u_short actor = getShort(arg0 + 1);
+    u_short flag = getShort(arg0 + 3);
 
     if (actor & 0x1000) {
         actor &= 0x1F;
-        if (vs_battle_getActor(actor) == NULL) {
+        if (getActor(actor) == NULL) {
             vs_battle_setStateFlag(flag, 0xFF);
             return vs_battle_scriptNext;
         }
@@ -814,15 +849,15 @@ int vs_battle_script_20(u_char* arg0, UNUSED short arg1)
     sp10[1] = arg0[6];
     sp10[2] = arg0[7];
     sp10[3] = arg0[8];
-    func_8007C928(resolveActorId(vs_battle_getShort(arg0 + 1)),
-        vs_battle_getShort(arg0 + 3), (vs_ObjectData_flags*)(sp10));
+    func_8007C928(resolveActorId(getShort(arg0 + 1)), getShort(arg0 + 3),
+        (vs_ObjectData_flags*)(sp10));
     return vs_battle_scriptNext;
 }
 
 int vs_battle_script_21(u_char* arg0, UNUSED short arg1)
 {
     SVECTOR sp10;
-    u_short temp_v0 = resolveActorId(vs_battle_getShort(arg0 + 1));
+    u_short temp_v0 = resolveActorId(getShort(arg0 + 1));
     sp10.vx = (arg0[3] << 7) + 0x40;
     sp10.vy = 0;
     sp10.vz = (arg0[5] << 7) + 0x40;
@@ -839,8 +874,8 @@ int vs_battle_script_21(u_char* arg0, UNUSED short arg1)
 
 int vs_battle_script_22(u_char* arg0)
 {
-    func_800A0204(resolveActorId(vs_battle_getShort(arg0 + 1)),
-        D_800E9B58[arg0[5] >> 6] + arg0[3], arg0[4], arg0[5] & 0x3F);
+    func_800A0204(resolveActorId(getShort(arg0 + 1)), D_800E9B58[arg0[5] >> 6] + arg0[3],
+        arg0[4], arg0[5] & 0x3F);
     return vs_battle_scriptNext;
 }
 
@@ -853,7 +888,7 @@ int vs_battle_script_23(u_char* arg0, UNUSED short arg1)
     int temp_v0;
     u_int a1;
 
-    func_800BB68C(vs_battle_getShort(arg0 + 1), &sp10);
+    func_800BB68C(getShort(arg0 + 1), &sp10);
 
     while (1) {
         temp_s0 = func_800BB788(&sp10);
@@ -886,7 +921,7 @@ int vs_battle_script_24(u_char* arg0, UNUSED short arg1)
     sp10.unk1 = arg0[4];
     sp10.unk2 = arg0[5];
     sp10.unk3 = arg0[6];
-    var_a0 = resolveActorId(vs_battle_getShort(arg0 + 1));
+    var_a0 = resolveActorId(getShort(arg0 + 1));
     if (var_a0 == 0x2001) {
         var_a0 = -1;
     }
@@ -897,7 +932,7 @@ int vs_battle_script_24(u_char* arg0, UNUSED short arg1)
 int vs_battle_script_25(u_char* arg0, UNUSED short arg1)
 {
     vs_battle_tilePosition sp10[3];
-    u_short temp_v0 = resolveActorId(vs_battle_getShort(arg0 + 1));
+    u_short temp_v0 = resolveActorId(getShort(arg0 + 1));
     sp10[0].x = arg0[3];
     sp10[0].surface = arg0[4];
     sp10[0].z = arg0[5];
@@ -917,10 +952,10 @@ int vs_battle_script_26(u_char* arg0, UNUSED short arg1)
 {
     vs_ActorPosition sp10;
 
-    u_short temp_s4 = resolveActorId(vs_battle_getShort(arg0 + 1));
-    int temp_s1 = vs_battle_getShort(arg0 + 3) >> 1;
-    short temp_s2 = vs_battle_getShort(arg0 + 5);
-    short temp_s3 = vs_battle_getShort(arg0 + 7);
+    u_short temp_s4 = resolveActorId(getShort(arg0 + 1));
+    int temp_s1 = getShort(arg0 + 3) >> 1;
+    short temp_s2 = getShort(arg0 + 5);
+    short temp_s3 = getShort(arg0 + 7);
 
     if (arg0[3] & 1) {
         func_800A1108(temp_s4, &sp10);
@@ -948,7 +983,7 @@ int vs_battle_script_26(u_char* arg0, UNUSED short arg1)
 int vs_battle_script_27(u_char* arg0, UNUSED short arg1)
 {
     vs_battle_tilePosition sp10[4];
-    u_short temp_s0 = resolveActorId(vs_battle_getShort(arg0 + 1));
+    u_short temp_s0 = resolveActorId(getShort(arg0 + 1));
     sp10[0].x = arg0[3];
     sp10[0].surface = arg0[4];
     sp10[0].z = arg0[5];
@@ -971,10 +1006,10 @@ int vs_battle_script_28(u_char* arg0, UNUSED short arg1)
     int temp_s1;
     u_short temp_s2;
 
-    temp_s2 = resolveActorId(vs_battle_getShort(arg0 + 1));
-    temp_s1 = vs_battle_getShort(arg0 + 3) >> 1;
-    temp_s3 = vs_battle_getShort(arg0 + 5);
-    temp_s4 = vs_battle_getShort(arg0 + 7);
+    temp_s2 = resolveActorId(getShort(arg0 + 1));
+    temp_s1 = getShort(arg0 + 3) >> 1;
+    temp_s3 = getShort(arg0 + 5);
+    temp_s4 = getShort(arg0 + 7);
 
     if (arg0[3] & 1) {
         func_800A1108(temp_s2, &sp10);
@@ -998,8 +1033,8 @@ int vs_battle_script_28(u_char* arg0, UNUSED short arg1)
 
 int vs_battle_script_29(u_char* arg0, UNUSED short arg1)
 {
-    u_short temp_s1 = resolveActorId(vs_battle_getShort(arg0 + 1));
-    u_int temp_a1 = resolveActorId(vs_battle_getShort(arg0 + 3)) & 0xFFFF;
+    u_short temp_s1 = resolveActorId(getShort(arg0 + 1));
+    u_int temp_a1 = resolveActorId(getShort(arg0 + 3)) & 0xFFFF;
     if (temp_a1 >= 0x2000) {
         func_8009FFA8(temp_s1, temp_a1);
     } else {
@@ -1011,10 +1046,10 @@ int vs_battle_script_29(u_char* arg0, UNUSED short arg1)
 int vs_battle_script_2A(u_char* arg0, UNUSED short arg1)
 {
     SVECTOR sp10;
-    u_short temp_s1 = resolveActorId(vs_battle_getShort(arg0 + 1) & 0xFFFF);
-    sp10.vx = vs_battle_getShort(arg0 + 3);
+    u_short temp_s1 = resolveActorId(getShort(arg0 + 1) & 0xFFFF);
+    sp10.vx = getShort(arg0 + 3);
     sp10.vy = 0;
-    sp10.vz = vs_battle_getShort(arg0 + 5);
+    sp10.vz = getShort(arg0 + 5);
     if (scriptSkipMode == vs_battle_scriptSkipping) {
         sp10.pad = -0x8000;
         func_800A9D90(temp_s1, &sp10, 0);
@@ -1029,7 +1064,7 @@ int vs_battle_script_2A(u_char* arg0, UNUSED short arg1)
 int vs_battle_script_2B(u_char* arg0, UNUSED short arg1)
 {
     vs_ActorPosition sp10;
-    u_short temp_s1 = resolveActorId(vs_battle_getShort(arg0 + 1));
+    u_short temp_s1 = resolveActorId(getShort(arg0 + 1));
     short var_s2 = arg0[5] != 0xFF ? arg0[5] : -1;
     int var_a1;
 
@@ -1069,8 +1104,8 @@ int vs_battle_script_2C(u_char* arg0, UNUSED short arg1)
     int temp_s0_2;
     int var_a2;
 
-    temp_s0 = resolveActorId(vs_battle_getShort(arg0 + 1));
-    func_800A1108(resolveActorId(vs_battle_getShort(arg0 + 3)), &sp10);
+    temp_s0 = resolveActorId(getShort(arg0 + 1));
+    func_800A1108(resolveActorId(getShort(arg0 + 3)), &sp10);
     var_a2 = -1;
     temp_s0_2 = temp_s0 & 0xFFFF;
     if (arg0[5] != 0xFF) {
@@ -1084,7 +1119,7 @@ int vs_battle_script_2C(u_char* arg0, UNUSED short arg1)
 int vs_battle_script_2D(u_char* arg0, UNUSED short arg1)
 {
     vs_battle_tilePosition sp10;
-    int temp_s0 = resolveActorId(vs_battle_getShort(arg0 + 1)) & 0xFFFF;
+    int temp_s0 = resolveActorId(getShort(arg0 + 1)) & 0xFFFF;
 
     sp10.x = arg0[3];
     sp10.surface = arg0[4];
@@ -1099,9 +1134,8 @@ int vs_battle_script_2E(u_char* arg0, UNUSED short arg1)
 {
     SVECTOR sp10;
 
-    setVector(&sp10, vs_battle_getShort(arg0 + 3), vs_battle_getShort(arg0 + 5),
-        vs_battle_getShort(arg0 + 7));
-    func_800AABD0(resolveActorId(vs_battle_getShort(arg0 + 1)), &sp10, arg0[9]);
+    setVector(&sp10, getShort(arg0 + 3), getShort(arg0 + 5), getShort(arg0 + 7));
+    func_800AABD0(resolveActorId(getShort(arg0 + 1)), &sp10, arg0[9]);
     return vs_battle_scriptNext;
 }
 
@@ -1109,7 +1143,7 @@ int vs_battle_script_2F(u_char* arg0, UNUSED short arg1)
 {
     func_800BB68C_t sp10;
 
-    func_800BB68C(vs_battle_getShort(arg0 + 1), &sp10);
+    func_800BB68C(getShort(arg0 + 1), &sp10);
     while (1) {
         int temp_a0 = func_800BB788(&sp10);
         if (temp_a0 == 1) {
@@ -1127,9 +1161,9 @@ int vs_battle_script_30(u_char* arg0)
     int temp_s2;
     u_short var_v0;
 
-    temp_s2 = resolveActorId(vs_battle_getShort(arg0 + 1)) & 0xFFFF;
+    temp_s2 = resolveActorId(getShort(arg0 + 1)) & 0xFFFF;
     temp_s3 = func_800A0BE0(temp_s2) ^ 0x81;
-    temp_v0 = vs_battle_getShort(arg0 + 3);
+    temp_v0 = getShort(arg0 + 3);
 
     if (temp_v0 & 1) {
         if (func_8007D03C(temp_s2) == 0) {
@@ -1149,17 +1183,17 @@ int vs_battle_script_31(u_char* arg0, UNUSED short arg1)
     sp10.b = arg0[5];
 
     if (sp10.r | sp10.g | sp10.b) {
-        func_800A07FC(resolveActorId(vs_battle_getShort(arg0 + 1)), &sp10);
+        func_800A07FC(resolveActorId(getShort(arg0 + 1)), &sp10);
     } else {
-        func_800A07FC(resolveActorId(vs_battle_getShort(arg0 + 1)), NULL);
+        func_800A07FC(resolveActorId(getShort(arg0 + 1)), NULL);
     }
     return vs_battle_scriptNext;
 }
 
 int vs_battle_script_32(u_char* arg0)
 {
-    func_800A01C8(resolveActorId(vs_battle_getShort(arg0 + 1)),
-        D_800E9B58[arg0[5] >> 6] + arg0[3], arg0[5] & 0x3F, 0);
+    func_800A01C8(resolveActorId(getShort(arg0 + 1)), D_800E9B58[arg0[5] >> 6] + arg0[3],
+        arg0[5] & 0x3F, 0);
     return vs_battle_scriptNext;
 }
 
@@ -1169,14 +1203,14 @@ int vs_battle_script_33(u_char* arg0, UNUSED short arg1)
     u_short temp_s2;
     short var_s1;
 
-    temp_s2 = resolveActorId(vs_battle_getShort(arg0 + 1));
+    temp_s2 = resolveActorId(getShort(arg0 + 1));
     var_s1 = -1;
     if (arg0[10] != 0xFF) {
         var_s1 = arg0[10];
     }
-    sp10.vx = vs_battle_getShort(arg0 + 4);
-    sp10.vy = vs_battle_getShort(arg0 + 6);
-    sp10.vz = vs_battle_getShort(arg0 + 8);
+    sp10.vx = getShort(arg0 + 4);
+    sp10.vy = getShort(arg0 + 6);
+    sp10.vz = getShort(arg0 + 8);
     if (arg0[3] != 0) {
         func_800A9F64(temp_s2, &sp10, var_s1);
     } else {
@@ -1192,10 +1226,10 @@ int vs_battle_script_34(u_char* arg0, UNUSED short arg1)
     int temp_v0;
     int var_a3;
 
-    sp10.vx = vs_battle_getShort(arg0 + 3);
-    sp10.vy = vs_battle_getShort(arg0 + 5);
+    sp10.vx = getShort(arg0 + 3);
+    sp10.vy = getShort(arg0 + 5);
     sp10.vz = 0;
-    temp_v0 = resolveActorId(vs_battle_getShort(arg0 + 1));
+    temp_v0 = resolveActorId(getShort(arg0 + 1));
     var_a3 = 0x1000;
     if (arg0[7] != 0) {
         var_a3 = arg0[7];
@@ -1206,21 +1240,21 @@ int vs_battle_script_34(u_char* arg0, UNUSED short arg1)
 
 int vs_battle_script_35(u_char* arg0)
 {
-    func_800A0618(resolveActorId(vs_battle_getShort(arg0 + 1)),
-        D_800E9B58[arg0[6] >> 6] + arg0[3], arg0[6] & 0x3F, arg0[4]);
+    func_800A0618(resolveActorId(getShort(arg0 + 1)), D_800E9B58[arg0[6] >> 6] + arg0[3],
+        arg0[6] & 0x3F, arg0[4]);
     return vs_battle_scriptNext;
 }
 
 int vs_battle_script_36(u_char* arg0)
 {
-    func_800A01C8(resolveActorId(vs_battle_getShort(arg0 + 1)),
-        D_800E9B58[arg0[6] >> 6] + arg0[3], arg0[6] & 0x3F, arg0[4]);
+    func_800A01C8(resolveActorId(getShort(arg0 + 1)), D_800E9B58[arg0[6] >> 6] + arg0[3],
+        arg0[6] & 0x3F, arg0[4]);
     return vs_battle_scriptNext;
 }
 
 int vs_battle_script_37(u_char* arg0, UNUSED short arg1)
 {
-    int temp_a0 = resolveActorId(vs_battle_getShort(arg0 + 1));
+    int temp_a0 = resolveActorId(getShort(arg0 + 1));
 
     if (arg0[4] == 0xFF) {
         func_8009FBD8(temp_a0, -1);
@@ -1234,8 +1268,8 @@ int vs_battle_script_38(u_char* arg0, UNUSED short arg1)
 {
     int var_a3;
 
-    int temp_s0 = resolveActorId(vs_battle_getShort(arg0 + 3));
-    int temp_a0 = resolveActorId(vs_battle_getShort(arg0 + 1));
+    int temp_s0 = resolveActorId(getShort(arg0 + 3));
+    int temp_a0 = resolveActorId(getShort(arg0 + 1));
 
     int var_a1 = -2;
     if (temp_s0 != 0x2000) {
@@ -1256,9 +1290,8 @@ int vs_battle_script_39(u_char* arg0, UNUSED short arg1)
     int temp_v0;
     int var_a3;
 
-    setVector(&sp10, vs_battle_getShort(arg0 + 3), vs_battle_getShort(arg0 + 5),
-        vs_battle_getShort(arg0 + 7));
-    temp_v0 = resolveActorId(vs_battle_getShort(arg0 + 1));
+    setVector(&sp10, getShort(arg0 + 3), getShort(arg0 + 5), getShort(arg0 + 7));
+    temp_v0 = resolveActorId(getShort(arg0 + 1));
     var_a3 = 0x1000;
     if (arg0[9] != 0) {
         var_a3 = arg0[9];
@@ -1271,14 +1304,13 @@ int vs_battle_script_3A(u_char* arg0, UNUSED short arg1)
 {
     switch ((arg0[3] >> 2) & 3) {
     case 0:
-        func_8007CB84(arg0[3] & 3, vs_battle_getShort(arg0 + 1));
+        func_8007CB84(arg0[3] & 3, getShort(arg0 + 1));
         break;
     case 1:
-        func_8007CBDC(arg0[3] & 3, vs_battle_getShort(arg0 + 1), (arg0[3] >> 4) + 0x1A);
+        func_8007CBDC(arg0[3] & 3, getShort(arg0 + 1), (arg0[3] >> 4) + 0x1A);
         break;
     case 2:
-        vs_battle_loadEtm(
-            arg0[3] & 3, vs_battle_getShort(arg0 + 1), (arg0[3] >> 4) + 0x1A);
+        vs_battle_loadEtm(arg0[3] & 3, getShort(arg0 + 1), (arg0[3] >> 4) + 0x1A);
         break;
     }
     return vs_battle_scriptNext;
@@ -1286,8 +1318,7 @@ int vs_battle_script_3A(u_char* arg0, UNUSED short arg1)
 
 int vs_battle_script_3B(UNUSED u_char* arg0, UNUSED short arg1)
 {
-    return vs_battle_getEmptyObjectDataSlot2() > 0 ? vs_battle_scriptRepeat
-                                                   : vs_battle_scriptNext;
+    return getEmptyObjectDataSlot2() > 0 ? vs_battle_scriptRepeat : vs_battle_scriptNext;
 }
 
 int vs_battle_script_3C(u_char* arg0, UNUSED short arg1)
@@ -1320,10 +1351,9 @@ int vs_battle_script_3E(u_char* arg0, UNUSED short arg1)
         sp10[2].g = arg0[4];
         sp10[2].b = arg0[5];
         sp10[2].cd = arg0[6];
-        func_8009F940(
-            resolveActorId(vs_battle_getShort(arg0 + 1)), 1, &sp10[2], &sp10[0]);
+        func_8009F940(resolveActorId(getShort(arg0 + 1)), 1, &sp10[2], &sp10[0]);
     } else {
-        func_8009F940(resolveActorId(vs_battle_getShort(arg0 + 1)), 0, NULL, NULL);
+        func_8009F940(resolveActorId(getShort(arg0 + 1)), 0, NULL, NULL);
     }
     return vs_battle_scriptNext;
 }
@@ -1333,7 +1363,7 @@ int vs_battle_script_3F(u_char* arg0, UNUSED short arg1)
     func_800BB68C_t sp10;
     int temp_a0;
 
-    func_800BB68C(vs_battle_getShort(arg0 + 1), &sp10);
+    func_800BB68C(getShort(arg0 + 1), &sp10);
 
     while (1) {
         temp_a0 = func_800BB788(&sp10);
@@ -1347,8 +1377,7 @@ int vs_battle_script_3F(u_char* arg0, UNUSED short arg1)
 
 int vs_battle_script_40_jumpFwdIfFlag(u_char* arg0, UNUSED short arg1)
 {
-    char temp_a0 =
-        vs_battle_getStateFlag(((u_char)arg0[2] >> 2) | ((arg0[1] & 0xF) << 6));
+    char temp_a0 = getStateFlag(((u_char)arg0[2] >> 2) | ((arg0[1] & 0xF) << 6));
     char temp_a1 = arg0[3];
 
     switch (arg0[1] & 0xF0) {
@@ -1388,14 +1417,13 @@ int vs_battle_script_40_jumpFwdIfFlag(u_char* arg0, UNUSED short arg1)
         }
         break;
     }
-    return (long)&arg0[vs_battle_getShort(arg0 + 4)];
+    return (long)&arg0[getShort(arg0 + 4)];
 }
 
 int vs_battle_script_41_jumpFwdIfFlags(u_char* arg0, UNUSED short arg1)
 {
-    char temp_s0 =
-        vs_battle_getStateFlag(((u_char)arg0[2] >> 2) | ((arg0[1] & 0xF) << 6));
-    char temp_a0 = vs_battle_getStateFlag(arg0[3] | ((arg0[2] & 3) << 8));
+    char temp_s0 = getStateFlag(((u_char)arg0[2] >> 2) | ((arg0[1] & 0xF) << 6));
+    char temp_a0 = getStateFlag(arg0[3] | ((arg0[2] & 3) << 8));
 
     switch (arg0[1] & 0xF0) {
     case 0:
@@ -1429,29 +1457,29 @@ int vs_battle_script_41_jumpFwdIfFlags(u_char* arg0, UNUSED short arg1)
         }
         break;
     }
-    return (long)&arg0[vs_battle_getShort(arg0 + 4)];
+    return (long)&arg0[getShort(arg0 + 4)];
 }
 
 int vs_battle_script_42_jumpFwd(u_char* arg0, UNUSED short arg1)
 {
-    return (long)&arg0[vs_battle_getShort(arg0 + 1)];
+    return (long)&arg0[getShort(arg0 + 1)];
 }
 
 int vs_battle_script_45_jumpFwd2(u_char* arg0, UNUSED short arg1)
 {
-    return (long)&arg0[vs_battle_getShort(arg0 + 1)];
+    return (long)&arg0[getShort(arg0 + 1)];
 }
 
 int vs_battle_script_46_setFlagImmContext(u_char* arg0, UNUSED short arg1)
 {
-    D_800F4BB4 = vs_battle_getStateFlag(vs_battle_getShort(arg0 + 1));
+    D_800F4BB4 = getStateFlag(getShort(arg0 + 1));
     return vs_battle_scriptNext;
 }
 
 int vs_battle_script_47_jumpFwdIfFlagContext(u_char* arg0, UNUSED short arg1)
 {
     if (D_800F4BB4 == arg0[1]) {
-        return (long)&arg0[vs_battle_getShort(arg0 + 2)];
+        return (long)&arg0[getShort(arg0 + 2)];
     }
     return vs_battle_scriptNext;
 }
@@ -1469,22 +1497,22 @@ int vs_battle_script_49(u_char* arg0, UNUSED short arg1)
 int vs_battle_script_4A_jumpBackIf(u_char* arg0, UNUSED short arg1)
 {
     if (arg0[1] == 0xFF) {
-        return (long)&arg0[-vs_battle_getShort(arg0 + 2)];
+        return (long)&arg0[-getShort(arg0 + 2)];
     }
     if (--D_800F4C10[arg0[1]] != 0) {
-        return (long)&arg0[-vs_battle_getShort(arg0 + 2)];
+        return (long)&arg0[-getShort(arg0 + 2)];
     }
     return vs_battle_scriptNext;
 }
 
 int vs_battle_script_4C_jumpFwd3(u_char* arg0, UNUSED short arg1)
 {
-    return (long)&arg0[vs_battle_getShort(arg0 + 1)];
+    return (long)&arg0[getShort(arg0 + 1)];
 }
 
 int vs_battle_script_4B_jumpFwd4(u_char* arg0, UNUSED short arg1)
 {
-    return (long)&arg0[vs_battle_getShort(arg0 + 1)];
+    return (long)&arg0[getShort(arg0 + 1)];
 }
 
 int vs_battle_script_50_setFlagImm(u_char* arg0, UNUSED short arg1)
@@ -1495,25 +1523,25 @@ int vs_battle_script_50_setFlagImm(u_char* arg0, UNUSED short arg1)
 
     switch (temp_a1 & 0xF0) {
     case 0x0:
-        vs_battle_setStateFlag(temp_s0, vs_battle_getStateFlag(temp_s0) + temp_s1);
+        vs_battle_setStateFlag(temp_s0, getStateFlag(temp_s0) + temp_s1);
         break;
     case 0x10:
-        vs_battle_setStateFlag(temp_s0, vs_battle_getStateFlag(temp_s0) - temp_s1);
+        vs_battle_setStateFlag(temp_s0, getStateFlag(temp_s0) - temp_s1);
         break;
     case 0x20:
-        vs_battle_setStateFlag(temp_s0, vs_battle_getStateFlag(temp_s0) * temp_s1);
+        vs_battle_setStateFlag(temp_s0, getStateFlag(temp_s0) * temp_s1);
         break;
     case 0x30:
-        vs_battle_setStateFlag(temp_s0, vs_battle_getStateFlag(temp_s0) / temp_s1);
+        vs_battle_setStateFlag(temp_s0, getStateFlag(temp_s0) / temp_s1);
         break;
     case 0x40:
-        vs_battle_setStateFlag(temp_s0, vs_battle_getStateFlag(temp_s0) % temp_s1);
+        vs_battle_setStateFlag(temp_s0, getStateFlag(temp_s0) % temp_s1);
         break;
     case 0x50:
-        vs_battle_setStateFlag(temp_s0, vs_battle_getStateFlag(temp_s0) & temp_s1);
+        vs_battle_setStateFlag(temp_s0, getStateFlag(temp_s0) & temp_s1);
         break;
     case 0x60:
-        vs_battle_setStateFlag(temp_s0, vs_battle_getStateFlag(temp_s0) | temp_s1);
+        vs_battle_setStateFlag(temp_s0, getStateFlag(temp_s0) | temp_s1);
         break;
     case 0x70:
         vs_battle_setStateFlag(temp_s0, temp_s1);
@@ -1532,43 +1560,36 @@ int vs_battle_script_51_setFlag(u_char* arg0, UNUSED short arg1)
 
     switch (arg0[1] & 0xF0) {
     case 0x0:
-        vs_battle_setStateFlag(
-            flag0, vs_battle_getStateFlag(flag0) + vs_battle_getStateFlag(flag1));
+        vs_battle_setStateFlag(flag0, getStateFlag(flag0) + getStateFlag(flag1));
         break;
     case 0x10:
-        vs_battle_setStateFlag(
-            flag0, vs_battle_getStateFlag(flag0) - vs_battle_getStateFlag(flag1));
+        vs_battle_setStateFlag(flag0, getStateFlag(flag0) - getStateFlag(flag1));
         break;
     case 0x20:
-        vs_battle_setStateFlag(
-            flag0, vs_battle_getStateFlag(flag0) * vs_battle_getStateFlag(flag1));
+        vs_battle_setStateFlag(flag0, getStateFlag(flag0) * getStateFlag(flag1));
         break;
     case 0x30:
-        vs_battle_setStateFlag(
-            flag0, vs_battle_getStateFlag(flag0) / vs_battle_getStateFlag(flag1));
+        vs_battle_setStateFlag(flag0, getStateFlag(flag0) / getStateFlag(flag1));
         break;
     case 0x40:
-        vs_battle_setStateFlag(
-            flag0, vs_battle_getStateFlag(flag0) % vs_battle_getStateFlag(flag1));
+        vs_battle_setStateFlag(flag0, getStateFlag(flag0) % getStateFlag(flag1));
         break;
     case 0x50:
-        vs_battle_setStateFlag(
-            flag0, vs_battle_getStateFlag(flag0) & vs_battle_getStateFlag(flag1));
+        vs_battle_setStateFlag(flag0, getStateFlag(flag0) & getStateFlag(flag1));
         break;
     case 0x60:
-        vs_battle_setStateFlag(
-            flag0, vs_battle_getStateFlag(flag0) | vs_battle_getStateFlag(flag1));
+        vs_battle_setStateFlag(flag0, getStateFlag(flag0) | getStateFlag(flag1));
         break;
     case 0x70:
-        vs_battle_setStateFlag(flag0, vs_battle_getStateFlag(flag1));
+        vs_battle_setStateFlag(flag0, getStateFlag(flag1));
         break;
     case 0x80:
-        tmp = vs_battle_getStateFlag(flag0) - vs_battle_getStateFlag(flag1);
+        tmp = getStateFlag(flag0) - getStateFlag(flag1);
         vs_battle_setStateFlag(flag0, ABS(tmp));
         break;
     case 0x90:
-        prev = vs_battle_getStateFlag(flag0);
-        vs_battle_setStateFlag(flag0, vs_battle_getStateFlag(flag1));
+        prev = getStateFlag(flag0);
+        vs_battle_setStateFlag(flag0, getStateFlag(flag1));
         vs_battle_setStateFlag(flag1, prev);
         break;
     }
@@ -1577,8 +1598,8 @@ int vs_battle_script_51_setFlag(u_char* arg0, UNUSED short arg1)
 
 int vs_battle_script_52_setFlagIfItemInInventory(u_char* arg0, UNUSED short arg1)
 {
-    vs_battle_setStateFlag(vs_battle_getShort(arg0 + 3),
-        vs_battle_itemIdIsInInventory(vs_battle_getShort(arg0 + 1)));
+    vs_battle_setStateFlag(
+        getShort(arg0 + 3), vs_battle_itemIdIsInInventory(getShort(arg0 + 1)));
     return vs_battle_scriptNext;
 }
 
@@ -1590,7 +1611,7 @@ int vs_battle_script_53_resetZoneEnemies(u_char* arg0, UNUSED short arg1)
 
 int vs_battle_script_54(u_char* arg0, UNUSED short arg1)
 {
-    func_8009DBDC(resolveActorId(vs_battle_getShort(arg0 + 1)), arg0[3]);
+    func_8009DBDC(resolveActorId(getShort(arg0 + 1)), arg0[3]);
     return vs_battle_scriptNext;
 }
 
@@ -1602,7 +1623,7 @@ int vs_battle_script_55(u_char* arg0, UNUSED short arg1)
 
 int vs_battle_script_56_setFlagIfButton(u_char* arg0, UNUSED short arg1)
 {
-    short temp_v0 = vs_battle_getShort(arg0 + 1);
+    short temp_v0 = getShort(arg0 + 1);
     vs_battle_setStateFlag(temp_v0 & 0x3FF, temp_v0 & 0x8000
                                                 ? vs_main_buttonsPressed.pad[0].low
                                                 : vs_main_buttonsPreviousState);
@@ -1611,7 +1632,7 @@ int vs_battle_script_56_setFlagIfButton(u_char* arg0, UNUSED short arg1)
 
 int vs_battle_script_57(u_char* arg0, UNUSED short arg1)
 {
-    func_8007C28C(resolveActorId(vs_battle_getShort(arg0 + 1)));
+    func_8007C28C(resolveActorId(getShort(arg0 + 1)));
     return vs_battle_scriptNext;
 }
 
@@ -1638,7 +1659,7 @@ int vs_battle_script_59(u_char* script, UNUSED short arg1)
 
     case 14:
         if (D_800F4BF8 == 0) {
-            if (vs_battle_getStateFlag(0xB6) == 1) {
+            if (getStateFlag(0xB6) == 1) {
                 vs_battle_setStateFlag(0xB6, 2);
             }
 
@@ -1720,7 +1741,7 @@ int vs_battle_script_5B_setTextBoxSpeaker(u_char* arg0, UNUSED short arg1)
     u_short temp_s0;
     int var_a0;
 
-    temp_s0 = vs_battle_getShort(arg0 + 2);
+    temp_s0 = getShort(arg0 + 2);
     temp_s1 = vs_battle_getTextBox(arg0[1] & 0xF);
 
     if (temp_s0 < 0x2000) {
@@ -1735,7 +1756,7 @@ int vs_battle_script_5B_setTextBoxSpeaker(u_char* arg0, UNUSED short arg1)
 
 int vs_battle_script_5C(u_char* arg0, UNUSED short arg1)
 {
-    u_short temp_a0 = resolveActorId(vs_battle_getShort(arg0 + 1));
+    u_short temp_a0 = resolveActorId(getShort(arg0 + 1));
 
     if (arg0[3] == 0xFE) {
         func_8007CAA4(temp_a0);
@@ -1747,7 +1768,7 @@ int vs_battle_script_5C(u_char* arg0, UNUSED short arg1)
 
 int vs_battle_script_5D(u_char* arg0, UNUSED short arg1)
 {
-    func_8009D7E8(resolveActorId(vs_battle_getShort(arg0 + 1)), arg0[3]);
+    func_8009D7E8(resolveActorId(getShort(arg0 + 1)), arg0[3]);
     return vs_battle_scriptNext;
 }
 
@@ -1791,7 +1812,7 @@ int vs_battle_script_60(u_char* arg0, UNUSED short arg1)
 
 int vs_battle_script_61(u_char* arg0, UNUSED short arg1)
 {
-    short temp_v0 = vs_battle_getShort(arg0 + 1);
+    short temp_v0 = getShort(arg0 + 1);
     D_800F4C6A = (temp_v0 << 0x10) >> 0x1F;
     if (D_800F4C6A) {
         func_80098194(temp_v0 & 0x7FF);
@@ -1886,13 +1907,13 @@ int vs_battle_script_6A(u_char* arg0)
 
 int vs_battle_script_6B(u_char* arg0, UNUSED short arg1)
 {
-    vs_battle_setScreenTransitionWipeAngle(arg0[1] * 0x10);
+    setScreenTransitionWipeAngle(arg0[1] * 0x10);
     return vs_battle_scriptNext;
 }
 
 int vs_battle_script_6C(u_char* arg0, UNUSED short arg1)
 {
-    vs_battle_setScreenTransition(arg0[1], arg0[2], arg0[3] * 0x10);
+    setScreenTransition(arg0[1], arg0[2], arg0[3] * 0x10);
     return vs_battle_scriptNext;
 }
 
@@ -1949,7 +1970,7 @@ int vs_battle_script_70(u_char* arg0, UNUSED short arg1)
 
     switch (arg0[1] >> 4) {
     case 0:
-        func_800BB68C(vs_battle_getShort(arg0 + 2), &sp18);
+        func_800BB68C(getShort(arg0 + 2), &sp18);
         while (1) {
             temp_a2 = func_800BB788(&sp18);
             if (temp_a2 == 1) {
@@ -1973,7 +1994,7 @@ int vs_battle_script_70(u_char* arg0, UNUSED short arg1)
 
 int vs_battle_script_71(u_char* arg0, UNUSED short arg1)
 {
-    func_800AC37C(resolveActorId(vs_battle_getShort(arg0 + 1)), arg0[3]);
+    func_800AC37C(resolveActorId(getShort(arg0 + 1)), arg0[3]);
     return vs_battle_scriptNext;
 }
 
@@ -1987,7 +2008,7 @@ int vs_battle_script_72(u_char* arg0, UNUSED short arg1)
     int ret;
 
     if (D_800F4C4E == 0) {
-        if (!vs_battle_getStateFlag(0xAC)) {
+        if (!getStateFlag(0xAC)) {
             return vs_battle_scriptNext;
         }
 
@@ -2138,7 +2159,7 @@ int vs_battle_script_79(u_char* arg0, UNUSED short arg1)
 
 int vs_battle_script_7B(u_char* arg0, UNUSED short arg1)
 {
-    func_80091468(vs_battle_getShort(arg0 + 1), vs_battle_getShort(arg0 + 3));
+    func_80091468(getShort(arg0 + 1), getShort(arg0 + 3));
     return vs_battle_scriptNext;
 }
 
@@ -2174,7 +2195,7 @@ int vs_battle_script_80_playSfx(u_char* arg0, UNUSED short arg1)
 
 int vs_battle_script_81(u_char* arg0, UNUSED short arg1)
 {
-    func_8007C8A4(resolveActorId(vs_battle_getShort(arg0 + 1)), arg0[3]);
+    func_8007C8A4(resolveActorId(getShort(arg0 + 1)), arg0[3]);
     return vs_battle_scriptNext;
 }
 
@@ -2318,8 +2339,7 @@ int vs_battle_script_9E_processSoundQueue(UNUSED u_char* arg0, UNUSED short arg1
 int vs_battle_script_9A_waitMusicBar(u_char* arg0, UNUSED short arg1)
 {
     int temp_s1 = vs_main_getMusicPosition() >> 0x10;
-    return temp_s1 < vs_battle_getShort(arg0 + 1) ? vs_battle_scriptRepeat
-                                                  : vs_battle_scriptNext;
+    return temp_s1 < getShort(arg0 + 1) ? vs_battle_scriptRepeat : vs_battle_scriptNext;
 }
 
 int vs_battle_script_9B_fadeSfxPitch(u_char* arg0, UNUSED short arg1)
@@ -2342,8 +2362,7 @@ int vs_battle_script_9F_queueMusic(u_char* arg0, UNUSED short arg1)
 
 int vs_battle_script_A0(u_char* arg0, UNUSED short arg1)
 {
-    func_8007BE20(
-        vs_battle_getShort(arg0 + 1), resolveActorId(vs_battle_getShort(arg0 + 3)));
+    func_8007BE20(getShort(arg0 + 1), resolveActorId(getShort(arg0 + 3)));
     return vs_battle_scriptNext;
 }
 
@@ -2430,7 +2449,7 @@ int vs_battle_script_A9(u_char* arg0)
 
 int vs_battle_script_AA(u_char* arg0, UNUSED short arg1)
 {
-    short temp_v0 = resolveActorId(vs_battle_getShort(arg0 + 2));
+    short temp_v0 = resolveActorId(getShort(arg0 + 2));
 
     if (arg0[1] != 0) {
         func_8006C480(temp_v0, arg0[4]);
@@ -2442,7 +2461,7 @@ int vs_battle_script_AA(u_char* arg0, UNUSED short arg1)
 
 int vs_battle_script_B1(u_char* arg0, UNUSED short arg1)
 {
-    vs_battle_setDoorEntered2(arg0[1]);
+    setDoorEntered2(arg0[1]);
     return vs_battle_scriptNext;
 }
 
@@ -2455,9 +2474,9 @@ int vs_battle_script_B2(u_char* arg0, UNUSED short arg1)
     short temp_v0_2;
     int temp_lo;
 
-    temp_s3 = vs_battle_getShort(arg0 + 6);
-    func_800A1108(resolveActorId(vs_battle_getShort(arg0 + 1)), &sp10);
-    func_800A1108(resolveActorId(vs_battle_getShort(arg0 + 3)), &sp20);
+    temp_s3 = getShort(arg0 + 6);
+    func_800A1108(resolveActorId(getShort(arg0 + 1)), &sp10);
+    func_800A1108(resolveActorId(getShort(arg0 + 3)), &sp20);
     temp_v0 = sp10.unk0.unk4.vx - sp20.unk0.unk4.vx;
     temp_v0_2 = sp10.unk0.unk4.vz - sp20.unk0.unk4.vz;
     temp_lo = vs_gte_rsqrt((temp_v0 * temp_v0) + (temp_v0_2 * temp_v0_2)) / arg0[5];
@@ -2470,7 +2489,7 @@ int vs_battle_script_B3(u_char* arg0, UNUSED short arg1)
 {
     func_800BB68C_t sp10;
 
-    func_800BB68C(vs_battle_getShort(arg0 + 1), &sp10);
+    func_800BB68C(getShort(arg0 + 1), &sp10);
     while (1) {
         int temp_a0 = func_800BB788(&sp10);
         if (temp_a0 == 1) {
@@ -2484,8 +2503,7 @@ int vs_battle_script_B3(u_char* arg0, UNUSED short arg1)
 int vs_battle_script_B4(u_char* arg0)
 {
     if (D_800F4BF8 == 0) {
-        func_8007BA98(
-            vs_battle_getShort(arg0 + 1), arg0[3], vs_battle_getShort(arg0 + 4), arg0[6]);
+        func_8007BA98(getShort(arg0 + 1), arg0[3], getShort(arg0 + 4), arg0[6]);
         D_800F4BF8 = 1;
         return vs_battle_scriptRepeat;
     }
@@ -2499,7 +2517,7 @@ int vs_battle_script_B4(u_char* arg0)
 
 int vs_battle_script_B5(u_char* arg0, UNUSED short arg1)
 {
-    vs_battle_decreaseMiscCount(vs_battle_getShort(arg0 + 1));
+    decreaseMiscCount(getShort(arg0 + 1));
     return vs_battle_scriptNext;
 }
 
@@ -2512,11 +2530,11 @@ int vs_battle_script_B6(u_char* arg0, UNUSED short arg1)
     short temp_s1;
     int var_v0;
 
-    func_800A1108(resolveActorId(vs_battle_getShort(arg0 + 1)), &sp10);
-    func_800A1108(resolveActorId(vs_battle_getShort(arg0 + 3)), &sp20);
+    func_800A1108(resolveActorId(getShort(arg0 + 1)), &sp10);
+    func_800A1108(resolveActorId(getShort(arg0 + 3)), &sp20);
     temp_s0 = sp10.unk0.unk4.vx - sp20.unk0.unk4.vx;
     temp_s1 = sp10.unk0.unk4.vz - sp20.unk0.unk4.vz;
-    temp_s0_2 = vs_battle_getShort(arg0 + 5);
+    temp_s0_2 = getShort(arg0 + 5);
     var_v0 = vs_gte_rsqrt((temp_s0 * temp_s0) + (temp_s1 * temp_s1));
     if (var_v0 < 0) {
         var_v0 += 0x7F;
@@ -2530,7 +2548,7 @@ void func_800BAF6C(short arg0)
     short actorId;
 
     for (actorId = 1; actorId < 17; ++actorId) {
-        if (vs_battle_getActor(actorId) != NULL) {
+        if (getActor(actorId) != NULL) {
             if (arg0 != 0) {
                 func_800A087C(actorId, func_800A0BE0(actorId) | 1);
             } else {
@@ -2568,10 +2586,10 @@ int vs_battle_script_B7_specialOp(u_char* arg0, UNUSED short arg1)
         skipRequested = 1;
         break;
     case 3:
-        if (vs_battle_isActionUnlocked(arg0[2]) != 0) {
+        if (isActionUnlocked(arg0[2]) != 0) {
             vs_battle_setStateFlag(0xB1, 0);
         } else {
-            vs_battle_setActionUnlocked(arg0[2]);
+            setActionUnlocked(arg0[2]);
             vs_battle_setStateFlag(0xB1, 1);
         }
         break;
@@ -2634,7 +2652,7 @@ int vs_battle_script_B8(UNUSED u_char* arg0, UNUSED short arg1)
 
 int vs_battle_script_BB(u_char* arg0, UNUSED short arg1)
 {
-    func_800F9800(vs_battle_getShort(arg0 + 1));
+    func_800F9800(getShort(arg0 + 1));
     return vs_battle_scriptNext;
 }
 
@@ -2671,7 +2689,7 @@ int vs_battle_script_DF(u_char* arg0, UNUSED short arg1)
 
 int vs_battle_script_E8(u_char* arg0, UNUSED short arg1)
 {
-    func_800BBE10(resolveActorId(vs_battle_getShort(arg0 + 1)));
+    func_800BBE10(resolveActorId(getShort(arg0 + 1)));
     return vs_battle_scriptNext;
 }
 
@@ -2736,7 +2754,7 @@ int vs_battle_script_F4(u_char* arg0, UNUSED short arg1)
 int vs_battle_script_F5(u_char* arg0, UNUSED short arg1)
 {
     D_800F4C38[arg0[1]] = arg0 + 4;
-    return (int)&arg0[vs_battle_getShort(arg0 + 2)];
+    return (int)&arg0[getShort(arg0 + 2)];
 }
 
 int vs_battle_script_F6(UNUSED u_char* arg0, UNUSED short arg1)
@@ -2746,7 +2764,7 @@ int vs_battle_script_F6(UNUSED u_char* arg0, UNUSED short arg1)
 
 int vs_battle_script_F7(u_char* arg0, UNUSED short arg1)
 {
-    evtFile = vs_battle_getShort(arg0 + 1);
+    evtFile = getShort(arg0 + 1);
     D_800F4C24 = vs_main_allocHeapR(0x1800);
     func_800C00E8(evtFile, D_800F4C24);
     D_800F4C54 = 1;
@@ -2794,7 +2812,7 @@ void func_800BB68C(u_short arg0, func_800BB68C_t* arg1)
         }
 
         for (i = 0; i < 17; ++i) {
-            temp_v0 = vs_battle_getActor(i);
+            temp_v0 = getActor(i);
             if (temp_v0 != NULL) {
                 if ((var_a0 < 0) || (temp_v0->unk1C == var_a0)) {
                     arg1->unk2[var_s3++] = i;
@@ -2874,21 +2892,22 @@ void func_800BB9B0(void)
 {
     short i;
     short temp_a0;
-    D_800F4B30_t* var_s0 = D_800F4B30;
-    Gim* var_s1 = gims;
+    GimTween* tween = gimTweens;
+    Gim* gim = gims;
 
-    for (i = 0; i < 3; ++i, ++var_s0, ++var_s1) {
-        if (var_s0->unk3 != 0) {
-            var_s0->unk2 += vs_gametime_tickspeed >> 1;
-            temp_a0 = func_800BFEBC(var_s0->unk1, var_s0->unk2, var_s0->unk3);
+    for (i = 0; i < 3; ++i, ++tween, ++gim) {
+        if (tween->duration != 0) {
+            tween->elapsed += vs_gametime_tickspeed >> 1;
+            temp_a0 = func_800BFEBC(tween->curve, tween->elapsed, tween->duration);
             if (gims != NULL) {
-                var_s1->unk8 = (var_s0->unk4 + ((var_s0->unk8 * temp_a0) >> 0xC));
-                var_s1->unkA = (var_s0->unk6 + ((var_s0->unkA * temp_a0) >> 0xC));
-                var_s1->unkC = (var_s0->unkC + ((var_s0->unkE * temp_a0) >> 0xC));
-                var_s1->unk0_24 = (var_s0->unk10 + ((var_s0->unk12 * temp_a0) >> 0xC));
+                gim->x = (tween->startX + ((tween->deltaX * temp_a0) >> 0xC));
+                gim->y = (tween->startY + ((tween->deltaY * temp_a0) >> 0xC));
+                gim->scale = (tween->startScale + ((tween->deltaScale * temp_a0) >> 0xC));
+                gim->brightness =
+                    tween->startBrightness + ((tween->deltaBrightness * temp_a0) >> 0xC);
             }
-            if (var_s0->unk2 >= var_s0->unk3) {
-                var_s0->unk3 = 0;
+            if (tween->elapsed >= tween->duration) {
+                tween->duration = 0;
             }
         }
     }
@@ -2922,8 +2941,8 @@ void func_800BBBE8(void)
     D_800F4BA4 = vs_main_allocHeapR(sizeof *D_800F4BA4);
     D_800F4BA0 = 0;
 
-    vs_battle_getCameraPosition(&sp20);
-    vs_battle_getCameraLookAt(&sp30);
+    getCameraPosition(&sp20);
+    getCameraLookAt(&sp30);
     vectorCopy(&D_800F4BA4->eye.current, &sp20);
     vectorCopy(&D_800F4BA4->lookAt.target, &sp20);
     vectorCopy(&D_800F4BA4->lookAt.current, &sp30);
@@ -3016,14 +3035,14 @@ void func_800BBE94(void)
     D_800F4BA4->unk1EC.vz = sp10.unk0.unk4.vz * ONE;
 }
 
-void vs_battle_applyCameraState(void)
+static void applyCameraState(void)
 {
     VECTOR cameraLookAt;
     VECTOR cameraPos;
     SVECTOR* vec;
 
     if (D_800F4BA0 != 0) {
-        vs_battle_initialiseCameraFromSpherical(&cameraPos, &cameraLookAt, -1, -1);
+        initialiseCameraFromSpherical(&cameraPos, &cameraLookAt, -1, -1);
         vectorCopy(&D_800F4BA4->lookAt.current, &cameraLookAt);
         vectorCopy(&D_800F4BA4->eye.current, &cameraPos);
     } else {
@@ -3048,10 +3067,10 @@ void vs_battle_applyCameraState(void)
         vectorAdd(&cameraLookAt, &cameraLookAt, (VECTOR*)0x1F800098);
         vectorAdd(&cameraPos, &cameraPos, (VECTOR*)0x1F8000A8);
     }
-    vs_battle_setCameraLookAt(&cameraLookAt);
-    vs_battle_setCameraPosition(&cameraPos);
+    setCameraLookAt(&cameraLookAt);
+    setCameraPosition(&cameraPos);
     if (D_800F4BA4->unk168.unk0 != 0) {
-        vs_battle_setCameraRoll(D_800F4BA4->unk168.unk2);
+        setCameraRoll(D_800F4BA4->unk168.unk2);
         D_800F4BA4->unk168.unk0 = 0;
     }
     if (D_800F4BA4->unk174.unk0 != 0) {
@@ -3063,11 +3082,11 @@ void vs_battle_applyCameraState(void)
         D_800F4BA4->projectionDistance.unk0 = 0;
     }
     if (D_800F4BA4->nearClip.unk0 != 0) {
-        vs_battle_setNearClip(D_800F4BA4->nearClip.unk2);
+        setNearClip(D_800F4BA4->nearClip.unk2);
         D_800F4BA4->nearClip.unk0 = 0;
     }
     if (D_800F4BA4->farClip.unk0 != 0) {
-        vs_battle_setFarClip(D_800F4BA4->farClip.unk2, D_800F4C6A);
+        setFarClip(D_800F4BA4->farClip.unk2, D_800F4C6A);
         D_800F4BA4->farClip.unk0 = 0;
     }
 }
@@ -3083,7 +3102,7 @@ void func_800BC1CC(short arg0, int arg1)
         D_800F4BA0 = 0;
         return;
     }
-    vs_battle_initialiseCameraFromSpherical(&sp10, &sp20, arg0, (short)arg1);
+    initialiseCameraFromSpherical(&sp10, &sp20, arg0, (short)arg1);
     vectorCopy(&D_800F4BA4->eye.position, &sp10);
     vectorCopy(&D_800F4BA4->lookAt.position, &sp20);
     temp_s0 = vectorMagnitude(vectorSubtract(
@@ -3196,15 +3215,15 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
         c->value = vectorMagnitude((VECTOR*)0x1F800098);
         c->delta = ((c->value * script[5]) >> 6) - c->value;
         c->angle = atan2FixedPoint(s->v1.vx, s->v1.vz);
-        c->angleDelta = vs_battle_getShort(script + 1);
-        height = vs_battle_getShort(script + 3) * ONE;
+        c->angleDelta = getShort(script + 1);
+        height = getShort(script + 3) * ONE;
         c->start.vy = c->current.vy;
         c->velocity.vy = height - c->start.vy;
         return vs_battle_scriptNext;
     }
     case 7:
-        func_800A190C(resolveActorId(vs_battle_getShort(script + 1)), script[3],
-            (SVECTOR*)0x1F8000D8, 2);
+        func_800A190C(
+            resolveActorId(getShort(script + 1)), script[3], (SVECTOR*)0x1F8000D8, 2);
         sVectorToFixedPointVector((VECTOR*)0x1F800098, (SVECTOR*)0x1F8000D8);
         setVectorImm((VECTOR*)0x1F8000A8, script + 4);
         vectorAdd(&c->position, (VECTOR*)0x1F800098, (VECTOR*)0x1F8000A8);
@@ -3214,7 +3233,7 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
         return vs_battle_scriptNext;
     case 8:
         c->mode = 8;
-        c->value = resolveActorId(vs_battle_getShort(script + 1));
+        c->value = resolveActorId(getShort(script + 1));
         c->delta = script[3];
         c->time = 0;
         c->duration = script[10];
@@ -3227,7 +3246,7 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
         vectorSubtract(&c->velocity, &c->current, &c->target);
         return vs_battle_scriptNext;
     case 10: {
-        int id = resolveActorId(vs_battle_getShort(script + 1));
+        int id = resolveActorId(getShort(script + 1));
         CameraScratch* s = (CameraScratch*)0x1F800088;
         s->value = id;
         func_800A1108(id, &D_800F4BA4->unk1D0);
@@ -3516,11 +3535,11 @@ int vs_battle_script_E2_E3_camera(u_char* arg0, UNUSED short arg1)
     var_s0->unkA = arg0[4];
 
     if (var_s0->unkA == 0) {
-        var_s0->unk2 = vs_battle_getShort(arg0 + 1);
+        var_s0->unk2 = getShort(arg0 + 1);
         var_s0->unk0 = 1;
     } else {
         var_s0->unk4 = var_s0->unk2;
-        var_s0->unk6 = vs_battle_getShort(arg0 + 1) - var_s0->unk2;
+        var_s0->unk6 = getShort(arg0 + 1) - var_s0->unk2;
         if (var_s0->unk6 < -(ONE / 2)) {
             var_s0->unk6 += ONE;
         } else if (var_s0->unk6 > (ONE / 2)) {
@@ -3598,7 +3617,7 @@ int vs_battle_script_B9_BA_BF_E4_E5_E6_E7_ED(u_char* script, UNUSED short arg1)
     short effectValue;
     switch (script[0]) {
     case 185:
-        func_8007DE44(vs_battle_getShort(script + 1));
+        func_8007DE44(getShort(script + 1));
         return vs_battle_scriptNext;
 
     case 186:
@@ -3682,7 +3701,7 @@ int vs_battle_script_B9_BA_BF_E4_E5_E6_E7_ED(u_char* script, UNUSED short arg1)
         return vs_battle_scriptNext;
 
     case 191:
-        mode = vs_battle_getShort(script + 1);
+        mode = getShort(script + 1);
         if (!mode) {
             func_8007DE2C(0);
             values.vx = values.vy = 0;
@@ -3948,11 +3967,10 @@ void func_800BE3D0(char arg0)
     u_char temp_s3;
     int new_var;
 
-    temp_s3 = vs_battle_getStateFlag(0xAF);
-    temp_s0 = vs_battle_getStateFlag(0xB0);
+    temp_s3 = getStateFlag(0xAF);
+    temp_s0 = getStateFlag(0xB0);
     new_var = temp_s3 - 1;
-    vs_battle_initialiseCameraFromSpherical(
-        &sp30, &sp10, (new_var + (arg0 * 2)) & 7, temp_s0 + 1);
+    initialiseCameraFromSpherical(&sp30, &sp10, (new_var + (arg0 * 2)) & 7, temp_s0 + 1);
 
     sp30.vy += D_800E9C24[temp_s0] << 0xC;
     sp10.vy += D_800E9C24[temp_s0] << 0xC;
@@ -3964,7 +3982,7 @@ void func_800BE3D0(char arg0)
 
     D_800F4BA4->lookAt.mode = 0xF;
 
-    vs_battle_initialiseCameraFromSpherical(&sp40, &sp20, temp_s3, temp_s0 + 1);
+    initialiseCameraFromSpherical(&sp40, &sp20, temp_s3, temp_s0 + 1);
 
     vectorCopy(&D_800F4BA4->eye.position, &sp40);
     vectorCopy(&D_800F4BA4->lookAt.position, &sp20);
@@ -4049,8 +4067,8 @@ static int vectorMagnitude(VECTOR* arg0)
 
 VECTOR* setVectorImm(VECTOR* arg0, u_char* arg1)
 {
-    setVector(arg0, vs_battle_getShort(arg1) * ONE, vs_battle_getShort(arg1 + 2) * ONE,
-        vs_battle_getShort(arg1 + 4) * ONE);
+    setVector(
+        arg0, getShort(arg1) * ONE, getShort(arg1 + 2) * ONE, getShort(arg1 + 4) * ONE);
     return arg0;
 }
 
@@ -4174,7 +4192,7 @@ void func_800BEB9C(int arg0)
 
 void func_800BEBEC(void) { }
 
-char vs_battle_getStateFlag(short arg0)
+char getStateFlag(short arg0)
 {
     char* flags = (char*)&vs_main_stateFlags;
     return flags[arg0];
@@ -4257,7 +4275,7 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
         }
 
         ++p;
-        eventId = vs_battle_getShort(p);
+        eventId = getShort(p);
         p += 2;
         negate = 0;
 
@@ -4301,13 +4319,13 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
                 break;
 
             case 3:
-                left = vs_battle_getStateFlag(((p[1] & 0xF) << 6) | (p[2] >> 2));
+                left = getStateFlag(((p[1] & 0xF) << 6) | (p[2] >> 2));
                 right = p[3];
                 goto compare;
 
             case 15:
-                left = vs_battle_getStateFlag(((p[1] & 0xF) << 6) | (p[2] >> 2));
-                right = vs_battle_getStateFlag(((p[2] & 3) << 8) | p[3]);
+                left = getStateFlag(((p[1] & 0xF) << 6) | (p[2] >> 2));
+                right = getStateFlag(((p[2] & 3) << 8) | p[3]);
             compare:
                 switch (p[1] & 0xF0) {
                 case 0x00:
@@ -4351,10 +4369,10 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
                 break;
 
             case 4:
-                left = vs_battle_getShort(p + 1);
+                left = getShort(p + 1);
 
                 if (left & 0x1000) {
-                    if (vs_battle_getActor(left & 0x1F) != NULL) {
+                    if (getActor(left & 0x1F) != NULL) {
                         result = 1;
                     }
                 } else if (func_8007CF18(left) != 1) {
@@ -4366,7 +4384,7 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
 
             case 5:
                 left = flagValue = func_8007CF80(p[1]);
-                flagId = vs_battle_getShort(p + 2);
+                flagId = getShort(p + 2);
 
                 if (flagId != 0) {
                     vs_battle_setStateFlag(flagId, flagValue);
@@ -4380,8 +4398,8 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
 
             case 6:
                 if (mode == 0) {
-                    actorId = resolveActorId(vs_battle_getShort(p + 1));
-                    otherActorId = resolveActorId(vs_battle_getShort(p + 3));
+                    actorId = resolveActorId(getShort(p + 1));
+                    otherActorId = resolveActorId(getShort(p + 3));
 
                     if (actorId != 1 && otherActorId != 1 && arg1 == actorId
                         && arg2 == otherActorId) {
@@ -4393,7 +4411,7 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
                 break;
 
             case 7:
-                actorId = resolveActorId(vs_battle_getShort(p + 1));
+                actorId = resolveActorId(getShort(p + 1));
 
                 if (actorId == 1) {
                     negate = 0;
@@ -4401,7 +4419,7 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
                 }
 
                 left = flagValue = func_8007C218(actorId);
-                flagId = vs_battle_getShort(p + 3);
+                flagId = getShort(p + 3);
 
                 if (flagId != 0) {
                     vs_battle_setStateFlag(flagId, flagValue);
@@ -4431,9 +4449,8 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
                 break;
 
             case 10:
-                left = flagValue =
-                    vs_battle_itemIdIsInInventory(vs_battle_getShort(p + 1));
-                flagId = vs_battle_getShort(p + 3);
+                left = flagValue = vs_battle_itemIdIsInInventory(getShort(p + 1));
+                flagId = getShort(p + 3);
 
                 if (flagId != 0) {
                     vs_battle_setStateFlag(flagId, flagValue);
@@ -4458,7 +4475,7 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
 
             case 12:
                 left = flagValue = -func_800A92B8(p[1], p[2]) / 128;
-                flagId = vs_battle_getShort(p + 3);
+                flagId = getShort(p + 3);
 
                 if (flagId != 0) {
                     vs_battle_setStateFlag(flagId, flagValue);
@@ -4471,7 +4488,7 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
                 break;
 
             case 13:
-                actorId = resolveActorId(vs_battle_getShort(p + 1));
+                actorId = resolveActorId(getShort(p + 1));
 
                 if (actorId == 1) {
                     negate = 0;
@@ -4488,7 +4505,7 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
                 break;
 
             case 14:
-                actorId = resolveActorId(vs_battle_getShort(p + 1));
+                actorId = resolveActorId(getShort(p + 1));
 
                 if (actorId == 1) {
                     negate = 0;
@@ -4507,7 +4524,7 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
                 break;
 
             case 16:
-                actorId = resolveActorId(vs_battle_getShort(p + 1));
+                actorId = resolveActorId(getShort(p + 1));
 
                 if (actorId == 1) {
                     negate = 0;
@@ -4577,7 +4594,7 @@ void parseEvt(u_char* data)
     D_800F4C22 = 0;
 
     for (i = 0; i < 8; ++i) {
-        vs_battle_textBoxStatuses[i] = 0;
+        textBoxStatuses[i] = 0;
     }
 
     for (i = 0; i < 4; ++i) {
@@ -4585,7 +4602,7 @@ void parseEvt(u_char* data)
     }
 
     D_800F4B8B = 0;
-    D_800F4B30[0].unk3 = D_800F4B30[1].unk3 = D_800F4B30[2].unk3 = 0;
+    gimTweens[0].duration = gimTweens[1].duration = gimTweens[2].duration = 0;
     D_800F4C69 = vs_main_getcurrentMusicSlot();
     evtCdSlot = NULL;
 
@@ -4681,7 +4698,7 @@ int func_800BF850(void)
 
     func_800BC9E0();
     func_800BDAB4();
-    vs_battle_applyCameraState();
+    applyCameraState();
     func_800BB9B0();
     func_800BBAFC();
 

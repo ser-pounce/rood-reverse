@@ -88,26 +88,26 @@ typedef struct {
 } func_800D6894_t;
 
 typedef struct {
-    u_int unk0_0 : 1;
+    u_int visible : 1;
     u_int loading : 1;
     u_int unk0_2 : 1;
-    u_int unk0_3 : 3;
-    u_int unk0_6 : 3;
-    u_int unk0_9 : 3;
+    u_int drawMode : 3;
+    u_int loadState : 3;
+    u_int pageCount : 3;
     u_int unk0_12 : 1;
     u_int unk0_13 : 3;
-    char unk2;
-    char unk3;
+    char vramSlot;
+    char brightness;
     u_char columns;
     u_char rows;
     short id;
-    short unk8;
-    short unkA;
-    short unkC;
+    short x;
+    short y;
+    short scale;
     u_short unkE;
     u_short* data;
     vs_Main_CdQueueSlot* cdQueueSlot;
-    u_short unk18[240];
+    u_short widths[240];
     u_short imageTable[254];
     int unk3F4;
 } Gim;
@@ -387,7 +387,7 @@ extern u_char spellClassCounts[];
 extern u_char* spellIds[];
 extern char D_800EBD68[];
 extern u_short D_800EBDDC[];
-extern u_int keystreamState;
+extern u_int randState;
 extern char D_800EBF58[][12];
 extern char* D_800EC258;
 extern void (*D_800EC25C[])(Gim*, int, u_long*);
@@ -1102,7 +1102,7 @@ int vs_battle_setTextBox(int boxId, char* str)
     return 0;
 }
 
-int vs_battle_selectTextBox(u_char boxMask)
+int selectTextBox(u_char boxMask)
 {
     vs_TextBox tempBox;
     short yPositions[8];
@@ -1890,7 +1890,7 @@ void renderTextImmediate(vs_TextBox* arg0, int arg1)
 }
 #pragma vsstring(end)
 
-void vs_battle_loadGim(int id, int arg1)
+void loadGim(int id, int vramSlot)
 {
     vs_Main_CdFile file;
     Gim* var_s0;
@@ -1904,13 +1904,13 @@ void vs_battle_loadGim(int id, int arg1)
         for (i = 0; i < 3; ++i) {
             *(u_short*)var_s0 = 0;
             var_s0->loading = 1;
-            var_s0->unk0_6 = 1;
-            var_s0->unk2 = arg1;
-            var_s0->unk3 = 0x80;
+            var_s0->loadState = 1;
+            var_s0->vramSlot = vramSlot;
+            var_s0->brightness = 0x80;
             var_s0->id = id;
-            var_s0->unk8 = 0;
-            var_s0->unkA = 0;
-            var_s0->unkC = 0x1000;
+            var_s0->x = 0;
+            var_s0->y = 0;
+            var_s0->scale = 0x1000;
             ++var_s0;
         }
         file.lba = gimLbas[id] >> 8;
@@ -1920,24 +1920,24 @@ void vs_battle_loadGim(int id, int arg1)
     }
 }
 
-void func_800C8550(u_int arg0, void* arg1, u_char* arg2)
+void activateGimImage(u_int image, UNUSED void* arg1, UNUSED u_char* arg2)
 {
-    Gim* gim = &gims[arg0];
+    Gim* gim = &gims[image];
     int step;
     int next;
     int i;
 
-    gim->unk0_0 = 1;
+    gim->visible = 1;
 
-    if (gim->unk0_3 == 2) {
-        u_short* p = gim->unk18;
-        int angle = vs_battle_keystreamBits(9);
-        int target = vs_battle_keystreamBits(10);
+    if (gim->drawMode == 2) {
+        u_short* p = gim->widths;
+        int angle = vs_battle_getRandBits(9);
+        int target = vs_battle_getRandBits(10);
 
         for (i = 0; i < 240; ++i) {
             p[i] = (rsin(angle) >> 3) + 320;
-            step = vs_battle_keystreamBits(8) - 64;
-            next = vs_battle_keystreamBits(10);
+            step = vs_battle_getRandBits(8) - 64;
+            next = vs_battle_getRandBits(10);
 
             if (target < angle) {
                 angle -= step;
@@ -1955,13 +1955,13 @@ void func_800C8550(u_int arg0, void* arg1, u_char* arg2)
 
             if (angle < 0) {
                 angle = 128;
-                target = vs_battle_keystreamBits(10);
+                target = vs_battle_getRandBits(10);
             }
         }
     }
 
-    if (gim->unk0_3 == 3) {
-        func_8007DFF0(gims->unk2 + gims->unk0_9, 1, 6);
+    if (gim->drawMode == 3) {
+        func_8007DFF0(gims->vramSlot + gims->pageCount, 1, 6);
     }
 }
 
@@ -1970,11 +1970,11 @@ void func_800C86AC(void)
     Gim* var_s0 = gims;
     int i;
 
-    if ((var_s0 != NULL) && (var_s0->unk0_6 == 3)) {
-        func_8007E0A8(var_s0->unk2, var_s0->unk0_9, 6);
+    if ((var_s0 != NULL) && (var_s0->loadState == 3)) {
+        func_8007E0A8(var_s0->vramSlot, var_s0->pageCount, 6);
         for (i = 0; i < 3; ++i) {
-            if (var_s0->unk0_3 == 3) {
-                func_8007E0A8(gims->unk2 + gims->unk0_9, 1, 6);
+            if (var_s0->drawMode == 3) {
+                func_8007E0A8(gims->vramSlot + gims->pageCount, 1, 6);
             }
             ++var_s0;
         }
@@ -1999,7 +1999,7 @@ void func_800C8778(void)
         return;
     }
 
-    switch (gim->unk0_6) {
+    switch (gim->loadState) {
     case 0:
         break;
     case 1:
@@ -2051,7 +2051,7 @@ void func_800C8778(void)
         }
 
         count = (count + 1) & 0xFFFE;
-        width = (gim->unk2 - 24) * 64;
+        width = (gim->vramSlot - 24) * 64;
         vs_battle_renderImage((width + 512) | 0x1FF0000, gim->data + count, 0x10040);
 
         for (j = 0; j < 3; ++j) {
@@ -2082,12 +2082,12 @@ void func_800C8778(void)
         height = i >> 8;
         i &= 0xFF;
         j = (i + 16) / 17;
-        gim->unk0_9 = j;
-        second->unk0_9 = j;
-        third->unk0_9 = j;
+        gim->pageCount = j;
+        second->pageCount = j;
+        third->pageCount = j;
         height *= 16;
         count += height;
-        func_8007DFF0(gim->unk2, gim->unk0_9, 6);
+        func_8007DFF0(gim->vramSlot, gim->pageCount, 6);
 
         while (i > 0) {
             vs_battle_renderImage((width + 512) | 0x1000000, gim->data + count,
@@ -2097,7 +2097,7 @@ void func_800C8778(void)
             width += 64;
         }
 
-        gim->unk0_6 = 2;
+        gim->loadState = 2;
         break;
     case 2:
         vs_main_freeHeapR(gim->data);
@@ -2106,11 +2106,11 @@ void func_800C8778(void)
             gim[j].loading = 0;
         }
 
-        gim->unk0_6 = 3;
+        gim->loadState = 3;
         break;
     case 3:
         for (j = 0; j < 3; ++j) {
-            if (gim[j].unk0_0) {
+            if (gim[j].visible) {
                 func_800CCA90(j);
             }
         }
@@ -3231,7 +3231,7 @@ int vs_battle_chainAbilitiesUnlocked(int defense)
     return 0;
 }
 
-int vs_battle_validateShortcutSelection(int shortcut)
+int validateShortcutSelection(int shortcut)
 {
     int noneUnlocked = 0;
     int menuState = 0;
@@ -3329,7 +3329,7 @@ int dismissAllTextBoxes(void)
     return var_s1;
 }
 
-void vs_battle_displaySceneMessage(int arg0, int arg1, int arg2)
+void displaySceneMessage(int arg0, int arg1, int arg2)
 {
     D_800EB9D8 = vs_main_allocHeapR(112);
     D_800F4E69 = arg2;
@@ -3611,29 +3611,29 @@ void func_800CB83C(void)
     }
 
     func_800CB708();
-    vs_battle_keystreamBits(0);
+    vs_battle_getRandBits(0);
 }
 
 void func_800CBBCC(Gim* image, int clut, u_long* ot)
 {
-    int alpha = image->unk3;
+    int alpha = image->brightness;
     int background;
     int quadColor;
     u_short* tiles = &image->imageTable[4];
-    int scale = image->unkC & 0x3FFF;
+    int scale = image->scale & 0x3FFF;
     int columns = image->columns;
     int rows = image->rows;
     int color;
     short* columnX = (short*)(0x1F800400 - (columns + 1) * 2);
     short* rowY = columnX - (rows + 1);
     int i;
-    int j = image->unk8 + 160;
+    int j = image->x + 160;
 
     for (i = 0; i <= columns; ++i) {
         columnX[i] = (((i * 2 - columns) * scale) >> 7) + j;
     }
 
-    j = image->unkA + 120;
+    j = image->y + 120;
 
     for (i = 0; i <= rows; ++i) {
         rowY[i] = (((i * 2 - rows) * scale * 15) >> 13) + j;
@@ -3716,7 +3716,7 @@ void func_800CBBCC(Gim* image, int clut, u_long* ot)
 
                 v = (v & 0x1F00) * 15;
                 tpage = getTPage(image->unk0_2, 1,
-                    ((image->unk2 - 18) * 64) + ((tile >> 2) & 0x1C0), 256);
+                    ((image->vramSlot - 18) * 64) + ((tile >> 2) & 0x1C0), 256);
 
                 if (scale == ONE) {
                     prim = vs_battle_setSprite(
@@ -3755,7 +3755,7 @@ void func_800CC128(Gim* arg0, int arg1, u_long* arg2)
     int var_s1;
     int new_var;
 
-    int temp_s0 = arg0->unk3;
+    int temp_s0 = arg0->brightness;
 
     if (temp_s0 == 0x80) {
         func_800CBBCC(arg0, arg1, arg2);
@@ -3784,18 +3784,18 @@ void func_800CC204(Gim* image, int clut, u_long* ot)
     short right[240];
     u_short* tiles = &image->imageTable[4];
     int mode = image->unk0_2;
-    u_short* widths = image->unk18;
-    int page = image->unk2 - 18;
+    u_short* widths = image->widths;
+    int page = image->vramSlot - 18;
     int color = image->unkE;
     int y;
     int column;
-    int end = image->unk3;
-    int x = image->unkC & 0x3FFF;
+    int end = image->brightness;
+    int x = image->scale & 0x3FFF;
 
     if (x == ONE) {
-        image->unk3 = 128;
+        image->brightness = 128;
         func_800CBBCC(image, clut, ot);
-        image->unk3 = end;
+        image->brightness = end;
         return;
     }
 
@@ -3908,8 +3908,8 @@ void func_800CC600(Gim* image, int clut, u_long* ot)
         fb = 320;
     }
 
-    alpha = image->unk3;
-    page = (image->unk2 + image->unk0_9 - 16) * 64;
+    alpha = image->brightness;
+    page = (image->vramSlot + image->pageCount - 16) * 64;
 
     if (alpha == 128) {
         func_800CBBCC(image, clut, ot);
@@ -3922,7 +3922,7 @@ void func_800CC600(Gim* image, int clut, u_long* ot)
     alpha += 7;
     columns = image->columns;
     height = image->rows * 15;
-    top = image->unkA + 120 - (height >> 1);
+    top = image->y + 120 - (height >> 1);
 
     for (column = 0; column < columns; ++column) {
         u_long* prim = vs_battle_setSprite(
@@ -3945,7 +3945,7 @@ void func_800CC600(Gim* image, int clut, u_long* ot)
             }
         }
 
-        x = image->unkA + 120;
+        x = image->y + 120;
 
         for (y = 0; y < image->rows; ++y) {
             int tile = tiles[y * columns + column];
@@ -3961,7 +3961,7 @@ void func_800CC600(Gim* image, int clut, u_long* ot)
             prim = vs_battle_setSprite(
                 128, (((y * 30 - height) >> 1) + x - top) << 16, vs_getWH(64, 15), ot);
             uv = ((tile * 64) & 192) | ((atlas & 31) * 15 << 8) | clut;
-            tx = ((image->unk2 - 18) * 64) + (atlas & 448);
+            tx = ((image->vramSlot - 18) * 64) + (atlas & 448);
             prim[4] = uv;
             prim[1] = _get_mode(0, 0, getTPage(mode, 0, tx, 256));
         }
@@ -3990,9 +3990,9 @@ void func_800CC600(Gim* image, int clut, u_long* ot)
 void func_800CCA90(int arg0)
 {
     Gim* gim = &gims[arg0];
-    int clut = (gim->unk2 - 16) << 6;
+    int clut = (gim->vramSlot - 16) << 6;
 
-    if ((gim->unk3 == 0) && (gim->unk0_3 != 2)) {
+    if ((gim->brightness == 0) && (gim->drawMode != 2)) {
         return;
     }
 
@@ -4007,12 +4007,12 @@ void func_800CCA90(int arg0)
     }
 
     D_800F51C8 = 0;
-    D_800EC25C[gim->unk0_3](gim, clut << 16,
-        gim->unkC & 0x4000 ? vs_scratch.unk4 + 0x1FF8 - arg0 * 4
-                           : vs_scratch.unk8 + 0x18 - arg0 * 8);
+    D_800EC25C[gim->drawMode](gim, clut << 16,
+        gim->scale & 0x4000 ? vs_scratch.unk4 + 0x1FF8 - arg0 * 4
+                            : vs_scratch.unk8 + 0x18 - arg0 * 8);
 }
 
-int vs_battle_decreaseMiscCount(int miscId)
+int decreaseMiscCount(int miscId)
 {
     int i;
 
@@ -4054,10 +4054,10 @@ void vs_battle_rMemcpy(void* dest, void const* src, int size)
 
 int vs_battle_toBCD(int value) { return (value % 10) | ((value / 10) * 16); }
 
-u_int vs_battle_keystreamBits(int value)
+u_int vs_battle_getRandBits(int value)
 {
-    u_int temp_a1 = keystreamState;
-    keystreamState = temp_a1 * 0x19660D;
+    u_int temp_a1 = randState;
+    randState = temp_a1 * 0x19660D;
     return temp_a1 >> (32 - value);
 }
 
@@ -4745,7 +4745,7 @@ int func_800CE9B0(void)
         break;
 
     case 6:
-        if (vs_battle_loadEffPurge() == 0) {
+        if (loadEffPurge() == 0) {
             vs_main_wait();
             vs_effpurge_exec();
             if ((D_800F5230.effectId != 0) && (vs_battle_pFileLoadContext.lba == 0)) {
@@ -4777,7 +4777,7 @@ int func_800CE9B0(void)
 
     case 3:
         if (func_800D7BF8() == 0) {
-            func_800D8060(vs_battle_pfileBuf);
+            func_800D8060(pfileBuf);
             func_800CF478(5);
 
             D_800F5224 = D_800F569C->block9Data->unk14;
@@ -4788,7 +4788,7 @@ int func_800CE9B0(void)
             }
 
             D_800F54A8 = 1;
-            sp38.lba = vs_battle_getMainMenuLba();
+            sp38.lba = getMainMenuLba();
             sp38.size = 0;
             D_800F5218 = vs_main_allocateCdQueueSlot(&sp38);
             vs_main_cdEnqueue(D_800F5218, NULL);
@@ -5944,7 +5944,7 @@ int func_800D12D8(int arg0)
     return sum;
 }
 
-int vs_battle_lerpRatio(int arg0, int arg1, int arg2, int arg3)
+static int lerpRatio(int arg0, int arg1, int arg2, int arg3)
 {
     int var_v0 = (arg1 - arg0) * ((arg2 * ONE) / arg3);
     return arg0 + var_v0 / ONE;
@@ -5986,7 +5986,7 @@ void func_800D155C(int arg0, int arg1, int arg2, int arg3, int arg4, int* arg5)
          >> 12;
 }
 
-int vs_battle_lerp(int arg0, int arg1, int arg2)
+static int lerp(int arg0, int arg1, int arg2)
 {
     int var_v0 = (arg1 - arg0) * arg2;
     return arg0 + (var_v0 / (ONE * 2));
@@ -5994,9 +5994,9 @@ int vs_battle_lerp(int arg0, int arg1, int arg2)
 
 void func_800D169C(SVECTOR* arg0, SVECTOR* arg1, int arg2, SVECTOR* arg3)
 {
-    arg3->vx = vs_battle_lerp(arg0->vx, arg1->vx, arg2);
-    arg3->vy = vs_battle_lerp(arg0->vy, arg1->vy, arg2);
-    arg3->vz = vs_battle_lerp(arg0->vz, arg1->vz, arg2);
+    arg3->vx = lerp(arg0->vx, arg1->vx, arg2);
+    arg3->vy = lerp(arg0->vy, arg1->vy, arg2);
+    arg3->vz = lerp(arg0->vz, arg1->vz, arg2);
 }
 
 void func_800D1718(SVECTOR* arg0, SVECTOR* arg1, int arg2, int arg3, SVECTOR* arg4)
@@ -6011,9 +6011,9 @@ void func_800D1778(SVECTOR* arg0, SVECTOR* arg1, int arg2, int arg3, SVECTOR* ar
 
 void func_800D17A8(VECTOR* arg0, VECTOR* arg1, int arg2, VECTOR* arg3)
 {
-    arg3->vx = vs_battle_lerp(arg0->vx, arg1->vx, arg2);
-    arg3->vy = vs_battle_lerp(arg0->vy, arg1->vy, arg2);
-    arg3->vz = vs_battle_lerp(arg0->vz, arg1->vz, arg2);
+    arg3->vx = lerp(arg0->vx, arg1->vx, arg2);
+    arg3->vy = lerp(arg0->vy, arg1->vy, arg2);
+    arg3->vz = lerp(arg0->vz, arg1->vz, arg2);
 }
 
 void func_800D1824(VECTOR* arg0, VECTOR* arg1, int arg2, int arg3, VECTOR* arg4)
@@ -6028,12 +6028,12 @@ void func_800D1884(VECTOR* arg0, VECTOR* arg1, int arg2, int arg3, VECTOR* arg4)
 
 int func_800D18B4(int arg0, int arg1, int arg2, int arg3)
 {
-    return vs_battle_lerp(arg0, arg1, ONE - rcos((arg3 * ONE / 2) / arg2));
+    return lerp(arg0, arg1, ONE - rcos((arg3 * ONE / 2) / arg2));
 }
 
 int func_800D1904(int arg0, int arg1, int arg2, int arg3)
 {
-    return vs_battle_lerp(arg0, arg1, (arg3 * (ONE * 2)) / arg2);
+    return lerp(arg0, arg1, (arg3 * (ONE * 2)) / arg2);
 }
 
 void func_800D1930(void)
@@ -6080,9 +6080,9 @@ void func_800D197C(VECTOR* position, VECTOR* target, MATRIX* view)
 
 void func_800D1B18(D_800F54D8_t* arg0)
 {
-    vs_battle_getCameraPosition(&arg0->position);
-    vs_battle_getCameraLookAt(&arg0->lookAt);
-    arg0->roll = vs_battle_getCameraRoll() + ONE * 8;
+    getCameraPosition(&arg0->position);
+    getCameraLookAt(&arg0->lookAt);
+    arg0->roll = getCameraRoll() + ONE * 8;
     arg0->nearClip = vs_main_nearClip;
     arg0->projectionDistance = vs_main_projectionDistance;
     arg0->farClip = vs_scratch.camera.farClip;
@@ -6111,16 +6111,16 @@ void func_800D1B80(D_800F54D8_t* camera)
     offset.vz += rcos(yaw) * (horizontal >> 12);
     setVector(&position, camera->position.vx + offset.vx, camera->position.vy + offset.vy,
         camera->position.vz + offset.vz);
-    vs_battle_setCameraPosition(&position);
+    setCameraPosition(&position);
     setVector(&position, camera->lookAt.vx + offset.vx, camera->lookAt.vy + offset.vy,
         camera->lookAt.vz + offset.vz);
-    vs_battle_setCameraLookAt(&position);
-    vs_battle_setCameraRoll(camera->roll - 32768 + camera->unk2C);
-    vs_battle_setNearClip(camera->nearClip);
+    setCameraLookAt(&position);
+    setCameraRoll(camera->roll - 32768 + camera->unk2C);
+    setNearClip(camera->nearClip);
     vs_battle_setProjectionDistance(camera->projectionDistance);
     // BUG: arg1 is not passed, so it holds whatever $a1 was left with by the previous
     // call and whether the far clip reaches func_80098194 is unpredictable
-    ((void (*)(int))vs_battle_setFarClip)(camera->farClip);
+    ((void (*)(int))setFarClip)(camera->farClip);
     func_8007ACB0();
 }
 
@@ -6447,7 +6447,7 @@ void func_800D2904(D_800F53B8_t* arg0)
     arg0->unk8 = 0;
 }
 
-void vs_battle_addVector(VECTOR* arg0, VECTOR* arg1, VECTOR* arg2)
+static void addVectors(VECTOR* arg0, VECTOR* arg1, VECTOR* arg2)
 {
     arg2->vx = arg0->vx + arg1->vx;
     arg2->vy = arg0->vy + arg1->vy;
@@ -7060,7 +7060,7 @@ int func_800D5D74(D_800F53B8_t* arg0, func_800D5780_t* arg1)
     func_800D5D74_t* temp_a3 = (func_800D5D74_t*)(arg1->unk6 * 8 + (u_int)arg1->unk0);
 
     if (temp_a3->unk0_0 == arg0->unkD1C.unk30->unk2) {
-        func_800CF694(arg0, vs_battle_effectRenderers[temp_a3->effectRenderer],
+        func_800CF694(arg0, effectRenderers[temp_a3->effectRenderer],
             (temp_a3->unk0_9 + temp_a3->unk0_21 * 256) | (temp_a3->unk4 << 0x10));
         return func_800D5780(arg1);
     }

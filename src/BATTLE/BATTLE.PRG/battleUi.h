@@ -259,7 +259,7 @@ void vs_battle_rMemcpy(void* dest, void const* src, int size);
  */
 int vs_battle_toBCD(int value);
 int vs_battle_drawCursor(int animStep, int position);
-u_int vs_battle_keystreamBits(int value);
+u_int vs_battle_getRandBits(int value);
 void vs_battle_addTile(u_long* before, int rgb0, int xy, int wh);
 void vs_battle_insertTpage(int arg0, u_long* arg1);
 vs_TextBox* vs_battle_getTextBox(int arg0);

@@ -1323,7 +1323,7 @@ int vs_battle_script_3E(u_char* arg0, UNUSED short arg1)
         func_8009F940(
             resolveActorId(vs_battle_getShort(arg0 + 1)), 1, &sp10[2], &sp10[0]);
     } else {
-        func_8009F940(resolveActorId(vs_battle_getShort(arg0 + 1)), 0, 0, 0);
+        func_8009F940(resolveActorId(vs_battle_getShort(arg0 + 1)), 0, NULL, NULL);
     }
     return vs_battle_scriptNext;
 }

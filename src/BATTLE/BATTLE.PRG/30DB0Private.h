@@ -134,8 +134,8 @@ VS_HIDDEN(func_800A0024);
 int func_800A0104(int index, int material);
 VS_HIDDEN(func_800A0104);
 
-int func_800A01C8(int, int, int, int);
-VS_HIDDEN(func_800A01C8);
+int queueActorAnimation(int, int, int, int);
+VS_HIDDEN(queueActorAnimation);
 
 int func_800A0618(int, int, int, int);
 VS_HIDDEN(func_800A0618);

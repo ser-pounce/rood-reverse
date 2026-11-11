@@ -64,7 +64,7 @@ void func_800A29A0(D_800F4538_t* arg0)
     case 1:
         arg0->unk0.unkA_5 = 0;
         vs_battle_setActorAnimation(arg0->unk0.unkF, 0x13, 0, 8);
-        func_800A01C8(arg0->unk0.unkF, 0x14, 8, 0);
+        queueActorAnimation(arg0->unk0.unkF, 0x14, 8, 0);
         arg0->unk0.unk54.cd = 0;
         arg0->unk0.unkB_0 = 2;
         arg0->unk0.unk9_0 = 6;
@@ -88,7 +88,7 @@ void func_800A29A0(D_800F4538_t* arg0)
             slideActorToTile(arg0->unk0.unkF, &arg0->unk5EC.tile, 0);
             arg0->unk0.facing = arg0->unk5EC.vec.pad;
             vs_battle_setActorAnimation(arg0->unk0.unkF, 0x15, 0, 8);
-            func_800A01C8(arg0->unk0.unkF, 0x16, 8, 0);
+            queueActorAnimation(arg0->unk0.unkF, 0x16, 8, 0);
             arg0->unk0.unkB_0 = 3;
         }
 
@@ -183,7 +183,7 @@ void func_800A2CD4(D_800F4538_t* arg0)
 
     case 4:
         vs_battle_setActorAnimation(arg0->unk0.unkF, 7, 0, 8);
-        func_800A01C8(arg0->unk0.unkF, 37, 8, 0);
+        queueActorAnimation(arg0->unk0.unkF, 37, 8, 0);
         func_800AA620(arg0->unk0.unkF, &arg0->unk5EC.vec, -1);
         turnActorToFacing(arg0->unk0.unkF, arg0->unk5EC.vec.pad, 8);
         arg0->unk5CA = arg0->unk0.unk1A;
@@ -1553,7 +1553,7 @@ int func_800A6AA0(D_800F4538_t* actor, int speed)
             next = 20;
         }
 
-        func_800A01C8(actor->unk0.unkF, next, 4, 0);
+        queueActorAnimation(actor->unk0.unkF, next, 4, 0);
         return;
     } else if (speed > 0) {
         int step;
@@ -1595,12 +1595,12 @@ int func_800A6AA0(D_800F4538_t* actor, int speed)
             next += 2;
         }
 
-        func_800A01C8(actor->unk0.unkF, next, 4, 0);
+        queueActorAnimation(actor->unk0.unkF, next, 4, 0);
         return;
     } else {
         if (animation >= 13 && animation <= 16) {
             vs_battle_setActorAnimation(actor->unk0.unkF, 6, 0, 10);
-            func_800A01C8(actor->unk0.unkF, 1, 10, 0);
+            queueActorAnimation(actor->unk0.unkF, 1, 10, 0);
             return;
         }
 

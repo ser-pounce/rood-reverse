@@ -2335,7 +2335,7 @@ void func_8009D934(int arg0, int arg1, int arg2)
             temp_s0->unk5AC_20 = 1;
             temp_s0->unk0.weaponDrawn = 0;
 
-            func_800A01C8(arg0, 1, 16, 0);
+            queueActorAnimation(arg0, 1, 16, 0);
         } else {
 
             if (temp_s0->unk6E6 == 0) {
@@ -2348,7 +2348,7 @@ void func_8009D934(int arg0, int arg1, int arg2)
 
             temp_s0->unk5AC_20 = 1;
 
-            func_800A01C8(arg0, 1, 16, 0);
+            queueActorAnimation(arg0, 1, 16, 0);
         }
     }
 }
@@ -3278,7 +3278,7 @@ void func_8009F298(int arg0, SVECTOR* arg1, int arg2)
         func_800AD494(D_800F4538[arg0], 0xFE, &frames);
 
         if (frames != NULL) {
-            func_800A01C8((int)arg0, 0xFE, 8, 0);
+            queueActorAnimation((int)arg0, 0xFE, 8, 0);
         }
     }
 }
@@ -3802,7 +3802,7 @@ int func_800A0104(int index, int material)
     return 0;
 }
 
-int func_800A01C8(int arg0, int arg1, int arg2, int arg3)
+int queueActorAnimation(int arg0, int arg1, int arg2, int arg3)
 {
     D_800F4538_t* temp_a0 = D_800F4538[arg0];
 

@@ -1434,10 +1434,19 @@ int vs_battle_script_31_setActorLightColor(u_char* script, UNUSED short arg1)
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_32(u_char* arg0, UNUSED short arg1)
+/**
+ * Queues an animation to play when the actor's current animation ends.
+ * @param script Opcode bytes:
+ *   - [1-2] = actor selector
+ *   - [3] = animation index within the bank
+ *   - [4] = unused
+ *   - [5] = (bank << 6) | blend frames, as for playAnimation
+ */
+int vs_battle_script_32_queueAnimation(u_char* script, UNUSED short arg1)
 {
-    func_800A01C8(resolveActorId(getShort(arg0 + 1)),
-        animationBankBase[arg0[5] >> 6] + arg0[3], arg0[5] & 0x3F, 0);
+    queueActorAnimation(resolveActorId(getShort(script + 1)),
+        animationBankBase[script[5] >> 6] + script[3], script[5] & 0x3F, 0);
+
     return vs_battle_scriptNext;
 }
 
@@ -1491,7 +1500,7 @@ int vs_battle_script_35(u_char* arg0, UNUSED short arg1)
 
 int vs_battle_script_36(u_char* arg0, UNUSED short arg1)
 {
-    func_800A01C8(resolveActorId(getShort(arg0 + 1)),
+    queueActorAnimation(resolveActorId(getShort(arg0 + 1)),
         animationBankBase[arg0[6] >> 6] + arg0[3], arg0[6] & 0x3F, arg0[4]);
     return vs_battle_scriptNext;
 }

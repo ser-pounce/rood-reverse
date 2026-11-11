@@ -1622,19 +1622,31 @@ int vs_battle_script_39_setActorLookPosition(u_char* script, UNUSED short arg1)
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_3A(u_char* arg0, UNUSED short arg1)
+/**
+ * Enqueues event data: an event sequence (ESQ), which provides
+ * the animations in bank 1 of animationBankBase, and an event texture map (ETM), which
+ * holds facial animation frames.
+ * @param script Opcode bytes:
+ *   - [1-2] = event data id (E<id>.ESQ and E<id>.ETM)
+ *   - [3] = bits 0-1: slot, bits 2-3: what to load (0 the ESQ, 1 the ESQ and then the
+ *     ETM, 2 the ETM), bits 4-7: selects the VRAM slot of the ETM
+ */
+int vs_battle_script_3A_enqueueEventData(u_char* script, UNUSED short arg1)
 {
-    switch ((arg0[3] >> 2) & 3) {
+    switch ((script[3] >> 2) & 3) {
     case 0:
-        func_8007CB84(arg0[3] & 3, getShort(arg0 + 1));
+        enqueueEsq(script[3] & 3, getShort(script + 1));
         break;
+
     case 1:
-        func_8007CBDC(arg0[3] & 3, getShort(arg0 + 1), (arg0[3] >> 4) + 0x1A);
+        enqueueEsqAndEtm(script[3] & 3, getShort(script + 1), (script[3] >> 4) + 0x1A);
         break;
+
     case 2:
-        vs_battle_loadEtm(arg0[3] & 3, getShort(arg0 + 1), (arg0[3] >> 4) + 0x1A);
+        enqueueEtm(script[3] & 3, getShort(script + 1), (script[3] >> 4) + 0x1A);
         break;
     }
+
     return vs_battle_scriptNext;
 }
 

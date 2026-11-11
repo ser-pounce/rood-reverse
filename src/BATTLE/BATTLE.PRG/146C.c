@@ -9004,39 +9004,39 @@ void func_8007CAA4(int arg0)
     }
 }
 
-void func_8007CB84(int index, int wepId)
+void enqueueEsq(int index, int effectId)
 {
     vs_ObjectData objData;
 
     objData.dataType = 7;
     objData.index = index;
-    objData.modelId = wepId;
+    objData.modelId = effectId;
     objData.actorId = 1;
     vs_battle_populateDataSlot(&objData);
 }
 
 void func_8007CBBC(int arg0) { func_8009CC20(arg0, 1); }
 
-void func_8007CBDC(int index, int wepId, int arg2)
+void enqueueEsqAndEtm(int index, int effectId, int textureSlot)
 {
     vs_ObjectData objData;
 
     objData.dataType = 7;
     objData.index = index;
-    objData.modelId = wepId;
+    objData.modelId = effectId;
     objData.actorId = 2;
-    objData.unk11 = arg2;
+    objData.unk11 = textureSlot;
     vs_battle_populateDataSlot(&objData);
 }
 
-void vs_battle_loadEtm(int index, int wepId, int arg2)
+void enqueueEtm(int index, int effectId, int textureSlot)
 {
     vs_ObjectData objData;
 
     objData.dataType = 9;
     objData.index = index;
-    objData.modelId = wepId;
-    objData.unk11 = arg2;
+    objData.modelId = effectId;
+    objData.unk11 = textureSlot;
     vs_battle_populateDataSlot(&objData);
 }
 

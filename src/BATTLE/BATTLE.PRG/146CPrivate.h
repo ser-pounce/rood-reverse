@@ -182,17 +182,17 @@ VS_HIDDEN(func_8007CA20);
 void func_8007CAA4(int);
 VS_HIDDEN(func_8007CAA4);
 
-void func_8007CB84(int, int wepId);
-VS_HIDDEN(func_8007CB84);
+void enqueueEsq(int, int);
+VS_HIDDEN(enqueueEsq);
 
 void func_8007CBBC(int);
 VS_HIDDEN(func_8007CBBC);
 
-void func_8007CBDC(int, int, int);
-VS_HIDDEN(func_8007CBDC);
+void enqueueEsqAndEtm(int, int, int);
+VS_HIDDEN(enqueueEsqAndEtm);
 
-void vs_battle_loadEtm(int, int, int);
-VS_HIDDEN(vs_battle_loadEtm);
+void enqueueEtm(int, int, int);
+VS_HIDDEN(enqueueEtm);
 
 void func_8007CC4C(int);
 VS_HIDDEN(func_8007CC4C);

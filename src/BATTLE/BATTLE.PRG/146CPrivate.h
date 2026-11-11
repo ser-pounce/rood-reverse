@@ -200,8 +200,8 @@ VS_HIDDEN(func_8007CC4C);
 void func_8007CC6C(int);
 VS_HIDDEN(func_8007CC6C);
 
-int getEmptyObjectDataSlot2(void);
-VS_HIDDEN(getEmptyObjectDataSlot2);
+int getEmptyObjectDataSlot(void);
+VS_HIDDEN(getEmptyObjectDataSlot);
 
 int func_8007CF18(int);
 VS_HIDDEN(func_8007CF18);

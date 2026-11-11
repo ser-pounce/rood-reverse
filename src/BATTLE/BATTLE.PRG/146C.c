@@ -9046,7 +9046,7 @@ void func_8007CC6C(int arg0) { func_8009CE9C(arg0); }
 
 void func_8007CC8C(void) { func_8009CFA0(); }
 
-int getEmptyObjectDataSlot2(void) { return vs_battle_getEmptyObjectDataSlot(); }
+int getEmptyObjectDataSlot(void) { return vs_battle_getEmptyObjectDataSlot(); }
 
 void setNearClip(int arg0)
 {

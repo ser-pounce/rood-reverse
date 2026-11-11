@@ -1650,9 +1650,13 @@ int vs_battle_script_3A_enqueueEventData(u_char* script, UNUSED short arg1)
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_3B(UNUSED u_char* arg0, UNUSED short arg1)
+/**
+ * Waits until the object data queue is empty.
+ */
+int vs_battle_script_3B_waitDataQueueEmpty(UNUSED u_char* script, UNUSED short arg1)
 {
-    return getEmptyObjectDataSlot2() > 0 ? vs_battle_scriptRepeat : vs_battle_scriptNext;
+    // BUG: a full queue has no empty slot (-1), so this does not wait
+    return getEmptyObjectDataSlot() > 0 ? vs_battle_scriptRepeat : vs_battle_scriptNext;
 }
 
 int vs_battle_script_3C(u_char* arg0, UNUSED short arg1)

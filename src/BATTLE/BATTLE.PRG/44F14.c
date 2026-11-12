@@ -989,14 +989,14 @@ void func_800AEF94(MATRIX* camera)
                 }
 
                 view = (void*)0x1F800000;
-                view->unk4 += actor->unk6F4.unk3 * 4;
-                applyVector(&actor->unk0.position, actor->unk6F4.unk0, actor->unk6F4.unk1,
-                    actor->unk6F4.unk2, +=);
+                view->unk4 += actor->unk6F4.otDepth * 4;
+                applyVector(&actor->unk0.position, actor->unk6F4.x, actor->unk6F4.y,
+                    actor->unk6F4.z, +=);
                 func_800B002C(actor, actor->unk17FD);
                 func_800B28A8(actor, camera, actor->unk17FD);
-                view->unk4 -= actor->unk6F4.unk3 * 4;
-                applyVector(&actor->unk0.position, actor->unk6F4.unk0, actor->unk6F4.unk1,
-                    actor->unk6F4.unk2, -=);
+                view->unk4 -= actor->unk6F4.otDepth * 4;
+                applyVector(&actor->unk0.position, actor->unk6F4.x, actor->unk6F4.y,
+                    actor->unk6F4.z, -=);
             }
         }
 

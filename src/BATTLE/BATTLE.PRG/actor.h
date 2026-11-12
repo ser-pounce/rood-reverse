@@ -188,7 +188,7 @@ int func_8009CFB0(int);
 void func_8009D468(int);
 void func_8009D934(int, int, int);
 void func_8009E634(D_800F4538_t*);
-void func_8009F940(int, int, CVECTOR*, CVECTOR*);
+void vs_battle_setActorEdgeHighlight(int, int, EdgeHighlight*, CVECTOR*);
 int vs_battle_setActorAnimation(int actorId, int animation, int unused, int blendFrames);
 int func_800A0768(int, CVECTOR*);
 int setActorLightColor(int, CVECTOR*);

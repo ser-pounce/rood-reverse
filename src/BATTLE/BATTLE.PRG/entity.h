@@ -20,11 +20,11 @@ typedef struct {
 } D_800F4538_t2;
 
 typedef struct {
-    signed char unk0;
-    signed char unk1;
-    signed char unk2;
-    u_char unk3;
-} D_800F4538_unk58;
+    int x : 8;
+    int y : 8;
+    int z : 8;
+    u_int otDepth : 8;
+} EdgeHighlight;
 
 typedef struct {
     int unk0;
@@ -413,7 +413,7 @@ typedef struct {
     u_char unk6F1;
     u_char unk6F2;
     u_char unk6F3;
-    D_800F4538_unk58 unk6F4;
+    EdgeHighlight unk6F4;
     CVECTOR unk6F8;
     SVECTOR unk6FC;
     D_800F4538_unkC54 unk704;

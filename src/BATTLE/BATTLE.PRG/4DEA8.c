@@ -1688,23 +1688,51 @@ int vs_battle_script_3D_selectEventData(u_char* script, UNUSED short arg1)
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_3E(u_char* arg0, UNUSED short arg1)
+/**
+ * Sets an edge highlight for an actor: a second copy of the actor in a flat colour, displaced
+ * and pushed back in the ordering table.
+ * @param script Opcode bytes:
+ *   - [1-2] = actor selector
+ *   - [3-5] = offset x, y and z of the copy
+ *   - [6] = number of ordering table entries to push the copy back
+ *   - [7-9] = red, green and blue of the copy, all zero = no edge highlight
+ */
+int vs_battle_script_3E_setActorEdgeHighlight(u_char* script, UNUSED short arg1)
 {
-    CVECTOR sp10[6];
+// `offset` below appers to have been defined as a flat array of bytes in the original
+#ifdef NON_MATCHING
+    typedef EdgeHighlight EdgeHighlightBytes;
+#else
+    typedef struct {
+        signed char x;
+        signed char y;
+        signed char z;
+        u_char otDepth;
+    } EdgeHighlightBytes;
+#endif
 
-    sp10[0].r = arg0[7];
-    sp10[0].g = arg0[8];
-    sp10[0].b = arg0[9];
+    CVECTOR color;
+    EdgeHighlightBytes offset;
+    UNUSED int _[2];
 
-    if (sp10[0].r | sp10[0].g | sp10[0].b) {
-        sp10[2].r = arg0[3];
-        sp10[2].g = arg0[4];
-        sp10[2].b = arg0[5];
-        sp10[2].cd = arg0[6];
-        func_8009F940(resolveActorId(getShort(arg0 + 1)), 1, &sp10[2], &sp10[0]);
+    color.r = script[7];
+    color.g = script[8];
+    color.b = script[9];
+
+    if (color.r | color.g | color.b) {
+        
+        offset.x = script[3];
+        offset.y = script[4];
+        offset.z = script[5];
+        offset.otDepth = script[6];
+
+        vs_battle_setActorEdgeHighlight(
+            resolveActorId(getShort(script + 1)), 1, (EdgeHighlight*)&offset, &color);
     } else {
-        func_8009F940(resolveActorId(getShort(arg0 + 1)), 0, NULL, NULL);
+        vs_battle_setActorEdgeHighlight(
+            resolveActorId(getShort(script + 1)), 0, NULL, NULL);
     }
+
     return vs_battle_scriptNext;
 }
 

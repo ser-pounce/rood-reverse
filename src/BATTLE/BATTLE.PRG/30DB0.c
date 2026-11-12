@@ -1416,10 +1416,10 @@ setupPalettes:
         actor->unk0.unk12 = object->actorId;
         actor->unk0.unk13 = 0xFC;
         D_800F4538[actor->unk0.unk12]->unk17FD = object->index;
-        D_800F4538[actor->unk0.unk12]->unk6F4.unk0 = 0;
-        D_800F4538[actor->unk0.unk12]->unk6F4.unk1 = 0;
-        D_800F4538[actor->unk0.unk12]->unk6F4.unk2 = 0;
-        D_800F4538[actor->unk0.unk12]->unk6F4.unk3 = 8;
+        D_800F4538[actor->unk0.unk12]->unk6F4.x = 0;
+        D_800F4538[actor->unk0.unk12]->unk6F4.y = 0;
+        D_800F4538[actor->unk0.unk12]->unk6F4.z = 0;
+        D_800F4538[actor->unk0.unk12]->unk6F4.otDepth = 8;
     } else {
         actor->unk0.unk12 = 0xFF;
         attachActor(object->index, object->actorId, object->unk11, 0);
@@ -3479,7 +3479,7 @@ int func_8009F8DC(int arg0)
     return temp_v0;
 }
 
-void func_8009F940(int arg0, int arg1, CVECTOR* arg2, CVECTOR* arg3)
+void vs_battle_setActorEdgeHighlight(int arg0, int arg1, EdgeHighlight* arg2, CVECTOR* arg3)
 {
     D_800F4538_t* temp_t0 = D_800F4538[arg0];
 

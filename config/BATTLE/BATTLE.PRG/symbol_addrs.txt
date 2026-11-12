@@ -370,6 +370,7 @@ D_800E8F29 = 0x800E8F29;
 loadShpState = 0x800E8F2A;
 loadEtmState = 0x800E8F2D;
 weaponMaterialPaletteMap = 0x800E8FC8;
+weaponDrawnModes = 0x800E9B4C;
 animationBankBase = 0x800E9B58;
 skipResetPaletteOp = 0x800E9BE0;
 skipTailMarkerOp = 0x800E9BE8;

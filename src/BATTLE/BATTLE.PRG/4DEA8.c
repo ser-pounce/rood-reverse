@@ -279,13 +279,10 @@ static VECTOR* sVectorToFixedPointVector(VECTOR* arg0, SVECTOR* arg1);
 static void toNormalIntegerVector(VECTOR*, VECTOR*);
 
 extern int D_800E9B34[];
-extern int D_800E9B4C[];
+extern int weaponDrawnModes[];
 extern char animationBankBase[];
-VS_HIDDEN(animationBankBase);
 extern char skipResetPaletteOp[];
-VS_HIDDEN(skipResetPaletteOp);
 extern char skipTailMarkerOp[];
-VS_HIDDEN(skipTailMarkerOp);
 extern u_char D_800E9BEC[];
 extern u_char D_800E9BF0[];
 extern short D_800E9BF4[];
@@ -298,7 +295,6 @@ extern u_char D_800E9C28;
 extern u_char D_800E9C2C;
 extern u_short D_800F4B20;
 extern GimTween gimTweens[];
-VS_HIDDEN(gimTweens);
 extern D_800F4B88_t D_800F4B88;
 extern char D_800F4B8B;
 extern char D_800F4BA0;
@@ -332,7 +328,6 @@ extern char D_800F4C6A;
 extern char D_800F4B70[];
 extern u_short D_800F4B28[];
 extern Gim* gims;
-VS_HIDDEN(gims);
 
 int vs_battle_script_invalidOpcode(u_char* arg0, short arg1)
 {
@@ -1755,7 +1750,7 @@ int vs_battle_script_3F_setWeaponDrawn(u_char* script, UNUSED short arg1)
             break;
         }
 
-        setWeaponDrawn(actor, D_800E9B4C[script[3]]);
+        setWeaponDrawn(actor, weaponDrawnModes[script[3]]);
     }
 
     return vs_battle_scriptNext;
@@ -2398,7 +2393,7 @@ int vs_battle_script_72(u_char* arg0, UNUSED short arg1)
             return vs_battle_scriptNext;
         }
 
-        setWeaponDrawn(0, D_800E9B4C[arg0[1]]);
+        setWeaponDrawn(0, weaponDrawnModes[arg0[1]]);
 
         if (scriptSkipMode == vs_battle_scriptSkipping || arg0[2] == 0) {
         block_5:

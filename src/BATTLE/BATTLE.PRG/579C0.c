@@ -5,36 +5,18 @@
 #include "scratch.h"
 #include "src/SLUS_010.40/sfx.h"
 #include "src/SLUS_010.40/sound.h"
+#include <memory.h>
 
 #ifdef NON_MATCHING
 
 void vs_battle_copyAligned(void* dst, const void* src, int numBytes)
 {
-    short* out = dst;
-    const short* in = src;
-
-    for (; numBytes & 7; numBytes -= 2) {
-        *out = *in;
-        ++out;
-        ++in;
-    }
-
-    vs_battle_memcpy(out, in, numBytes);
+    memcpy(dst, src, numBytes);
 }
 
 void vs_battle_memcpy(void* dst, const void* src, int numBytes)
 {
-    short* out = dst;
-    const short* in = src;
-
-    for (; numBytes != 0; numBytes -= 8) {
-        out[0] = in[0];
-        out[1] = in[1];
-        out[2] = in[2];
-        out[3] = in[3];
-        out += 4;
-        in += 4;
-    }
+    memcpy(dst, src, numBytes);
 }
 
 u_long* vs_battle_setSpriteDefault(int wh, int xy)

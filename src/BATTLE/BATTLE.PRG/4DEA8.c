@@ -1689,8 +1689,8 @@ int vs_battle_script_3D_selectEventData(u_char* script, UNUSED short arg1)
 }
 
 /**
- * Sets an edge highlight for an actor: a second copy of the actor in a flat colour, displaced
- * and pushed back in the ordering table.
+ * Sets an edge highlight for an actor: a second copy of the actor in a flat colour,
+ * displaced and pushed back in the ordering table.
  * @param script Opcode bytes:
  *   - [1-2] = actor selector
  *   - [3-5] = offset x, y and z of the copy
@@ -1720,7 +1720,7 @@ int vs_battle_script_3E_setActorEdgeHighlight(u_char* script, UNUSED short arg1)
     color.b = script[9];
 
     if (color.r | color.g | color.b) {
-        
+
         offset.x = script[3];
         offset.y = script[4];
         offset.z = script[5];
@@ -1736,20 +1736,28 @@ int vs_battle_script_3E_setActorEdgeHighlight(u_char* script, UNUSED short arg1)
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_3F(u_char* arg0, UNUSED short arg1)
+/**
+ * Draws, sheathes or toggles the weapons of the selected actors.
+ * @param script Opcode bytes:
+ *   - [1-2] = actor selector
+ *   - [3] = 0 = sheathe, 1 = draw, 2 = toggle
+ */
+int vs_battle_script_3F_setWeaponDrawn(u_char* script, UNUSED short arg1)
 {
-    ActorList sp10;
-    int temp_a0;
+    ActorList actors;
 
-    expandActorSelector(getShort(arg0 + 1), &sp10);
+    expandActorSelector(getShort(script + 1), &actors);
 
     while (1) {
-        temp_a0 = nextActor(&sp10);
-        if (temp_a0 == 1) {
+        int actor = nextActor(&actors);
+
+        if (actor == 1) {
             break;
         }
-        func_8007C0AC(temp_a0, D_800E9B4C[arg0[3]]);
+
+        setWeaponDrawn(actor, D_800E9B4C[script[3]]);
     }
+
     return vs_battle_scriptNext;
 }
 
@@ -2390,7 +2398,7 @@ int vs_battle_script_72(u_char* arg0, UNUSED short arg1)
             return vs_battle_scriptNext;
         }
 
-        func_8007C0AC(0, D_800E9B4C[arg0[1]]);
+        setWeaponDrawn(0, D_800E9B4C[arg0[1]]);
 
         if (scriptSkipMode == vs_battle_scriptSkipping || arg0[2] == 0) {
         block_5:

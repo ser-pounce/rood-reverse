@@ -128,8 +128,8 @@ VS_HIDDEN(func_8007BFC0);
 void func_8007C050(void);
 VS_HIDDEN(func_8007C050);
 
-void func_8007C0AC(int, int);
-VS_HIDDEN(func_8007C0AC);
+void setWeaponDrawn(int, int);
+VS_HIDDEN(setWeaponDrawn);
 
 int func_8007C218(int);
 VS_HIDDEN(func_8007C218);

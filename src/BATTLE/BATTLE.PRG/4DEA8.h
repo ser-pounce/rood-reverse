@@ -46,7 +46,7 @@ int vs_battle_script_3B_waitDataQueueEmpty(u_char*, short);
 int vs_battle_script_3C_unloadEventData(u_char*, short);
 int vs_battle_script_3D_selectEventData(u_char*, short);
 int vs_battle_script_3E_setActorEdgeHighlight(u_char*, short);
-int vs_battle_script_3F(u_char*, short);
+int vs_battle_script_3F_setWeaponDrawn(u_char*, short);
 int vs_battle_script_40_jumpFwdIfFlag(u_char*, short);
 int vs_battle_script_41_jumpFwdIfFlags(u_char*, short);
 int vs_battle_script_42_jumpFwd(u_char*, short);

@@ -3479,7 +3479,8 @@ int func_8009F8DC(int arg0)
     return temp_v0;
 }
 
-void vs_battle_setActorEdgeHighlight(int arg0, int arg1, EdgeHighlight* arg2, CVECTOR* arg3)
+void vs_battle_setActorEdgeHighlight(
+    int arg0, int arg1, EdgeHighlight* arg2, CVECTOR* arg3)
 {
     D_800F4538_t* temp_t0 = D_800F4538[arg0];
 

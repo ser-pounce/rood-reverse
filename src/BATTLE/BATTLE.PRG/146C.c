@@ -4460,7 +4460,7 @@ void func_800734C0(void)
     for (i = 0; i < 16; ++i) {
         func_8009E5C4(i);
     }
-    func_8007C0AC(0, 2);
+    setWeaponDrawn(0, 2);
     D_800F196C = 10;
 }
 
@@ -8660,7 +8660,7 @@ void func_8007C050(void)
 
 UNUSED int isWeaponDrawn(int actor) { return vs_battle_actors[actor]->weaponDrawn & 1; }
 
-void func_8007C0AC(int arg0, int arg1)
+void setWeaponDrawn(int arg0, int arg1)
 {
     if (arg1 == 2) {
         vs_battle_actors[arg0]->weaponDrawn ^= 1;

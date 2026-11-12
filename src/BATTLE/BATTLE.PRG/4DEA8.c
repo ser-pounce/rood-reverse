@@ -1777,7 +1777,7 @@ int vs_battle_script_3F_setWeaponDrawn(u_char* script, UNUSED short arg1)
  *   - [3] = value to compare with (signed)
  *   - [4-5] = offset from this opcode to jump to if the comparison is false
  */
-int vs_battle_script_40_jumpFwdUnlessFlag(u_char* script, UNUSED short arg1)
+int vs_battle_script_40_jumpFwdUnlessFlagImm(u_char* script, UNUSED short arg1)
 {
     char flag = getStateFlag(((u_char)script[2] >> 2) | ((script[1] & 0xF) << 6));
     char value = script[3];
@@ -1829,44 +1829,62 @@ int vs_battle_script_40_jumpFwdUnlessFlag(u_char* script, UNUSED short arg1)
     return (long)&script[getShort(script + 4)];
 }
 
-int vs_battle_script_41_jumpFwdIfFlags(u_char* arg0, UNUSED short arg1)
+/**
+ * Continues if a state flag compares true against another state flag, otherwise jumps.
+ * Like jumpFwdUnlessFlagImm, but the value to compare with is a state flag (also there
+ *  is no AND op)
+ * @param script Opcode bytes:
+ *   - [1] = comparison in the high nibble (flagComparison*), bits 6-9 of the first flag
+ *     id in the low nibble
+ *   - [2] = bits 0-5 of the first flag id in bits 2-7, bits 8-9 of the second flag id in
+ *     bits 0-1
+ *   - [3] = bits 0-7 of the second flag id
+ *   - [4-5] = offset from this opcode to jump to if the comparison is false
+ */
+int vs_battle_script_41_jumpFwdUnlessFlag(u_char* script, UNUSED short arg1)
 {
-    char temp_s0 = getStateFlag(((u_char)arg0[2] >> 2) | ((arg0[1] & 0xF) << 6));
-    char temp_a0 = getStateFlag(arg0[3] | ((arg0[2] & 3) << 8));
+    char flag = getStateFlag(((u_char)script[2] >> 2) | ((script[1] & 0xF) << 6));
+    char other = getStateFlag(script[3] | ((script[2] & 3) << 8));
 
-    switch (arg0[1] & 0xF0) {
-    case 0:
-        if (temp_s0 <= temp_a0) {
+    switch (script[1] & 0xF0) {
+    case flagComparisonLe:
+        if (flag <= other) {
             return vs_battle_scriptNext;
         }
         break;
-    case 16:
-        if (temp_s0 >= temp_a0) {
+
+    case flagComparisonGe:
+        if (flag >= other) {
             return vs_battle_scriptNext;
         }
         break;
-    case 32:
-        if (temp_s0 == temp_a0) {
+
+    case flagComparisonEq:
+        if (flag == other) {
             return vs_battle_scriptNext;
         }
         break;
-    case 48:
-        if (temp_s0 != temp_a0) {
+
+    case flagComparisonNe:
+        if (flag != other) {
             return vs_battle_scriptNext;
         }
         break;
-    case 64:
-        if (temp_s0 < temp_a0) {
+
+    case flagComparisonLt:
+        if (flag < other) {
             return vs_battle_scriptNext;
         }
         break;
-    case 80:
-        if (temp_s0 > temp_a0) {
+
+    case flagComparisonGt:
+        if (flag > other) {
             return vs_battle_scriptNext;
         }
         break;
     }
-    return (long)&arg0[getShort(arg0 + 4)];
+
+    return (long)&script[getShort(script + 4)];
 }
 
 int vs_battle_script_42_jumpFwd(u_char* arg0, UNUSED short arg1)

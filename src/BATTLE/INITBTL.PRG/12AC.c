@@ -33,7 +33,7 @@ static int (*skipOpcodeTableInit[])(u_char*, short) = { vs_battle_script_invalid
     vs_battle_script_3A_enqueueEventData, vs_battle_script_3B_waitDataQueueEmpty,
     vs_battle_script_3C_unloadEventData, vs_battle_script_3D_selectEventData,
     vs_battle_script_3E_setActorEdgeHighlight, vs_battle_script_3F_setWeaponDrawn,
-    vs_battle_script_40_jumpFwdUnlessFlag, vs_battle_script_41_jumpFwdIfFlags,
+    vs_battle_script_40_jumpFwdUnlessFlagImm, vs_battle_script_41_jumpFwdUnlessFlag,
     vs_battle_script_42_jumpFwd, vs_battle_script_nop, vs_battle_script_nop,
     vs_battle_script_45_jumpFwd2, vs_battle_script_46_setFlagImmContext,
     vs_battle_script_47_jumpFwdIfFlagContext, vs_battle_script_nop, vs_battle_script_49,

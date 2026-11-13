@@ -137,7 +137,7 @@ void func_800F9CB0(void)
     sp10.b = 0;
 
     func_800A0768(1, &sp10);
-    setActorLightColor(1, 0);
+    setActorLightColor(1, NULL);
 
     temp_s0->unk648_16 = 0;
 }

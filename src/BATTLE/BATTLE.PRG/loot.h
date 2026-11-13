@@ -19,7 +19,7 @@ typedef struct {
     char unk2;
     char unk3;
     vs_InventoryBlade blade;
-} vs_LootedBlade;
+} LootedBlade;
 
 typedef struct {
     char difficultyFlags;
@@ -27,7 +27,7 @@ typedef struct {
     char unk2;
     char unk3;
     vs_InventoryGrip grip;
-} vs_LootedGrip;
+} LootedGrip;
 
 typedef struct {
     char difficultyFlags;
@@ -44,7 +44,7 @@ typedef struct {
     char unk2;
     char unk3;
     vs_InventoryArmor armor;
-} vs_LootedArmor;
+} LootedArmor;
 
 typedef struct {
     char difficultyFlags;
@@ -52,7 +52,7 @@ typedef struct {
     char unk2;
     char unk3;
     vs_InventoryArmor accessory;
-} vs_LootedAccessory;
+} LootedAccessory;
 
 typedef struct {
     char difficultyFlags;
@@ -60,7 +60,7 @@ typedef struct {
     char unk2;
     char unk3;
     vs_InventoryGem gem;
-} vs_LootedGem;
+} LootedGem;
 
 typedef struct {
     u_short id;
@@ -70,11 +70,11 @@ typedef struct {
 
 typedef struct {
     vs_LootedWeapon weapon;
-    vs_LootedBlade blade;
-    vs_LootedGrip grip;
+    LootedBlade blade;
+    LootedGrip grip;
     vs_LootedShield shield; // 0xF0
-    vs_LootedArmor armor[2]; // 0x170
-    vs_LootedAccessory accessory; // 0x1C8
-    vs_LootedGem gem; // 0x1F4
+    LootedArmor armor[2]; // 0x170
+    LootedAccessory accessory; // 0x1C8
+    LootedGem gem; // 0x1F4
     vs_LootedMisc misc[3]; // 0x214
 } vs_Loot;

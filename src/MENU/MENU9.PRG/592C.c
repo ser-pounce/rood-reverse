@@ -163,7 +163,7 @@ static char paletteFlags[256] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 static char modelVariants[] = { 30, 31, 32, 33, 172, 173 };
 static char variantMap[] = { 27, 27, 72, 72, 80, 80, 72, 52 };
 
-static vs_Main_CdQueueSlot* zudCdSlot;
+static vs_CdQueueSlot* zudCdSlot;
 static ZudData* zudData;
 static void* zudBuffer;
 static int modelVariant;
@@ -173,7 +173,7 @@ void vs_menu9_loadZudFile(int id)
 {
     static int zudIndex;
 
-    vs_Main_CdFile cdFile;
+    vs_CdFile cdFile;
     int i;
 
     cdFile.lba = zudLbas[id];
@@ -208,7 +208,7 @@ int vs_menu9_parseZudFile(void)
     vs_ObjectData slot;
 
     if (zudCdSlot != NULL) {
-        if (zudCdSlot->state != vs_main_CdQueueStateLoaded) {
+        if (zudCdSlot->state != CdQueueStateLoaded) {
             return 1;
         }
 

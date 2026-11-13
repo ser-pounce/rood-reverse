@@ -215,12 +215,12 @@ static void menuReady(void) { vs_mainmenu_ready(); }
 
 static int loadMapBackground(int arg0)
 {
-    static vs_Main_CdQueueSlot* slot;
+    static vs_CdQueueSlot* slot;
     static u_short* buf;
     static int state;
 
     if (arg0 != 0) {
-        vs_Main_CdFile cdFile;
+        vs_CdFile cdFile;
         cdFile.lba = VS_MAPBG_BIN_LBA;
         cdFile.size = VS_MAPBG_BIN_SIZE;
         slot = vs_main_allocateCdQueueSlot(&cdFile);
@@ -377,7 +377,7 @@ int vs_menu5_exec(u_char* state)
 
 #include "src/MENU/unused_vertices.h"
 
-static vs_Main_CdFile const sceneArmFiles[] = { { VS_DUMMY_ARM_LBA, VS_DUMMY_ARM_SIZE },
+static vs_CdFile const sceneArmFiles[] = { { VS_DUMMY_ARM_LBA, VS_DUMMY_ARM_SIZE },
     { VS_SCEN001_ARM_LBA, VS_SCEN001_ARM_SIZE },
     { VS_SCEN002_ARM_LBA, VS_SCEN002_ARM_SIZE },
     { VS_SCEN003_ARM_LBA, VS_SCEN003_ARM_SIZE },
@@ -443,7 +443,7 @@ static UNUSED short _1[2];
 static SVECTOR cameraAngles;
 static SVECTOR cameraPos;
 static SVECTOR centerPoint;
-static vs_Main_CdQueueSlot* sceneCdQueueSlot;
+static vs_CdQueueSlot* sceneCdQueueSlot;
 static void* armFileBuff;
 static int sceneRowIdMap[32];
 static int quitState;
@@ -504,7 +504,7 @@ static int loadArmFile(void)
         return 0;
     }
 
-    if (sceneCdQueueSlot->state != vs_main_CdQueueStateLoaded) {
+    if (sceneCdQueueSlot->state != CdQueueStateLoaded) {
         return 0;
     }
 
@@ -850,8 +850,7 @@ static int menuManager(void)
     case initNewMap:
         geomOffsetX += 64;
 
-        if ((sceneCdQueueSlot->state == vs_main_CdQueueStateLoaded)
-            && (geomOffsetX >= 384)) {
+        if ((sceneCdQueueSlot->state == CdQueueStateLoaded) && (geomOffsetX >= 384)) {
 
             isPaling = 0;
 

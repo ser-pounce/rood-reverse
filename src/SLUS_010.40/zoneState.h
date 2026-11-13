@@ -17,7 +17,7 @@ typedef struct {
     short limbHP[6];
     UNUSED short _;
     int statuses;
-    vs_battle_tilePosition tile;
+    vs_TilePosition tile;
 } vs_SavedEnemyState;
 
 typedef struct {

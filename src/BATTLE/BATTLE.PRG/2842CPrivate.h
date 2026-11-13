@@ -2,8 +2,8 @@
 #include "common.h"
 #include "2842C.h"
 
-short vs_battle_clamp(short arg0, int arg1, int arg2);
-VS_HIDDEN(vs_battle_clamp);
+short clamp(short arg0, int arg1, int arg2);
+VS_HIDDEN(clamp);
 
 void func_80090C2C(int arg0);
 VS_HIDDEN(func_80090C2C);
@@ -29,7 +29,7 @@ VS_HIDDEN(func_800913BC);
 void func_80091468(int, int);
 VS_HIDDEN(func_80091468);
 
-void func_8009147C(vs_BackgroundLayout*, int, int, int);
+void func_8009147C(BackgroundLayout*, int, int, int);
 VS_HIDDEN(func_8009147C);
 
 void func_800918E8(int);

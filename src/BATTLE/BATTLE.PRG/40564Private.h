@@ -17,29 +17,29 @@ VS_HIDDEN(func_800A92B8);
 int func_800A9378(int, int, int, int);
 VS_HIDDEN(func_800A9378);
 
-void func_800A97EC(int, vs_battle_tilePosition*, int, int);
-VS_HIDDEN(func_800A97EC);
+void moveActorToTile(int, vs_TilePosition*, int, int);
+VS_HIDDEN(moveActorToTile);
 
-void func_800A9988(int, SVECTOR*, int, int);
-VS_HIDDEN(func_800A9988);
+void moveActorToCoordinate(int, SVECTOR*, int, int);
+VS_HIDDEN(moveActorToCoordinate);
 
-void func_800A9C54(int, vs_battle_tilePosition*, int);
-VS_HIDDEN(func_800A9C54);
+void slideActorToTile(int, vs_TilePosition*, int);
+VS_HIDDEN(slideActorToTile);
 
-void func_800A9CDC(int, vs_battle_tilePosition*, int);
-VS_HIDDEN(func_800A9CDC);
+void turnActorToFaceTile(int, vs_TilePosition*, int);
+VS_HIDDEN(turnActorToFaceTile);
 
 void func_800A9D24(int, SVECTOR*, int);
 VS_HIDDEN(func_800A9D24);
 
-void func_800A9D90(int, SVECTOR*, int);
-VS_HIDDEN(func_800A9D90);
+void slideActorToCoordinate(int, SVECTOR*, int);
+VS_HIDDEN(slideActorToCoordinate);
 
-void func_800A9E38(int, short, int);
-VS_HIDDEN(func_800A9E38);
+void turnActorToRelativeFacing(int, short, int);
+VS_HIDDEN(turnActorToRelativeFacing);
 
-void func_800A9EB4(int, short, int);
-VS_HIDDEN(func_800A9EB4);
+void turnActorToFacing(int, short, int);
+VS_HIDDEN(turnActorToFacing);
 
 void func_800A9F64(int, SVECTOR*, int);
 VS_HIDDEN(func_800A9F64);
@@ -47,7 +47,7 @@ VS_HIDDEN(func_800A9F64);
 void func_800A9FD0(int, SVECTOR*, int);
 VS_HIDDEN(func_800A9FD0);
 
-void func_800AA454(int, vs_battle_tilePosition*, int);
+void func_800AA454(int, vs_TilePosition*, int);
 VS_HIDDEN(func_800AA454);
 
 void func_800AA620(int, SVECTOR*, int);
@@ -56,8 +56,8 @@ VS_HIDDEN(func_800AA620);
 void func_800AA850(int, short, int);
 VS_HIDDEN(func_800AA850);
 
-void func_800AABD0(int, SVECTOR*, int);
-VS_HIDDEN(func_800AABD0);
+void setActorScale(int, SVECTOR*, int);
+VS_HIDDEN(setActorScale);
 
 void func_800AACDC(void);
 VS_HIDDEN(func_800AACDC);
@@ -92,8 +92,8 @@ VS_HIDDEN(func_800AC440);
 void func_800AC500(D_800F4538_t* arg0);
 VS_HIDDEN(func_800AC500);
 
-void func_800AC540(int arg0, D_800F4538_t* arg1);
-VS_HIDDEN(func_800AC540);
+void processActorMove(int arg0, D_800F4538_t* arg1);
+VS_HIDDEN(processActorMove);
 
 void func_800AC690(int, D_800F4538_t*);
 VS_HIDDEN(func_800AC690);

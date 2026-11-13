@@ -173,11 +173,11 @@ typedef struct {
     UNUSED u_char _[0x54];
 } ClutState;
 
-typedef struct vs_Main_HeapHeader {
-    struct vs_Main_HeapHeader* prev;
-    struct vs_Main_HeapHeader* next;
+typedef struct HeapHeader {
+    struct HeapHeader* prev;
+    struct HeapHeader* next;
     u_int blockSz;
-} __attribute__((aligned(16))) vs_Main_HeapHeader;
+} __attribute__((aligned(16))) HeapHeader;
 
 void __main(void);
 static void unlockPadModeSwitch(void);
@@ -667,7 +667,7 @@ u_char vs_main_locationZoneMapIds[] = { 100, 0, 1, 0, 2, 0, 3, 0, 4, 0, 5, 0, 6,
         VS_ZONE##file##_ZND_LBA, VS_ZONE##file##_ZND_SIZE \
     }
 
-vs_Main_CdFile vs_main_zndFiles[] = { ZNDLBA(000), ZNDLBA(001), ZNDLBA(002), ZNDLBA(003),
+vs_CdFile vs_main_zndFiles[] = { ZNDLBA(000), ZNDLBA(001), ZNDLBA(002), ZNDLBA(003),
     ZNDLBA(004), ZNDLBA(005), ZNDLBA(006), ZNDLBA(007), ZNDLBA(008), ZNDLBA(009),
     ZNDLBA(010), ZNDLBA(011), ZNDLBA(012), ZNDLBA(013), ZNDLBA(014), ZNDLBA(015),
     ZNDLBA(016), ZNDLBA(017), ZNDLBA(018), ZNDLBA(019), ZNDLBA(020), ZNDLBA(021),
@@ -765,8 +765,8 @@ u_char vs_main_actorExtraShp[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
 
 static void loadBattlePrg(void)
 {
-    vs_Main_CdFile cdFile;
-    vs_Main_CdQueueSlot* slot;
+    vs_CdFile cdFile;
+    vs_CdQueueSlot* slot;
 
     cdFile.lba = VS_BATTLE_PRG_LBA;
     cdFile.size = VS_BATTLE_PRG_SIZE;
@@ -774,7 +774,7 @@ static void loadBattlePrg(void)
     slot = vs_main_allocateCdQueueSlot(&cdFile);
     vs_main_cdEnqueuePriority(slot, vs_overlay_slots[0]);
 
-    while (slot->state != vs_main_CdQueueStateLoaded) {
+    while (slot->state != CdQueueStateLoaded) {
         vs_main_gametimeUpdate(0);
     }
 
@@ -786,7 +786,7 @@ static void loadBattlePrg(void)
     slot = vs_main_allocateCdQueueSlot(&cdFile);
     vs_main_cdEnqueuePriority(slot, vs_overlay_slots[1]);
 
-    while (slot->state != vs_main_CdQueueStateLoaded) {
+    while (slot->state != CdQueueStateLoaded) {
         vs_main_gametimeUpdate(0);
     }
 
@@ -796,8 +796,8 @@ static void loadBattlePrg(void)
 
 static void loadTitlePrg(void)
 {
-    vs_Main_CdFile cdFile;
-    vs_Main_CdQueueSlot* slot;
+    vs_CdFile cdFile;
+    vs_CdQueueSlot* slot;
 
     cdFile.lba = VS_TITLE_PRG_LBA;
     cdFile.size = VS_TITLE_PRG_SIZE;
@@ -805,7 +805,7 @@ static void loadTitlePrg(void)
     slot = vs_main_allocateCdQueueSlot(&cdFile);
     vs_main_cdEnqueuePriority(slot, vs_overlay_slots[0]);
 
-    while (slot->state != vs_main_CdQueueStateLoaded) {
+    while (slot->state != CdQueueStateLoaded) {
         vs_main_gametimeUpdate(0);
     }
 
@@ -815,8 +815,8 @@ static void loadTitlePrg(void)
 
 static void loadEndingPrg(void)
 {
-    vs_Main_CdFile cdFile;
-    vs_Main_CdQueueSlot* slot;
+    vs_CdFile cdFile;
+    vs_CdQueueSlot* slot;
 
     cdFile.lba = VS_ENDING_PRG_LBA;
     cdFile.size = VS_ENDING_PRG_SIZE;
@@ -824,7 +824,7 @@ static void loadEndingPrg(void)
     slot = vs_main_allocateCdQueueSlot(&cdFile);
     vs_main_cdEnqueuePriority(slot, vs_overlay_slots[0]);
 
-    while (slot->state != vs_main_CdQueueStateLoaded) {
+    while (slot->state != CdQueueStateLoaded) {
         vs_main_gametimeUpdate(0);
     }
 
@@ -842,15 +842,15 @@ static struct {
 } padAct;
 PortInfo vs_main_portInfo[2];
 static UNUSED u_char _2[2];
-static vs_Main_HeapHeader heapList;
-static UNUSED vs_Main_HeapHeader unusedHeap;
+static HeapHeader heapList;
+static UNUSED HeapHeader unusedHeap;
 static DslLOC cdReadLoc;
 static int cdaTrack;
 static int cdaMinute;
 static int cdaSecond;
 static int cdaPeak;
 static UNUSED int _3;
-static vs_Main_CdQueueSlot cdQueue[32];
+static vs_CdQueueSlot cdQueue[32];
 static CdQueueCount cdQueueCount;
 static UNUSED int _4;
 vs_BattleTimer vs_main_battleTimer;
@@ -1771,8 +1771,7 @@ int vs_main_processPadState(void)
     return 1;
 }
 
-static inline void insertFreeBlock(
-    vs_Main_HeapHeader* freeNode, vs_Main_HeapHeader* target)
+static inline void insertFreeBlock(HeapHeader* freeNode, HeapHeader* target)
 {
     if ((target + target->blockSz) == freeNode->next) {
         target->blockSz += freeNode->next->blockSz;
@@ -1796,8 +1795,8 @@ static inline void insertFreeBlock(
 
 void vs_main_freeHeapR(void* block)
 {
-    vs_Main_HeapHeader* freeNode = heapList.prev;
-    vs_Main_HeapHeader* target = (vs_Main_HeapHeader*)block - 1;
+    HeapHeader* freeNode = heapList.prev;
+    HeapHeader* target = (HeapHeader*)block - 1;
 
     for (; freeNode >= target || target >= freeNode->next; freeNode = freeNode->prev) {
         if (freeNode >= freeNode->next
@@ -1811,8 +1810,8 @@ void vs_main_freeHeapR(void* block)
 
 void vs_main_freeHeap(void* block)
 {
-    vs_Main_HeapHeader* freeNode = heapList.next;
-    vs_Main_HeapHeader* target = (vs_Main_HeapHeader*)block - 1;
+    HeapHeader* freeNode = heapList.next;
+    HeapHeader* target = (HeapHeader*)block - 1;
 
     for (; freeNode >= target || target >= freeNode->next; freeNode = freeNode->next) {
         if (freeNode >= freeNode->next
@@ -1827,8 +1826,8 @@ void vs_main_freeHeap(void* block)
 void* vs_main_allocHeapR(u_int size)
 {
     u_int blockSz = ((size + 15) >> 4) + 1;
-    vs_Main_HeapHeader* lastNode = &heapList;
-    vs_Main_HeapHeader* freeNode = heapList.prev;
+    HeapHeader* lastNode = &heapList;
+    HeapHeader* freeNode = heapList.prev;
 
     while (1) {
         if (freeNode->blockSz >= blockSz) {
@@ -1857,8 +1856,8 @@ void* vs_main_allocHeapR(u_int size)
 
 void* vs_main_allocHeap(u_int size)
 {
-    vs_Main_HeapHeader* lastNode = &heapList;
-    vs_Main_HeapHeader* freeNode = heapList.next;
+    HeapHeader* lastNode = &heapList;
+    HeapHeader* freeNode = heapList.next;
     u_int blockSz = ((size + 0xF) >> 4) + 1;
 
     while (1) {
@@ -1868,7 +1867,7 @@ void* vs_main_allocHeap(u_int size)
                 lastNode->next = freeNode->next;
                 freeNode->next->prev = freeNode->prev;
             } else {
-                vs_Main_HeapHeader* remainder = freeNode + blockSz;
+                HeapHeader* remainder = freeNode + blockSz;
                 remainder->blockSz = freeNode->blockSz - blockSz;
                 remainder->prev = freeNode->prev;
                 remainder->next = freeNode->next;
@@ -1892,7 +1891,7 @@ void* vs_main_allocHeap(u_int size)
 
 void vs_main_initHeap(void* heap, u_int size)
 {
-    vs_Main_HeapHeader* node = heap;
+    HeapHeader* node = heap;
 
     heapList.prev = node;
     heapList.next = node;
@@ -2373,19 +2372,19 @@ static void initCdQueue(void)
     int i;
 
     for (i = 31; i >= 0; --i) {
-        cdQueue[i].state = vs_main_CdQueueStateFree;
+        cdQueue[i].state = CdQueueStateFree;
     }
 
     cdQueueCount = (CdQueueCount) { 0, 0 };
 }
 
-vs_Main_CdQueueSlot* vs_main_allocateCdQueueSlot(vs_Main_CdFile const* file)
+vs_CdQueueSlot* vs_main_allocateCdQueueSlot(vs_CdFile const* file)
 {
     int i;
 
     for (i = 0; i < 32; ++i) {
-        if (cdQueue[i].state == vs_main_CdQueueStateFree) {
-            cdQueue[i].state = vs_main_CdQueueStateAllocated;
+        if (cdQueue[i].state == CdQueueStateFree) {
+            cdQueue[i].state = CdQueueStateAllocated;
             cdQueue[i].cdFile = *file;
             return &cdQueue[i];
         }
@@ -2394,37 +2393,37 @@ vs_Main_CdQueueSlot* vs_main_allocateCdQueueSlot(vs_Main_CdFile const* file)
     vs_main_nop9(162, 0);
 }
 
-void vs_main_freeCdQueueSlot(vs_Main_CdQueueSlot* slot)
+void vs_main_freeCdQueueSlot(vs_CdQueueSlot* slot)
 {
     u_short state = slot->state - 2;
 
-    if (state < vs_main_CdQueueStateLoaded - 2) {
+    if (state < CdQueueStateLoaded - 2) {
         vs_main_nop9(163, 0);
     }
 
-    slot->state = vs_main_CdQueueStateFree;
+    slot->state = CdQueueStateFree;
 }
 
-void vs_main_cdEnqueue(vs_Main_CdQueueSlot* slot, void* vram)
+void vs_main_cdEnqueue(vs_CdQueueSlot* slot, void* vram)
 {
-    slot->state = vs_main_CdQueueStateEnqueued;
+    slot->state = CdQueueStateEnqueued;
     slot->vram = vram;
     slot->unused = 0;
     slot->priority = cdQueueCount.queued++;
 }
 
-void vs_main_cdEnqueuePriority(vs_Main_CdQueueSlot* slot, void* vram)
+void vs_main_cdEnqueuePriority(vs_CdQueueSlot* slot, void* vram)
 {
     int i;
-    vs_Main_CdQueueSlot* queue = cdQueue;
+    vs_CdQueueSlot* queue = cdQueue;
 
     for (i = 0; i < 32; ++i, ++queue) {
-        if (queue->state == vs_main_CdQueueStateEnqueued) {
+        if (queue->state == CdQueueStateEnqueued) {
             ++queue->priority;
         }
     }
 
-    slot->state = vs_main_CdQueueStateEnqueued;
+    slot->state = CdQueueStateEnqueued;
     slot->vram = vram;
     slot->unused = 0;
     slot->priority = 0;
@@ -2439,17 +2438,17 @@ static void processCdQueue(void)
 
     if (cdQueueCount.processing || cdQueueCount.queued) {
 
-        vs_Main_CdQueueSlot* slot = cdQueue;
+        vs_CdQueueSlot* slot = cdQueue;
 
         int i = diskGetState();
 
         if (i == diskIdle) {
 
             for (i = 0; i < 32; ++i, ++slot) {
-                if (slot->state == vs_main_CdQueueStateEnqueued) {
+                if (slot->state == CdQueueStateEnqueued) {
                     if (slot->priority == 0) {
 
-                        slot->state = vs_main_CdQueueStateReading;
+                        slot->state = CdQueueStateReading;
 
                         diskInitRead(slot->cdFile.lba, slot->cdFile.size, slot->vram);
 
@@ -2460,8 +2459,8 @@ static void processCdQueue(void)
                         --slot->priority;
                     }
 
-                } else if (slot->state == vs_main_CdQueueStateReading) {
-                    slot->state = vs_main_CdQueueStateLoaded;
+                } else if (slot->state == CdQueueStateReading) {
+                    slot->state = CdQueueStateLoaded;
                     --cdQueueCount.processing;
                 }
             }
@@ -2611,7 +2610,7 @@ int vs_main_loadMusicSlot(int id, int targetSlot)
         if (targetSlot < 5) {
             if (vs_main_soundData.musicIds[slot] != id) {
 
-                vs_Main_CdFile cdFile;
+                vs_CdFile cdFile;
 
                 if (vs_main_soundData.musicData[slot] != 0) {
                     vs_main_nop10(142, 0);
@@ -2622,8 +2621,7 @@ int vs_main_loadMusicSlot(int id, int targetSlot)
                 cdFile.size = musicFileSizes[id];
 
                 if ((vs_main_soundData.musicQueueSlot[slot] != 0)
-                    && (vs_main_soundData.musicQueueSlot[slot]
-                        != (vs_Main_CdQueueSlot*)-1)) {
+                    && (vs_main_soundData.musicQueueSlot[slot] != (vs_CdQueueSlot*)-1)) {
                     vs_main_nop9(0x98, 0);
                 }
 
@@ -2668,8 +2666,7 @@ int vs_main_clearMusicLoadSlot(u_int slot)
     if ((slot - 1) < 4) {
         if (vs_main_soundData.musicQueueSlot[slot - 1] != 0) {
 
-            if (vs_main_soundData.musicQueueSlot[slot - 1]->state
-                == vs_main_CdQueueStateLoaded) {
+            if (vs_main_soundData.musicQueueSlot[slot - 1]->state == CdQueueStateLoaded) {
 
                 vs_main_freeCdQueueSlot(vs_main_soundData.musicQueueSlot[slot - 1]);
                 vs_main_soundData.musicQueueSlot[slot - 1] = NULL;
@@ -2677,11 +2674,10 @@ int vs_main_clearMusicLoadSlot(u_int slot)
                 return 0;
             }
 
-            if (vs_main_soundData.musicQueueSlot[slot - 1]->state
-                == vs_main_CdQueueStateError) {
+            if (vs_main_soundData.musicQueueSlot[slot - 1]->state == CdQueueStateError) {
 
                 vs_main_freeCdQueueSlot(vs_main_soundData.musicQueueSlot[slot - 1]);
-                vs_main_soundData.musicQueueSlot[slot - 1] = (vs_Main_CdQueueSlot*)-1;
+                vs_main_soundData.musicQueueSlot[slot - 1] = (vs_CdQueueSlot*)-1;
 
                 return -1;
             }
@@ -3094,13 +3090,13 @@ int vs_main_loadSfxSlot(int id, u_int slot)
     if (slot - 1 < 3) {
         if (vs_main_soundData.sfxData[slot - 1] == NULL) {
 
-            vs_Main_CdFile cdFile;
+            vs_CdFile cdFile;
             u_int index = slot - 1;
             cdFile.lba = seLBAs[id];
             cdFile.size = seFileSizes[id];
 
             if ((vs_main_soundData.sfxQueueSlot[index] != NULL)
-                && (vs_main_soundData.sfxQueueSlot[index] != (vs_Main_CdQueueSlot*)-1)) {
+                && (vs_main_soundData.sfxQueueSlot[index] != (vs_CdQueueSlot*)-1)) {
                 vs_main_nop9(0x8F, 0);
             }
 
@@ -3141,8 +3137,7 @@ int vs_main_freeSfxQueueSlot(u_int slot)
     if ((slot - 1) < 3) {
         if (vs_main_soundData.sfxQueueSlot[slot - 1] != NULL) {
 
-            if (vs_main_soundData.sfxQueueSlot[slot - 1]->state
-                == vs_main_CdQueueStateLoaded) {
+            if (vs_main_soundData.sfxQueueSlot[slot - 1]->state == CdQueueStateLoaded) {
 
                 vs_main_freeCdQueueSlot(vs_main_soundData.sfxQueueSlot[slot - 1]);
                 vs_main_soundData.sfxQueueSlot[slot - 1] = NULL;
@@ -3150,11 +3145,10 @@ int vs_main_freeSfxQueueSlot(u_int slot)
                 return 0;
             }
 
-            if (vs_main_soundData.sfxQueueSlot[slot - 1]->state
-                == vs_main_CdQueueStateError) {
+            if (vs_main_soundData.sfxQueueSlot[slot - 1]->state == CdQueueStateError) {
 
                 vs_main_freeCdQueueSlot(vs_main_soundData.sfxQueueSlot[slot - 1]);
-                vs_main_soundData.sfxQueueSlot[slot - 1] = (vs_Main_CdQueueSlot*)-1;
+                vs_main_soundData.sfxQueueSlot[slot - 1] = (vs_CdQueueSlot*)-1;
 
                 return -1;
             }
@@ -3451,7 +3445,7 @@ int vs_main_clearCutsceneStreamSlot3(void)
 
 static void loadSoundFile(int file)
 {
-    vs_Main_CdFile cdFile;
+    vs_CdFile cdFile;
     int loadedBanks = Sound_GetLoadedMusicBankIds();
 
     if (loadedBanks % 0x10000 == file || loadedBanks / 0x10000 == file) {
@@ -3462,7 +3456,7 @@ static void loadSoundFile(int file)
     cdFile.size = soundFileSizes[file];
 
     if (vs_main_soundData.soundQueueSlot != NULL
-        && vs_main_soundData.soundQueueSlot != (vs_Main_CdQueueSlot*)-1) {
+        && vs_main_soundData.soundQueueSlot != (vs_CdQueueSlot*)-1) {
         vs_main_nop9(0x93, 0);
     }
 
@@ -3495,7 +3489,7 @@ static inline void releaseSoundQueue(void)
 int vs_main_processSoundQueue(void)
 {
     if (vs_main_soundData.soundQueueSlot != NULL) {
-        if (vs_main_soundData.soundQueueSlot->state == vs_main_CdQueueStateDispatched) {
+        if (vs_main_soundData.soundQueueSlot->state == CdQueueStateDispatched) {
 
             int isTransferring = IsSpuTransferring();
 
@@ -3514,15 +3508,15 @@ int vs_main_processSoundQueue(void)
             return 1;
         }
 
-        if (vs_main_soundData.soundQueueSlot->state == vs_main_CdQueueStateLoaded) {
+        if (vs_main_soundData.soundQueueSlot->state == CdQueueStateLoaded) {
 
-            vs_main_soundData.soundQueueSlot->state = vs_main_CdQueueStateDispatched;
+            vs_main_soundData.soundQueueSlot->state = CdQueueStateDispatched;
             Sound_LoadMusicBank(vs_main_soundData.soundData, 0);
 
             return 1;
         }
 
-        if (vs_main_soundData.soundQueueSlot->state == vs_main_CdQueueStateError) {
+        if (vs_main_soundData.soundQueueSlot->state == CdQueueStateError) {
             releaseSoundQueue();
 
             return -1;

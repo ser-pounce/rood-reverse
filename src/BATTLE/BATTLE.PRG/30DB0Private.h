@@ -41,8 +41,8 @@ VS_HIDDEN(func_8009D854);
 void func_8009D88C(int);
 VS_HIDDEN(func_8009D88C);
 
-void func_8009DBDC(int, int);
-VS_HIDDEN(func_8009DBDC);
+void playWeaponSfx(int, int);
+VS_HIDDEN(playWeaponSfx);
 
 void func_8009DC38(int);
 VS_HIDDEN(func_8009DC38);
@@ -107,14 +107,14 @@ VS_HIDDEN(func_8009F898);
 int func_8009F8DC(int);
 VS_HIDDEN(func_8009F8DC);
 
-void func_8009F990(int, D_800F4538_unk64*);
-VS_HIDDEN(func_8009F990);
+void setActorsSfxOverride(int, SfxOverride*);
+VS_HIDDEN(setActorsSfxOverride);
 
-int func_8009FBD8(int, int);
-VS_HIDDEN(func_8009FBD8);
+int setActorMoveAnimation(int, int);
+VS_HIDDEN(setActorMoveAnimation);
 
-int func_8009FC60(int, int, SVECTOR*, int);
-VS_HIDDEN(func_8009FC60);
+int setActorLook(int, int, SVECTOR*, int);
+VS_HIDDEN(setActorLook);
 
 int func_8009FD5C(int, int, int);
 VS_HIDDEN(func_8009FD5C);
@@ -122,23 +122,23 @@ VS_HIDDEN(func_8009FD5C);
 int func_8009FE74(int arg0, int arg1);
 VS_HIDDEN(func_8009FE74);
 
-void func_8009FF08(int, int, int, int);
-VS_HIDDEN(func_8009FF08);
+void attachActor(int, int, int, int);
+VS_HIDDEN(attachActor);
 
-int func_8009FFA8(int arg0, int arg1);
-VS_HIDDEN(func_8009FFA8);
+int detachActor(int arg0, int arg1);
+VS_HIDDEN(detachActor);
 
-int func_800A0024(int arg0, vs_ActorLocation* arg1);
+int func_800A0024(int arg0, ActorLocation* arg1);
 VS_HIDDEN(func_800A0024);
 
 int func_800A0104(int index, int material);
 VS_HIDDEN(func_800A0104);
 
-int func_800A01C8(int, int, int, int);
-VS_HIDDEN(func_800A01C8);
+int queueActorAnimation(int, int, int, int);
+VS_HIDDEN(queueActorAnimation);
 
-int func_800A0618(int, int, int, int);
-VS_HIDDEN(func_800A0618);
+int setActorAnimationFromFrame(int, int, int, int);
+VS_HIDDEN(setActorAnimationFromFrame);
 
 void func_800A0870(int);
 VS_HIDDEN(func_800A0870);

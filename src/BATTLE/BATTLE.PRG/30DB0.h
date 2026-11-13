@@ -35,11 +35,11 @@ typedef struct {
     short clut0;
     short clut1;
     u_char refCount;
-} vs_TexInfo;
+} TexInfo;
 
 extern WepModelOffsets* vs_battle_commonWepBuffs[];
-extern vs_TexInfo D_800F46A8[];
-extern vs_TexInfo vs_battle_wepTextures[20];
+extern TexInfo D_800F46A8[];
+extern TexInfo vs_battle_wepTextures[20];
 extern char D_800E8FC0;
 extern void* D_800F4768;
 extern void* D_800F4930;

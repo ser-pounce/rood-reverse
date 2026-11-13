@@ -148,13 +148,13 @@ typedef struct {
     u_short id;
     char count;
     char unk3;
-} vs_UiMisc;
+} UiMisc;
 
 typedef struct {
     u_short id;
     char dropRate;
     char unk3;
-} vs_UiMiscRand;
+} UiMiscRand;
 
 typedef struct {
     vs_UiEquipment blade;

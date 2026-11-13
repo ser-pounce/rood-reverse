@@ -1121,10 +1121,10 @@ void vs_mainMenu_initItem(int itemCategory, int index)
 int vs_mainMenu_loadItemText(int load)
 {
     static UNUSED int bss_2; // Garbage, patched in MAINMENU_PRG.py
-    static vs_Main_CdQueueSlot* itemNamesCdQueueSlot;
+    static vs_CdQueueSlot* itemNamesCdQueueSlot;
     static char itemNamesLoading;
 
-    vs_Main_CdFile cdFile;
+    vs_CdFile cdFile;
 
     if (load != 0) {
 

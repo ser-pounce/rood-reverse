@@ -382,7 +382,7 @@ static void func_800F9CCC(void)
     int bladeMaterial;
     int shieldMaterial;
 
-    vs_battle_tilePosition sp20;
+    vs_TilePosition sp20;
 
     sp20.x = 4;
     sp20.z = 2;

@@ -93,18 +93,11 @@ void func_800F9A78(int arg0)
     temp_s3->unk5B5 = temp_s2->unk5B5;
 }
 
-typedef struct {
-    u_int unk0_0 : 8;
-    u_int unk0_8 : 8;
-    u_int unk0_16 : 8;
-    u_int unk0_24 : 8;
-} D_800F4538_unk58_3;
-
 void func_800F9CB0(void)
 {
     CVECTOR sp10;
     int new_var;
-    D_800F4538_unk58_3 sp18;
+    EdgeHighlight sp18;
     D_800F4538_t* temp_s0;
     int i;
 
@@ -128,13 +121,13 @@ void func_800F9CB0(void)
     sp10.g = -1;
     sp10.b = -1;
 
-    sp18.unk0_0 = 2;
-    sp18.unk0_8 = 254;
-    sp18.unk0_16 = 2;
-    sp18.unk0_24 = 16;
+    sp18.x = 2;
+    sp18.y = 254;
+    sp18.z = 2;
+    sp18.otDepth = 16;
 
     if (D_800F4538[16] == NULL) {
-        func_8009F940(1, 1, (CVECTOR*)&sp18, &sp10);
+        vs_battle_setActorEdgeHighlight(1, 1, &sp18, &sp10);
     } else {
         D_800F4538[16]->unk0.skip = 0;
     }
@@ -144,7 +137,7 @@ void func_800F9CB0(void)
     sp10.b = 0;
 
     func_800A0768(1, &sp10);
-    func_800A07FC(1, 0);
+    setActorLightColor(1, NULL);
 
     temp_s0->unk648_16 = 0;
 }
@@ -218,21 +211,21 @@ int func_800F9EB8(MATRIX* arg0)
 
     if (temp_s1->unk17FD != 0) {
         int* p = (int*)0x1F800000;
-        new_var2 = (temp_s1->unk6F4.unk3 * 4) + 0xC0;
+        new_var2 = (temp_s1->unk6F4.otDepth * 4) + 0xC0;
         p[1] += new_var2;
 
-        applyVector(&temp_s1->unk0.position, temp_s1->unk6F4.unk0, temp_s1->unk6F4.unk1,
-            temp_s1->unk6F4.unk2, +=);
+        applyVector(&temp_s1->unk0.position, temp_s1->unk6F4.x, temp_s1->unk6F4.y,
+            temp_s1->unk6F4.z, +=);
 
         func_800B002C(temp_s1, temp_s1->unk17FD);
         func_800B28A8(temp_s1, arg0, temp_s1->unk17FD);
 
         p = (int*)0x1F800000;
-        new_var3 = (temp_s1->unk6F4.unk3 * 4) + 0xC0;
+        new_var3 = (temp_s1->unk6F4.otDepth * 4) + 0xC0;
         p[1] -= new_var3;
 
-        applyVector(&temp_s1->unk0.position, temp_s1->unk6F4.unk0, temp_s1->unk6F4.unk1,
-            temp_s1->unk6F4.unk2, -=);
+        applyVector(&temp_s1->unk0.position, temp_s1->unk6F4.x, temp_s1->unk6F4.y,
+            temp_s1->unk6F4.z, -=);
     }
 
     if (temp_s1->unk0.unk9_4) {
@@ -246,15 +239,15 @@ int func_800F9EB8(MATRIX* arg0)
         if ((temp_a0 != 0) && temp_a0->unk8_4) {
             MATRIX* bone = &temp_s1->bones[temp_a0->unkD];
 
-            bone->t[0] -= temp_s1->unk6F4.unk0;
-            bone->t[1] -= temp_s1->unk6F4.unk1;
-            bone->t[2] -= temp_s1->unk6F4.unk2;
+            bone->t[0] -= temp_s1->unk6F4.x;
+            bone->t[1] -= temp_s1->unk6F4.y;
+            bone->t[2] -= temp_s1->unk6F4.z;
 
             func_800B217C(temp_a0, bone);
 
-            bone->t[0] += temp_s1->unk6F4.unk0;
-            bone->t[1] += temp_s1->unk6F4.unk1;
-            bone->t[2] += temp_s1->unk6F4.unk2;
+            bone->t[0] += temp_s1->unk6F4.x;
+            bone->t[1] += temp_s1->unk6F4.y;
+            bone->t[2] += temp_s1->unk6F4.z;
         }
     }
 

@@ -9,7 +9,7 @@ typedef struct {
     short modelId;
     void* unk4;
     u_long dataAddr;
-    vs_battle_tilePosition unkC;
+    vs_TilePosition unkC;
     u_char actorId;
     char unk11;
     u_char material;

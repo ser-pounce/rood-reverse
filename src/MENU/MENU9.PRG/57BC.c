@@ -59,7 +59,7 @@ void func_801080C8(void)
 
     func_800AD008(p, &p->unk704);
     vs_battle_setActorFlags(1, 3);
-    func_8009F940(1, 0, NULL, NULL);
+    vs_battle_setActorEdgeHighlight(1, 0, NULL, NULL);
 }
 
 VS_HIDDEN(func_801080C8);

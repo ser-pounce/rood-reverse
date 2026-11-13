@@ -16,7 +16,7 @@ typedef struct {
 } D_800F4B28_t;
 
 extern int (*normalOpcodeTable[])(u_char*, short);
-extern vs_Main_CdFile D_800F4BF0;
+extern vs_CdFile D_800F4BF0;
 
 int func_800BFE34(u_char*);
 void func_800C0150(void);
@@ -29,7 +29,7 @@ short func_800BFBB8(u_char** arg0, short arg1)
     int ret;
     u_char* script = *arg0;
 
-    if ((arg1 == 0) && (scriptSkipMode == vs_battle_scriptSkippable)
+    if ((arg1 == 0) && (scriptSkipMode == scriptSkippable)
         && ((vs_main_buttonsPressed.all & PADstart) || (skipRequested != 0))) {
         skipRequested = 0;
         D_800F4C58[3] = 0;
@@ -51,11 +51,11 @@ short func_800BFBB8(u_char** arg0, short arg1)
         func_8007C46C(0, 0xFF, 0);
         vs_battle_disableDispMask();
         vs_battle_setStateFlag(0xA8, 1);
-        scriptSkipMode = vs_battle_scriptSkipping;
+        scriptSkipMode = scriptSkipping;
     }
 
     while (1) {
-        if (scriptSkipMode != vs_battle_scriptSkipping) {
+        if (scriptSkipMode != scriptSkipping) {
             ret = normalOpcodeTable[*script](script, arg1);
         } else {
             ret = vs_battle_skipOpcodeTable[*script](script, arg1);

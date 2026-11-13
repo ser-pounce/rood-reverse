@@ -212,8 +212,8 @@ int vs_menuE_exec(u_char* state)
 
 static int topMenu_state;
 static int menuSelectedRow;
-static vs_Main_CdQueueSlot* helpTextCdQueue;
-static vs_Main_CdQueueSlot* helpAssetsCdQueue;
+static vs_CdQueueSlot* helpTextCdQueue;
+static vs_CdQueueSlot* helpAssetsCdQueue;
 static int showMenuState;
 static int scrollPosition;
 static int totalLineCount;
@@ -238,7 +238,7 @@ static int initMenuState(void)
 
 #include "src/MENU/unused_vertices.h"
 
-static vs_Main_CdFile const helpFileCdFiles[] = { mkHfoPair(HELP01), mkHfoPair(HELP02),
+static vs_CdFile const helpFileCdFiles[] = { mkHfoPair(HELP01), mkHfoPair(HELP02),
     mkHfoPair(HELP03), mkHfoPair(HELP04), mkHfoPair(HELP05), mkHfoPair(HELP06),
     mkHfoPair(HELP07), mkHfoPair(HELP08), mkHfoPair(HELP09), mkHfoPair(HELP10),
     mkHfoPair(HELP11), mkHfoPair(HELP12), mkHfoPair(HELP13), mkHfoPair(HELP14) };
@@ -313,7 +313,7 @@ static int showMenu(void)
         break;
     case loadSubMenu:
         cdState = helpAssetsCdQueue->state;
-        if (cdState != vs_main_CdQueueStateLoaded) {
+        if (cdState != CdQueueStateLoaded) {
             break;
         }
         vs_main_freeCdQueueSlot(helpAssetsCdQueue);
@@ -326,7 +326,7 @@ static int showMenu(void)
         showMenuState = initSubMenu;
         break;
     case initSubMenu:
-        if (helpTextCdQueue->state != vs_main_CdQueueStateLoaded) {
+        if (helpTextCdQueue->state != CdQueueStateLoaded) {
             break;
         }
         vs_main_freeCdQueueSlot(helpTextCdQueue);

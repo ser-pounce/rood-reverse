@@ -128,8 +128,8 @@ VS_HIDDEN(func_8007BFC0);
 void func_8007C050(void);
 VS_HIDDEN(func_8007C050);
 
-void func_8007C0AC(int, int);
-VS_HIDDEN(func_8007C0AC);
+void setWeaponDrawn(int, int);
+VS_HIDDEN(setWeaponDrawn);
 
 int func_8007C218(int);
 VS_HIDDEN(func_8007C218);
@@ -173,7 +173,7 @@ VS_HIDDEN(func_8007C654);
 void func_8007C8A4(int, int);
 VS_HIDDEN(func_8007C8A4);
 
-int spawnModelActor(u_int slot, int modelId, vs_battle_tilePosition* tile);
+int spawnModelActor(u_int slot, int modelId, vs_TilePosition* tile);
 VS_HIDDEN(spawnModelActor);
 
 void func_8007CA20(int, int, int);
@@ -182,26 +182,26 @@ VS_HIDDEN(func_8007CA20);
 void func_8007CAA4(int);
 VS_HIDDEN(func_8007CAA4);
 
-void func_8007CB84(int, int wepId);
-VS_HIDDEN(func_8007CB84);
+void enqueueEsq(int, int);
+VS_HIDDEN(enqueueEsq);
 
-void func_8007CBBC(int);
-VS_HIDDEN(func_8007CBBC);
+void unloadEsqAndEtm(int);
+VS_HIDDEN(unloadEsqAndEtm);
 
-void func_8007CBDC(int, int, int);
-VS_HIDDEN(func_8007CBDC);
+void enqueueEsqAndEtm(int, int, int);
+VS_HIDDEN(enqueueEsqAndEtm);
 
-void vs_battle_loadEtm(int, int, int);
-VS_HIDDEN(vs_battle_loadEtm);
+void enqueueEtm(int, int, int);
+VS_HIDDEN(enqueueEtm);
 
-void func_8007CC4C(int);
-VS_HIDDEN(func_8007CC4C);
+void unloadEtm(int);
+VS_HIDDEN(unloadEtm);
 
-void func_8007CC6C(int);
-VS_HIDDEN(func_8007CC6C);
+void selectEventData(int);
+VS_HIDDEN(selectEventData);
 
-int getEmptyObjectDataSlot2(void);
-VS_HIDDEN(getEmptyObjectDataSlot2);
+int getEmptyObjectDataSlot(void);
+VS_HIDDEN(getEmptyObjectDataSlot);
 
 int func_8007CF18(int);
 VS_HIDDEN(func_8007CF18);
@@ -209,11 +209,11 @@ VS_HIDDEN(func_8007CF18);
 int func_8007CFCC(int);
 VS_HIDDEN(func_8007CFCC);
 
-void func_8007CFF8(int, SVECTOR*);
-VS_HIDDEN(func_8007CFF8);
+void walkActorToCoordinate(int, SVECTOR*);
+VS_HIDDEN(walkActorToCoordinate);
 
-int func_8007D03C(int);
-VS_HIDDEN(func_8007D03C);
+int isActorWalkDone(int);
+VS_HIDDEN(isActorWalkDone);
 
 int func_8007D08C(int, int);
 VS_HIDDEN(func_8007D08C);
@@ -233,8 +233,11 @@ VS_HIDDEN(setActionUnlocked);
 void func_8007D260(int arg0);
 VS_HIDDEN(func_8007D260);
 
-void func_8007D340(int);
-VS_HIDDEN(func_8007D340);
+void despawnActor(int);
+VS_HIDDEN(despawnActor);
+
+int func_8008C458(int, int, CVECTOR*, SVECTOR*);
+VS_HIDDEN(func_8008C458);
 
 void func_8007DE88(VECTOR* arg0);
 VS_HIDDEN(func_8007DE88);
@@ -251,8 +254,8 @@ VS_HIDDEN(func_8007E180);
 int func_8007E1C0(int arg0);
 VS_HIDDEN(func_8007E1C0);
 
-int vs_battle_itemIdIsInInventory(int);
-VS_HIDDEN(vs_battle_itemIdIsInInventory);
+int itemIdIsInInventory(int);
+VS_HIDDEN(itemIdIsInInventory);
 
 int func_8008631C(int arg0, int arg1, int targetActor, int targetLimb, void* arg4);
 VS_HIDDEN(func_8008631C);

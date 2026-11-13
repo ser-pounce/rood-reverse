@@ -52,7 +52,7 @@ int vs_menuF_exec(u_char* state)
 
 enum disFileIndices { rankDis, timeDis, attackDis, iqDis, escDis };
 
-static vs_Main_CdFile const disFiles[] = { { VS_RANK_DIS_LBA, VS_RANK_DIS_SIZE },
+static vs_CdFile const disFiles[] = { { VS_RANK_DIS_LBA, VS_RANK_DIS_SIZE },
     { VS_TIME_DIS_LBA, VS_TIME_DIS_SIZE }, { VS_ATTACK_DIS_LBA, VS_ATTACK_DIS_SIZE },
     { VS_IQ_DIS_LBA, VS_IQ_DIS_SIZE }, { VS_ESC_DIS_LBA, VS_ESC_DIS_SIZE } };
 
@@ -126,7 +126,7 @@ static int screenState;
 
 int initCongratulationsScreen(void)
 {
-    static vs_Main_CdQueueSlot* cdSlot;
+    static vs_CdQueueSlot* cdSlot;
     static void* timData;
 
     int i;
@@ -143,7 +143,7 @@ int initCongratulationsScreen(void)
         ++vs_battle_submenuState;
 
     } else if (vs_battle_submenuState == 1) {
-        if (cdSlot->state == vs_main_CdQueueStateLoaded) {
+        if (cdSlot->state == CdQueueStateLoaded) {
 
             for (i = 0; i < 3; ++i) {
                 TIM_IMAGE tim;
@@ -264,7 +264,7 @@ static u_short clutBuf[160];
 
 int initTimeAttackEnd(void)
 {
-    static vs_Main_CdQueueSlot* cdSlot;
+    static vs_CdQueueSlot* cdSlot;
     static void* timData;
 
     int i;
@@ -282,7 +282,7 @@ int initTimeAttackEnd(void)
         ++vs_battle_submenuState;
 
     } else if (state == 1) {
-        if (cdSlot->state == vs_main_CdQueueStateLoaded) {
+        if (cdSlot->state == CdQueueStateLoaded) {
             TIM_IMAGE tim;
 
             vs_battle_parseTim(timData, &tim);
@@ -380,7 +380,7 @@ int initTimeAttackEnd(void)
 
 int initTimeAttackStart(void)
 {
-    static vs_Main_CdQueueSlot* cdSlot;
+    static vs_CdQueueSlot* cdSlot;
     static void* timData;
 
     if (vs_battle_submenuState == 0) {
@@ -394,7 +394,7 @@ int initTimeAttackStart(void)
 
         ++vs_battle_submenuState;
     } else if (vs_battle_submenuState == 1) {
-        if (cdSlot->state == vs_main_CdQueueStateLoaded) {
+        if (cdSlot->state == CdQueueStateLoaded) {
             int i;
             TIM_IMAGE tim;
 
@@ -2262,7 +2262,7 @@ static short puzzleRankCap;
 
 int initCubePuzzleStart(void)
 {
-    static vs_Main_CdQueueSlot* iqDisCdSlot;
+    static vs_CdQueueSlot* iqDisCdSlot;
     static void* iqDisData;
 
     vs_Room* room;
@@ -2286,7 +2286,7 @@ int initCubePuzzleStart(void)
         ++vs_battle_submenuState;
 
     } else if (vs_battle_submenuState == 1) {
-        if (iqDisCdSlot->state == vs_main_CdQueueStateLoaded) {
+        if (iqDisCdSlot->state == CdQueueStateLoaded) {
             int i;
             TIM_IMAGE tim;
             for (i = 0; i < 2; ++i) {
@@ -2365,7 +2365,7 @@ int initCubePuzzleEnd(void)
 
 int initCubePuzzleQuit(void)
 {
-    static vs_Main_CdQueueSlot* escDisCdSLot;
+    static vs_CdQueueSlot* escDisCdSLot;
     static void* escDisData;
 
     TIM_IMAGE tim;
@@ -2383,7 +2383,7 @@ int initCubePuzzleQuit(void)
         ++vs_battle_submenuState;
 
     } else if (vs_battle_submenuState == 1) {
-        if (escDisCdSLot->state == vs_main_CdQueueStateLoaded) {
+        if (escDisCdSLot->state == CdQueueStateLoaded) {
             for (i = 0; i <= 0; ++i) {
 
                 vs_battle_parseTim(escDisData + i * 0x8220, &tim);

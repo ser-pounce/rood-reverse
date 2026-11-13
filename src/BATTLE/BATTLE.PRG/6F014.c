@@ -119,7 +119,7 @@ void parsePfileBlock13(void* arg0)
 
 static int loadfile(int lba, int size, void* buf)
 {
-    vs_Main_CdFile cdFile;
+    vs_CdFile cdFile;
 
     if (D_800F568C == NULL) {
         cdFile.lba = lba;
@@ -129,7 +129,7 @@ static int loadfile(int lba, int size, void* buf)
         return 1;
     }
 
-    if (D_800F568C->state == vs_main_CdQueueStateLoaded) {
+    if (D_800F568C->state == CdQueueStateLoaded) {
         vs_main_freeCdQueueSlot(D_800F568C);
         D_800F568C = NULL;
         return 0;

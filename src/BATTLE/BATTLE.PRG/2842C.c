@@ -270,28 +270,28 @@ void func_80090C2C(int arg0)
         case 0:
             break;
         case 1:
-            func_8008F29C(vs_battle_clamp((room->unk48[1].s16[0] / 128)
-                                              * (room->unk48[1].s16[1] / 128) / 4,
-                              4, 128),
+            func_8008F29C(
+                clamp((room->unk48[1].s16[0] / 128) * (room->unk48[1].s16[1] / 128) / 4,
+                    4, 128),
                 arg0);
             sound = 21;
             break;
         case 2:
-            func_8008F29C(vs_battle_clamp((room->unk48[1].s16[0] / 128)
-                                              * (room->unk48[1].s16[1] / 128) / 4,
-                              4, 128),
+            func_8008F29C(
+                clamp((room->unk48[1].s16[0] / 128) * (room->unk48[1].s16[1] / 128) / 4,
+                    4, 128),
                 arg0);
             break;
         case 3:
-            func_8008F30C(vs_battle_clamp((room->unk48[1].s16[0] / 128)
-                                              * (room->unk48[1].s16[1] / 128) / 4,
-                              4, 128),
+            func_8008F30C(
+                clamp((room->unk48[1].s16[0] / 128) * (room->unk48[1].s16[1] / 128) / 4,
+                    4, 128),
                 arg0);
             break;
         case 4:
-            func_8008F9A4(vs_battle_clamp((room->unk48[1].s16[0] / 128)
-                                              * (room->unk48[1].s16[1] / 128) / 2,
-                              4, 128),
+            func_8008F9A4(
+                clamp((room->unk48[1].s16[0] / 128) * (room->unk48[1].s16[1] / 128) / 2,
+                    4, 128),
                 arg0);
             break;
         }
@@ -331,7 +331,7 @@ void func_80090EEC(void)
 
             D_800F1D98[5] += D_800F1D98[7];
             D_800F1D98[5] &= 0xFFF;
-            D_800F1D98[5] = vs_battle_clamp(D_800F1D98[5], room->unk36, room->unk38);
+            D_800F1D98[5] = clamp(D_800F1D98[5], room->unk36, room->unk38);
             changed = 1;
         }
         if (((D_800F1CDC + 30) & masks[room->unk46]) == 0) {
@@ -340,7 +340,7 @@ void func_80090EEC(void)
             }
 
             D_800F1D98[4] += D_800F1D98[9];
-            D_800F1D98[4] = vs_battle_clamp(D_800F1D98[4], room->unk42, room->unk44);
+            D_800F1D98[4] = clamp(D_800F1D98[4], room->unk42, room->unk44);
             changed = 1;
         }
         if (((D_800F1CDC + 60) & masks[room->unk40]) == 0) {
@@ -349,7 +349,7 @@ void func_80090EEC(void)
             }
 
             D_800F1DC4 += D_800F1D98[8];
-            D_800F1DC4 = vs_battle_clamp(D_800F1DC4, room->unk3C, room->unk3E);
+            D_800F1DC4 = clamp(D_800F1DC4, room->unk3C, room->unk3E);
             func_8009121C();
             changed = 1;
         }
@@ -373,7 +373,7 @@ void func_80090EEC(void)
     }
 }
 
-short vs_battle_clamp(short arg0, int arg1, int arg2)
+short clamp(short arg0, int arg1, int arg2)
 {
     short var_t0;
     short var_v1;
@@ -398,7 +398,7 @@ void func_8009121C(void)
 {
     short scale;
 
-    D_800F1DC0 = vs_battle_clamp(D_800F1DC4 * 8, 4, D_800F1DC2);
+    D_800F1DC0 = clamp(D_800F1DC4 * 8, 4, D_800F1DC2);
     if (D_800F1DBC >= 0) {
         if (D_80068EB4[D_800F1DC4] != 0) {
             vs_main_playSfxDefault(0x200, D_800F1DBC);
@@ -407,7 +407,7 @@ void func_8009121C(void)
             vs_main_evictSfx(0x200, D_800F1DBC);
         }
     }
-    scale = vs_battle_clamp((D_800F1DC4 * 4) + (D_800F1DC4 * 2), 12, 90);
+    scale = clamp((D_800F1DC4 * 4) + (D_800F1DC4 * 2), 12, 90);
     D_800F1DA4 = scale + (scale >> 1) + (scale >> 2);
 }
 
@@ -461,10 +461,10 @@ void func_80091468(int arg0, int arg1)
     D_800F1DB6 = arg1;
 }
 
-void func_8009147C(vs_BackgroundLayout* arg0, int arg1, int arg2, int arg3)
+void func_8009147C(BackgroundLayout* arg0, int arg1, int arg2, int arg3)
 {
     void* buffer = ((vs_Scratch*)0x1F800000)->unk0;
-    vs_BackgroundTile* tiles = arg0->tiles;
+    BackgroundTile* tiles = arg0->tiles;
     int cosStep = rcos(((vs_Scratch*)0x1F800000)->camera.angles.vz) * 32;
     int sinStep = rsin(((vs_Scratch*)0x1F800000)->camera.angles.vz) * 32;
     int row;
@@ -481,7 +481,7 @@ void func_8009147C(vs_BackgroundLayout* arg0, int arg1, int arg2, int arg3)
                         - rsin(((vs_Scratch*)0x1F800000)->camera.angles.vz) * y;
             int screenY = rsin(((vs_Scratch*)0x1F800000)->camera.angles.vz) * x
                         + rcos(((vs_Scratch*)0x1F800000)->camera.angles.vz) * y;
-            vs_BackgroundTile* tile;
+            BackgroundTile* tile;
 
             if ((screenX < -64 * ONE) || (screenX > 384 * ONE) || (screenY < -64 * ONE)
                 || (screenY > 304 * ONE)) {

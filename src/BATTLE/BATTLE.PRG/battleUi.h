@@ -15,34 +15,30 @@ typedef struct {
     u_int tail : 4;
 } TextOffset;
 
-enum vs_battle_warlockSpellIds_e {
-    vs_battle_spell_solidShock = 0x61,
-    vs_battle_spell_lightningBolt,
-    vs_battle_spell_fireball,
-    vs_battle_spell_vulcanLance,
-    vs_battle_spell_aquaBlast,
-    vs_battle_spell_spiritSurge,
-    vs_battle_spell_darkChant,
-    vs_battle_spell_exorcism,
-    vs_battle_spell_banish,
-    vs_battle_spell_explosion,
-    vs_battle_spell_thunderburst = 0x6E,
-    vs_battle_spell_flameSphere = 0x72,
-    vs_battle_spell_gaeaStrike = 0x76,
-    vs_battle_spell_avalanche = 0x7A,
-    vs_battle_spell_radialSurge = 0x7E,
-    vs_battle_spell_meteor = 0x82,
-    vs_battle_spell_drainHeart = 0x5E,
-    vs_battle_spell_drainMind = 0x5F
+enum warlockSpellIds_e {
+    spell_solidShock = 0x61,
+    spell_lightningBolt,
+    spell_fireball,
+    spell_vulcanLance,
+    spell_aquaBlast,
+    spell_spiritSurge,
+    spell_darkChant,
+    spell_exorcism,
+    spell_banish,
+    spell_explosion,
+    spell_thunderburst = 0x6E,
+    spell_flameSphere = 0x72,
+    spell_gaeaStrike = 0x76,
+    spell_avalanche = 0x7A,
+    spell_radialSurge = 0x7E,
+    spell_meteor = 0x82,
+    spell_drainHeart = 0x5E,
+    spell_drainMind = 0x5F
 };
 
-enum vs_battle_menuItemScrollable {
-    menuItem_scrollNone,
-    menuItem_scrollUp,
-    menuItem_scrollDown
-};
+enum menuItemScrollable { menuItem_scrollNone, menuItem_scrollUp, menuItem_scrollDown };
 
-enum vs_battle_menuItemState {
+enum menuItemState {
     menuItemStateInactive,
     menuItemStateIdle,
     menuItemStateSlideX,
@@ -77,7 +73,7 @@ typedef struct {
     char* subText;
 } vs_MenuItem;
 
-enum vs_battle_menuStates {
+enum menuStates {
     menuStateMainMenu,
     menuStateNoneClosing = 0x1F,
     menuStateNoneClosed = 0x3F,
@@ -89,7 +85,7 @@ typedef struct {
     char returnState;
     char executeAbilityType;
     char loading;
-    vs_Main_CdQueueSlot* cdQueue;
+    vs_CdQueueSlot* cdQueue;
 } vs_MenuState;
 
 typedef struct {
@@ -102,10 +98,10 @@ typedef struct {
     u_int speakerActor : 6;
     u_int done : 1;
     u_int unk0_31 : 1;
-} vs_TextBox_fields;
+} TextBox_fields;
 
 typedef struct {
-    vs_TextBox_fields unk0;
+    TextBox_fields unk0;
     short unk4;
     short unk6;
     char* string;
@@ -168,7 +164,7 @@ typedef struct {
 typedef struct {
     int integers[10];
     char* strings[10];
-} vs_PrintfArgs;
+} PrintfArgs;
 
 int vs_battle_setTextBox(int, char*);
 char* vs_battle_printf(char*, char*);
@@ -189,7 +185,7 @@ int vs_battle_printVariableWidthFontChar(u_int glyphId, int x, int y, u_long* ot
 void vs_battle_setFontStyle(int arg0);
 int vs_battle_loadMenuPrg(int arg0);
 
-enum vs_battle_informationTextBoxHeader {
+enum informationTextBoxHeader {
     informationTextBoxHeaderNone,
     informationTextBoxHeaderCaution,
     informationTextBoxHeaderInformation,
@@ -199,7 +195,7 @@ enum vs_battle_informationTextBoxHeader {
 /**
  * Initializes textbox ID 7
  */
-void vs_battle_initInformationTextBox(enum vs_battle_informationTextBoxHeader flags);
+void vs_battle_initInformationTextBox(enum informationTextBoxHeader flags);
 /**
  * Lerps between two predefined colors, used for menu item backgrounds.
  *
@@ -307,7 +303,7 @@ extern char vs_battle_unlockedBattleAbility;
 extern char D_800F4FDB;
 extern vs_TextBox vs_battle_textBoxes[];
 extern u_char vs_battle_miscItemInvoked;
-extern vs_PrintfArgs vs_battle_printfArgs;
+extern PrintfArgs vs_battle_printfArgs;
 extern vs_MenuState vs_battle_menuState;
 
 void vs_battle_copyAligned(void* dst, const void* src, int numBytes);

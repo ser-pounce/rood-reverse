@@ -988,9 +988,9 @@ static int initMemcard(int init)
     static u_short eventSpecs[] = { EvSpIOE, EvSpERROR, EvSpTIMOUT, EvSpNEW };
     static char initMemcardState;
     static UNUSED char _[3];
-    static vs_Main_CdQueueSlot* initMemcardCdQueueSlot;
+    static vs_CdQueueSlot* initMemcardCdQueueSlot;
 
-    vs_Main_CdFile cdFile;
+    vs_CdFile cdFile;
     int i;
     u_int event;
 
@@ -1012,7 +1012,7 @@ static int initMemcard(int init)
 
     switch (initMemcardState) {
     case none:
-        if (initMemcardCdQueueSlot->state == vs_main_CdQueueStateLoaded) {
+        if (initMemcardCdQueueSlot->state == CdQueueStateLoaded) {
             vs_main_freeCdQueueSlot(initMemcardCdQueueSlot);
             drawImage(vs_getXY(800, 256), mcImageBuf, vs_getWH(224, 256));
             initMemcardState = queueReady;
@@ -1032,7 +1032,7 @@ static int initMemcard(int init)
         return 0;
     }
 
-    if (initMemcardCdQueueSlot->state == vs_main_CdQueueStateLoaded) {
+    if (initMemcardCdQueueSlot->state == CdQueueStateLoaded) {
         vs_main_freeCdQueueSlot(initMemcardCdQueueSlot);
         vs_main_enableReset(0);
         EnterCriticalSection();

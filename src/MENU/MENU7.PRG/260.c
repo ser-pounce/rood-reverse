@@ -67,10 +67,10 @@ static char const* memcardFilenameTemplate = "bu00:BASLUS-01040VAG0";
  */
 static int loadIntroSaveFile(int action)
 {
-    static vs_Main_CdQueueSlot* opmcimgSlot;
+    static vs_CdQueueSlot* opmcimgSlot;
     static vs_Savedata* opMcImg;
 
-    vs_Main_CdFile file;
+    vs_CdFile file;
     void* new_var2;
     vs_Gametime gametime;
     int lba;
@@ -79,7 +79,7 @@ static int loadIntroSaveFile(int action)
     switch (action) {
     case 0:
         new_var = &gametime;
-        if (opmcimgSlot->state == vs_main_CdQueueStateLoaded) {
+        if (opmcimgSlot->state == CdQueueStateLoaded) {
             vs_main_freeCdQueueSlot(opmcimgSlot);
             gametime.t = vs_main_gametime.t;
             mcImageBuf = (char*)(opMcImg - 1);
@@ -148,12 +148,12 @@ static u_short menuItemTextClut[][16] = {
 static int initGameOver(int arg0)
 {
 
-    static vs_Main_CdQueueSlot* queueSlot;
+    static vs_CdQueueSlot* queueSlot;
     static u_int* gameOverBin;
     static int state;
     static UNUSED char _[8];
 
-    vs_Main_CdFile cdFile;
+    vs_CdFile cdFile;
 
     if (arg0 != 0) {
         cdFile.lba = VS_GAMEOVER_BIN_LBA;

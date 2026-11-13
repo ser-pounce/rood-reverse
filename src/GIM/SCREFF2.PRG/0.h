@@ -9,7 +9,7 @@ typedef struct {
     short unk4;
     short unk6;
     int unk8;
-    vs_Main_CdQueueSlot* slot;
+    vs_CdQueueSlot* slot;
 } D_800EB9B4_t;
 
 void func_800F9800(int);

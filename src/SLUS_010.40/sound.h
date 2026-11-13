@@ -11,16 +11,16 @@ typedef struct {
     char musicIds[4];
     u_int musicHandleBySlot[4];
     void* musicData[4];
-    vs_Main_CdQueueSlot* musicQueueSlot[4];
+    vs_CdQueueSlot* musicQueueSlot[4];
     u_int currentSfxId;
     char sfxIds[4];
     int* sfxData[3]; // bank: [0] = entry count, [1..] = byte offsets to each effect
-    vs_Main_CdQueueSlot* sfxQueueSlot[3];
+    vs_CdQueueSlot* sfxQueueSlot[3];
     void* unk64[3];
     UNUSED int* unused[3];
     int soundFileId;
     void* soundData;
-    vs_Main_CdQueueSlot* soundQueueSlot;
+    vs_CdQueueSlot* soundQueueSlot;
 } SoundData;
 
 // Avoids breaking .bss order

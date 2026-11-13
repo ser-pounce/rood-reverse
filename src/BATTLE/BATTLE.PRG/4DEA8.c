@@ -323,7 +323,7 @@ extern short D_800F4BE0;
 extern char D_800F4BE4;
 extern void* mpdRoomDoorSection;
 extern char D_800F4BF8;
-extern char D_800F4C10[];
+extern char loopCounters[];
 extern short D_800F4C22;
 extern void* D_800F4C24;
 extern char D_800F4C34;
@@ -1944,11 +1944,19 @@ int vs_battle_script_48_endSceneReset(UNUSED u_char* script, UNUSED short arg1)
     return scriptReturnAddress;
 }
 
-int vs_battle_script_49(u_char* arg0, UNUSED short arg1)
+/**
+ * Sets a loop counter. Using 0xFF as the counter is a nop and may be a
+ * marker for "loop forever".
+ * @param script Opcode bytes:
+ *   - [1] = counter index (0-15), 0xFF = none
+ *   - [2] = number of times to loop
+ */
+int vs_battle_script_49_setLoopCounter(u_char* script, UNUSED short arg1)
 {
-    if (arg0[1] != 0xFF) {
-        D_800F4C10[arg0[1]] = arg0[2];
+    if (script[1] != 0xFF) {
+        loopCounters[script[1]] = script[2];
     }
+
     return vs_battle_scriptNext;
 }
 
@@ -1957,7 +1965,7 @@ int vs_battle_script_4A_jumpBackIf(u_char* arg0, UNUSED short arg1)
     if (arg0[1] == 0xFF) {
         return (long)&arg0[-getShort(arg0 + 2)];
     }
-    if (--D_800F4C10[arg0[1]] != 0) {
+    if (--loopCounters[arg0[1]] != 0) {
         return (long)&arg0[-getShort(arg0 + 2)];
     }
     return vs_battle_scriptNext;

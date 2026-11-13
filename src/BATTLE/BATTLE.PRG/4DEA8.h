@@ -53,7 +53,7 @@ int vs_battle_script_42_jumpFwdElse(u_char*, short);
 int vs_battle_script_45_jumpFwd(u_char*, short);
 int vs_battle_script_46_switchOnFlag(u_char*, short);
 int vs_battle_script_47_jumpFwdCase(u_char*, short);
-int vs_battle_script_49(u_char*, short);
+int vs_battle_script_49_setLoopCounter(u_char*, short);
 int vs_battle_script_4A_jumpBackIf(u_char*, short);
 int vs_battle_script_4B_jumpFwdBreak(u_char*, short);
 int vs_battle_script_4C_jumpFwdUnused(u_char*, short);

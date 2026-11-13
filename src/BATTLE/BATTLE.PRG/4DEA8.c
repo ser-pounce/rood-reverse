@@ -299,7 +299,7 @@ extern u_char D_800E9BEC[];
 extern u_char D_800E9BF0[];
 extern short D_800E9BF4[];
 extern short D_800E9BF8[];
-extern void D_800E9B5C;
+extern void sceneResetScript;
 extern short D_800E9C00[];
 extern u_char D_800E9C1C[];
 extern short D_800E9C24[];
@@ -333,7 +333,7 @@ extern char D_800F4C4E;
 extern short mpdScriptSection;
 extern short D_800F4C54;
 extern char textBoxSelectionPending;
-extern int D_800F4C64;
+extern int scriptReturnAddress;
 extern char D_800F4C69;
 extern char D_800F4C6A;
 
@@ -1936,7 +1936,13 @@ int vs_battle_script_47_jumpFwdCase(u_char* script, UNUSED short arg1)
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_48(UNUSED u_char* arg0, UNUSED short arg1) { return D_800F4C64; }
+/**
+ * Ends sceneResetScript.
+ */
+int vs_battle_script_48_endSceneReset(UNUSED u_char* script, UNUSED short arg1)
+{
+    return scriptReturnAddress;
+}
 
 int vs_battle_script_49(u_char* arg0, UNUSED short arg1)
 {
@@ -3092,8 +3098,8 @@ int vs_battle_script_B7_specialOp(u_char* arg0, UNUSED short arg1)
         func_800F9DE8(arg0[2]);
         break;
     case 16:
-        D_800F4C64 = (long)(arg0 + 6);
-        return (long)&D_800E9B5C;
+        scriptReturnAddress = (long)(arg0 + 6);
+        return (long)&sceneResetScript;
     case 17:
         func_8007C4D4();
         break;

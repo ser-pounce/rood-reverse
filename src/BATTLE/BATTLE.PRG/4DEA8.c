@@ -314,7 +314,7 @@ extern D_800F4BA4_t* D_800F4BA4;
 extern char D_800F4BA8;
 extern void* mpdClearedSection;
 extern u_short* scriptStrings;
-extern char D_800F4BB4;
+extern char switchValue;
 extern short D_800F4BB6;
 extern char D_800F4BB8;
 extern u_char D_800F4BB9;
@@ -1908,17 +1908,31 @@ int vs_battle_script_45_jumpFwd(u_char* script, UNUSED short arg1)
     return (long)&script[getShort(script + 1)];
 }
 
-int vs_battle_script_46_setFlagImmContext(u_char* arg0, UNUSED short arg1)
+/**
+ * Starts a switch: stores the value of a state flag, for the jumpFwdCase opcodes that
+ * follow to compare against.
+ * @param script Opcode bytes:
+ *   - [1-2] = state flag id
+ */
+int vs_battle_script_46_switchOnFlag(u_char* script, UNUSED short arg1)
 {
-    D_800F4BB4 = getStateFlag(getShort(arg0 + 1));
+    switchValue = getStateFlag(getShort(script + 1));
+
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_47_jumpFwdIfFlagContext(u_char* arg0, UNUSED short arg1)
+/**
+ * A case of a switch: jumps forward if the value stored by switchOnFlag matches.
+ * @param script Opcode bytes:
+ *   - [1] = value to compare
+ *   - [2-3] = target offset from this opcode
+ */
+int vs_battle_script_47_jumpFwdCase(u_char* script, UNUSED short arg1)
 {
-    if (D_800F4BB4 == arg0[1]) {
-        return (long)&arg0[getShort(arg0 + 2)];
+    if (switchValue == script[1]) {
+        return (long)&script[getShort(script + 2)];
     }
+
     return vs_battle_scriptNext;
 }
 

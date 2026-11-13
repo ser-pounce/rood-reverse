@@ -41,8 +41,8 @@ VS_HIDDEN(func_8009D854);
 void func_8009D88C(int);
 VS_HIDDEN(func_8009D88C);
 
-void func_8009DBDC(int, int);
-VS_HIDDEN(func_8009DBDC);
+void playWeaponSfx(int, int);
+VS_HIDDEN(playWeaponSfx);
 
 void func_8009DC38(int);
 VS_HIDDEN(func_8009DC38);

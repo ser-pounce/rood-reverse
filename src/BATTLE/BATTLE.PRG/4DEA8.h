@@ -59,7 +59,7 @@ int vs_battle_script_4B_break(u_char*, short);
 int vs_battle_script_4C_jumpFwdUnused(u_char*, short);
 int vs_battle_script_50_modifyFlagImm(u_char*, short);
 int vs_battle_script_51_modifyFlag(u_char*, short);
-int vs_battle_script_52_setFlagIfItemInInventory(u_char*, short);
+int vs_battle_script_52_setFlagToItemCount(u_char*, short);
 int vs_battle_script_53_resetZoneEnemies(u_char*, short);
 int vs_battle_script_55(u_char*, short);
 int vs_battle_script_56_setFlagIfButton(u_char*, short);

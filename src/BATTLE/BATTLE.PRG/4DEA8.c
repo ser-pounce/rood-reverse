@@ -257,6 +257,21 @@ enum flagComparison {
     flagComparisonAnd = 0x60
 };
 
+// Operation selected by the high nibble of a flag modifying opcode's second byte,
+// applied as `flag = flag <op> operand`
+enum flagOperation {
+    flagOperationAdd = 0x00,
+    flagOperationSubtract = 0x10,
+    flagOperationMultiply = 0x20,
+    flagOperationDivide = 0x30,
+    flagOperationModulo = 0x40,
+    flagOperationAnd = 0x50,
+    flagOperationOr = 0x60,
+    flagOperationAssign = 0x70,
+    flagOperationAbsDifference = 0x80,
+    flagOperationSwap = 0x90
+};
+
 static int tryTextBoxPlacement(
     SVECTOR* origin, u_char* script, TextPlacement* result, u_char direction);
 void expandActorSelector(u_short, ActorList*);
@@ -1999,84 +2014,121 @@ int vs_battle_script_4B_break(u_char* script, UNUSED short arg1)
     return (long)&script[getShort(script + 1)];
 }
 
-int vs_battle_script_50_setFlagImm(u_char* arg0, UNUSED short arg1)
+/**
+ * Modifies a state flag using an immediate value: the flag is replaced by the result of
+ * `flag <operation> value`.
+ * @param script Opcode bytes:
+ *   - [1] = operation in the high nibble (flagOperation*, up to Assign), bits 6-9 of the
+ *     flag id in the low nibble
+ *   - [2] = bits 0-5 of the flag id in bits 2-7
+ *   - [3] = value
+ */
+int vs_battle_script_50_modifyFlagImm(u_char* script, UNUSED short arg1)
 {
-    int temp_a1 = arg0[1];
-    short temp_s1 = arg0[3];
-    int temp_s0 = (arg0[2] >> 2) + ((temp_a1 & 0xF) << 6);
+    int operationAndFlag = script[1];
+    short value = script[3];
+    int flag = (script[2] >> 2) + ((operationAndFlag & 0xF) << 6);
 
-    switch (temp_a1 & 0xF0) {
-    case 0x0:
-        vs_battle_setStateFlag(temp_s0, getStateFlag(temp_s0) + temp_s1);
+    switch (operationAndFlag & 0xF0) {
+    case flagOperationAdd:
+        vs_battle_setStateFlag(flag, getStateFlag(flag) + value);
         break;
-    case 0x10:
-        vs_battle_setStateFlag(temp_s0, getStateFlag(temp_s0) - temp_s1);
+
+    case flagOperationSubtract:
+        vs_battle_setStateFlag(flag, getStateFlag(flag) - value);
         break;
-    case 0x20:
-        vs_battle_setStateFlag(temp_s0, getStateFlag(temp_s0) * temp_s1);
+
+    case flagOperationMultiply:
+        vs_battle_setStateFlag(flag, getStateFlag(flag) * value);
         break;
-    case 0x30:
-        vs_battle_setStateFlag(temp_s0, getStateFlag(temp_s0) / temp_s1);
+
+    case flagOperationDivide:
+        vs_battle_setStateFlag(flag, getStateFlag(flag) / value);
         break;
-    case 0x40:
-        vs_battle_setStateFlag(temp_s0, getStateFlag(temp_s0) % temp_s1);
+
+    case flagOperationModulo:
+        vs_battle_setStateFlag(flag, getStateFlag(flag) % value);
         break;
-    case 0x50:
-        vs_battle_setStateFlag(temp_s0, getStateFlag(temp_s0) & temp_s1);
+
+    case flagOperationAnd:
+        vs_battle_setStateFlag(flag, getStateFlag(flag) & value);
         break;
-    case 0x60:
-        vs_battle_setStateFlag(temp_s0, getStateFlag(temp_s0) | temp_s1);
+
+    case flagOperationOr:
+        vs_battle_setStateFlag(flag, getStateFlag(flag) | value);
         break;
-    case 0x70:
-        vs_battle_setStateFlag(temp_s0, temp_s1);
+
+    case flagOperationAssign:
+        vs_battle_setStateFlag(flag, value);
         break;
     }
+
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_51_setFlag(u_char* arg0, UNUSED short arg1)
+/**
+ * Like modifyFlagImm, but the value is another state flag, and there are two more
+ * operations: absolute difference and swap.
+ * @param script Opcode bytes:
+ *   - [1] = operation in the high nibble (flagOperation*), bits 6-9 of the first flag id
+ *     in the low nibble
+ *   - [2] = bits 0-5 of the first flag id in bits 2-7, bits 8-9 of the second flag id in
+ *     bits 0-1
+ *   - [3] = bits 0-7 of the second flag id
+ */
+int vs_battle_script_51_modifyFlag(u_char* script, UNUSED short arg1)
 {
     int tmp;
     char prev;
 
-    int flag0 = (arg0[2] >> 2) + ((arg0[1] & 0xF) << 6);
-    int flag1 = arg0[3] + ((arg0[2] & 3) << 8);
+    int flag0 = (script[2] >> 2) + ((script[1] & 0xF) << 6);
+    int flag1 = script[3] + ((script[2] & 3) << 8);
 
-    switch (arg0[1] & 0xF0) {
-    case 0x0:
+    switch (script[1] & 0xF0) {
+    case flagOperationAdd:
         vs_battle_setStateFlag(flag0, getStateFlag(flag0) + getStateFlag(flag1));
         break;
-    case 0x10:
+
+    case flagOperationSubtract:
         vs_battle_setStateFlag(flag0, getStateFlag(flag0) - getStateFlag(flag1));
         break;
-    case 0x20:
+
+    case flagOperationMultiply:
         vs_battle_setStateFlag(flag0, getStateFlag(flag0) * getStateFlag(flag1));
         break;
-    case 0x30:
+
+    case flagOperationDivide:
         vs_battle_setStateFlag(flag0, getStateFlag(flag0) / getStateFlag(flag1));
         break;
-    case 0x40:
+
+    case flagOperationModulo:
         vs_battle_setStateFlag(flag0, getStateFlag(flag0) % getStateFlag(flag1));
         break;
-    case 0x50:
+
+    case flagOperationAnd:
         vs_battle_setStateFlag(flag0, getStateFlag(flag0) & getStateFlag(flag1));
         break;
-    case 0x60:
+
+    case flagOperationOr:
         vs_battle_setStateFlag(flag0, getStateFlag(flag0) | getStateFlag(flag1));
         break;
-    case 0x70:
+
+    case flagOperationAssign:
         vs_battle_setStateFlag(flag0, getStateFlag(flag1));
         break;
-    case 0x80:
+
+    case flagOperationAbsDifference:
         tmp = getStateFlag(flag0) - getStateFlag(flag1);
-        vs_battle_setStateFlag(flag0, ABS(tmp));
+        vs_battle_setStateFlag(flag0, abs(tmp));
         break;
-    case 0x90:
+
+    case flagOperationSwap:
         prev = getStateFlag(flag0);
         vs_battle_setStateFlag(flag0, getStateFlag(flag1));
         vs_battle_setStateFlag(flag1, prev);
         break;
     }
+
     return vs_battle_scriptNext;
 }
 

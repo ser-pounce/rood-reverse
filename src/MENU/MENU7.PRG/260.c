@@ -79,7 +79,7 @@ static int loadIntroSaveFile(int action)
     switch (action) {
     case 0:
         new_var = &gametime;
-        if (opmcimgSlot->state == vs_main_CdQueueStateLoaded) {
+        if (opmcimgSlot->state == CdQueueStateLoaded) {
             vs_main_freeCdQueueSlot(opmcimgSlot);
             gametime.t = vs_main_gametime.t;
             mcImageBuf = (char*)(opMcImg - 1);

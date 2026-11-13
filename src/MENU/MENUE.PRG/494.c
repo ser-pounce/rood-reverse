@@ -313,7 +313,7 @@ static int showMenu(void)
         break;
     case loadSubMenu:
         cdState = helpAssetsCdQueue->state;
-        if (cdState != vs_main_CdQueueStateLoaded) {
+        if (cdState != CdQueueStateLoaded) {
             break;
         }
         vs_main_freeCdQueueSlot(helpAssetsCdQueue);
@@ -326,7 +326,7 @@ static int showMenu(void)
         showMenuState = initSubMenu;
         break;
     case initSubMenu:
-        if (helpTextCdQueue->state != vs_main_CdQueueStateLoaded) {
+        if (helpTextCdQueue->state != CdQueueStateLoaded) {
             break;
         }
         vs_main_freeCdQueueSlot(helpTextCdQueue);

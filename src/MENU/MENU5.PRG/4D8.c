@@ -504,7 +504,7 @@ static int loadArmFile(void)
         return 0;
     }
 
-    if (sceneCdQueueSlot->state != vs_main_CdQueueStateLoaded) {
+    if (sceneCdQueueSlot->state != CdQueueStateLoaded) {
         return 0;
     }
 
@@ -850,8 +850,7 @@ static int menuManager(void)
     case initNewMap:
         geomOffsetX += 64;
 
-        if ((sceneCdQueueSlot->state == vs_main_CdQueueStateLoaded)
-            && (geomOffsetX >= 384)) {
+        if ((sceneCdQueueSlot->state == CdQueueStateLoaded) && (geomOffsetX >= 384)) {
 
             isPaling = 0;
 

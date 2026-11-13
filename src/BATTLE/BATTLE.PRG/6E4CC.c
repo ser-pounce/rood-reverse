@@ -187,7 +187,7 @@ static int loadfile(int lba, int size, void* buf)
         return 1;
     }
 
-    if (D_800F568C->state == vs_main_CdQueueStateLoaded) {
+    if (D_800F568C->state == CdQueueStateLoaded) {
         vs_main_freeCdQueueSlot(D_800F568C);
         D_800F568C = NULL;
         return 0;

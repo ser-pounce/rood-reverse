@@ -1,7 +1,7 @@
 #pragma once
 #include <sys/types.h>
 
-enum actions_e { vs_main_actions_daggerArt1 = 184 };
+enum actions_e { actions_daggerArt1 = 184 };
 
 enum actionTypes {
     actionTypeSpell = 1,

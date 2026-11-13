@@ -153,7 +153,7 @@ static int weaponArtsMenu(int typeCursorMem)
 
         for (i = 0; i < 4; ++i) {
 
-            int actionId = vs_main_actions_daggerArt1 + (weaponType - 1) * 4 + i;
+            int actionId = actions_daggerArt1 + (weaponType - 1) * 4 + i;
 
             if (vs_main_actions[actionId].unlocked) {
                 menuStrings[rowCount * 2] = (char*)vs_main_actions[actionId].name;
@@ -299,7 +299,7 @@ static int weaponCategoriesMenu(int initialize)
             menuStrings[i * 2 + 1] = (char*)&strings[strings[i * 3 + 1]];
             rowTypes[i] = 0x04000000 * (i + 1);
             for (j = 0; j < 4; ++j) {
-                if (vs_main_actions[i * 4 + vs_main_actions_daggerArt1 + j].unlocked) {
+                if (vs_main_actions[i * 4 + actions_daggerArt1 + j].unlocked) {
                     break;
                 }
             }

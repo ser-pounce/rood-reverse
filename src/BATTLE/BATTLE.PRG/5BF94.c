@@ -50,7 +50,7 @@ typedef struct {
     short unk2;
 } func_800CFE1C_t;
 
-enum vs_battle_limbStatus {
+enum limbStatus {
     limbStatusCritical,
     limbStatusDamaged,
     limbStatusWounded,
@@ -2177,7 +2177,7 @@ int vs_battle_loadMenuPrg(int arg0)
         return 1;
     }
 
-    if (state->cdQueue->state == vs_main_CdQueueStateLoaded) {
+    if (state->cdQueue->state == CdQueueStateLoaded) {
 
         vs_main_freeCdQueueSlot(state->cdQueue);
         vs_main_wait();
@@ -2201,7 +2201,7 @@ int vs_battle_loadMenuPrg(int arg0)
     return 0;
 }
 
-void vs_battle_initInformationTextBox(enum vs_battle_informationTextBoxHeader header)
+void vs_battle_initInformationTextBox(enum informationTextBoxHeader header)
 {
     vs_battle_initTextBox(7, (header << 8) | 4, 0, 1, 0, 4, 0, 0);
 }

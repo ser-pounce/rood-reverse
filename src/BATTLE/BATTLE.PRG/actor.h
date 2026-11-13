@@ -21,7 +21,7 @@ typedef struct {
 // halved; left arm, hit threshold doubled; body, risk recovers more slowly; legs,
 // movement speed halved.
 // Bits 5-28 are the status effects and match the order of vs_main_statusEffectParams.
-enum vs_battle_statuses {
+enum statuses {
     vsBattleStatusHeadDown = 1 << 0,
     vsBattleStatusRightArmDown = 1 << 1,
     vsBattleStatusLeftArmDown = 1 << 2,

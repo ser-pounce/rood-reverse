@@ -4664,7 +4664,7 @@ int func_80073AFC(MpdRoomSectionA* arg0)
                 break;
             case 1:
             case 3:
-                if (vs_battle_itemIdIsInInventory(arg0->keyOrSigil) != 0) {
+                if (itemIdIsInInventory(arg0->keyOrSigil) != 0) {
                     if (arg0->keyOrSigil >= chamomileSigil) {
                         vs_battle_setStateFlag(arg0->keyOrSigil + 0x1B6, 2);
                         decreaseMiscCount(arg0->keyOrSigil);
@@ -4761,7 +4761,7 @@ void func_80073E30(MpdRoomSectionA* arg0, int arg1)
     case 1:
     case 3:
         if (!getStateFlag(arg0->unkE + 0x1B6)) {
-            if (vs_battle_itemIdIsInInventory(arg0->unkE) == 0) {
+            if (itemIdIsInInventory(arg0->unkE) == 0) {
                 break;
             }
             vs_battle_setStateFlag(arg0->unkE + 0x1B6, 1);
@@ -9652,7 +9652,7 @@ void calculateWeaponClassAffinity(vs_ActorStats* stats)
 
 extern u_int itemCategorySizes[];
 
-int vs_battle_itemIdIsInInventory(int id)
+int itemIdIsInInventory(int id)
 {
     int ret;
     int i;
@@ -14723,7 +14723,7 @@ void finishLoadZnd(int id)
         loadZnd(id);
     }
 
-    while (zoneContext.zndCdFile->state != vs_main_CdQueueStateLoaded) {
+    while (zoneContext.zndCdFile->state != CdQueueStateLoaded) {
         vs_main_gametimeUpdate(0);
     }
 
@@ -15172,7 +15172,7 @@ void func_80089DC0(int arg0)
         loadMpd(arg0);
     }
 
-    while (zoneContext.mpdCdFile->state != vs_main_CdQueueStateLoaded) {
+    while (zoneContext.mpdCdFile->state != CdQueueStateLoaded) {
         vs_main_gametimeUpdate(0);
     }
 
@@ -17483,9 +17483,9 @@ void func_8008EC48(VECTOR* arg0)
             red = 128 + D_800F1BB0.unk0 * 4;
             green = 128 + D_800F1BB0.unk1 * 4;
             blue = 128 + D_800F1BB0.unk2 * 4;
-            red = vs_battle_clamp(red, 0, 255);
-            green = vs_battle_clamp(green, 0, 255);
-            blue = vs_battle_clamp(blue, 0, 255);
+            red = clamp(red, 0, 255);
+            green = clamp(green, 0, 255);
+            blue = clamp(blue, 0, 255);
             setRGB0(prim, red, green, blue);
         } else {
             setRGB0(prim, 128, 128, 128);

@@ -2146,9 +2146,17 @@ int vs_battle_script_52_setFlagToItemCount(u_char* script, UNUSED short arg1)
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_53_resetZoneEnemies(u_char* arg0, UNUSED short arg1)
+/**
+ * Forgets the saved state of the enemies of a zone and map, so they are in their initial
+ * state the next time it is loaded (see despawnActor, which saves it).
+ * @param script Opcode bytes:
+ *   - [1] = zone id (ZND)
+ *   - [2] = map id (MPD)
+ */
+int vs_battle_script_53_forgetZoneEnemies(u_char* script, UNUSED short arg1)
 {
-    vs_battle_forgetZoneEnemies(arg0[2], arg0[1]);
+    vs_battle_forgetZoneEnemies(script[2], script[1]);
+
     return vs_battle_scriptNext;
 }
 

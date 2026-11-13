@@ -2132,10 +2132,17 @@ int vs_battle_script_51_modifyFlag(u_char* script, UNUSED short arg1)
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_52_setFlagIfItemInInventory(u_char* arg0, UNUSED short arg1)
+/**
+ * Gets the count of a given item.
+ * @param script Opcode bytes:
+ *   - [1-2] = item id
+ *   - [3-4] = state flag id
+ */
+int vs_battle_script_52_setFlagToItemCount(u_char* script, UNUSED short arg1)
 {
     vs_battle_setStateFlag(
-        getShort(arg0 + 3), vs_battle_itemIdIsInInventory(getShort(arg0 + 1)));
+        getShort(script + 3), vs_battle_itemIdIsInInventory(getShort(script + 1)));
+
     return vs_battle_scriptNext;
 }
 

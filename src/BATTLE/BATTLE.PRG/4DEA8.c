@@ -1594,7 +1594,7 @@ int vs_battle_script_38_setActorLookTarget(u_char* script, UNUSED short arg1)
         speed = script[5];
     }
 
-    setActorLook(actor, mode, 0, speed);
+    setActorLook(actor, mode, NULL, speed);
 
     return vs_battle_scriptNext;
 }

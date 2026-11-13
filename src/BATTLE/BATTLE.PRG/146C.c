@@ -4613,7 +4613,7 @@ void func_800738E4(void)
 
     for (i = 0; i < 16; ++i) {
         func_8009D7E8(i, 0);
-        setActorLightColor(i, 0);
+        setActorLightColor(i, NULL);
     }
 
     func_80093A14();

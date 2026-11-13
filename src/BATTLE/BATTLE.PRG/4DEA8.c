@@ -1945,8 +1945,8 @@ int vs_battle_script_48_endSceneReset(UNUSED u_char* script, UNUSED short arg1)
 }
 
 /**
- * Sets a loop counter. Using 0xFF as the counter is a nop and may be a
- * marker for "loop forever".
+ * Sets a loop counter. Using 0xFF as the counter is a marker for
+ * the start of an infinite loop.
  * @param script Opcode bytes:
  *   - [1] = counter index (0-15), 0xFF = none
  *   - [2] = number of times to loop
@@ -1960,14 +1960,22 @@ int vs_battle_script_49_setLoopCounter(u_char* script, UNUSED short arg1)
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_4A_jumpBackIf(u_char* arg0, UNUSED short arg1)
+/**
+ * Checks a loop condition and jumps back accordingly.
+ * @param script Opcode bytes:
+ *   - [1] = counter index (0-15), 0xFF = unconditional jump back (i.e. infinite loop)
+ *   - [2-3] = target offset before this opcode
+ */
+int vs_battle_script_4A_loopCondition(u_char* script, UNUSED short arg1)
 {
-    if (arg0[1] == 0xFF) {
-        return (long)&arg0[-getShort(arg0 + 2)];
+    if (script[1] == 0xFF) {
+        return (long)&script[-getShort(script + 2)];
     }
-    if (--loopCounters[arg0[1]] != 0) {
-        return (long)&arg0[-getShort(arg0 + 2)];
+
+    if (--loopCounters[script[1]] != 0) {
+        return (long)&script[-getShort(script + 2)];
     }
+
     return vs_battle_scriptNext;
 }
 
@@ -1982,11 +1990,11 @@ int vs_battle_script_4C_jumpFwdUnused(u_char* script, UNUSED short arg1)
 }
 
 /**
- * Breaks out of a loop, jumps past the jumpBackIf that closes the loop.
+ * Breaks out of a loop, jumping past the loopCondition that closes the loop.
  * @param script Opcode bytes:
  *   - [1-2] = target offset from this opcode
  */
-int vs_battle_script_4B_jumpFwdBreak(u_char* script, UNUSED short arg1)
+int vs_battle_script_4B_break(u_char* script, UNUSED short arg1)
 {
     return (long)&script[getShort(script + 1)];
 }

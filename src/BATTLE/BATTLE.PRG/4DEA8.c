@@ -2151,9 +2151,17 @@ int vs_battle_script_53_forgetZoneEnemies(u_char* script, UNUSED short arg1)
     return scriptNext;
 }
 
-int vs_battle_script_54(u_char* arg0, UNUSED short arg1)
+/**
+ * Plays the sound of an actor drawing or sheathing its weapon, without changing its
+ * weapon state.
+ * @param script Opcode bytes:
+ *   - [1-2] = actor selector
+ *   - [3] = 0 = draw, 1 = sheathe
+ */
+int vs_battle_script_54_playWeaponSfx(u_char* script, UNUSED short arg1)
 {
-    func_8009DBDC(resolveActorId(getShort(arg0 + 1)), arg0[3]);
+    playWeaponSfx(resolveActorId(getShort(script + 1)), script[3]);
+
     return scriptNext;
 }
 
@@ -2579,7 +2587,7 @@ int vs_battle_script_72(u_char* arg0, UNUSED short arg1)
         t *= 2;
         u = (arg0[1] ^ 1) + 0x6D;
         vs_battle_setActorAnimation(0, t + u, 0, 0xA);
-        func_8009DBDC(0, arg0[1] ^ 1);
+        playWeaponSfx(0, arg0[1] ^ 1);
         ret = 1;
         D_800F4C4E = ret;
     } else {

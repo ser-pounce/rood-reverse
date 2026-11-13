@@ -79,7 +79,7 @@ extern void* D_800E8FB4[];
 extern int D_800E8FC4;
 extern u_char weaponMaterialPaletteMap[];
 extern u_char D_800E9030[];
-extern u_char D_800E9090[];
+extern u_char weaponCategorySfx[];
 extern u_char D_800E919C[];
 extern void* wepFileData;
 extern int wepFileLoaded;
@@ -2312,7 +2312,7 @@ void func_8009D934(int arg0, int arg1, int arg2)
 
     if (arg2 != 0) {
         var_s2 = 16;
-        temp_s1 = D_800E9090[temp_s0->unk5B1];
+        temp_s1 = weaponCategorySfx[temp_s0->unk5B1];
     } else {
         temp_s1 = D_800E909C[temp_s0->unk5B1];
     }
@@ -2353,11 +2353,12 @@ void func_8009D934(int arg0, int arg1, int arg2)
     }
 }
 
-void func_8009DBDC(int arg0, int arg1)
+// Plays the sound of an actor drawing (sheathe = 0) or sheathing (sheathe = 1) its weapon
+void playWeaponSfx(int actor, int sheathe)
 {
-    D_800F4538_t* temp_a0 = D_800F4538[arg0];
+    D_800F4538_t* temp_a0 = D_800F4538[actor];
     if (temp_a0 != NULL) {
-        func_800AE6C0(temp_a0, D_800E9090[temp_a0->unk5B1] + arg1, 0);
+        func_800AE6C0(temp_a0, weaponCategorySfx[temp_a0->unk5B1] + sheathe, 0);
     }
 }
 

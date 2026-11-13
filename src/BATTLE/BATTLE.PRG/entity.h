@@ -20,11 +20,11 @@ typedef struct {
 } D_800F4538_t2;
 
 typedef struct {
-    signed char unk0;
-    signed char unk1;
-    signed char unk2;
-    u_char unk3;
-} D_800F4538_unk58;
+    int x : 8;
+    int y : 8;
+    int z : 8;
+    u_int otDepth : 8;
+} EdgeHighlight;
 
 typedef struct {
     int unk0;
@@ -41,10 +41,13 @@ typedef struct {
 } D_800F4538_unk1864;
 
 typedef struct {
-    SVECTOR unk0[42];
-    SVECTOR unk150[42];
+    SVECTOR unk0[41];
+    SVECTOR unk148;
+    SVECTOR unk150[41];
+    SVECTOR unk298;
     SVECTOR unk2A0[42];
-    SVECTOR unk3F0[42];
+    SVECTOR unk3F0[41];
+    SVECTOR unk538;
     short unk540;
     u_short unk542;
     u_char* unk544;
@@ -86,6 +89,19 @@ typedef struct {
     u_char unk2;
     u_char unk3;
 } D_800F4538_unk64;
+
+enum SfxOverrideMode {
+    sfxOverrideOff, // sounds follow the actor's screen position
+    sfxOverrideSet, // fixed pan and volume, ramped over duration frames
+    sfxOverrideMute // centered and silent
+};
+
+typedef struct {
+    u_char mode; // enum SfxOverrideMode
+    u_char pan;
+    u_char volume;
+    u_char duration;
+} SfxOverride;
 
 typedef struct {
     u_char unk0;
@@ -164,8 +180,8 @@ typedef struct {
     SVECTOR lastPosition;
     CVECTOR unk54;
     CVECTOR unk58;
-    vs_battle_tilePosition currentTile;
-    vs_battle_tilePosition lastTouchedTile;
+    vs_TilePosition currentTile;
+    vs_TilePosition lastTouchedTile;
     D_800F4538_unk64 unk64;
     D_800F4538_unk68* unk68;
 } D_800F4538_unk0;
@@ -226,8 +242,8 @@ typedef struct {
     SVECTOR lastPosition;
     CVECTOR unk54;
     CVECTOR unk58;
-    vs_battle_tilePosition currentTile;
-    vs_battle_tilePosition lastTouchedTile;
+    vs_TilePosition currentTile;
+    vs_TilePosition lastTouchedTile;
     D_800F4538_unk64 unk64;
     D_800F4538_unk68* unk68;
 } D_800F45E0_unk0;
@@ -350,7 +366,7 @@ typedef struct {
     void* unk5DC[4];
     union {
         SVECTOR vec;
-        vs_battle_tilePosition tile;
+        vs_TilePosition tile;
     } unk5EC;
     TexMapOverlay texMapOverlays[8];
     D_800F4538_unk614 unk614[2];
@@ -397,7 +413,7 @@ typedef struct {
     u_char unk6F1;
     u_char unk6F2;
     u_char unk6F3;
-    D_800F4538_unk58 unk6F4;
+    EdgeHighlight unk6F4;
     CVECTOR unk6F8;
     SVECTOR unk6FC;
     D_800F4538_unkC54 unk704;
@@ -405,8 +421,8 @@ typedef struct {
     u_short unk11A4[2][0xA0];
     u_short unk1424[0x140];
     u_short unk16A4[0xA0];
-    D_800F4538_unk64 unk17E4;
-    D_800F4538_unk64 unk17E8;
+    SfxOverride unk17E4;
+    SfxOverride unk17E8;
     SVECTOR unk17EC;
     SVECTOR unk17F4;
     signed char unk17FC;
@@ -435,7 +451,7 @@ typedef struct {
     u_char unk1862;
     u_char unk1863;
     D_800F4538_unk1864 unk1864;
-    vs_battle_tilePosition unk1868;
+    vs_TilePosition unk1868;
     void* unk187C;
     u_short unk1880[4][2];
     MATRIX unk1890[2];

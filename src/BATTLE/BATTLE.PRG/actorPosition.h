@@ -4,11 +4,11 @@
 #include <libgte.h>
 
 typedef struct {
-    vs_battle_tilePosition unk0;
+    vs_TilePosition unk0;
     SVECTOR unk4;
-} vs_ActorLocation;
+} ActorLocation;
 
 typedef struct {
-    vs_ActorLocation unk0;
+    ActorLocation unk0;
     int unkC;
 } vs_ActorPosition;

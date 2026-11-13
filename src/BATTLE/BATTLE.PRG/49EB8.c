@@ -1,5 +1,6 @@
 #include "common.h"
 #include "146C.h"
+#include "146CPrivate.h"
 #include "30DB0Private.h"
 #include "44F14.h"
 #include "48C7C.h"
@@ -18,8 +19,6 @@
 typedef struct {
     int words[2];
 } func_800B28A8_t;
-
-void func_8008C458(int, int, void*, void*);
 
 inline void func_800B26B8(D_800F4538_t* actor, MATRIX* parent, int bone, int saved)
 {
@@ -377,7 +376,7 @@ void func_800B28A8(D_800F4538_t* actor, MATRIX* camera, int mode)
                     temp = scratch->offset.vz;
                     temp <<= 16;
                     func_8008C458(temp | scratch->offset.vx,
-                        actor->unk0.currentTile.surface, &scratch->unk0[0x30],
+                        actor->unk0.currentTile.surface, (CVECTOR*)&scratch->unk0[0x30],
                         &actor->unk0.position);
                     {
                         int color;

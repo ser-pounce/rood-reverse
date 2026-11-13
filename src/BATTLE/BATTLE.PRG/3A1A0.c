@@ -64,7 +64,7 @@ void func_800A29A0(D_800F4538_t* arg0)
     case 1:
         arg0->unk0.unkA_5 = 0;
         vs_battle_setActorAnimation(arg0->unk0.unkF, 0x13, 0, 8);
-        func_800A01C8(arg0->unk0.unkF, 0x14, 8, 0);
+        queueActorAnimation(arg0->unk0.unkF, 0x14, 8, 0);
         arg0->unk0.unk54.cd = 0;
         arg0->unk0.unkB_0 = 2;
         arg0->unk0.unk9_0 = 6;
@@ -85,10 +85,10 @@ void func_800A29A0(D_800F4538_t* arg0)
 
         if (busy == 0) {
             arg0->unk0.unk9_0 = 9;
-            func_800A9C54(arg0->unk0.unkF, &arg0->unk5EC.tile, 0);
+            slideActorToTile(arg0->unk0.unkF, &arg0->unk5EC.tile, 0);
             arg0->unk0.facing = arg0->unk5EC.vec.pad;
             vs_battle_setActorAnimation(arg0->unk0.unkF, 0x15, 0, 8);
-            func_800A01C8(arg0->unk0.unkF, 0x16, 8, 0);
+            queueActorAnimation(arg0->unk0.unkF, 0x16, 8, 0);
             arg0->unk0.unkB_0 = 3;
         }
 
@@ -125,7 +125,7 @@ void func_800A29A0(D_800F4538_t* arg0)
 
 void func_800A2C48(D_800F4538_t* arg0)
 {
-    func_800A9C54(arg0->unk0.unkF, &arg0->unk5EC.tile, 0);
+    slideActorToTile(arg0->unk0.unkF, &arg0->unk5EC.tile, 0);
     arg0->unk6E0 = 0;
     arg0->unk0.unkB_0 = 4;
     func_800A29A0(arg0);
@@ -139,8 +139,8 @@ void func_800A2CD4(D_800F4538_t* arg0)
     switch (arg0->unk0.unkB_4) {
     case 1:
         vs_battle_setActorAnimation(arg0->unk0.unkF, 9, 0, 8);
-        func_800A9C54(arg0->unk0.unkF, &arg0->unk5EC.tile, -1);
-        func_800A9EB4(arg0->unk0.unkF, arg0->unk5EC.vec.pad, 8);
+        slideActorToTile(arg0->unk0.unkF, &arg0->unk5EC.tile, -1);
+        turnActorToFacing(arg0->unk0.unkF, arg0->unk5EC.vec.pad, 8);
         arg0->unk5CA = arg0->unk0.unk1A;
         arg0->unk0.unk1A = 0;
 
@@ -183,9 +183,9 @@ void func_800A2CD4(D_800F4538_t* arg0)
 
     case 4:
         vs_battle_setActorAnimation(arg0->unk0.unkF, 7, 0, 8);
-        func_800A01C8(arg0->unk0.unkF, 37, 8, 0);
+        queueActorAnimation(arg0->unk0.unkF, 37, 8, 0);
         func_800AA620(arg0->unk0.unkF, &arg0->unk5EC.vec, -1);
-        func_800A9EB4(arg0->unk0.unkF, arg0->unk5EC.vec.pad, 8);
+        turnActorToFacing(arg0->unk0.unkF, arg0->unk5EC.vec.pad, 8);
         arg0->unk5CA = arg0->unk0.unk1A;
         arg0->unk0.unk1A = 0;
         arg0->unk0.unkA_5 = 1;
@@ -718,7 +718,7 @@ int func_800A3DB4(int x, int z, int minimumHeight)
 int func_800A3E6C(int actorId)
 {
     SVECTOR position;
-    vs_battle_tilePosition tile;
+    vs_TilePosition tile;
     D_800F4538_t* actor = D_800F4538[actorId];
     D_800F45E0_t* object;
     int objectId;
@@ -1553,7 +1553,7 @@ int func_800A6AA0(D_800F4538_t* actor, int speed)
             next = 20;
         }
 
-        func_800A01C8(actor->unk0.unkF, next, 4, 0);
+        queueActorAnimation(actor->unk0.unkF, next, 4, 0);
         return;
     } else if (speed > 0) {
         int step;
@@ -1595,12 +1595,12 @@ int func_800A6AA0(D_800F4538_t* actor, int speed)
             next += 2;
         }
 
-        func_800A01C8(actor->unk0.unkF, next, 4, 0);
+        queueActorAnimation(actor->unk0.unkF, next, 4, 0);
         return;
     } else {
         if (animation >= 13 && animation <= 16) {
             vs_battle_setActorAnimation(actor->unk0.unkF, 6, 0, 10);
-            func_800A01C8(actor->unk0.unkF, 1, 10, 0);
+            queueActorAnimation(actor->unk0.unkF, 1, 10, 0);
             return;
         }
 

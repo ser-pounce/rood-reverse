@@ -5,7 +5,7 @@
 typedef struct {
     int lba;
     u_int size;
-} vs_Main_CdFile;
+} vs_CdFile;
 
 enum vs_main_CdQueueState {
     vs_main_CdQueueStateFree = 0,
@@ -20,15 +20,15 @@ enum vs_main_CdQueueState {
 typedef struct {
     short state;
     short priority;
-    vs_Main_CdFile cdFile;
+    vs_CdFile cdFile;
     UNUSED int unused;
     void* vram;
-} vs_Main_CdQueueSlot;
+} vs_CdQueueSlot;
 
-vs_Main_CdQueueSlot* vs_main_allocateCdQueueSlot(vs_Main_CdFile const* file);
-void vs_main_freeCdQueueSlot(vs_Main_CdQueueSlot* slot);
-void vs_main_cdEnqueue(vs_Main_CdQueueSlot* slot, void* vram);
-void vs_main_cdEnqueuePriority(vs_Main_CdQueueSlot* slot, void* vram);
+vs_CdQueueSlot* vs_main_allocateCdQueueSlot(vs_CdFile const* file);
+void vs_main_freeCdQueueSlot(vs_CdQueueSlot* slot);
+void vs_main_cdEnqueue(vs_CdQueueSlot* slot, void* vram);
+void vs_main_cdEnqueuePriority(vs_CdQueueSlot* slot, void* vram);
 int vs_main_diskLoadFile(int sector, u_int bytes, void* vram);
 int vs_main_streamXa(int sector, int cdVolume);
 int vs_main_checkStreamXaEnd(void);

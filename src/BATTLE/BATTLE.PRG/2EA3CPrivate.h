@@ -29,7 +29,7 @@ VS_HIDDEN(func_80098160);
 void func_80098194(int);
 VS_HIDDEN(func_80098194);
 
-void func_80098B38(int, int);
+int func_80098B38(int, int, CVECTOR*);
 VS_HIDDEN(func_80098B38);
 
 u_char func_80099514(u_int, int, int);

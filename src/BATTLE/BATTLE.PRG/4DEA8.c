@@ -245,6 +245,18 @@ typedef struct {
     u_char high;
 } ScriptBytePair;
 
+// Comparison selected by the high nibble of a conditional opcode's second byte, applied
+// as `flag <op> operand`
+enum flagComparison {
+    flagComparisonLe = 0x00,
+    flagComparisonGe = 0x10,
+    flagComparisonEq = 0x20,
+    flagComparisonNe = 0x30,
+    flagComparisonLt = 0x40,
+    flagComparisonGt = 0x50,
+    flagComparisonAnd = 0x60
+};
+
 static int tryTextBoxPlacement(
     SVECTOR* origin, u_char* script, TextPlacement* result, u_char direction);
 void expandActorSelector(u_short, ActorList*);
@@ -279,13 +291,10 @@ static VECTOR* sVectorToFixedPointVector(VECTOR* arg0, SVECTOR* arg1);
 static void toNormalIntegerVector(VECTOR*, VECTOR*);
 
 extern int D_800E9B34[];
-extern int D_800E9B4C[];
+extern int weaponDrawnModes[];
 extern char animationBankBase[];
-VS_HIDDEN(animationBankBase);
 extern char skipResetPaletteOp[];
-VS_HIDDEN(skipResetPaletteOp);
 extern char skipTailMarkerOp[];
-VS_HIDDEN(skipTailMarkerOp);
 extern u_char D_800E9BEC[];
 extern u_char D_800E9BF0[];
 extern short D_800E9BF4[];
@@ -298,7 +307,6 @@ extern u_char D_800E9C28;
 extern u_char D_800E9C2C;
 extern u_short D_800F4B20;
 extern GimTween gimTweens[];
-VS_HIDDEN(gimTweens);
 extern D_800F4B88_t D_800F4B88;
 extern char D_800F4B8B;
 extern char D_800F4BA0;
@@ -332,7 +340,6 @@ extern char D_800F4C6A;
 extern char D_800F4B70[];
 extern u_short D_800F4B28[];
 extern Gim* gims;
-VS_HIDDEN(gims);
 
 int vs_battle_script_invalidOpcode(u_char* arg0, short arg1)
 {
@@ -898,7 +905,7 @@ int vs_battle_script_1F_getActorTile(u_char* script, UNUSED short arg1)
  */
 int vs_battle_script_20_spawnActor(u_char* script, UNUSED short arg1)
 {
-    vs_battle_tilePosition tile[3];
+    vs_TilePosition tile[3];
 
     tile[0].x = script[5];
     tile[0].surface = script[6];
@@ -911,13 +918,14 @@ int vs_battle_script_20_spawnActor(u_char* script, UNUSED short arg1)
 }
 
 /**
+ * Walks an actor to a tile, with pathfinding.
  * @param script Opcode bytes:
  *   - [1-2] = actor selector
  *   - [3] = tile x
  *   - [4] = unused
  *   - [5] = tile z
  */
-int vs_battle_script_21_walkToTile(u_char* script, UNUSED short arg1)
+int vs_battle_script_21_walkActorToTile(u_char* script, UNUSED short arg1)
 {
     SVECTOR destination;
     u_short actor = resolveActorId(getShort(script + 1));
@@ -928,9 +936,9 @@ int vs_battle_script_21_walkToTile(u_char* script, UNUSED short arg1)
 
     if (scriptSkipMode == vs_battle_scriptSkipping) {
         destination.pad = -0x8000;
-        func_800A9D90(actor, &destination, 0);
+        slideActorToCoordinate(actor, &destination, 0);
     } else {
-        func_8007CFF8(actor, &destination);
+        walkActorToCoordinate(actor, &destination);
     }
 
     func_8009DC8C(actor);
@@ -1004,552 +1012,879 @@ int vs_battle_script_23_setActorFlags(u_char* script, UNUSED short arg1)
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_24(u_char* arg0, UNUSED short arg1)
+/**
+ * Overrides the stereo pan and volume used for an actor's sound effects.
+ * @param script Opcode bytes:
+ *   - [1-2] = actor id
+ *   - [3] = mode:
+ *     - 0: clear the override, sounds follow the actor's position on screen
+ *     - 1: use the pan and volume below, ramped over the duration.
+ *     - 2: mute the actor's sounds
+ *   - [4] = pan, 0x80 is centered
+ *   - [5] = volume, 0x7F is maximum
+ *   - [6] = ramp duration in frames, 0 applies immediately
+ */
+int vs_battle_script_24_setActorSfxPanVolume(u_char* script, UNUSED short arg1)
 {
-    D_800F4538_unk64 sp10;
-    int var_a0;
+    SfxOverride override;
+    int actorId;
 
-    sp10.unk0 = arg0[3];
-    sp10.unk1 = arg0[4];
-    sp10.unk2 = arg0[5];
-    sp10.unk3 = arg0[6];
-    var_a0 = resolveActorId(getShort(arg0 + 1));
-    if (var_a0 == 0x2001) {
-        var_a0 = -1;
+    override.mode = script[3];
+    override.pan = script[4];
+    override.volume = script[5];
+    override.duration = script[6];
+
+    actorId = resolveActorId(getShort(script + 1));
+
+    if (actorId == 0x2001) {
+        actorId = -1;
     }
-    func_8009F990(var_a0, &sp10);
+
+    setActorsSfxOverride(actorId, &override);
+
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_25(u_char* arg0, UNUSED short arg1)
+/**
+ * Moves an actor to a tile and turns it to a facing, ignoring the tile map.
+ * Animated move (non-zero values for the frames) does not seem to be used by the scripts.
+ * Does not respect paths; walkActorToTile is used for walking in practice.
+ * @param script Opcode bytes:
+ *   - [1-2] = actor selector
+ *   - [3-5] = tile x, surface and z
+ *   - [6] = final facing (1/256 turn). With frame counts, 0xFF skips the final turn;
+ *   - [7] = movement frame count, 0 = immediately, 0xFF = default (from distance and
+ *     the actor's unk5C2)
+ *   - [8] = turn frame count, 0 = immediately, 0xFF = default (from angle and the
+ *     actor's unk5C0)
+ */
+int vs_battle_script_25_moveActorToTile(u_char* script, UNUSED short arg1)
 {
-    vs_battle_tilePosition sp10[3];
-    u_short temp_v0 = resolveActorId(getShort(arg0 + 1));
-    sp10[0].x = arg0[3];
-    sp10[0].surface = arg0[4];
-    sp10[0].z = arg0[5];
-    sp10[0].extra = arg0[6];
+    vs_TilePosition tile[3];
+    u_short actor = resolveActorId(getShort(script + 1));
+
+    tile[0].x = script[3];
+    tile[0].surface = script[4];
+    tile[0].z = script[5];
+    tile[0].extra = script[6];
+
     if (scriptSkipMode == vs_battle_scriptSkipping) {
-        func_800A97EC(temp_v0, sp10, 0, 0);
+        moveActorToTile(actor, tile, 0, 0);
     } else {
-        func_800A97EC(temp_v0, sp10, arg0[7] != 0xFF ? arg0[7] : -1,
-            arg0[8] != 0xFF ? arg0[8] : -1);
+        moveActorToTile(actor, tile, script[7] != 0xFF ? script[7] : -1,
+            script[8] != 0xFF ? script[8] : -1);
     }
-    func_8009DC8C(temp_v0);
-    D_800F4B70[temp_v0] = 1;
+
+    func_8009DC8C(actor);
+
+    D_800F4B70[actor] = 1;
+
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_26(u_char* arg0, UNUSED short arg1)
+/**
+ * Like moveActorToTile, but to a position given in world coordinates instead of a tile.
+ * Does not respect paths; walkActorToCoordinate is used for walking in practice.
+ * @param script Opcode bytes:
+ *   - [1-2] = actor selector
+ *   - [3-4] = x in bits 1-15 (value >> 1). If bit 0 is set, x, y and z are added to the
+ *     actor's current position instead of replacing it
+ *   - [5-6] = y (height), 0x8000 = the ground height at the target (absolute only)
+ *   - [7-8] = z
+ *   - [9] = facing (1/256 turn), 0xFF = none: turn towards the direction of travel
+ *   - [10] = movement frame count, 0 = immediately, 0xFF = default
+ *   - [11] = turn frame count, 0 = immediately, 0xFF = default
+ */
+int vs_battle_script_26_moveActorToCoordinate(u_char* arg0, UNUSED short arg1)
 {
-    vs_ActorPosition sp10;
-
-    u_short temp_s4 = resolveActorId(getShort(arg0 + 1));
-    int temp_s1 = getShort(arg0 + 3) >> 1;
-    short temp_s2 = getShort(arg0 + 5);
-    short temp_s3 = getShort(arg0 + 7);
+    vs_ActorPosition position;
+    u_short actor = resolveActorId(getShort(arg0 + 1));
+    short x = getShort(arg0 + 3) >> 1;
+    short y = getShort(arg0 + 5);
+    short z = getShort(arg0 + 7);
 
     if (arg0[3] & 1) {
-        vs_battle_getActorPosition(temp_s4, &sp10);
-        applyVector(&sp10.unk0.unk4, temp_s1, temp_s2, temp_s3, +=);
+        vs_battle_getActorPosition(actor, &position);
+        applyVector(&position.unk0.unk4, x, y, z, +=);
     } else {
-        setVector(&sp10.unk0.unk4, temp_s1, temp_s2, temp_s3);
+        setVector(&position.unk0.unk4, x, y, z);
     }
+
     if (arg0[9] != 0xFF) {
-        char v = 0x10;
-        sp10.unk0.unk4.pad = arg0[9] * v;
+        position.unk0.unk4.pad = arg0[9] << 4;
     } else {
-        sp10.unk0.unk4.pad = -0x8000;
+        position.unk0.unk4.pad = -0x8000;
     }
-    if (scriptSkipMode == vs_battle_scriptSkipping) {
-        func_800A9988(temp_s4, &sp10.unk0.unk4, 0, 0);
-    } else {
-        func_800A9988(temp_s4, &sp10.unk0.unk4, arg0[10] != 0xFF ? arg0[10] : -1,
-            arg0[11] != 0xFF ? arg0[11] : -1);
-    }
-    func_8009DC8C(temp_s4);
-    D_800F4B70[temp_s4] = 1;
-    return vs_battle_scriptNext;
-}
-
-int vs_battle_script_27(u_char* arg0, UNUSED short arg1)
-{
-    vs_battle_tilePosition sp10[4];
-    u_short temp_s0 = resolveActorId(getShort(arg0 + 1));
-    sp10[0].x = arg0[3];
-    sp10[0].surface = arg0[4];
-    sp10[0].z = arg0[5];
-    sp10[0].extra = 0xFF;
-    if (scriptSkipMode == vs_battle_scriptSkipping) {
-        func_800A9C54(temp_s0, sp10, 0);
-    } else {
-        func_800A9C54(temp_s0, sp10, arg0[6] != 0xFF ? arg0[6] : -1);
-    }
-    func_8009DC8C(temp_s0);
-    D_800F4B70[temp_s0] = 1;
-    return vs_battle_scriptNext;
-}
-
-int vs_battle_script_28(u_char* arg0, UNUSED short arg1)
-{
-    vs_ActorPosition sp10;
-    short temp_s3;
-    short temp_s4;
-    int temp_s1;
-    u_short temp_s2;
-
-    temp_s2 = resolveActorId(getShort(arg0 + 1));
-    temp_s1 = getShort(arg0 + 3) >> 1;
-    temp_s3 = getShort(arg0 + 5);
-    temp_s4 = getShort(arg0 + 7);
-
-    if (arg0[3] & 1) {
-        vs_battle_getActorPosition(temp_s2, &sp10);
-        applyVector(&sp10.unk0.unk4, temp_s1, temp_s3, temp_s4, +=);
-    } else {
-        setVector(&sp10.unk0.unk4, temp_s1, temp_s3, temp_s4);
-    }
-
-    sp10.unk0.unk4.pad = -0x8000;
 
     if (scriptSkipMode == vs_battle_scriptSkipping) {
-        func_800A9D90(temp_s2, &sp10.unk0.unk4, 0);
+        moveActorToCoordinate(actor, &position.unk0.unk4, 0, 0);
     } else {
-        func_800A9D90(temp_s2, &sp10.unk0.unk4, arg0[9] != 0xFF ? arg0[9] : -1);
+        moveActorToCoordinate(actor, &position.unk0.unk4,
+            arg0[10] != 0xFF ? arg0[10] : -1, arg0[11] != 0xFF ? arg0[11] : -1);
     }
 
-    func_8009DC8C(temp_s2);
-    D_800F4B70[temp_s2] = 1;
+    func_8009DC8C(actor);
+
+    D_800F4B70[actor] = 1;
+
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_29(u_char* arg0, UNUSED short arg1)
+/**
+ * Slides an actor to a tile over time, ignoring the tile map. Unlike moveActorToTile
+ * the actor only changes position, there is no walk animation and no turning.
+ * @param script Opcode bytes:
+ *   - [1-2] = actor selector
+ *   - [3-5] = tile x, surface and z
+ *   - [6] = frame count, 0xFF = default (from distance and the actor's unk5C2)
+ */
+int vs_battle_script_27_slideActorToTile(u_char* script, UNUSED short arg1)
 {
-    u_short temp_s1 = resolveActorId(getShort(arg0 + 1));
-    u_int temp_a1 = resolveActorId(getShort(arg0 + 3)) & 0xFFFF;
-    if (temp_a1 >= 0x2000) {
-        func_8009FFA8(temp_s1, temp_a1);
-    } else {
-        func_8009FF08(temp_s1, temp_a1, arg0[5], arg0[6]);
-    }
-    return vs_battle_scriptNext;
-}
+    vs_TilePosition tile[4];
+    u_short actor = resolveActorId(getShort(script + 1));
 
-int vs_battle_script_2A(u_char* arg0, UNUSED short arg1)
-{
-    SVECTOR sp10;
-    u_short temp_s1 = resolveActorId(getShort(arg0 + 1) & 0xFFFF);
-    sp10.vx = getShort(arg0 + 3);
-    sp10.vy = 0;
-    sp10.vz = getShort(arg0 + 5);
+    tile[0].x = script[3];
+    tile[0].surface = script[4];
+    tile[0].z = script[5];
+    tile[0].extra = 0xFF;
+
     if (scriptSkipMode == vs_battle_scriptSkipping) {
-        sp10.pad = -0x8000;
-        func_800A9D90(temp_s1, &sp10, 0);
+        slideActorToTile(actor, tile, 0);
     } else {
-        func_8007CFF8(temp_s1, &sp10);
+        slideActorToTile(actor, tile, script[6] != 0xFF ? script[6] : -1);
     }
-    func_8009DC8C(temp_s1);
-    D_800F4B70[temp_s1] = 1;
+
+    func_8009DC8C(actor);
+
+    D_800F4B70[actor] = 1;
+
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_2B(u_char* arg0, UNUSED short arg1)
+/**
+ * Like slideActorToTile, but to a position given in world coordinates instead of a tile.
+ * @param script Opcode bytes:
+ *   - [1-2] = actor selector
+ *   - [3-4] = x in bits 1-15 (value >> 1). If bit 0 is set, x, y and z are added to the
+ *     actor's current position instead of replacing it
+ *   - [5-6] = y (height)
+ *   - [7-8] = z
+ *   - [9] = frame count, 0xFF = default (from distance and the actor's unk5C2)
+ */
+int vs_battle_script_28_slideActorToCoordinate(u_char* script, UNUSED short arg1)
 {
-    vs_ActorPosition sp10;
-    u_short temp_s1 = resolveActorId(getShort(arg0 + 1));
-    short var_s2 = arg0[5] != 0xFF ? arg0[5] : -1;
-    int var_a1;
+    vs_ActorPosition position;
+    u_short actor = resolveActorId(getShort(script + 1));
+    short x = getShort(script + 3) >> 1;
+    short y = getShort(script + 5);
+    short z = getShort(script + 7);
 
-    if (arg0[4] != 0) {
-        vs_battle_getActorPosition(temp_s1, &sp10);
-        var_a1 = (arg0[3] << 4) - sp10.unk0.unk4.pad;
-        if (var_a1 < -ONE / 2) {
-            var_a1 += ONE;
+    if (script[3] & 1) {
+        vs_battle_getActorPosition(actor, &position);
+        applyVector(&position.unk0.unk4, x, y, z, +=);
+    } else {
+        setVector(&position.unk0.unk4, x, y, z);
+    }
+
+    position.unk0.unk4.pad = -0x8000;
+
+    if (scriptSkipMode == vs_battle_scriptSkipping) {
+        slideActorToCoordinate(actor, &position.unk0.unk4, 0);
+    } else {
+        slideActorToCoordinate(
+            actor, &position.unk0.unk4, script[9] != 0xFF ? script[9] : -1);
+    }
+
+    func_8009DC8C(actor);
+
+    D_800F4B70[actor] = 1;
+
+    return vs_battle_scriptNext;
+}
+
+/**
+ * Attaches an actor to a bone of a parent actor. A parent selector >= 0x2000 detaches it.
+ * @param script Opcode bytes:
+ *   - [1-2] = actor selector
+ *   - [3-4] = parent actor selector
+ *   - [5] = bone index in the parent
+ *   - [6] = unused
+ */
+int vs_battle_script_29_attachActor(u_char* script, UNUSED short arg1)
+{
+    u_short actor = resolveActorId(getShort(script + 1));
+    u_short parent = resolveActorId(getShort(script + 3));
+
+    if (parent >= 0x2000) {
+        detachActor(actor, parent);
+    } else {
+        attachActor(actor, parent, script[5], script[6]);
+    }
+
+    return vs_battle_scriptNext;
+}
+
+/**
+ * Like walkActorToTile, but to a position given in world coordinates instead of a tile.
+ * @param script Opcode bytes:
+ *   - [1-2] = actor selector
+ *   - [3-4] = x
+ *   - [5-6] = z
+ */
+int vs_battle_script_2A_walkActorToCoordinate(u_char* script, UNUSED short arg1)
+{
+    SVECTOR destination;
+    u_short actor = resolveActorId(getShort(script + 1));
+    destination.vx = getShort(script + 3);
+    destination.vy = 0;
+    destination.vz = getShort(script + 5);
+
+    if (scriptSkipMode == vs_battle_scriptSkipping) {
+        destination.pad = -0x8000;
+        slideActorToCoordinate(actor, &destination, 0);
+    } else {
+        walkActorToCoordinate(actor, &destination);
+    }
+
+    func_8009DC8C(actor);
+
+    D_800F4B70[actor] = 1;
+
+    return vs_battle_scriptNext;
+}
+
+/**
+ * Turns an actor to face a direction.
+ * @param script Opcode bytes:
+ *   - [1-2] = actor selector
+ *   - [3] = facing (1/256 turn)
+ *   - [4] = turn direction: 0 = shortest, 1 = positive, -1 = negative
+ *   - [5] = frame count, 0 = immediately, 0xFF = default (from angle and the actor's
+ *     unk5C0)
+ */
+int vs_battle_script_2B_turnActorToFacing(u_char* script, UNUSED short arg1)
+{
+    vs_ActorPosition position;
+    u_short actor = resolveActorId(getShort(script + 1));
+    short frames = script[5] != 0xFF ? script[5] : -1;
+
+    if (script[4] != 0) {
+        int angle;
+
+        vs_battle_getActorPosition(actor, &position);
+
+        angle = (script[3] << 4) - position.unk0.unk4.pad;
+
+        if (angle < -ONE / 2) {
+            angle += ONE;
         }
-        if (var_a1 > ONE / 2) {
-            var_a1 -= ONE;
+
+        if (angle > ONE / 2) {
+            angle -= ONE;
         }
-        switch ((signed char)arg0[4]) {
+
+        switch ((signed char)script[4]) {
         case -1:
-            if (var_a1 > 0) {
-                var_a1 -= ONE;
+            if (angle > 0) {
+                angle -= ONE;
             }
             break;
         case 1:
-            if (var_a1 < 0) {
-                var_a1 += ONE;
+            if (angle < 0) {
+                angle += ONE;
             }
             break;
         }
-        func_800A9E38(temp_s1, var_a1, var_s2);
+
+        turnActorToRelativeFacing(actor, angle, frames);
     } else {
-        func_800A9EB4(temp_s1, arg0[3] << 4, var_s2);
+        turnActorToFacing(actor, script[3] << 4, frames);
     }
-    D_800F4B70[temp_s1] = 1;
+
+    D_800F4B70[actor] = 1;
+
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_2C(u_char* arg0, UNUSED short arg1)
+/**
+ * Turns an actor to face the tile another actor is standing on.
+ * @param script Opcode bytes:
+ *   - [1-2] = actor selector
+ *   - [3-4] = target actor selector
+ *   - [5] = frame count, 0 = immediately, 0xFF = default (from angle and the actor's
+ *     unk5C0)
+ */
+int vs_battle_script_2C_turnActorToFaceActor(u_char* script, UNUSED short arg1)
 {
-    vs_ActorPosition sp10;
-    int temp_s0;
-    int temp_s0_2;
-    int var_a2;
+    vs_ActorPosition position;
+    u_short actor = resolveActorId(getShort(script + 1));
 
-    temp_s0 = resolveActorId(getShort(arg0 + 1));
-    vs_battle_getActorPosition(resolveActorId(getShort(arg0 + 3)), &sp10);
-    var_a2 = -1;
-    temp_s0_2 = temp_s0 & 0xFFFF;
-    if (arg0[5] != 0xFF) {
-        var_a2 = arg0[5];
-    }
-    func_800A9CDC(temp_s0_2, &sp10.unk0.unk0, var_a2);
-    D_800F4B70[temp_s0_2] = 1;
+    vs_battle_getActorPosition(resolveActorId(getShort(script + 3)), &position);
+    turnActorToFaceTile(actor, &position.unk0.unk0, script[5] != 0xFF ? script[5] : -1);
+
+    D_800F4B70[actor] = 1;
+
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_2D(u_char* arg0, UNUSED short arg1)
+/**
+ * Turns an actor to face a tile.
+ * @param script Opcode bytes:
+ *   - [1-2] = actor selector
+ *   - [3-5] = tile x, surface and z
+ *   - [6] = frame count, 0 = immediately, 0xFF = default (from angle and the actor's
+ *     unk5C0)
+ */
+int vs_battle_script_2D_turnActorToFaceTile(u_char* script, UNUSED short arg1)
 {
-    vs_battle_tilePosition sp10;
-    int temp_s0 = resolveActorId(getShort(arg0 + 1)) & 0xFFFF;
+    vs_TilePosition tile;
+    u_short actor = resolveActorId(getShort(script + 1));
 
-    sp10.x = arg0[3];
-    sp10.surface = arg0[4];
-    sp10.z = arg0[5];
+    tile.x = script[3];
+    tile.surface = script[4];
+    tile.z = script[5];
 
-    func_800A9CDC(temp_s0, &sp10, arg0[6] != 0xFF ? arg0[6] : -1);
-    D_800F4B70[temp_s0] = 1;
+    // BUG: tile.extra is uninitialised, but used as the facing if already on the tile
+    turnActorToFaceTile(actor, &tile, script[6] != 0xFF ? script[6] : -1);
+
+    D_800F4B70[actor] = 1;
+
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_2E(u_char* arg0, UNUSED short arg1)
+/**
+ * Sets the scale of an actor, per axis.
+ * @param script Opcode bytes:
+ *   - [1-2] = actor selector
+ *   - [3-4] = x scale (0x1000 = normal size)
+ *   - [5-6] = y scale
+ *   - [7-8] = z scale
+ *   - [9] = frame count to change over, 0 = immediately
+ */
+int vs_battle_script_2E_setActorScale(u_char* script, UNUSED short arg1)
 {
-    SVECTOR sp10;
+    SVECTOR scale;
+    setVector(&scale, getShort(script + 3), getShort(script + 5), getShort(script + 7));
 
-    setVector(&sp10, getShort(arg0 + 3), getShort(arg0 + 5), getShort(arg0 + 7));
-    func_800AABD0(resolveActorId(getShort(arg0 + 1)), &sp10, arg0[9]);
+    setActorScale(resolveActorId(getShort(script + 1)), &scale, script[9]);
+
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_2F(u_char* arg0, UNUSED short arg1)
+/**
+ * Removes actors, the counterpart of spawnActor. Enemies have their state saved and are
+ * not marked as hidden, so they return when the room is reloaded.
+ * @param script Opcode bytes:
+ *   - [1-2] = actor selector
+ */
+int vs_battle_script_2F_despawnActor(u_char* script, UNUSED short arg1)
 {
-    ActorList sp10;
+    ActorList actors;
 
-    expandActorSelector(getShort(arg0 + 1), &sp10);
+    expandActorSelector(getShort(script + 1), &actors);
+
     while (1) {
-        int temp_a0 = nextActor(&sp10);
-        if (temp_a0 == 1) {
+        int actor = nextActor(&actors);
+
+        if (actor == 1) {
             break;
         }
-        func_8007D340(temp_a0);
+
+        despawnActor(actor);
     }
+
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_30(u_char* arg0, UNUSED short arg1)
+/**
+ * Waits until the selected activities of an actor have finished.
+ * @param script Opcode bytes:
+ *   - [1-2] = actor selector
+ *   - [3-4] = mask of the vs_battle_getActorFlags bits to wait for
+ */
+int vs_battle_script_30_waitActorActivity(u_char* script, UNUSED short arg1)
 {
-    short temp_v0;
-    u_short temp_s3;
-    int temp_s2;
-    u_short var_v0;
+    u_short actor = resolveActorId(getShort(script + 1)) & 0xFFFF;
+    u_short status = vs_battle_getActorFlags(actor) ^ 0x81;
+    u_short mask = getShort(script + 3);
 
-    temp_s2 = resolveActorId(getShort(arg0 + 1)) & 0xFFFF;
-    temp_s3 = vs_battle_getActorFlags(temp_s2) ^ 0x81;
-    temp_v0 = getShort(arg0 + 3);
-
-    if (temp_v0 & 1) {
-        if (func_8007D03C(temp_s2) == 0) {
-            temp_s3 |= 1;
+    if (mask & 1) {
+        if (isActorWalkDone(actor) == 0) {
+            status |= 1;
         }
     }
-    var_v0 = (temp_s3 & temp_v0);
-    return var_v0 != 0 ? vs_battle_scriptRepeat : vs_battle_scriptNext;
+
+    return (status & mask) != 0 ? vs_battle_scriptRepeat : vs_battle_scriptNext;
 }
 
-int vs_battle_script_31(u_char* arg0, UNUSED short arg1)
+/**
+ * Overrides the ambient light colour of an actor. Black (0, 0, 0) restores the colour
+ * taken from the map lighting at the actor's position.
+ * @param script Opcode bytes:
+ *   - [1-2] = actor selector
+ *   - [3-5] = red, green and blue (0x80 = neutral)
+ */
+int vs_battle_script_31_setActorLightColor(u_char* script, UNUSED short arg1)
 {
-    CVECTOR sp10;
+    CVECTOR color;
 
-    sp10.r = arg0[3];
-    sp10.g = arg0[4];
-    sp10.b = arg0[5];
+    color.r = script[3];
+    color.g = script[4];
+    color.b = script[5];
 
-    if (sp10.r | sp10.g | sp10.b) {
-        func_800A07FC(resolveActorId(getShort(arg0 + 1)), &sp10);
+    if (color.r | color.g | color.b) {
+        setActorLightColor(resolveActorId(getShort(script + 1)), &color);
     } else {
-        func_800A07FC(resolveActorId(getShort(arg0 + 1)), NULL);
+        setActorLightColor(resolveActorId(getShort(script + 1)), NULL);
     }
+
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_32(u_char* arg0, UNUSED short arg1)
+/**
+ * Queues an animation to play when the actor's current animation ends.
+ * @param script Opcode bytes:
+ *   - [1-2] = actor selector
+ *   - [3] = animation index within the bank
+ *   - [4] = unused
+ *   - [5] = (bank << 6) | blend frames, as for playAnimation
+ */
+int vs_battle_script_32_queueAnimation(u_char* script, UNUSED short arg1)
 {
-    func_800A01C8(resolveActorId(getShort(arg0 + 1)),
-        animationBankBase[arg0[5] >> 6] + arg0[3], arg0[5] & 0x3F, 0);
+    queueActorAnimation(resolveActorId(getShort(script + 1)),
+        animationBankBase[script[5] >> 6] + script[3], script[5] & 0x3F, 0);
+
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_33(u_char* arg0, UNUSED short arg1)
+/**
+ * Rotates an actor, either absolutely or relative to its current one.
+ * @param script Opcode bytes:
+ *   - [1-2] = actor selector
+ *   - [3] = 0: rotate to the given absolute rotation, otherwise rotate by it
+ *   - [4-5] = x rotation (1/4096 turn)
+ *   - [6-7] = y rotation (the facing)
+ *   - [8-9] = z rotation
+ *   - [10] = frame count, 0 = immediately, 0xFF = default (from angle and the actor's
+ *     unk5C0)
+ */
+int vs_battle_script_33_rotateActor(u_char* script, UNUSED short arg1)
 {
-    SVECTOR sp10;
-    u_short temp_s2;
-    short var_s1;
+    SVECTOR rotation;
+    u_short actor = resolveActorId(getShort(script + 1));
+    short frames = script[10] != 0xFF ? script[10] : -1;
 
-    temp_s2 = resolveActorId(getShort(arg0 + 1));
-    var_s1 = -1;
-    if (arg0[10] != 0xFF) {
-        var_s1 = arg0[10];
-    }
-    sp10.vx = getShort(arg0 + 4);
-    sp10.vy = getShort(arg0 + 6);
-    sp10.vz = getShort(arg0 + 8);
-    if (arg0[3] != 0) {
-        func_800A9F64(temp_s2, &sp10, var_s1);
+    rotation.vx = getShort(script + 4);
+    rotation.vy = getShort(script + 6);
+    rotation.vz = getShort(script + 8);
+
+    if (script[3] != 0) {
+        func_800A9F64(actor, &rotation, frames);
     } else {
-        func_800A9FD0(temp_s2, &sp10, var_s1);
+        func_800A9FD0(actor, &rotation, frames);
     }
-    D_800F4B70[temp_s2] = 1;
+
+    D_800F4B70[actor] = 1;
+
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_34(u_char* arg0, UNUSED short arg1)
+/**
+ * Turns the actor's head to the given angles.
+ * @param script Opcode bytes:
+ *   - [1-2] = actor selector
+ *   - [3-4] = pitch (1/4096 turn)
+ *   - [5-6] = yaw
+ *   - [7] = speed, 0 = unlimited
+ */
+int vs_battle_script_34_setActorLookAngles(u_char* script, UNUSED short arg1)
 {
-    SVECTOR sp10;
-    int temp_v0;
-    int var_a3;
+    SVECTOR angles;
+    int actor;
+    int speed;
 
-    sp10.vx = getShort(arg0 + 3);
-    sp10.vy = getShort(arg0 + 5);
-    sp10.vz = 0;
-    temp_v0 = resolveActorId(getShort(arg0 + 1));
-    var_a3 = 0x1000;
-    if (arg0[7] != 0) {
-        var_a3 = arg0[7];
+    angles.vx = getShort(script + 3);
+    angles.vy = getShort(script + 5);
+    angles.vz = 0;
+    actor = resolveActorId(getShort(script + 1));
+    speed = ONE;
+
+    if (script[7] != 0) {
+        speed = script[7];
     }
-    func_8009FC60(temp_v0, -4, &sp10, var_a3);
+
+    setActorLook(actor, -4, &angles, speed);
+
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_35(u_char* arg0, UNUSED short arg1)
+/**
+ * Like playAnimation, but starts the animation part way through.
+ * @param script Opcode bytes:
+ *   - [1-2] = actor selector
+ *   - [3] = animation index within the bank
+ *   - [4] = frame to start at
+ *   - [5] = unused
+ *   - [6] = (bank << 6) | blend frames
+ */
+int vs_battle_script_35_playAnimationFromFrame(u_char* script, UNUSED short arg1)
 {
-    func_800A0618(resolveActorId(getShort(arg0 + 1)),
-        animationBankBase[arg0[6] >> 6] + arg0[3], arg0[6] & 0x3F, arg0[4]);
+    setActorAnimationFromFrame(resolveActorId(getShort(script + 1)),
+        animationBankBase[script[6] >> 6] + script[3], script[6] & 0x3F, script[4]);
+
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_36(u_char* arg0, UNUSED short arg1)
+/**
+ * Like queueAnimation, but the queued animation starts part way through.
+ * @param script Opcode bytes: as for playAnimationFromFrame
+ */
+int vs_battle_script_36_queueAnimationFromFrame(u_char* script, UNUSED short arg1)
 {
-    func_800A01C8(resolveActorId(getShort(arg0 + 1)),
-        animationBankBase[arg0[6] >> 6] + arg0[3], arg0[6] & 0x3F, arg0[4]);
+    queueActorAnimation(resolveActorId(getShort(script + 1)),
+        animationBankBase[script[6] >> 6] + script[3], script[6] & 0x3F, script[4]);
+
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_37(u_char* arg0, UNUSED short arg1)
+/**
+ * Sets the animation an actor plays while moving with moveActorToTile or
+ * moveActorToCoordinate.
+ * @param script Opcode bytes:
+ *   - [1-2] = actor selector
+ *   - [3] = animation bank, selects the base id in animationBankBase
+ *   - [4] = animation index within the bank, 0xFF = the default
+ */
+int vs_battle_script_37_setActorMoveAnimation(u_char* script, UNUSED short arg1)
 {
-    int temp_a0 = resolveActorId(getShort(arg0 + 1));
+    int actor = resolveActorId(getShort(script + 1));
 
-    if (arg0[4] == 0xFF) {
-        func_8009FBD8(temp_a0, -1);
+    if (script[4] == 0xFF) {
+        setActorMoveAnimation(actor, -1);
     } else {
-        func_8009FBD8(temp_a0, animationBankBase[arg0[3]] + arg0[4]);
+        setActorMoveAnimation(actor, animationBankBase[script[3]] + script[4]);
     }
+
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_38(u_char* arg0, UNUSED short arg1)
+/**
+ * Turns the actor's head towards another actor.
+ * @param script Opcode bytes:
+ *   - [1-2] = actor selector
+ *   - [3-4] = target actor selector, 0x2000 = stop looking at anything
+ *   - [5] = speed, 0 = unlimited
+ */
+int vs_battle_script_38_setActorLookTarget(u_char* script, UNUSED short arg1)
 {
-    int var_a3;
+    int speed;
 
-    int temp_s0 = resolveActorId(getShort(arg0 + 3));
-    int temp_a0 = resolveActorId(getShort(arg0 + 1));
+    int target = resolveActorId(getShort(script + 3));
+    int actor = resolveActorId(getShort(script + 1));
 
-    int var_a1 = -2;
-    if (temp_s0 != 0x2000) {
-        var_a1 = temp_s0;
+    int mode = -2;
+
+    if (target != 0x2000) {
+        mode = target;
     }
 
-    var_a3 = 0x1000;
-    if (arg0[5] != 0) {
-        var_a3 = arg0[5];
+    speed = ONE;
+
+    if (script[5] != 0) {
+        speed = script[5];
     }
-    func_8009FC60(temp_a0, var_a1, 0, var_a3);
+
+    setActorLook(actor, mode, NULL, speed);
+
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_39(u_char* arg0, UNUSED short arg1)
+/**
+ * Turns the actor's head towards a world position.
+ * @param script Opcode bytes:
+ *   - [1-2] = actor selector
+ *   - [3-4] = x
+ *   - [5-6] = y
+ *   - [7-8] = z
+ *   - [9] = speed, 0 = unlimited
+ */
+int vs_battle_script_39_setActorLookPosition(u_char* script, UNUSED short arg1)
 {
-    SVECTOR sp10;
-    int temp_v0;
-    int var_a3;
+    SVECTOR position;
+    int actor;
+    int speed;
 
-    setVector(&sp10, getShort(arg0 + 3), getShort(arg0 + 5), getShort(arg0 + 7));
-    temp_v0 = resolveActorId(getShort(arg0 + 1));
-    var_a3 = 0x1000;
-    if (arg0[9] != 0) {
-        var_a3 = arg0[9];
+    setVector(
+        &position, getShort(script + 3), getShort(script + 5), getShort(script + 7));
+
+    actor = resolveActorId(getShort(script + 1));
+    speed = ONE;
+
+    if (script[9] != 0) {
+        speed = script[9];
     }
-    func_8009FC60(temp_v0, -1, &sp10, var_a3);
+
+    setActorLook(actor, -1, &position, speed);
+
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_3A(u_char* arg0, UNUSED short arg1)
+/**
+ * Enqueues event data: an event sequence (ESQ), which provides
+ * the animations in bank 1 of animationBankBase, and an event texture map (ETM), which
+ * holds facial animation frames.
+ * @param script Opcode bytes:
+ *   - [1-2] = event data id (E<id>.ESQ and E<id>.ETM)
+ *   - [3] = bits 0-1: slot, bits 2-3: what to load (0 the ESQ, 1 the ESQ and then the
+ *     ETM, 2 the ETM), bits 4-7: selects the VRAM slot of the ETM
+ */
+int vs_battle_script_3A_enqueueEventData(u_char* script, UNUSED short arg1)
 {
-    switch ((arg0[3] >> 2) & 3) {
+    switch ((script[3] >> 2) & 3) {
     case 0:
-        func_8007CB84(arg0[3] & 3, getShort(arg0 + 1));
+        enqueueEsq(script[3] & 3, getShort(script + 1));
         break;
+
     case 1:
-        func_8007CBDC(arg0[3] & 3, getShort(arg0 + 1), (arg0[3] >> 4) + 0x1A);
+        enqueueEsqAndEtm(script[3] & 3, getShort(script + 1), (script[3] >> 4) + 0x1A);
         break;
+
     case 2:
-        vs_battle_loadEtm(arg0[3] & 3, getShort(arg0 + 1), (arg0[3] >> 4) + 0x1A);
+        enqueueEtm(script[3] & 3, getShort(script + 1), (script[3] >> 4) + 0x1A);
         break;
     }
+
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_3B(UNUSED u_char* arg0, UNUSED short arg1)
+/**
+ * Waits until the object data queue is empty.
+ */
+int vs_battle_script_3B_waitDataQueueEmpty(UNUSED u_char* script, UNUSED short arg1)
 {
-    return getEmptyObjectDataSlot2() > 0 ? vs_battle_scriptRepeat : vs_battle_scriptNext;
+    // BUG: a full queue has no empty slot (-1), so this does not wait
+    return getEmptyObjectDataSlot() > 0 ? vs_battle_scriptRepeat : vs_battle_scriptNext;
 }
 
-int vs_battle_script_3C(u_char* arg0, UNUSED short arg1)
+/**
+ * Unloads event data.
+ * @param script Opcode bytes:
+ *   - [1] = bits 0-1: slot, bit 2: unload only the ETM, otherwise the ESQ and its ETM
+ */
+int vs_battle_script_3C_unloadEventData(u_char* script, UNUSED short arg1)
 {
-    if (arg0[1] & 4) {
-        func_8007CC4C(arg0[1] & 3);
+    if (script[1] & 4) {
+        unloadEtm(script[1] & 3);
     } else {
-        func_8007CBBC(arg0[1]);
+        unloadEsqAndEtm(script[1]);
     }
+
     return (scriptSkipMode == vs_battle_scriptSkipping) ? vs_battle_scriptYield
                                                         : vs_battle_scriptNext;
 }
 
-int vs_battle_script_3D(u_char* arg0, UNUSED short arg1)
+/**
+ * Selects the slot of the loaded event data used by actors.
+ * @param script Opcode bytes:
+ *   - [1] = slot (1-3)
+ */
+int vs_battle_script_3D_selectEventData(u_char* script, UNUSED short arg1)
 {
-    func_8007CC6C(arg0[1]);
+    selectEventData(script[1]);
+
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_3E(u_char* arg0, UNUSED short arg1)
+/**
+ * Sets an edge highlight for an actor: a second copy of the actor in a flat colour,
+ * displaced and pushed back in the ordering table.
+ * @param script Opcode bytes:
+ *   - [1-2] = actor selector
+ *   - [3-5] = offset x, y and z of the copy
+ *   - [6] = number of ordering table entries to push the copy back
+ *   - [7-9] = red, green and blue of the copy, all zero = no edge highlight
+ */
+int vs_battle_script_3E_setActorEdgeHighlight(u_char* script, UNUSED short arg1)
 {
-    CVECTOR sp10[6];
+// `offset` below appers to have been defined as a flat array of bytes in the original
+#ifdef NON_MATCHING
+    typedef EdgeHighlight EdgeHighlightBytes;
+#else
+    typedef struct {
+        signed char x;
+        signed char y;
+        signed char z;
+        u_char otDepth;
+    } EdgeHighlightBytes;
+#endif
 
-    sp10[0].r = arg0[7];
-    sp10[0].g = arg0[8];
-    sp10[0].b = arg0[9];
+    CVECTOR color;
+    EdgeHighlightBytes offset;
+    UNUSED int _[2];
 
-    if (sp10[0].r | sp10[0].g | sp10[0].b) {
-        sp10[2].r = arg0[3];
-        sp10[2].g = arg0[4];
-        sp10[2].b = arg0[5];
-        sp10[2].cd = arg0[6];
-        func_8009F940(resolveActorId(getShort(arg0 + 1)), 1, &sp10[2], &sp10[0]);
+    color.r = script[7];
+    color.g = script[8];
+    color.b = script[9];
+
+    if (color.r | color.g | color.b) {
+
+        offset.x = script[3];
+        offset.y = script[4];
+        offset.z = script[5];
+        offset.otDepth = script[6];
+
+        vs_battle_setActorEdgeHighlight(
+            resolveActorId(getShort(script + 1)), 1, (EdgeHighlight*)&offset, &color);
     } else {
-        func_8009F940(resolveActorId(getShort(arg0 + 1)), 0, NULL, NULL);
+        vs_battle_setActorEdgeHighlight(
+            resolveActorId(getShort(script + 1)), 0, NULL, NULL);
     }
+
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_3F(u_char* arg0, UNUSED short arg1)
+/**
+ * Draws, sheathes or toggles the weapons of the selected actors.
+ * @param script Opcode bytes:
+ *   - [1-2] = actor selector
+ *   - [3] = 0 = sheathe, 1 = draw, 2 = toggle
+ */
+int vs_battle_script_3F_setWeaponDrawn(u_char* script, UNUSED short arg1)
 {
-    ActorList sp10;
-    int temp_a0;
+    ActorList actors;
 
-    expandActorSelector(getShort(arg0 + 1), &sp10);
+    expandActorSelector(getShort(script + 1), &actors);
 
     while (1) {
-        temp_a0 = nextActor(&sp10);
-        if (temp_a0 == 1) {
+        int actor = nextActor(&actors);
+
+        if (actor == 1) {
             break;
         }
-        func_8007C0AC(temp_a0, D_800E9B4C[arg0[3]]);
+
+        setWeaponDrawn(actor, weaponDrawnModes[script[3]]);
     }
+
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_40_jumpFwdIfFlag(u_char* arg0, UNUSED short arg1)
+/**
+ * Continues if a state flag compares true against an immediate value, otherwise jumps.
+ * @param script Opcode bytes:
+ *   - [1] = comparison in the high nibble (flagComparison*), bits 6-9 of the flag id in
+ *     the low nibble
+ *   - [2] = bits 0-5 of the flag id in bits 2-7
+ *   - [3] = value to compare with (signed)
+ *   - [4-5] = offset from this opcode to jump to if the comparison is false
+ */
+int vs_battle_script_40_jumpFwdUnlessFlagImm(u_char* script, UNUSED short arg1)
 {
-    char temp_a0 = getStateFlag(((u_char)arg0[2] >> 2) | ((arg0[1] & 0xF) << 6));
-    char temp_a1 = arg0[3];
+    char flag = getStateFlag(((u_char)script[2] >> 2) | ((script[1] & 0xF) << 6));
+    char value = script[3];
 
-    switch (arg0[1] & 0xF0) {
-    case 0:
-        if (temp_a1 >= temp_a0) {
+    switch (script[1] & 0xF0) {
+    case flagComparisonLe:
+        if (flag <= value) {
             return vs_battle_scriptNext;
         }
         break;
-    case 16:
-        if (temp_a0 >= temp_a1) {
+
+    case flagComparisonGe:
+        if (flag >= value) {
             return vs_battle_scriptNext;
         }
         break;
-    case 32:
-        if (temp_a0 == temp_a1) {
+
+    case flagComparisonEq:
+        if (flag == value) {
             return vs_battle_scriptNext;
         }
         break;
-    case 48:
-        if (temp_a0 != temp_a1) {
+
+    case flagComparisonNe:
+        if (flag != value) {
             return vs_battle_scriptNext;
         }
         break;
-    case 64:
-        if (temp_a0 < temp_a1) {
+
+    case flagComparisonLt:
+        if (flag < value) {
             return vs_battle_scriptNext;
         }
         break;
-    case 80:
-        if (temp_a1 < temp_a0) {
+
+    case flagComparisonGt:
+        if (flag > value) {
             return vs_battle_scriptNext;
         }
         break;
-    case 96:
-        if (temp_a0 & temp_a1) {
+
+    case flagComparisonAnd:
+        if (flag & value) {
             return vs_battle_scriptNext;
         }
         break;
     }
-    return (long)&arg0[getShort(arg0 + 4)];
+
+    return (long)&script[getShort(script + 4)];
 }
 
-int vs_battle_script_41_jumpFwdIfFlags(u_char* arg0, UNUSED short arg1)
+/**
+ * Continues if a state flag compares true against another state flag, otherwise jumps.
+ * Like jumpFwdUnlessFlagImm, but the value to compare with is a state flag (also there
+ *  is no AND op)
+ * @param script Opcode bytes:
+ *   - [1] = comparison in the high nibble (flagComparison*), bits 6-9 of the first flag
+ *     id in the low nibble
+ *   - [2] = bits 0-5 of the first flag id in bits 2-7, bits 8-9 of the second flag id in
+ *     bits 0-1
+ *   - [3] = bits 0-7 of the second flag id
+ *   - [4-5] = offset from this opcode to jump to if the comparison is false
+ */
+int vs_battle_script_41_jumpFwdUnlessFlag(u_char* script, UNUSED short arg1)
 {
-    char temp_s0 = getStateFlag(((u_char)arg0[2] >> 2) | ((arg0[1] & 0xF) << 6));
-    char temp_a0 = getStateFlag(arg0[3] | ((arg0[2] & 3) << 8));
+    char flag = getStateFlag(((u_char)script[2] >> 2) | ((script[1] & 0xF) << 6));
+    char other = getStateFlag(script[3] | ((script[2] & 3) << 8));
 
-    switch (arg0[1] & 0xF0) {
-    case 0:
-        if (temp_s0 <= temp_a0) {
+    switch (script[1] & 0xF0) {
+    case flagComparisonLe:
+        if (flag <= other) {
             return vs_battle_scriptNext;
         }
         break;
-    case 16:
-        if (temp_s0 >= temp_a0) {
+
+    case flagComparisonGe:
+        if (flag >= other) {
             return vs_battle_scriptNext;
         }
         break;
-    case 32:
-        if (temp_s0 == temp_a0) {
+
+    case flagComparisonEq:
+        if (flag == other) {
             return vs_battle_scriptNext;
         }
         break;
-    case 48:
-        if (temp_s0 != temp_a0) {
+
+    case flagComparisonNe:
+        if (flag != other) {
             return vs_battle_scriptNext;
         }
         break;
-    case 64:
-        if (temp_s0 < temp_a0) {
+
+    case flagComparisonLt:
+        if (flag < other) {
             return vs_battle_scriptNext;
         }
         break;
-    case 80:
-        if (temp_s0 > temp_a0) {
+
+    case flagComparisonGt:
+        if (flag > other) {
             return vs_battle_scriptNext;
         }
         break;
     }
-    return (long)&arg0[getShort(arg0 + 4)];
+
+    return (long)&script[getShort(script + 4)];
 }
 
 int vs_battle_script_42_jumpFwd(u_char* arg0, UNUSED short arg1)
@@ -2104,7 +2439,7 @@ int vs_battle_script_72(u_char* arg0, UNUSED short arg1)
             return vs_battle_scriptNext;
         }
 
-        func_8007C0AC(0, D_800E9B4C[arg0[1]]);
+        setWeaponDrawn(0, weaponDrawnModes[arg0[1]]);
 
         if (scriptSkipMode == vs_battle_scriptSkipping || arg0[2] == 0) {
         block_5:
@@ -2891,7 +3226,7 @@ int vs_battle_script_F2_playMenuSelectSfx(UNUSED u_char* arg0, UNUSED short arg1
 
 void expandActorSelector(u_short arg0, ActorList* arg1)
 {
-    vs_Actor* temp_v0;
+    Actor* temp_v0;
     short var_s3 = 0;
     arg1->remaining = 0;
     arg1->next = 0;

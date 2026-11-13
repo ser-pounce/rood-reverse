@@ -412,7 +412,7 @@ static u_short characterRank;
 static u_short clearCount;
 static u_short openedChestCount;
 static u_short mapCompletion;
-static vs_Main_CdQueueSlot* monBinCdQueueSlot;
+static vs_CdQueueSlot* monBinCdQueueSlot;
 static MonBinData* monBinData;
 static u_short* enemyDescriptions;
 static UNUSED int _1[2];
@@ -478,7 +478,7 @@ static int calculateProgress(void)
     return 1;
 }
 
-static const vs_Main_CdFile monBinFile = { VS_MON_BIN_LBA, VS_MON_BIN_SIZE };
+static const vs_CdFile monBinFile = { VS_MON_BIN_LBA, VS_MON_BIN_SIZE };
 
 /**
  * Stops used for the green and purple UI backgrounds

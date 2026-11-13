@@ -11,7 +11,7 @@ typedef struct {
     u_short unk20;
     char unk22;
     char unk23;
-} vs_ManualDisplayState;
+} ManualDisplayState;
 
 typedef struct {
     u_char titlePage;
@@ -35,7 +35,7 @@ int func_8008A4FC(void);
 void func_8008A6FC(void);
 void vs_battle_parseTim(u_long*, TIM_IMAGE*);
 extern vs_LootListNode* lootListHead;
-extern vs_ManualDisplayState vs_battle_manualDisplayState;
+extern ManualDisplayState vs_battle_manualDisplayState;
 extern vs_Menu9CursorMemory vs_battle_menu9CursorMemory;
 extern int vs_battle_submenuState;
 

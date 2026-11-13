@@ -3014,7 +3014,7 @@ glabel func_800B6634
      sw        $a0, 0x4($sp)
     or         $a2, $zero, 0x20
   0:
-    jal        func_800A9EB4
+    jal        turnActorToFacing
      sw        $a1, 0x8($sp)
   .L800B6670:
     lw         $a0, 0x4($sp)

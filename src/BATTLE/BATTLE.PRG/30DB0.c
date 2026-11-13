@@ -51,7 +51,7 @@ void func_8009CAEC(D_800F4538_t* arg0, int arg1);
 int func_8009E228(D_800F4538_t* arg0, SVECTOR* arg1);
 void func_8009E700(int, int);
 int func_8009F794(D_800F45E0_t* arg0);
-void func_8009F9F4(int, D_800F4538_unk64*);
+void setActorSfxOverride(int, SfxOverride*);
 void func_8009FD38(D_800F4538_t* arg0);
 void func_800A06B8(D_800F4538_t*, int);
 void func_800A11D8(int, int, MATRIX*, u_long*);
@@ -83,15 +83,15 @@ extern u_char D_800E9090[];
 extern u_char D_800E919C[];
 extern void* wepFileData;
 extern int wepFileLoaded;
-extern vs_Main_CdFile wepFile;
-extern vs_Main_CdQueueSlot* wepCdSlot;
+extern vs_CdFile wepFile;
+extern vs_CdQueueSlot* wepCdSlot;
 extern void* shpDataBuf;
 extern int shpAllocated;
-extern vs_Main_CdFile shpFile;
-extern vs_Main_CdQueueSlot* shpCdSlot;
+extern vs_CdFile shpFile;
+extern vs_CdQueueSlot* shpCdSlot;
 extern u_short* etmData;
-extern vs_Main_CdFile etmFile;
-extern vs_Main_CdQueueSlot* etmFileCdSlot;
+extern vs_CdFile etmFile;
+extern vs_CdQueueSlot* etmFileCdSlot;
 extern void* wepFileEpilog;
 extern u_char* D_800F22B4;
 extern u_char D_800F22B8;
@@ -100,8 +100,8 @@ extern int D_800F22C0;
 extern int D_800F22C4;
 extern void* D_800F22C8;
 extern int D_800F22D0;
-extern vs_Main_CdFile D_800F22D8;
-extern vs_Main_CdQueueSlot* D_800F22E0;
+extern vs_CdFile D_800F22D8;
+extern vs_CdQueueSlot* D_800F22E0;
 extern u_char* D_800F22E4;
 extern u_char D_800F244F[];
 extern VECTOR D_800F4438;
@@ -1416,13 +1416,13 @@ setupPalettes:
         actor->unk0.unk12 = object->actorId;
         actor->unk0.unk13 = 0xFC;
         D_800F4538[actor->unk0.unk12]->unk17FD = object->index;
-        D_800F4538[actor->unk0.unk12]->unk6F4.unk0 = 0;
-        D_800F4538[actor->unk0.unk12]->unk6F4.unk1 = 0;
-        D_800F4538[actor->unk0.unk12]->unk6F4.unk2 = 0;
-        D_800F4538[actor->unk0.unk12]->unk6F4.unk3 = 8;
+        D_800F4538[actor->unk0.unk12]->unk6F4.x = 0;
+        D_800F4538[actor->unk0.unk12]->unk6F4.y = 0;
+        D_800F4538[actor->unk0.unk12]->unk6F4.z = 0;
+        D_800F4538[actor->unk0.unk12]->unk6F4.otDepth = 8;
     } else {
         actor->unk0.unk12 = 0xFF;
-        func_8009FF08(object->index, object->actorId, object->unk11, 0);
+        attachActor(object->index, object->actorId, object->unk11, 0);
     }
 
     D_800E8F29 = 0;
@@ -2132,7 +2132,7 @@ void func_8009D460(void) { }
 
 void func_8009D468(int arg0)
 {
-    D_800F4538_unk64 sp10;
+    SfxOverride sp10;
     int var_a2;
     D_800F4538_unk1864* s0;
     D_800F4538_t* temp_s1 = D_800F4538[arg0];
@@ -2164,13 +2164,13 @@ void func_8009D468(int arg0)
         temp_s1->unk5AC_21 = 0;
         temp_s1->unk180C[1].unk0_0 = 0;
         temp_s1->unk5AC_22 = 0;
-        func_800A07FC(arg0, NULL);
+        setActorLightColor(arg0, NULL);
         if (temp_s1->unk17FD == 1) {
             temp_s1->unk17FD = 0;
         }
         temp_s1->unk0.unk9_7 = 1;
-        sp10.unk0 = 0;
-        func_8009F990(arg0, &sp10);
+        sp10.mode = sfxOverrideOff;
+        setActorsSfxOverride(arg0, &sp10);
         temp_s1->unk5BE = 4;
         temp_s1->unk17FF = 0;
         temp_s1->unk0.unk64.unk0 = 0;
@@ -2335,7 +2335,7 @@ void func_8009D934(int arg0, int arg1, int arg2)
             temp_s0->unk5AC_20 = 1;
             temp_s0->unk0.weaponDrawn = 0;
 
-            func_800A01C8(arg0, 1, 16, 0);
+            queueActorAnimation(arg0, 1, 16, 0);
         } else {
 
             if (temp_s0->unk6E6 == 0) {
@@ -2348,7 +2348,7 @@ void func_8009D934(int arg0, int arg1, int arg2)
 
             temp_s0->unk5AC_20 = 1;
 
-            func_800A01C8(arg0, 1, 16, 0);
+            queueActorAnimation(arg0, 1, 16, 0);
         }
     }
 }
@@ -3278,7 +3278,7 @@ void func_8009F298(int arg0, SVECTOR* arg1, int arg2)
         func_800AD494(D_800F4538[arg0], 0xFE, &frames);
 
         if (frames != NULL) {
-            func_800A01C8((int)arg0, 0xFE, 8, 0);
+            queueActorAnimation((int)arg0, 0xFE, 8, 0);
         }
     }
 }
@@ -3479,7 +3479,8 @@ int func_8009F8DC(int arg0)
     return temp_v0;
 }
 
-void func_8009F940(int arg0, int arg1, CVECTOR* arg2, CVECTOR* arg3)
+void vs_battle_setActorEdgeHighlight(
+    int arg0, int arg1, EdgeHighlight* arg2, CVECTOR* arg3)
 {
     D_800F4538_t* temp_t0 = D_800F4538[arg0];
 
@@ -3492,20 +3493,20 @@ void func_8009F940(int arg0, int arg1, CVECTOR* arg2, CVECTOR* arg3)
     }
 }
 
-void func_8009F990(int arg0, D_800F4538_unk64* arg1)
+void setActorsSfxOverride(int arg0, SfxOverride* arg1)
 {
     int i;
 
     if (arg0 == -1) {
         for (i = 0; i < 17; ++i) {
-            func_8009F9F4(i, arg1);
+            setActorSfxOverride(i, arg1);
         }
     } else {
-        func_8009F9F4(arg0, arg1);
+        setActorSfxOverride(arg0, arg1);
     }
 }
 
-void func_8009F9F4(int arg0, D_800F4538_unk64* arg1)
+void setActorSfxOverride(int arg0, SfxOverride* arg1)
 {
     int temp_a2;
     D_800F4538_t* temp_s0 = D_800F4538[arg0];
@@ -3514,13 +3515,13 @@ void func_8009F9F4(int arg0, D_800F4538_unk64* arg1)
         return;
     }
 
-    temp_a2 = arg1->unk0;
+    temp_a2 = arg1->mode;
 
-    if (temp_a2 == 0) {
-        temp_s0->unk17E4.unk1 = 0;
-        temp_s0->unk17E4.unk2 = 0;
-    } else if (temp_a2 == 1) {
-        if (arg1->unk3 == 0) {
+    if (temp_a2 == sfxOverrideOff) {
+        temp_s0->unk17E4.pan = 0;
+        temp_s0->unk17E4.volume = 0;
+    } else if (temp_a2 == sfxOverrideSet) {
+        if (arg1->duration == 0) {
             temp_s0->unk17E4 = *arg1;
         } else {
             int sp10;
@@ -3528,34 +3529,34 @@ void func_8009F9F4(int arg0, D_800F4538_unk64* arg1)
             int temp_v1;
 
             temp_s0->unk17E8 = *arg1;
-            temp_s0->unk17E4.unk3 = arg1->unk3;
-            temp_v1 = temp_s0->unk17E4.unk0;
+            temp_s0->unk17E4.duration = arg1->duration;
+            temp_v1 = temp_s0->unk17E4.mode;
 
-            if (temp_v1 == 0) {
+            if (temp_v1 == sfxOverrideOff) {
                 func_800AD62C(arg0, &sp10, &sp14, arg0);
-                temp_s0->unk17E4.unk1 = sp10;
-                temp_s0->unk17E4.unk2 = sp14;
+                temp_s0->unk17E4.pan = sp10;
+                temp_s0->unk17E4.volume = sp14;
             } else if (temp_v1 == temp_a2) {
                 func_800AD62C(arg0, &sp10, &sp14, arg0);
-                if (temp_s0->unk17E4.unk1 == 0) {
-                    temp_s0->unk17E4.unk1 = sp10;
+                if (temp_s0->unk17E4.pan == 0) {
+                    temp_s0->unk17E4.pan = sp10;
                 }
-                if (temp_s0->unk17E4.unk2 == 0) {
-                    temp_s0->unk17E4.unk2 = sp14;
+                if (temp_s0->unk17E4.volume == 0) {
+                    temp_s0->unk17E4.volume = sp14;
                 }
-            } else if (temp_v1 == 2) {
-                temp_s0->unk17E4.unk1 = 0x80;
-                temp_s0->unk17E4.unk2 = temp_a2;
+            } else if (temp_v1 == sfxOverrideMute) {
+                temp_s0->unk17E4.pan = 0x80;
+                temp_s0->unk17E4.volume = temp_a2;
             }
-            if (arg1->unk1 == 0) {
-                temp_s0->unk17E4.unk1 = 0;
+            if (arg1->pan == 0) {
+                temp_s0->unk17E4.pan = 0;
             }
-            if (arg1->unk2 == 0) {
-                temp_s0->unk17E4.unk2 = 0;
+            if (arg1->volume == 0) {
+                temp_s0->unk17E4.volume = 0;
             }
         }
     }
-    temp_s0->unk17E4.unk0 = arg1->unk0;
+    temp_s0->unk17E4.mode = arg1->mode;
 }
 
 void func_8009FB64(VECTOR* arg0)
@@ -3571,7 +3572,7 @@ void func_8009FB64(VECTOR* arg0)
     }
 }
 
-int func_8009FBD8(int arg0, int arg1)
+int setActorMoveAnimation(int arg0, int arg1)
 {
     UNUSED int _[2];
     D_800F4538_t* temp_a0 = D_800F4538[arg0];
@@ -3603,7 +3604,7 @@ int func_8009FC20(int arg0, int* arg1)
     return 0;
 }
 
-int func_8009FC60(int arg0, int arg1, SVECTOR* arg2, int arg3)
+int setActorLook(int arg0, int arg1, SVECTOR* arg2, int arg3)
 {
     UNUSED int _[2];
     D_800F4538_t* temp_s0 = D_800F4538[arg0];
@@ -3704,7 +3705,7 @@ int func_8009FE74(int arg0, int arg1)
     return 0;
 }
 
-void func_8009FF08(int arg0, int arg1, int arg2, int arg3)
+void attachActor(int arg0, int arg1, int arg2, int arg3)
 {
     D_800F4538_t* temp_a0 = D_800F4538[arg0];
 
@@ -3726,7 +3727,7 @@ void func_8009FF08(int arg0, int arg1, int arg2, int arg3)
     temp_a0->unk0.unk9_5 = 1;
 }
 
-int func_8009FFA8(int arg0, int arg1)
+int detachActor(int arg0, int arg1)
 {
     UNUSED int _[2];
 
@@ -3745,7 +3746,7 @@ int func_8009FFA8(int arg0, int arg1)
     // BUG: no return value, in practice it isn't read by the only caller.
 }
 
-int func_800A0024(int arg0, vs_ActorLocation* arg1)
+int func_800A0024(int arg0, ActorLocation* arg1)
 {
     D_800F45E0_t* temp_s0;
     int var_v0_2;
@@ -3802,7 +3803,7 @@ int func_800A0104(int index, int material)
     return 0;
 }
 
-int func_800A01C8(int arg0, int arg1, int arg2, int arg3)
+int queueActorAnimation(int arg0, int arg1, int arg2, int arg3)
 {
     D_800F4538_t* temp_a0 = D_800F4538[arg0];
 
@@ -3960,7 +3961,7 @@ retry:
     return 0;
 }
 
-int func_800A0618(int arg0, int arg1, int arg2, int arg3)
+int setActorAnimationFromFrame(int arg0, int arg1, int arg2, int arg3)
 {
     D_800F4538_t* temp_s0;
 
@@ -4040,7 +4041,7 @@ int func_800A07B4(int arg0, CVECTOR* arg1)
     return 0;
 }
 
-int func_800A07FC(int arg0, CVECTOR* arg1)
+int setActorLightColor(int arg0, CVECTOR* arg1)
 {
     D_800F4538_t* temp_a2 = D_800F4538[arg0];
 

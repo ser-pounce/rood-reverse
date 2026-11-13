@@ -44,14 +44,14 @@ typedef struct {
 
 typedef struct {
     int zndId;
-    vs_Main_CdFile* mpdLbas;
+    vs_CdFile* mpdLbas;
     int zndEnemyCount;
     ZndEnemy* zndEnemies;
-    vs_Main_CdFile* zudFiles;
+    vs_CdFile* zudFiles;
     int unk14;
-    vs_Main_CdQueueSlot* unk18;
+    vs_CdQueueSlot* unk18;
     void* unk1C;
-    vs_Main_CdQueueSlot* zndCdFile;
+    vs_CdQueueSlot* zndCdFile;
     void* zndData;
     int musicId;
     int musicSlot;
@@ -65,7 +65,7 @@ typedef struct {
     int unk4C;
     int unk50;
     int unk54;
-    vs_Main_CdQueueSlot* mpdCdFile;
+    vs_CdQueueSlot* mpdCdFile;
     void* mpdData;
     u_int mpdEnemyCount;
     MpdEnemy* mpdEnemies;

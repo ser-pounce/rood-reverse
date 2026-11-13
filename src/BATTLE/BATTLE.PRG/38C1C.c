@@ -392,8 +392,8 @@ MATRIX* func_800A1DE8(int actorId, int bone, MATRIX* unused)
 
         scratch->matrix = *(weapon->unk20 + bone - 0x3F);
     } else if (bone == 0xFF) {
-        setVector(&scratch->offset, actor->unk704.unk0[41].vx >> 1,
-            actor->unk704.unk0[41].vy >> 1, actor->unk704.unk0[41].vz >> 1);
+        setVector(&scratch->offset, actor->unk704.unk148.vx >> 1,
+            actor->unk704.unk148.vy >> 1, actor->unk704.unk148.vz >> 1);
         setVector(&scratch->offset, scratch->offset.vx * actor->unk183C / ONE,
             scratch->offset.vy * actor->unk183C / ONE,
             scratch->offset.vz * actor->unk183C / ONE);
@@ -418,8 +418,7 @@ MATRIX* func_800A1DE8(int actorId, int bone, MATRIX* unused)
     return &scratch->matrix;
 }
 
-void func_800A208C(
-    D_800F4538_t* actor, vs_battle_tilePosition* target, int speed, short facing)
+void func_800A208C(D_800F4538_t* actor, vs_TilePosition* target, int speed, short facing)
 {
     int x;
     int y;
@@ -562,7 +561,7 @@ void func_800A208C(
     actor->unk181A = 2;
     vs_battle_setActorAnimation(actor->unk0.unkF, animation, 0, 4);
     actor->unk0.unkA_0 = 2;
-    func_800A9EB4(actor->unk0.unkF, facing, 8);
+    turnActorToFacing(actor->unk0.unkF, facing, 8);
 }
 
 void func_800A249C(int arg0, int arg1)
@@ -615,7 +614,7 @@ void func_800A249C(int arg0, int arg1)
 void func_800A2574(int arg0, short arg1)
 {
     D_800F4538_t* temp_s1 = D_800F4538[arg0];
-    func_800A9EB4(arg0, arg1, 8);
+    turnActorToFacing(arg0, arg1, 8);
     func_8009DF3C(arg0, 3);
     temp_s1->unk0.unkB_4 = 6;
 }

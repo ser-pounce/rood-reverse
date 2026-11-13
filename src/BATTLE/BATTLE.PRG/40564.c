@@ -30,8 +30,8 @@ typedef struct {
 void func_800AA698(int arg0, SVECTOR* arg1, int arg2);
 void func_800AA984(int, short, int);
 void func_800AAA88(int arg0, SVECTOR* arg1, int arg2);
-void func_800AA290(int, vs_battle_tilePosition*, int, int);
-void func_800AA490(int, vs_battle_tilePosition*, int, int);
+void func_800AA290(int, vs_TilePosition*, int, int);
+void func_800AA490(int, vs_TilePosition*, int, int);
 
 extern func_800AAE9C_t D_800E916C[][8];
 extern short D_800F4B00;
@@ -454,7 +454,7 @@ int func_800A9530(D_800F4538_t* actor, SVECTOR* offset)
     return 1;
 }
 
-void func_800A97EC(int arg0, vs_battle_tilePosition* arg1, int arg2, int arg3)
+void moveActorToTile(int arg0, vs_TilePosition* arg1, int arg2, int arg3)
 {
     int angle;
 
@@ -506,7 +506,7 @@ void func_800A97EC(int arg0, vs_battle_tilePosition* arg1, int arg2, int arg3)
     }
 }
 
-void func_800A9988(int id, SVECTOR* target, int arg2, int arg3)
+void moveActorToCoordinate(int id, SVECTOR* target, int arg2, int arg3)
 {
     D_800F4538_t* actor = D_800F4538[id];
     int angle;
@@ -533,7 +533,7 @@ void func_800A9988(int id, SVECTOR* target, int arg2, int arg3)
         }
 
         actor->unk0.unk18 = 0;
-        func_800A9D90(id, target, 0);
+        slideActorToCoordinate(id, target, 0);
         return;
     }
 
@@ -554,7 +554,7 @@ void func_800A9988(int id, SVECTOR* target, int arg2, int arg3)
     }
 
     angle = (short)angle;
-    func_800A9EB4(id, angle, arg3);
+    turnActorToFacing(id, angle, arg3);
 
     if (arg2 == -1) {
         actor->unk5C4 = actor->unk5C2;
@@ -593,7 +593,7 @@ void func_800A9988(int id, SVECTOR* target, int arg2, int arg3)
     actor->unk5AC_2 = 0;
 }
 
-void func_800A9C54(int arg0, vs_battle_tilePosition* arg1, int arg2)
+void slideActorToTile(int arg0, vs_TilePosition* arg1, int arg2)
 {
     D_800F4538_t* temp_s0 = D_800F4538[arg0];
 
@@ -608,7 +608,7 @@ void func_800A9C54(int arg0, vs_battle_tilePosition* arg1, int arg2)
     temp_s0->unk0.currentTile.z = arg1->z;
 }
 
-void func_800A9CDC(int arg0, vs_battle_tilePosition* arg1, int arg2)
+void turnActorToFaceTile(int arg0, vs_TilePosition* arg1, int arg2)
 {
     D_800F4538_t* new_var = D_800F4538[arg0];
 
@@ -637,7 +637,7 @@ void func_800A9D24(int arg0, SVECTOR* arg1, int arg2)
     temp_s1->unk5C2 = temp_s0;
 }
 
-void func_800A9D90(int arg0, SVECTOR* arg1, int arg2)
+void slideActorToCoordinate(int arg0, SVECTOR* arg1, int arg2)
 {
     SVECTOR sp10;
     u_short temp_s0;
@@ -660,7 +660,7 @@ void func_800A9D90(int arg0, SVECTOR* arg1, int arg2)
     temp_s1->unk5C2 = temp_s0;
 }
 
-void func_800A9E38(int arg0, short arg1, int arg2)
+void turnActorToRelativeFacing(int arg0, short arg1, int arg2)
 {
     u_short temp_s0;
     D_800F4538_t* temp_s1 = D_800F4538[arg0];
@@ -678,7 +678,7 @@ void func_800A9E38(int arg0, short arg1, int arg2)
     temp_s1->unk5C0 = temp_s0;
 }
 
-void func_800A9EB4(int arg0, short arg1, int arg2)
+void turnActorToFacing(int arg0, short arg1, int arg2)
 {
     u_short temp_s0;
     D_800F4538_t* temp_s1 = D_800F4538[arg0];
@@ -774,7 +774,7 @@ void func_800A9FD0(int arg0, SVECTOR* arg1, int arg2)
     temp_s1->unk5C0 = temp_s0;
 }
 
-void func_800AA108(int arg0, vs_battle_tilePosition* arg1, int arg2, int arg3)
+void func_800AA108(int arg0, vs_TilePosition* arg1, int arg2, int arg3)
 {
     D_800F4538_t* temp_s0 = D_800F4538[arg0];
 
@@ -806,7 +806,7 @@ void func_800AA108(int arg0, vs_battle_tilePosition* arg1, int arg2, int arg3)
     }
 }
 
-void func_800AA218(int arg0, vs_battle_tilePosition* arg1, int arg2)
+void func_800AA218(int arg0, vs_TilePosition* arg1, int arg2)
 {
     D_800F4538_t* temp_s0 = D_800F4538[arg0];
 
@@ -818,7 +818,7 @@ void func_800AA218(int arg0, vs_battle_tilePosition* arg1, int arg2)
     }
 }
 
-void func_800AA290(int arg0, vs_battle_tilePosition* arg1, int arg2, int arg3)
+void func_800AA290(int arg0, vs_TilePosition* arg1, int arg2, int arg3)
 {
     SVECTOR target;
     int dist;
@@ -880,12 +880,12 @@ void func_800AA290(int arg0, vs_battle_tilePosition* arg1, int arg2, int arg3)
     actor->unk0.unk1A = arg2;
 }
 
-void func_800AA454(int arg0, vs_battle_tilePosition* arg1, int arg2)
+void func_800AA454(int arg0, vs_TilePosition* arg1, int arg2)
 {
     func_800AA490(arg0, arg1, arg2, D_800F4538[arg0]->unk5C0);
 }
 
-void func_800AA490(int arg0, vs_battle_tilePosition* arg1, int arg2, int arg3)
+void func_800AA490(int arg0, vs_TilePosition* arg1, int arg2, int arg3)
 {
     int angle;
     int dz;
@@ -1176,7 +1176,7 @@ void func_800AAA88(int arg0, SVECTOR* arg1, int arg2)
     }
 }
 
-void func_800AABD0(int arg0, SVECTOR* arg1, int arg2)
+void setActorScale(int arg0, SVECTOR* arg1, int arg2)
 {
     D_800F4538_t* temp_a3 = D_800F4538[arg0];
 
@@ -1933,7 +1933,7 @@ void func_800AC500(D_800F4538_t* arg0)
     }
 }
 
-void func_800AC540(int arg0, D_800F4538_t* arg1)
+void processActorMove(int arg0, D_800F4538_t* arg1)
 {
 
     switch (arg1->unk5AC_0) {
@@ -1947,7 +1947,7 @@ void func_800AC540(int arg0, D_800F4538_t* arg1)
             }
 
             if (!(arg1->unk5AC_2)) {
-                func_800A9D90(arg0, &arg1->unk5EC.vec, arg1->unk5C4);
+                slideActorToCoordinate(arg0, &arg1->unk5EC.vec, arg1->unk5C4);
             } else {
                 func_800AA620(arg0, &arg1->unk5EC.vec, arg1->unk5C4);
             }
@@ -1967,7 +1967,7 @@ void func_800AC540(int arg0, D_800F4538_t* arg1)
             if (facing != 32768) {
                 facing = facing & 0xFFF;
                 if ((arg1->unk5AC_2) == 0) {
-                    func_800A9EB4(arg0, facing, arg1->unk5C6);
+                    turnActorToFacing(arg0, facing, arg1->unk5C6);
                 } else {
                     func_800AA850(arg0, facing, arg1->unk5C6);
                 }
@@ -2040,9 +2040,9 @@ void func_800AD008(D_800F4538_t* actor, D_800F4538_unkC54* pose)
     actor->unk5AC_23 = 0;
     pose->unk540 = 0;
     pose->unk549 = 0;
-    *(int*)&pose->unk150[41].vx = 0;
-    *(int*)&pose->unk150[41].vz = 0;
-    pose->unk3F0[41].pad = 0;
+    *(int*)&pose->unk298.vx = 0;
+    *(int*)&pose->unk298.vz = 0;
+    pose->unk538.pad = 0;
     anim = func_800AD494(actor, actor->animationId, &header);
 
     if (anim == NULL) {
@@ -2071,7 +2071,7 @@ void func_800AD008(D_800F4538_t* actor, D_800F4538_unkC54* pose)
     pose->unk548 = actor->animationId;
 
     if (header[4] != 0) {
-        key = &pose->unk150[41];
+        key = &pose->unk298;
         data = anim->unk0;
         data += header[4];
         func_800ACFA0(key, data, 0xFF);
@@ -2083,7 +2083,7 @@ void func_800AD008(D_800F4538_t* actor, D_800F4538_unkC54* pose)
         header = (u_short*)((u_char*)anim->unk8 + (actor->unk0.nBones * 4 + 10) * frame);
     }
 
-    key = &pose->unk0[41];
+    key = &pose->unk148;
     data = anim->unk0;
     data += header[3];
     func_800ACFA0(key, data, frame);
@@ -2211,7 +2211,7 @@ void func_800AD62C(int arg0, int* arg1, int* arg2, UNUSED int arg3)
     int temp_v0;
     D_800F4538_t* temp_s0 = D_800F4538[arg0];
 
-    if (temp_s0->unk17E4.unk0 == 2) {
+    if (temp_s0->unk17E4.mode == sfxOverrideMute) {
         *arg1 = 0x80;
         if (arg2 != NULL) {
             *arg2 = 0;
@@ -2225,14 +2225,14 @@ void func_800AD62C(int arg0, int* arg1, int* arg2, UNUSED int arg3)
         temp_v0 = vs_main_computeSfxPan(*(int*)&temp_s0->unk6FC, temp_s0->unk6FC.vz);
         *arg1 = temp_v0 >> 0x10;
 
-        if (temp_s0->unk17E4.unk1 != 0) {
-            *arg1 = temp_s0->unk17E4.unk1;
+        if (temp_s0->unk17E4.pan != 0) {
+            *arg1 = temp_s0->unk17E4.pan;
         }
 
         if (arg2 != NULL) {
             *arg2 = temp_v0 & 0xFFFF;
-            if (temp_s0->unk17E4.unk2 != 0) {
-                *arg2 = temp_s0->unk17E4.unk2;
+            if (temp_s0->unk17E4.volume != 0) {
+                *arg2 = temp_s0->unk17E4.volume;
             }
         }
     }

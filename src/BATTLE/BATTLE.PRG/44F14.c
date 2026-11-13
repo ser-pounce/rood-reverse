@@ -234,7 +234,7 @@ loop:
         target5 = D_800F4538[id];
         sfx[1] = script[2];
 
-        if (target5->unk17E4.unk0 == 2) {
+        if (target5->unk17E4.mode == sfxOverrideMute) {
             sfx[0] = 0x80;
         } else {
             if (target5->unk0.unk9_0 || target5->unk0.unk9_4 || !target5->unk0.unk9_7
@@ -245,8 +245,8 @@ loop:
             sfx[0] =
                 vs_main_computeSfxPan(*(int*)&target5->unk6FC, target5->unk6FC.vz) >> 16;
 
-            if (target5->unk17E4.unk1 != 0) {
-                sfx[0] = target5->unk17E4.unk1;
+            if (target5->unk17E4.pan != 0) {
+                sfx[0] = target5->unk17E4.pan;
             }
         }
 
@@ -259,7 +259,7 @@ loop:
         arg = script[1];
         target7 = D_800F4538[id];
 
-        if (target7->unk17E4.unk0 == 2) {
+        if (target7->unk17E4.mode == sfxOverrideMute) {
             sfx[0] = 0x80;
             sfx[1] = 0;
         } else {
@@ -273,14 +273,14 @@ loop:
             value = vs_main_computeSfxPan(*(int*)&target7->unk6FC, target7->unk6FC.vz);
             sfx[0] = value >> 16;
 
-            if (target7->unk17E4.unk1 != 0) {
-                sfx[0] = target7->unk17E4.unk1;
+            if (target7->unk17E4.pan != 0) {
+                sfx[0] = target7->unk17E4.pan;
             }
 
             sfx[1] = value & 0xFFFF;
 
-            if (target7->unk17E4.unk2 != 0) {
-                sfx[1] = target7->unk17E4.unk2;
+            if (target7->unk17E4.volume != 0) {
+                sfx[1] = target7->unk17E4.volume;
             }
         }
 
@@ -294,7 +294,7 @@ loop:
         target8 = D_800F4538[id];
         sfx[1] = script[2];
 
-        if (target8->unk17E4.unk0 == 2) {
+        if (target8->unk17E4.mode == sfxOverrideMute) {
             sfx[0] = 0x80;
         } else {
             if (target8->unk0.unk9_0 || target8->unk0.unk9_4 || !target8->unk0.unk9_7
@@ -305,8 +305,8 @@ loop:
             sfx[0] =
                 vs_main_computeSfxPan(*(int*)&target8->unk6FC, target8->unk6FC.vz) >> 16;
 
-            if (target8->unk17E4.unk1 != 0) {
-                sfx[0] = target8->unk17E4.unk1;
+            if (target8->unk17E4.pan != 0) {
+                sfx[0] = target8->unk17E4.pan;
             }
         }
 
@@ -628,7 +628,7 @@ void func_800AE4FC(D_800F4538_t* arg0, int arg1)
 
     actor = D_800F4538[arg0->unk0.unkF];
 
-    if (actor->unk17E4.unk0 == 2) {
+    if (actor->unk17E4.mode == sfxOverrideMute) {
         sp[0] = 0x80;
         sp[1] = 0;
     } else {
@@ -639,14 +639,14 @@ void func_800AE4FC(D_800F4538_t* arg0, int arg1)
         temp = vs_main_computeSfxPan(*(int*)&actor->unk6FC, actor->unk6FC.vz);
         sp[0] = temp >> 0x10;
 
-        if (actor->unk17E4.unk1 != 0) {
-            sp[0] = actor->unk17E4.unk1;
+        if (actor->unk17E4.pan != 0) {
+            sp[0] = actor->unk17E4.pan;
         }
 
         sp[1] = temp & 0xFFFF;
 
-        if (actor->unk17E4.unk2 != 0) {
-            sp[1] = actor->unk17E4.unk2;
+        if (actor->unk17E4.volume != 0) {
+            sp[1] = actor->unk17E4.volume;
         }
     }
 
@@ -671,7 +671,7 @@ void func_800AE6C0(D_800F4538_t* arg0, int arg1, int arg2)
     int sp10[2];
     D_800F4538_t* temp_s0 = D_800F4538[arg0->unk0.unkF];
 
-    if (temp_s0->unk17E4.unk0 == 2) {
+    if (temp_s0->unk17E4.mode == sfxOverrideMute) {
         sp10[0] = 0x80;
         sp10[1] = 0;
     } else {
@@ -685,14 +685,14 @@ void func_800AE6C0(D_800F4538_t* arg0, int arg1, int arg2)
         temp_v0 = vs_main_computeSfxPan(*(int*)&temp_s0->unk6FC, temp_s0->unk6FC.vz);
         sp10[0] = temp_v0 >> 0x10;
 
-        if (temp_s0->unk17E4.unk1 != 0) {
-            sp10[0] = temp_s0->unk17E4.unk1;
+        if (temp_s0->unk17E4.pan != 0) {
+            sp10[0] = temp_s0->unk17E4.pan;
         }
 
         sp10[1] = temp_v0 & 0xFFFF;
 
-        if (temp_s0->unk17E4.unk2 != 0) {
-            sp10[1] = temp_s0->unk17E4.unk2;
+        if (temp_s0->unk17E4.volume != 0) {
+            sp10[1] = temp_s0->unk17E4.volume;
         }
     }
 
@@ -761,9 +761,9 @@ void func_800AE980(D_800F4538_unkC54* dst, D_800F4538_unkC54* src, int count)
 {
     int i;
 
-    dst->unk0[41].vx = (dst->unk0[41].vx + src->unk0[41].vx) >> 1;
-    dst->unk0[41].vy = (dst->unk0[41].vy + src->unk0[41].vy) >> 1;
-    dst->unk0[41].vz = (dst->unk0[41].vz + src->unk0[41].vz) >> 1;
+    dst->unk148.vx = (dst->unk148.vx + src->unk148.vx) >> 1;
+    dst->unk148.vy = (dst->unk148.vy + src->unk148.vy) >> 1;
+    dst->unk148.vz = (dst->unk148.vz + src->unk148.vz) >> 1;
 
     for (i = 0; i < count; ++i) {
         int x = src->unk0[i].vx - dst->unk0[i].vx;
@@ -812,13 +812,13 @@ void func_800AEAE8(D_800F4538_t* actor)
 
     if (actor->unk0.unk2C == ONE && actor->unk0.unk2E == ONE
         && actor->unk0.unk30 == ONE) {
-        setVector(&scratch->offset, actor->unk704.unk0[41].vx >> 1,
-            actor->unk704.unk0[41].vy >> 1, actor->unk704.unk0[41].vz >> 1);
+        setVector(&scratch->offset, actor->unk704.unk148.vx >> 1,
+            actor->unk704.unk148.vy >> 1, actor->unk704.unk148.vz >> 1);
     } else {
         setVector(&scratch->offset,
-            actor->unk704.unk0[41].vx * actor->unk0.unk2C / (ONE * 2),
-            actor->unk704.unk0[41].vy * actor->unk0.unk2E / (ONE * 2),
-            actor->unk704.unk0[41].vz * actor->unk0.unk30 / (ONE * 2));
+            actor->unk704.unk148.vx * actor->unk0.unk2C / (ONE * 2),
+            actor->unk704.unk148.vy * actor->unk0.unk2E / (ONE * 2),
+            actor->unk704.unk148.vz * actor->unk0.unk30 / (ONE * 2));
     }
 
     setVector(&scratch->offset, scratch->offset.vx * actor->unk183C / ONE,
@@ -868,33 +868,33 @@ inline void func_800AEEC4(D_800F4538_t* actor)
     int step;
     int delta;
 
-    if (actor->unk17E4.unk0 != 1 || actor->unk17E4.unk3 == 0) {
+    if (actor->unk17E4.mode != sfxOverrideSet || actor->unk17E4.duration == 0) {
         return;
     }
 
     step = vs_gametime_tickspeed / 2;
 
-    if (actor->unk17E4.unk3 < step) {
-        step = actor->unk17E4.unk3;
+    if (actor->unk17E4.duration < step) {
+        step = actor->unk17E4.duration;
     }
 
-    delta = actor->unk17E8.unk2 - actor->unk17E4.unk2;
+    delta = actor->unk17E8.volume - actor->unk17E4.volume;
 
     if (delta != 0) {
         delta *= step;
-        delta /= actor->unk17E4.unk3;
-        actor->unk17E4.unk2 += delta;
+        delta /= actor->unk17E4.duration;
+        actor->unk17E4.volume += delta;
     }
 
-    delta = actor->unk17E8.unk1 - actor->unk17E4.unk1;
+    delta = actor->unk17E8.pan - actor->unk17E4.pan;
 
     if (delta != 0) {
         delta *= step;
-        delta /= actor->unk17E4.unk3;
-        actor->unk17E4.unk1 += delta;
+        delta /= actor->unk17E4.duration;
+        actor->unk17E4.pan += delta;
     }
 
-    actor->unk17E4.unk3 -= step;
+    actor->unk17E4.duration -= step;
 }
 
 void func_800AEF94(MATRIX* camera)
@@ -940,7 +940,7 @@ void func_800AEF94(MATRIX* camera)
             func_800AB4F0(actor);
         loaded:
             if (actor->unk5AC_0) {
-                func_800AC540(i, actor);
+                processActorMove(i, actor);
             }
 
             if (vs_gametime_tickspeed == 4) {
@@ -989,14 +989,14 @@ void func_800AEF94(MATRIX* camera)
                 }
 
                 view = (void*)0x1F800000;
-                view->unk4 += actor->unk6F4.unk3 * 4;
-                applyVector(&actor->unk0.position, actor->unk6F4.unk0, actor->unk6F4.unk1,
-                    actor->unk6F4.unk2, +=);
+                view->unk4 += actor->unk6F4.otDepth * 4;
+                applyVector(&actor->unk0.position, actor->unk6F4.x, actor->unk6F4.y,
+                    actor->unk6F4.z, +=);
                 func_800B002C(actor, actor->unk17FD);
                 func_800B28A8(actor, camera, actor->unk17FD);
-                view->unk4 -= actor->unk6F4.unk3 * 4;
-                applyVector(&actor->unk0.position, actor->unk6F4.unk0, actor->unk6F4.unk1,
-                    actor->unk6F4.unk2, -=);
+                view->unk4 -= actor->unk6F4.otDepth * 4;
+                applyVector(&actor->unk0.position, actor->unk6F4.x, actor->unk6F4.y,
+                    actor->unk6F4.z, -=);
             }
         }
 
@@ -1193,7 +1193,7 @@ void func_800AFA28(D_800F4538_t* actor, D_800F4538_unkC54* state, int mode)
             state->unk548_17 = 1;
 
             if (actor->unk6E0 != 0) {
-                func_800A0618(
+                setActorAnimationFromFrame(
                     actor->unk0.unkF, actor->unk6E0, actor->unk6E1, actor->unk6E2);
                 actor->unk6E0 = 0;
                 return;
@@ -1243,12 +1243,12 @@ void func_800AFA28(D_800F4538_t* actor, D_800F4538_unkC54* state, int mode)
     track = header[4];
 
     if (track != 0) {
-        func_800AFDE8(track, &state->unk150[41], 0);
-        applyVector(&actor->unk0.position, state->unk150[41].vx / 4,
-            state->unk150[41].vy / 4, state->unk150[41].vz / 4, +=);
+        func_800AFDE8(track, &state->unk298, 0);
+        applyVector(&actor->unk0.position, state->unk298.vx / 4, state->unk298.vy / 4,
+            state->unk298.vz / 4, +=);
     }
 
-    func_800AFDE8(header[3], &state->unk0[41], 0);
+    func_800AFDE8(header[3], &state->unk148, 0);
 
     for (i = 0; i < actor->unk0.nBones; ++i) {
         func_800AFDE8(header[i + 5], &state->unk0[i], 1);
@@ -1382,13 +1382,13 @@ void func_800B002C(D_800F4538_t* actor, int arg1)
 
     if (actor->unk0.unk2C == ONE && actor->unk0.unk2E == ONE
         && actor->unk0.unk30 == ONE) {
-        setVector(&scratch->offset, actor->unk704.unk0[41].vx >> 1,
-            actor->unk704.unk0[41].vy >> 1, actor->unk704.unk0[41].vz >> 1);
+        setVector(&scratch->offset, actor->unk704.unk148.vx >> 1,
+            actor->unk704.unk148.vy >> 1, actor->unk704.unk148.vz >> 1);
     } else {
         setVector(&scratch->offset,
-            actor->unk704.unk0[41].vx * actor->unk0.unk2E / (ONE * 2),
-            actor->unk704.unk0[41].vy * actor->unk0.unk30 / (ONE * 2),
-            actor->unk704.unk0[41].vz * actor->unk0.unk2C / (ONE * 2));
+            actor->unk704.unk148.vx * actor->unk0.unk2E / (ONE * 2),
+            actor->unk704.unk148.vy * actor->unk0.unk30 / (ONE * 2),
+            actor->unk704.unk148.vz * actor->unk0.unk2C / (ONE * 2));
     }
 
     setVector(&scratch->offset, scratch->offset.vx * actor->unk183C / ONE,

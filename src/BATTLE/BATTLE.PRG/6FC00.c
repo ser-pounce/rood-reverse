@@ -29,10 +29,10 @@ static inline int historyStalled(func_800E78F4_t* state)
 u_int func_800D8400(func_800E78F4_t* arg0, int arg1, int arg2, int arg3)
 {
     union {
-        vs_battle_tilePosition fields;
+        vs_TilePosition fields;
         u_int value;
     } pos;
-    vs_battle_tilePosition source;
+    vs_TilePosition source;
     u_int directions;
     int count;
     int i;
@@ -98,7 +98,7 @@ int func_800D85D8(func_800E78F4_t* arg0)
     int i;
     int changed = 0;
     u_char status;
-    vs_Actor* actor;
+    Actor* actor;
 
     for (i = 0; i < arg0->unk470; ++i) {
         func_800DCAA0_t* entry = arg0->unk430[i];
@@ -166,7 +166,7 @@ void func_800D87E8(func_800E78F4_t* arg0, int id)
     func_800DA1D4_t final;
     D_800F4538_t* object;
     func_800E78F4_t* other;
-    vs_Actor* actor;
+    Actor* actor;
     int owner;
     int blocked;
     int heading;
@@ -323,7 +323,7 @@ void func_800D87E8(func_800E78F4_t* arg0, int id)
 
 void func_800D8EF4(void)
 {
-    vs_Actor* actor;
+    Actor* actor;
 
     D_800F58E0 = 0;
     D_800F58BC->unk24 = 0;
@@ -336,7 +336,7 @@ void func_800D8EF4(void)
         int flags = actor->unk8;
         func_800E78F4_t* state;
         D_800F4538_t* object;
-        vs_Actor* other;
+        Actor* other;
         int id;
         int i;
         int arg;

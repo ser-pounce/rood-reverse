@@ -965,9 +965,9 @@ void vs_ending_exec(void)
     extern TimData const fin;
     extern TimData const episodeLogo;
 
-    vs_Main_CdFile file;
+    vs_CdFile file;
     short i;
-    vs_Main_CdQueueSlot* slot;
+    vs_CdQueueSlot* slot;
 
     initEnvironment();
     SetGeomOffset(160, 112);
@@ -1752,7 +1752,7 @@ static void updateTitles(void)
     }
 }
 
-static vs_Main_CdQueueSlot* cdSlot;
+static vs_CdQueueSlot* cdSlot;
 static void* timData;
 static u_int rank;
 static int clearCount;
@@ -1802,7 +1802,7 @@ static void updateScore(void);
  */
 static int initCongratulationsScreen(void)
 {
-    static const vs_Main_CdFile endScrDisFiles[] = {
+    static const vs_CdFile endScrDisFiles[] = {
         { VS_END_DIS_LBA, VS_END_DIS_SIZE },
         { VS_ENDSCR00_DIS_LBA, VS_ENDSCR00_DIS_SIZE },
         { VS_ENDSCR01_DIS_LBA, VS_ENDSCR01_DIS_SIZE },

@@ -774,7 +774,7 @@ static void loadBattlePrg(void)
     slot = vs_main_allocateCdQueueSlot(&cdFile);
     vs_main_cdEnqueuePriority(slot, vs_overlay_slots[0]);
 
-    while (slot->state != vs_main_CdQueueStateLoaded) {
+    while (slot->state != CdQueueStateLoaded) {
         vs_main_gametimeUpdate(0);
     }
 
@@ -786,7 +786,7 @@ static void loadBattlePrg(void)
     slot = vs_main_allocateCdQueueSlot(&cdFile);
     vs_main_cdEnqueuePriority(slot, vs_overlay_slots[1]);
 
-    while (slot->state != vs_main_CdQueueStateLoaded) {
+    while (slot->state != CdQueueStateLoaded) {
         vs_main_gametimeUpdate(0);
     }
 
@@ -805,7 +805,7 @@ static void loadTitlePrg(void)
     slot = vs_main_allocateCdQueueSlot(&cdFile);
     vs_main_cdEnqueuePriority(slot, vs_overlay_slots[0]);
 
-    while (slot->state != vs_main_CdQueueStateLoaded) {
+    while (slot->state != CdQueueStateLoaded) {
         vs_main_gametimeUpdate(0);
     }
 
@@ -824,7 +824,7 @@ static void loadEndingPrg(void)
     slot = vs_main_allocateCdQueueSlot(&cdFile);
     vs_main_cdEnqueuePriority(slot, vs_overlay_slots[0]);
 
-    while (slot->state != vs_main_CdQueueStateLoaded) {
+    while (slot->state != CdQueueStateLoaded) {
         vs_main_gametimeUpdate(0);
     }
 
@@ -2372,7 +2372,7 @@ static void initCdQueue(void)
     int i;
 
     for (i = 31; i >= 0; --i) {
-        cdQueue[i].state = vs_main_CdQueueStateFree;
+        cdQueue[i].state = CdQueueStateFree;
     }
 
     cdQueueCount = (CdQueueCount) { 0, 0 };
@@ -2383,8 +2383,8 @@ vs_CdQueueSlot* vs_main_allocateCdQueueSlot(vs_CdFile const* file)
     int i;
 
     for (i = 0; i < 32; ++i) {
-        if (cdQueue[i].state == vs_main_CdQueueStateFree) {
-            cdQueue[i].state = vs_main_CdQueueStateAllocated;
+        if (cdQueue[i].state == CdQueueStateFree) {
+            cdQueue[i].state = CdQueueStateAllocated;
             cdQueue[i].cdFile = *file;
             return &cdQueue[i];
         }
@@ -2397,16 +2397,16 @@ void vs_main_freeCdQueueSlot(vs_CdQueueSlot* slot)
 {
     u_short state = slot->state - 2;
 
-    if (state < vs_main_CdQueueStateLoaded - 2) {
+    if (state < CdQueueStateLoaded - 2) {
         vs_main_nop9(163, 0);
     }
 
-    slot->state = vs_main_CdQueueStateFree;
+    slot->state = CdQueueStateFree;
 }
 
 void vs_main_cdEnqueue(vs_CdQueueSlot* slot, void* vram)
 {
-    slot->state = vs_main_CdQueueStateEnqueued;
+    slot->state = CdQueueStateEnqueued;
     slot->vram = vram;
     slot->unused = 0;
     slot->priority = cdQueueCount.queued++;
@@ -2418,12 +2418,12 @@ void vs_main_cdEnqueuePriority(vs_CdQueueSlot* slot, void* vram)
     vs_CdQueueSlot* queue = cdQueue;
 
     for (i = 0; i < 32; ++i, ++queue) {
-        if (queue->state == vs_main_CdQueueStateEnqueued) {
+        if (queue->state == CdQueueStateEnqueued) {
             ++queue->priority;
         }
     }
 
-    slot->state = vs_main_CdQueueStateEnqueued;
+    slot->state = CdQueueStateEnqueued;
     slot->vram = vram;
     slot->unused = 0;
     slot->priority = 0;
@@ -2445,10 +2445,10 @@ static void processCdQueue(void)
         if (i == diskIdle) {
 
             for (i = 0; i < 32; ++i, ++slot) {
-                if (slot->state == vs_main_CdQueueStateEnqueued) {
+                if (slot->state == CdQueueStateEnqueued) {
                     if (slot->priority == 0) {
 
-                        slot->state = vs_main_CdQueueStateReading;
+                        slot->state = CdQueueStateReading;
 
                         diskInitRead(slot->cdFile.lba, slot->cdFile.size, slot->vram);
 
@@ -2459,8 +2459,8 @@ static void processCdQueue(void)
                         --slot->priority;
                     }
 
-                } else if (slot->state == vs_main_CdQueueStateReading) {
-                    slot->state = vs_main_CdQueueStateLoaded;
+                } else if (slot->state == CdQueueStateReading) {
+                    slot->state = CdQueueStateLoaded;
                     --cdQueueCount.processing;
                 }
             }
@@ -2666,8 +2666,7 @@ int vs_main_clearMusicLoadSlot(u_int slot)
     if ((slot - 1) < 4) {
         if (vs_main_soundData.musicQueueSlot[slot - 1] != 0) {
 
-            if (vs_main_soundData.musicQueueSlot[slot - 1]->state
-                == vs_main_CdQueueStateLoaded) {
+            if (vs_main_soundData.musicQueueSlot[slot - 1]->state == CdQueueStateLoaded) {
 
                 vs_main_freeCdQueueSlot(vs_main_soundData.musicQueueSlot[slot - 1]);
                 vs_main_soundData.musicQueueSlot[slot - 1] = NULL;
@@ -2675,8 +2674,7 @@ int vs_main_clearMusicLoadSlot(u_int slot)
                 return 0;
             }
 
-            if (vs_main_soundData.musicQueueSlot[slot - 1]->state
-                == vs_main_CdQueueStateError) {
+            if (vs_main_soundData.musicQueueSlot[slot - 1]->state == CdQueueStateError) {
 
                 vs_main_freeCdQueueSlot(vs_main_soundData.musicQueueSlot[slot - 1]);
                 vs_main_soundData.musicQueueSlot[slot - 1] = (vs_CdQueueSlot*)-1;
@@ -3139,8 +3137,7 @@ int vs_main_freeSfxQueueSlot(u_int slot)
     if ((slot - 1) < 3) {
         if (vs_main_soundData.sfxQueueSlot[slot - 1] != NULL) {
 
-            if (vs_main_soundData.sfxQueueSlot[slot - 1]->state
-                == vs_main_CdQueueStateLoaded) {
+            if (vs_main_soundData.sfxQueueSlot[slot - 1]->state == CdQueueStateLoaded) {
 
                 vs_main_freeCdQueueSlot(vs_main_soundData.sfxQueueSlot[slot - 1]);
                 vs_main_soundData.sfxQueueSlot[slot - 1] = NULL;
@@ -3148,8 +3145,7 @@ int vs_main_freeSfxQueueSlot(u_int slot)
                 return 0;
             }
 
-            if (vs_main_soundData.sfxQueueSlot[slot - 1]->state
-                == vs_main_CdQueueStateError) {
+            if (vs_main_soundData.sfxQueueSlot[slot - 1]->state == CdQueueStateError) {
 
                 vs_main_freeCdQueueSlot(vs_main_soundData.sfxQueueSlot[slot - 1]);
                 vs_main_soundData.sfxQueueSlot[slot - 1] = (vs_CdQueueSlot*)-1;
@@ -3493,7 +3489,7 @@ static inline void releaseSoundQueue(void)
 int vs_main_processSoundQueue(void)
 {
     if (vs_main_soundData.soundQueueSlot != NULL) {
-        if (vs_main_soundData.soundQueueSlot->state == vs_main_CdQueueStateDispatched) {
+        if (vs_main_soundData.soundQueueSlot->state == CdQueueStateDispatched) {
 
             int isTransferring = IsSpuTransferring();
 
@@ -3512,15 +3508,15 @@ int vs_main_processSoundQueue(void)
             return 1;
         }
 
-        if (vs_main_soundData.soundQueueSlot->state == vs_main_CdQueueStateLoaded) {
+        if (vs_main_soundData.soundQueueSlot->state == CdQueueStateLoaded) {
 
-            vs_main_soundData.soundQueueSlot->state = vs_main_CdQueueStateDispatched;
+            vs_main_soundData.soundQueueSlot->state = CdQueueStateDispatched;
             Sound_LoadMusicBank(vs_main_soundData.soundData, 0);
 
             return 1;
         }
 
-        if (vs_main_soundData.soundQueueSlot->state == vs_main_CdQueueStateError) {
+        if (vs_main_soundData.soundQueueSlot->state == CdQueueStateError) {
             releaseSoundQueue();
 
             return -1;

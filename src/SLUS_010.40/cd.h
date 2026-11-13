@@ -7,14 +7,14 @@ typedef struct {
     u_int size;
 } vs_CdFile;
 
-enum vs_main_CdQueueState {
-    vs_main_CdQueueStateFree = 0,
-    vs_main_CdQueueStateAllocated = 1,
-    vs_main_CdQueueStateReading = 2,
-    vs_main_CdQueueStateEnqueued = 3,
-    vs_main_CdQueueStateLoaded = 4,
-    vs_main_CdQueueStateError = 6,
-    vs_main_CdQueueStateDispatched = 7,
+enum CdQueueState {
+    CdQueueStateFree = 0,
+    CdQueueStateAllocated = 1,
+    CdQueueStateReading = 2,
+    CdQueueStateEnqueued = 3,
+    CdQueueStateLoaded = 4,
+    CdQueueStateError = 6,
+    CdQueueStateDispatched = 7,
 };
 
 typedef struct {

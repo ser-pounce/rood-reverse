@@ -254,8 +254,8 @@ VS_HIDDEN(func_8007E180);
 int func_8007E1C0(int arg0);
 VS_HIDDEN(func_8007E1C0);
 
-int vs_battle_itemIdIsInInventory(int);
-VS_HIDDEN(vs_battle_itemIdIsInInventory);
+int itemIdIsInInventory(int);
+VS_HIDDEN(itemIdIsInInventory);
 
 int func_8008631C(int arg0, int arg1, int targetActor, int targetLimb, void* arg4);
 VS_HIDDEN(func_8008631C);

@@ -2,8 +2,8 @@
 #include "common.h"
 #include "2842C.h"
 
-short vs_battle_clamp(short arg0, int arg1, int arg2);
-VS_HIDDEN(vs_battle_clamp);
+short clamp(short arg0, int arg1, int arg2);
+VS_HIDDEN(clamp);
 
 void func_80090C2C(int arg0);
 VS_HIDDEN(func_80090C2C);

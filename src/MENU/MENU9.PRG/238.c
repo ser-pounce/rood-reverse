@@ -944,7 +944,7 @@ static int menuInput(void)
         return 2;
 
     case 13:
-        if (monBinCdQueueSlot->state == vs_main_CdQueueStateLoaded) {
+        if (monBinCdQueueSlot->state == CdQueueStateLoaded) {
 
             vs_main_freeCdQueueSlot(monBinCdQueueSlot);
 

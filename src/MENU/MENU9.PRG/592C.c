@@ -208,7 +208,7 @@ int vs_menu9_parseZudFile(void)
     vs_ObjectData slot;
 
     if (zudCdSlot != NULL) {
-        if (zudCdSlot->state != vs_main_CdQueueStateLoaded) {
+        if (zudCdSlot->state != CdQueueStateLoaded) {
             return 1;
         }
 

@@ -3,18 +3,18 @@
 #include "4DEA8.h"
 
 // Value of scriptSkipMode
-enum vs_battle_ScriptSkipMode {
-    vs_battle_scriptSkipOff = 0,
-    vs_battle_scriptSkippable = 1, // set by opcode 0x0D; START (or skipRequested) skips
-    vs_battle_scriptSkipping = 2, // dispatching through the skip table
+enum ScriptSkipMode {
+    scriptSkipOff = 0,
+    scriptSkippable = 1, // set by opcode 0x0D; START (or skipRequested) skips
+    scriptSkipping = 2, // dispatching through the skip table
 };
 
 // Return values of script opcode handlers, as interpreted by func_800BFBB8
-enum vs_battle_ScriptResult {
-    vs_battle_scriptNext = 0, // advance to the next opcode and keep running
-    vs_battle_scriptRepeat = 1, // not finished: stop and run this opcode again next frame
-    vs_battle_scriptEnd = 3, // terminate this script
-    vs_battle_scriptYield = 4, // advance past this opcode, resume next frame
+enum ScriptResult {
+    scriptNext = 0, // advance to the next opcode and keep running
+    scriptRepeat = 1, // not finished: stop and run this opcode again next frame
+    scriptEnd = 3, // terminate this script
+    scriptYield = 4, // advance past this opcode, resume next frame
 };
 
 void func_800BBDDC(void);

@@ -1836,7 +1836,7 @@ static int initCongratulationsScreen(void)
 
     } else if (submenuState == 1) {
 
-        if (cdSlot->state != vs_main_CdQueueStateLoaded) {
+        if (cdSlot->state != CdQueueStateLoaded) {
             return 0;
         }
 

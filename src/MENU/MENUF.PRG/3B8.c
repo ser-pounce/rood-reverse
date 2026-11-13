@@ -143,7 +143,7 @@ int initCongratulationsScreen(void)
         ++vs_battle_submenuState;
 
     } else if (vs_battle_submenuState == 1) {
-        if (cdSlot->state == vs_main_CdQueueStateLoaded) {
+        if (cdSlot->state == CdQueueStateLoaded) {
 
             for (i = 0; i < 3; ++i) {
                 TIM_IMAGE tim;
@@ -282,7 +282,7 @@ int initTimeAttackEnd(void)
         ++vs_battle_submenuState;
 
     } else if (state == 1) {
-        if (cdSlot->state == vs_main_CdQueueStateLoaded) {
+        if (cdSlot->state == CdQueueStateLoaded) {
             TIM_IMAGE tim;
 
             vs_battle_parseTim(timData, &tim);
@@ -394,7 +394,7 @@ int initTimeAttackStart(void)
 
         ++vs_battle_submenuState;
     } else if (vs_battle_submenuState == 1) {
-        if (cdSlot->state == vs_main_CdQueueStateLoaded) {
+        if (cdSlot->state == CdQueueStateLoaded) {
             int i;
             TIM_IMAGE tim;
 
@@ -2286,7 +2286,7 @@ int initCubePuzzleStart(void)
         ++vs_battle_submenuState;
 
     } else if (vs_battle_submenuState == 1) {
-        if (iqDisCdSlot->state == vs_main_CdQueueStateLoaded) {
+        if (iqDisCdSlot->state == CdQueueStateLoaded) {
             int i;
             TIM_IMAGE tim;
             for (i = 0; i < 2; ++i) {
@@ -2383,7 +2383,7 @@ int initCubePuzzleQuit(void)
         ++vs_battle_submenuState;
 
     } else if (vs_battle_submenuState == 1) {
-        if (escDisCdSLot->state == vs_main_CdQueueStateLoaded) {
+        if (escDisCdSLot->state == CdQueueStateLoaded) {
             for (i = 0; i <= 0; ++i) {
 
                 vs_battle_parseTim(escDisData + i * 0x8220, &tim);

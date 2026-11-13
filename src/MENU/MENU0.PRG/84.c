@@ -178,10 +178,9 @@ int warlockMagicMenu(u_int initShortcutInvoked)
 {
     enum state { init, handleInput, returnIfReady, levelledSpellInit, levelledSpell };
 
-    static char levelledSpells[] = { vs_battle_spell_explosion,
-        vs_battle_spell_thunderburst, vs_battle_spell_flameSphere,
-        vs_battle_spell_gaeaStrike, vs_battle_spell_avalanche,
-        vs_battle_spell_radialSurge, vs_battle_spell_meteor };
+    static char levelledSpells[] = { spell_explosion, spell_thunderburst,
+        spell_flameSphere, spell_gaeaStrike, spell_avalanche, spell_radialSurge,
+        spell_meteor };
     static char* spellLevels[] = { "LV1", "LV2", "LV3", "LV4", "--" };
 
     static u_int state;

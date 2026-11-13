@@ -1887,14 +1887,25 @@ int vs_battle_script_41_jumpFwdUnlessFlag(u_char* script, UNUSED short arg1)
     return (long)&script[getShort(script + 4)];
 }
 
-int vs_battle_script_42_jumpFwd(u_char* arg0, UNUSED short arg1)
+/**
+ * Jumps over the else branch, the opcode after it is always the target
+ * of a conditional jump (40, 41 or 47).
+ * @param script Opcode bytes:
+ *   - [1-2] = target offset from this opcode
+ */
+int vs_battle_script_42_jumpFwdElse(u_char* script, UNUSED short arg1)
 {
-    return (long)&arg0[getShort(arg0 + 1)];
+    return (long)&script[getShort(script + 1)];
 }
 
-int vs_battle_script_45_jumpFwd2(u_char* arg0, UNUSED short arg1)
+/**
+ * Presumably for jumping to a label.
+ * @param script Opcode bytes:
+ *   - [1-2] = target offset from this opcode
+ */
+int vs_battle_script_45_jumpFwd(u_char* script, UNUSED short arg1)
 {
-    return (long)&arg0[getShort(arg0 + 1)];
+    return (long)&script[getShort(script + 1)];
 }
 
 int vs_battle_script_46_setFlagImmContext(u_char* arg0, UNUSED short arg1)
@@ -1932,14 +1943,24 @@ int vs_battle_script_4A_jumpBackIf(u_char* arg0, UNUSED short arg1)
     return vs_battle_scriptNext;
 }
 
-int vs_battle_script_4C_jumpFwd3(u_char* arg0, UNUSED short arg1)
+/**
+ * Not used by any event script.
+ * @param script Opcode bytes:
+ *   - [1-2] = target offset from this opcode
+ */
+int vs_battle_script_4C_jumpFwdUnused(u_char* script, UNUSED short arg1)
 {
-    return (long)&arg0[getShort(arg0 + 1)];
+    return (long)&script[getShort(script + 1)];
 }
 
-int vs_battle_script_4B_jumpFwd4(u_char* arg0, UNUSED short arg1)
+/**
+ * Breaks out of a loop, jumps past the jumpBackIf that closes the loop.
+ * @param script Opcode bytes:
+ *   - [1-2] = target offset from this opcode
+ */
+int vs_battle_script_4B_jumpFwdBreak(u_char* script, UNUSED short arg1)
 {
-    return (long)&arg0[getShort(arg0 + 1)];
+    return (long)&script[getShort(script + 1)];
 }
 
 int vs_battle_script_50_setFlagImm(u_char* arg0, UNUSED short arg1)

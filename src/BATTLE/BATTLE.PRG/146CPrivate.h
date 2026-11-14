@@ -118,17 +118,17 @@ VS_HIDDEN(func_8007BF04);
 int func_8007BF0C(void);
 VS_HIDDEN(func_8007BF0C);
 
-void func_8007BF2C(void);
-VS_HIDDEN(func_8007BF2C);
+void showCurrentRoom(void);
+VS_HIDDEN(showCurrentRoom);
 
-void func_8007BF4C(void);
-VS_HIDDEN(func_8007BF4C);
+void hideCurrentRoom(void);
+VS_HIDDEN(hideCurrentRoom);
 
-void func_8007BFC0(void);
-VS_HIDDEN(func_8007BFC0);
+void enableAllActors(void);
+VS_HIDDEN(enableAllActors);
 
-void func_8007C050(void);
-VS_HIDDEN(func_8007C050);
+void disableAllActors(void);
+VS_HIDDEN(disableAllActors);
 
 void setWeaponDrawn(int, int);
 VS_HIDDEN(setWeaponDrawn);

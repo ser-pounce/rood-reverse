@@ -79,7 +79,7 @@ int vs_battle_script_64_showGeometry(u_char*, short);
 int vs_battle_script_65_hideGeometry(u_char*, short);
 int vs_battle_script_66_swapGeometryFlags(u_char*, short);
 int vs_battle_script_67_setTileBlocked(u_char*, short);
-int vs_battle_script_68(u_char*, short);
+int vs_battle_script_68_warp(u_char*, short);
 int vs_battle_script_6B(u_char*, short);
 int vs_battle_script_6C(u_char*, short);
 int vs_battle_script_6F(u_char*, short);
@@ -147,7 +147,7 @@ int vs_battle_script_F6(u_char*, short);
 int vs_battle_script_F7(u_char*, short);
 int vs_battle_script_FE_FF(u_char*, short);
 
-extern short D_800F4BE2;
+extern short scriptWarpState;
 extern char D_800F4C08;
 extern void* D_800F4C30;
 extern void* D_800F4C48;

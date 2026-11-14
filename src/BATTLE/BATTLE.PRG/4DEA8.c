@@ -2749,9 +2749,12 @@ int vs_battle_script_6D_setSceneVisibility(u_char* script, UNUSED short arg1)
     return scriptNext;
 }
 
-int vs_battle_script_6E(UNUSED u_char* arg0, UNUSED short arg1)
+/**
+ * Waits until the screen transition has finished.
+ */
+int vs_battle_script_6E_waitForScreenTransition(UNUSED u_char* script, UNUSED short arg1)
 {
-    return getScreenTransitionPhase() != 0 ? scriptRepeat : scriptNext;
+    return getScreenTransitionPhase() != screenTransitionIdle ? scriptRepeat : scriptNext;
 }
 
 int vs_battle_script_6F(u_char* arg0, UNUSED short arg1)

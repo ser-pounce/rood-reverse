@@ -215,11 +215,11 @@ VS_HIDDEN(walkActorToCoordinate);
 int isActorWalkDone(int);
 VS_HIDDEN(isActorWalkDone);
 
-int func_8007D08C(int, int);
-VS_HIDDEN(func_8007D08C);
+int setActorAwake(int, int);
+VS_HIDDEN(setActorAwake);
 
-int func_8007D15C(int);
-VS_HIDDEN(func_8007D15C);
+int setActorsAwake(int);
+VS_HIDDEN(setActorsAwake);
 
 void setActorInactive(int actorId, int inactive);
 VS_HIDDEN(setActorInactive);

@@ -9186,52 +9186,79 @@ int isActorWalkDone(int arg0)
     return temp_v0 == 2;
 }
 
-int func_8007D08C(int arg0, int arg1)
+/**
+ * Wakes an actor, or puts it into a dormant state. A dormant actor is in state 0x20
+ * (also used for dead actors), so the enemy AI skips it (and drops it from its alert
+ * list), is skipped by target selection (unk1C bit 0x8000) and loses its target marker.
+ * The model is not affected (see vs_battle_setActorFlags).
+ * @param actorId Actor to change.
+ * @param awake 0 = make dormant, nonzero = wake (only if currently in state 0x20).
+ * @return awake
+ */
+int setActorAwake(int actorId, int awake)
 {
-    if (arg1 != 0) {
-        if (vs_battle_actors[arg0] != NULL) {
-            if (vs_battle_actors[arg0]->unk8 == 0x20) {
-                vs_battle_actors[arg0]->unk8 = 0;
-                vs_battle_actors[arg0]->unk1C &= 0x7FFF;
+    if (awake != 0) {
+        if (vs_battle_actors[actorId] != NULL) {
+            if (vs_battle_actors[actorId]->unk8 == 0x20) {
+                vs_battle_actors[actorId]->unk8 = 0;
+                vs_battle_actors[actorId]->unk1C &= 0x7FFF;
             }
         }
     } else {
-        if (vs_battle_actors[arg0] != NULL) {
-            vs_battle_actors[arg0]->unk8 = 0x20;
-            vs_battle_actors[arg0]->unk1C |= 0x8000;
-            func_80095B7C(arg0, 0);
-            func_80095B7C(arg0, 0x40);
+        if (vs_battle_actors[actorId] != NULL) {
+            vs_battle_actors[actorId]->unk8 = 0x20;
+            vs_battle_actors[actorId]->unk1C |= 0x8000;
+            func_80095B7C(actorId, 0);
+            func_80095B7C(actorId, 0x40);
         }
     }
-    return arg1;
+
+    return awake;
 }
 
-int func_8007D15C(int arg0)
+/**
+ * Applies setActorAwake to every actor except actor 0 (the player).
+ * @param awake 0 = make dormant, nonzero = wake.
+ * @return awake
+ */
+int setActorsAwake(int awake)
 {
     int i;
 
     for (i = 1; i < 16; ++i) {
-        func_8007D08C(i, arg0);
+        setActorAwake(i, awake);
     }
-    return arg0;
+
+    return awake;
 }
 
+/**
+ * Removes or returns actor from or to the scene's actor list, without freeing it.
+ * Not to be confused with setActorAwake, which keeps the actor in the list.
+ * @param actorId Actor to change.
+ * @param inactive Nonzero = remove from the scene, 0 = put back.
+ */
 void setActorInactive(int actorId, int inactive)
 {
-    int temp_s0;
-    Actor* temp_a0 = vs_battle_actors[actorId];
-    if (temp_a0 != NULL) {
+    int listChanged;
+    Actor* actor = vs_battle_actors[actorId];
+
+    if (actor != NULL) {
         if (inactive != 0) {
-            temp_s0 = removeActor(temp_a0);
+            listChanged = removeActor(actor);
+
             setActorInactiveFlag(actorId, inactive);
-            if (temp_s0 != 0) {
+
+            if (listChanged != 0) {
                 func_800E7608(actorId);
                 func_800DEC88(NULL);
             }
         } else {
-            temp_s0 = insertActor(temp_a0);
+            listChanged = insertActor(actor);
+
             setActorInactiveFlag(actorId, 0);
-            if (temp_s0 != 0) {
+
+            if (listChanged != 0) {
                 func_800E5998();
                 func_800DEC88(NULL);
             }
@@ -15281,7 +15308,7 @@ void func_80089DC0(int arg0)
     firstPersonViewEnabled = 0;
     D_800F1A50[0] = 1;
     D_800F1868 = 0;
-    func_8007D15C(1);
+    setActorsAwake(1);
     vs_main_unused1 = 0;
     vs_main_unused2 = 0;
     vs_main_unused0 = 0;

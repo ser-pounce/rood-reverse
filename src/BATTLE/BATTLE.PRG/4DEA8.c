@@ -2165,9 +2165,16 @@ int vs_battle_script_54_playWeaponSfx(u_char* script, UNUSED short arg1)
     return scriptNext;
 }
 
-int vs_battle_script_55(u_char* arg0, UNUSED short arg1)
+/**
+ * Wakes every actor except actor 0 (the player), or puts them all into the dormant state:
+ * inert, no AI, not targetable (see setActorAwake).
+ * @param script Opcode bytes:
+ *   - [1] = 0 = dormant, nonzero = awake
+ */
+int vs_battle_script_55_setActorsAwake(u_char* script, UNUSED short arg1)
 {
-    func_8007D15C(arg0[1]);
+    setActorsAwake(script[1]);
+
     return scriptNext;
 }
 
@@ -3036,7 +3043,7 @@ int vs_battle_script_B3(u_char* arg0, UNUSED short arg1)
         if (temp_a0 == 1) {
             break;
         }
-        func_8007D08C(temp_a0, arg0[3]);
+        setActorAwake(temp_a0, arg0[3]);
     }
     return scriptNext;
 }
@@ -3098,7 +3105,7 @@ void func_800BAF6C(short arg0)
         }
     }
 
-    func_8007D15C(arg0);
+    setActorsAwake(arg0);
 }
 
 int vs_battle_script_B7_specialOp(u_char* arg0, UNUSED short arg1)

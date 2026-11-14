@@ -2420,15 +2420,24 @@ int vs_battle_script_5B_setTextBoxSpeaker(u_char* script, UNUSED short arg1)
     return scriptNext;
 }
 
-int vs_battle_script_5C(u_char* arg0, UNUSED short arg1)
+/**
+ * Changes the weapon models an actor holds.
+ * @param script Opcode bytes:
+ *   - [1-2] = actor selector
+ *   - [3] = blade model id, 0 = none, 0xFF = leave unchanged, 0xFE = take both weapons
+ *     from the actor's equipment
+ *   - [5] = shield model id, 0 = none, 0xFF = leave unchanged
+ */
+int vs_battle_script_5C_setActorWeaponModels(u_char* script, UNUSED short arg1)
 {
-    u_short temp_a0 = resolveActorId(getShort(arg0 + 1));
+    u_short actor = resolveActorId(getShort(script + 1));
 
-    if (arg0[3] == 0xFE) {
-        func_8007CAA4(temp_a0);
+    if (script[3] == 0xFE) {
+        restoreActorWeaponModels(actor);
     } else {
-        func_8007CA20(temp_a0, arg0[3], arg0[5]);
+        setActorWeaponModels(actor, script[3], script[5]);
     }
+
     return scriptNext;
 }
 

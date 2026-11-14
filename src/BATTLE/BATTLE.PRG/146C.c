@@ -256,7 +256,7 @@ void func_80073E30(MpdRoomSectionA*, int);
 int func_80074798(vs_ActorPosition*, u_char*);
 void func_80074B14(int arg0, vs_TilePosition* arg1);
 void func_80076D50(u_int, int, int, int, int);
-void func_80077130(Actor*, int, int, int, int);
+void setActorWeaponModel(Actor*, int, int, int, int);
 Actor_dat* func_80077240(int, int, int, int, int, int, vs_TilePosition*, int);
 void func_800773BC(Actor*, int, int, int, int, int);
 Actor* func_800775C0(int, MpdEnemy*, vs_CharInitData*, int);
@@ -6345,7 +6345,12 @@ void func_800770FC(UNUSED Actor* arg0, int arg1)
     vs_battle_populateDataSlot(&sp10);
 }
 
-void func_80077130(Actor* actor, int actorId, int wepId, int isShield, int material)
+/**
+ * Replaces one weapon model of an actor.
+ * @param wepId Model id. 0 removes the current model and 0xFF leaves it unchanged.
+ * @param isShield 0 = blade model, 1 = shield model.
+ */
+void setActorWeaponModel(Actor* actor, int actorId, int wepId, int isShield, int material)
 {
     vs_ObjectData sp10;
 
@@ -6415,8 +6420,10 @@ Actor_dat* func_80077240(int arg0, int arg1, int bladeWepId, int bladeMaterial,
         func_80077078(&temp_v0->unk0.unk0.unk0, arg0, arg1, arg6, arg7);
         if (arg1 != 0x7F) {
             func_800770FC(&temp_v0->unk0.unk0.unk0, arg0);
-            func_80077130(&temp_v0->unk0.unk0.unk0, arg0, bladeWepId, 0, bladeMaterial);
-            func_80077130(&temp_v0->unk0.unk0.unk0, arg0, shieldWepId, 1, shieldMaterial);
+            setActorWeaponModel(
+                &temp_v0->unk0.unk0.unk0, arg0, bladeWepId, 0, bladeMaterial);
+            setActorWeaponModel(
+                &temp_v0->unk0.unk0.unk0, arg0, shieldWepId, 1, shieldMaterial);
             func_800771E0((char*)&temp_v0->unk0, arg0,
                 temp_v0->unk0.unk0.unk0.equippedWeaponCategory, arg7);
         }
@@ -8519,8 +8526,6 @@ void vs_battle_forgetZoneEnemies(int arg0, int arg1) { forgetZoneEnemies(arg0, a
 /**
  * Starts the on-screen timer. Its time is copied to state flags 0xA0-0xA3 every frame
  * (see updateBattleTimer).
- * @param mode Not battleTimerOff.
- * @param lifetime When the timer is cleared automatically.
  * @param time Start time for a countdown, as hours << 24 | minutes << 16 | seconds << 8.
  */
 void startBattleTimer(
@@ -8738,7 +8743,6 @@ int func_8007C218(int arg0)
 /**
  * Restores an actor's HP, MP and limb HP to their maximums, sets its risk and action
  * delay to 0 and removes all status effects.
- * @param actorId Actor to restore.
  */
 void fullyRestoreActor(int actorId)
 {
@@ -8996,38 +9000,49 @@ int spawnModelActor(u_int slot, int modelId, vs_TilePosition* tile)
     return 0;
 }
 
-void func_8007CA20(int actorId, int bladeWepId, int shieldWepId)
+/**
+ * Sets both weapon models of an actor, using the ids as in setActorWeaponModel.
+ */
+void setActorWeaponModels(int actorId, int bladeWepId, int shieldWepId)
 {
-    Actor* temp_s0 = vs_battle_actors[actorId];
-    if (temp_s0 != NULL) {
-        func_80077130(temp_s0, actorId, bladeWepId, 0, 0);
-        func_80077130(temp_s0, actorId, shieldWepId, 1, 0);
+    Actor* actor = vs_battle_actors[actorId];
+
+    if (actor != NULL) {
+        setActorWeaponModel(actor, actorId, bladeWepId, 0, 0);
+        setActorWeaponModel(actor, actorId, shieldWepId, 1, 0);
     }
 }
 
-void func_8007CAA4(int arg0)
+/**
+ * Gives an actor the weapon models of the weapons it has equipped.
+ */
+void restoreActorWeaponModels(int actorId)
 {
-    Actor* temp_s1;
     vs_ActorStats* stats;
+    Actor* actor = vs_battle_actors[actorId];
 
-    temp_s1 = vs_battle_actors[arg0];
-    if (temp_s1 != NULL) {
-        stats = temp_s1->stats;
-        if (stats != NULL) {
-            if (stats->weapon.blade.id != 0) {
-                func_80077130(
-                    temp_s1, arg0, stats->weapon.wepId, 0, stats->weapon.blade.material);
+    if (actor == NULL) {
+        return;
+    }
 
-            } else {
-                func_80077130(temp_s1, arg0, 0, 0, 0);
-            }
-            if (stats->shield.base.id != 0) {
-                func_80077130(
-                    temp_s1, arg0, stats->shield.wepId, 1, stats->shield.base.material);
-            } else {
-                func_80077130(temp_s1, arg0, 0, 0, 0);
-            }
-        }
+    stats = actor->stats;
+
+    if (stats == NULL) {
+        return;
+    }
+
+    if (stats->weapon.blade.id != 0) {
+        setActorWeaponModel(
+            actor, actorId, stats->weapon.wepId, 0, stats->weapon.blade.material);
+    } else {
+        setActorWeaponModel(actor, actorId, 0, 0, 0);
+    }
+
+    if (stats->shield.base.id != 0) {
+        setActorWeaponModel(
+            actor, actorId, stats->shield.wepId, 1, stats->shield.base.material);
+    } else {
+        setActorWeaponModel(actor, actorId, 0, 0, 0);
     }
 }
 
@@ -9218,7 +9233,6 @@ int isActorWalkDone(int arg0)
  * (also used for dead actors), so the enemy AI skips it (and drops it from its alert
  * list), is skipped by target selection (unk1C bit 0x8000) and loses its target marker.
  * The model is not affected (see vs_battle_setActorFlags).
- * @param actorId Actor to change.
  * @param awake 0 = make dormant, nonzero = wake (only if currently in state 0x20).
  * @return awake
  */
@@ -9262,7 +9276,6 @@ int setActorsAwake(int awake)
 /**
  * Removes or returns actor from or to the scene's actor list, without freeing it.
  * Not to be confused with setActorAwake, which keeps the actor in the list.
- * @param actorId Actor to change.
  * @param inactive Nonzero = remove from the scene, 0 = put back.
  */
 void setActorInactive(int actorId, int inactive)

@@ -68,7 +68,7 @@ int vs_battle_script_58_setUiVisible(u_char*, short);
 int vs_battle_script_59_openMenu(u_char*, short);
 int vs_battle_script_5A_setBattleTimer(u_char*, short);
 int vs_battle_script_5B_setTextBoxSpeaker(u_char*, short);
-int vs_battle_script_5C(u_char*, short);
+int vs_battle_script_5C_setActorWeaponModels(u_char*, short);
 int vs_battle_script_5D(u_char*, short);
 int vs_battle_script_5F(u_char*, short);
 int vs_battle_script_60(u_char*, short);

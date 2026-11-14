@@ -178,11 +178,11 @@ VS_HIDDEN(func_8007C8A4);
 int spawnModelActor(u_int slot, int modelId, vs_TilePosition* tile);
 VS_HIDDEN(spawnModelActor);
 
-void func_8007CA20(int, int, int);
-VS_HIDDEN(func_8007CA20);
+void setActorWeaponModels(int, int, int);
+VS_HIDDEN(setActorWeaponModels);
 
-void func_8007CAA4(int);
-VS_HIDDEN(func_8007CAA4);
+void restoreActorWeaponModels(int actorId);
+VS_HIDDEN(restoreActorWeaponModels);
 
 void enqueueEsq(int, int);
 VS_HIDDEN(enqueueEsq);

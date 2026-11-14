@@ -240,11 +240,6 @@ typedef struct {
     SVECTOR c;
 } CameraShakeScratch;
 
-typedef struct {
-    u_char low;
-    u_char high;
-} ScriptBytePair;
-
 // Comparison selected by the high nibble of a conditional opcode's second byte, applied
 // as `flag <op> operand`
 enum flagComparison {
@@ -353,7 +348,6 @@ extern char scriptMusicSlot;
 extern char D_800F4C6A;
 
 extern char D_800F4B70[];
-extern u_short D_800F4B28[];
 extern Gim* gims;
 
 /**
@@ -2479,21 +2473,29 @@ int vs_battle_script_5E_waitFramesOrButton(u_char* script, short slot)
     return scriptRepeat;
 }
 
-int vs_battle_script_5F(u_char* arg0, UNUSED short arg1)
+/**
+ * Defines one of the four easing curves, numbered 4-7, that tweens can use. It is one of
+ * the built-in curves 0-3 with its progress squared a number of times first.
+ * @param script Opcode bytes:
+ *   - [1] = (slot << 6) | (base curve << 4) | squarings, where squarings is a signed 4
+ *     bit number, an ease-in if positive and an ease-out if negative
+ */
+int vs_battle_script_5F_defineEasing(u_char* script, UNUSED short arg1)
 {
-    int var_v1;
-    u_char* temp_a1;
-    u_short* new_var;
+    int power;
+    CustomEasing* base = customEasings;
+    CustomEasing* easing = &base[script[1] >> 6];
 
-    new_var = D_800F4B28;
-    temp_a1 = (u_char*)((arg0[1] >> 6) + new_var);
-    temp_a1[0] = ((arg0[1] >> 4) & 3);
+    easing->curve = (script[1] >> 4) & 3;
 
-    var_v1 = arg0[1] & 7;
-    if (arg0[1] & 8) {
-        var_v1 |= 0xF8;
+    power = script[1] & 7;
+
+    if (script[1] & 8) {
+        power |= 0xF8;
     }
-    temp_a1[1] = var_v1;
+
+    easing->power = power;
+
     return scriptNext;
 }
 
@@ -3945,7 +3947,7 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
         CameraScratch* s;
         c->mode = 11;
         c->time = 0;
-        c->ease1 = 0;
+        c->ease1 = easingLinear;
         c->duration = script[2];
         vectorSubtract((VECTOR*)0x1F800098, &c->target, &c->current);
         vecToRotMatrix((VECTOR*)0x1F800098, (MATRIX*)0x1F8000F8);
@@ -4077,7 +4079,7 @@ void func_800BCA8C(D_800F4BA4_t2* c, D_800F4BA4_t2* other)
         int fraction;
         CameraScratch* s;
         vectorAdd(&c->followPosition, &c->followPosition, &c->followDelta);
-        fraction = func_800BFEBC(1, c->time, c->duration);
+        fraction = func_800BFEBC(easingSineOut, c->time, c->duration);
         s = (CameraScratch*)0x1F800088;
         s->value = fraction;
         vectorSubtract((VECTOR*)0x1F800098, &c->computed, &c->followPosition);
@@ -5274,7 +5276,7 @@ void parseEvt(u_char* data)
     }
 
     for (i = 0; i < 4; ++i) {
-        ((ScriptBytePair*)D_800F4B28)[i].low = ((ScriptBytePair*)D_800F4B28)[i].high = 0;
+        customEasings[i].curve = customEasings[i].power = 0;
     }
 
     D_800F4B8B = 0;

@@ -10,11 +10,6 @@
 #include "build/src/include/lbas.h"
 #include <libetc.h>
 
-typedef struct {
-    u_char curve;
-    signed char power;
-} D_800F4B28_t;
-
 extern int (*normalOpcodeTable[])(u_char*, short);
 extern vs_CdFile D_800F4BF0;
 
@@ -22,7 +17,6 @@ int func_800BFE34(u_char*);
 void func_800C0150(void);
 
 extern unsigned char D_800F4B70[17];
-extern D_800F4B28_t D_800F4B28[];
 
 short func_800BFBB8(u_char** arg0, short arg1)
 {
@@ -137,17 +131,17 @@ int func_800BFEBC(short mode, short frame, short duration)
     }
 
     switch (mode) {
-    case 0:
+    case easingLinear:
         return position * ONE / duration;
-    case 1:
+    case easingSineOut:
         return rsin(position * (ONE / 4) / duration);
-    case 2:
+    case easingSineInOut:
         return (rcos(position * (ONE / 2) / duration + ONE / 2) + ONE) >> 1;
-    case 3:
+    case easingSineIn:
         return rsin(position * (ONE / 4) / duration - ONE / 4) + ONE;
     default:
-        mode -= 4;
-        power = D_800F4B28[mode].power;
+        mode -= easingCustom0;
+        power = customEasings[mode].power;
         value = position * ONE / duration;
 
         if (power != 0) {
@@ -166,14 +160,14 @@ int func_800BFEBC(short mode, short frame, short duration)
             }
         }
 
-        switch (D_800F4B28[mode].curve) {
-        case 1:
+        switch (customEasings[mode].curve) {
+        case easingSineOut:
             return rsin(value / 4);
-        case 2:
+        case easingSineInOut:
             return (rcos(value / 2 + ONE / 2) + ONE) >> 1;
-        case 3:
+        case easingSineIn:
             return rsin(value / 4 - ONE / 4) + ONE;
-        case 0:
+        case easingLinear:
         default:
             return value;
         }

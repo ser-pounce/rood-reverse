@@ -8725,16 +8725,16 @@ void vs_battle_enableDispMask(void) { enableDispMask(); }
 
 void vs_battle_disableDispMask(void) { disableDispMask(); }
 
-void setScreenTransition(int arg0, int arg1, int arg2)
+void setScreenTransition(int effect, int speed, int angle)
 {
-    vs_battle_screenTransitionEffect = arg0;
-    vs_battle_screenTransitionSpeed = arg1;
-    vs_battle_screenTransitionWipeAngle = arg2;
+    vs_battle_screenTransitionEffect = effect;
+    vs_battle_screenTransitionSpeed = speed;
+    vs_battle_screenTransitionWipeAngle = angle;
 }
 
-void setScreenTransitionWipeAngle(int arg0)
+void setScreenTransitionWipeAngle(int angle)
 {
-    vs_battle_screenTransitionWipeAngle = arg0;
+    vs_battle_screenTransitionWipeAngle = angle;
 }
 
 void startScreenTransitionOut(int effect, int speed, int angle)

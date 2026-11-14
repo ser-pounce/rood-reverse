@@ -2662,7 +2662,7 @@ int vs_battle_script_69_screenTransitionOut(u_char* script, UNUSED short arg1)
 
     if (phase != screenTransitionOutDone) {
         if (phase == screenTransitionIdle) {
-            startScreenTransitionOut(script[1], script[2], script[3] * 0x10);
+            startScreenTransitionOut(script[1], script[2], script[3] * ONE / 256);
         }
 
         return scriptRepeat;
@@ -2671,21 +2671,43 @@ int vs_battle_script_69_screenTransitionOut(u_char* script, UNUSED short arg1)
     return scriptNext;
 }
 
-int vs_battle_script_6A(u_char* arg0, UNUSED short arg1)
+/**
+ * Transitions the screen back in from a fade or wipe, without waiting for it to finish.
+ * @param script Opcode bytes:
+ *   - [1] = effect
+ *   - [2] = speed
+ *   - [3] = wipe angle, in 1/256ths of a turn
+ */
+int vs_battle_script_6A_screenTransitionIn(u_char* script, UNUSED short arg1)
 {
-    startScreenTransitionIn(arg0[1], arg0[2], arg0[3] * 0x10);
+    startScreenTransitionIn(script[1], script[2], script[3] * ONE / 256);
+
     return scriptNext;
 }
 
-int vs_battle_script_6B(u_char* arg0, UNUSED short arg1)
+/**
+ * Sets the wipe angle of the screen transition, without starting one. Unused.
+ * @param script Opcode bytes:
+ *   - [1] = wipe angle, in 1/256ths of a turn
+ */
+int vs_battle_script_6B_setScreenTransitionWipeAngle(u_char* script, UNUSED short arg1)
 {
-    setScreenTransitionWipeAngle(arg0[1] * 0x10);
+    setScreenTransitionWipeAngle(script[1] * ONE / 256);
+
     return scriptNext;
 }
 
-int vs_battle_script_6C(u_char* arg0, UNUSED short arg1)
+/**
+ * Sets the effect, speed and wipe angle of the screen transition, without starting one.
+ * @param script Opcode bytes:
+ *   - [1] = effect
+ *   - [2] = speed
+ *   - [3] = wipe angle, in 1/256ths of a turn
+ */
+int vs_battle_script_6C_setScreenTransition(u_char* script, UNUSED short arg1)
 {
-    setScreenTransition(arg0[1], arg0[2], arg0[3] * 0x10);
+    setScreenTransition(script[1], script[2], script[3] * ONE / 256);
+
     return scriptNext;
 }
 

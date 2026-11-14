@@ -359,8 +359,8 @@ VS_HIDDEN(func_80090B28);
 extern int D_800F1868;
 VS_HIDDEN(D_800F1868);
 
-extern int D_800F19C8;
-VS_HIDDEN(D_800F19C8);
+extern int firstPersonRendering;
+VS_HIDDEN(firstPersonRendering);
 
 extern u_short D_800F1CDC;
 VS_HIDDEN(D_800F1CDC);

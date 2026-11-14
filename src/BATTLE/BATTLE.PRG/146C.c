@@ -4901,7 +4901,7 @@ void func_80074580(void)
     if (stepCameraTransition() != 0) {
         cameraMode = 1;
         firstPersonViewEnabled = 1;
-        D_800F19C8 = 1;
+        firstPersonRendering = 1;
         func_8008C40C();
     }
 }
@@ -4916,7 +4916,7 @@ void checkFirstPersonViewExit(void)
 
     cameraMode = 2;
     firstPersonViewEnabled = 0;
-    D_800F19C8 = 0;
+    firstPersonRendering = 0;
 
     vs_battle_getActorPosition(0, &sp10);
     func_80074B14(0, &sp10.unk0.unk0);
@@ -9016,11 +9016,11 @@ void vs_battle_setProjectionDistance(int projectionDistance)
     SetGeomScreen(projectionDistance);
 }
 
-void setFarClip(int farClip, int arg1)
+void setFarClip(int farClip, int fogDepthOverridden)
 {
     vs_scratch.camera.farClip = farClip;
 
-    if (arg1 == 0) {
+    if (!fogDepthOverridden) {
         if (farClip < 0) {
             farClip += 7;
         }
@@ -9030,7 +9030,7 @@ void setFarClip(int farClip, int arg1)
         } else if (farClip < 0) {
             farClip = 0;
         }
-        func_80098194(farClip);
+        setFogDepth(farClip);
     }
 }
 
@@ -15258,7 +15258,7 @@ void func_80089DC0(int arg0)
     func_80093FEC(0, 0, vs_battle_characterState->stats->statuses & 0x21000, 1);
     func_80086754(0x21000, vs_battle_characterState->stats);
 
-    D_800F19C8 = 0;
+    firstPersonRendering = 0;
     firstPersonViewEnabled = 0;
     D_800F1A50[0] = 1;
     D_800F1868 = 0;
@@ -15799,7 +15799,7 @@ void func_8008B1FC(void* arg0)
     SetTransMatrix((MATRIX*)0x1F800014); // camera.viewMatrix
     func_800983F8(arg0);
     D_800F1CC0 = *(void**)0x1F800000; // camera.unk0
-    func_8009723C(arg0, D_800F19C8);
+    func_8009723C(arg0, firstPersonRendering);
     D_800F1BB8 = *(void**)0x1F800000; // camera.unk0
     if (D_800F1BB0.unk6 != 0) {
         func_80098D6C(D_800F1CC0, D_800F1BB8, &D_800F1BB0, 0);
@@ -17108,7 +17108,7 @@ void func_8008E19C(int arg0, int arg1, short arg2, u_int arg3)
     (*var_t0)[1] = arg3;
     (*var_t0)[2] = arg3;
     p = D_800E85A0;
-    func_8009723C(p - 0x58, D_800F19C8);
+    func_8009723C(p - 0x58, firstPersonRendering);
 }
 
 /**

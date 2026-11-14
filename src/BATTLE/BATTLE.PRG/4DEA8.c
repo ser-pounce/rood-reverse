@@ -345,7 +345,7 @@ extern short D_800F4C54;
 extern char textBoxSelectionPending;
 extern int scriptReturnAddress;
 extern char scriptMusicSlot;
-extern char D_800F4C6A;
+extern char fogDepthOverridden;
 
 extern char D_800F4B70[];
 extern Gim* gims;
@@ -2512,43 +2512,78 @@ int vs_battle_script_60_setCloudstoneMoving(u_char* script, UNUSED short arg1)
     return scriptNext;
 }
 
-int vs_battle_script_61(u_char* arg0, UNUSED short arg1)
+/**
+ * Sets the depth beyond which polygons are dimmed, overriding current setting.
+ * @param script Opcode bytes:
+ *   - [1..2] = depth, with bit 15 toggling the override
+ */
+int vs_battle_script_61_overrideFogDepth(u_char* script, UNUSED short arg1)
 {
-    short temp_v0 = getShort(arg0 + 1);
-    D_800F4C6A = (temp_v0 << 0x10) >> 0x1F;
-    if (D_800F4C6A) {
-        func_80098194(temp_v0 & 0x7FF);
+    short depth = getShort(script + 1);
+
+    fogDepthOverridden = depth >> 15;
+
+    if (fogDepthOverridden) {
+        setFogDepth(depth & 0x7FF);
     }
+
     return scriptNext;
 }
 
-int vs_battle_script_62(u_char* arg0, UNUSED short arg1)
+/**
+ * Enables or disables the close-up render mode used for first person view, which
+ * subdivides large polygons and skips geometry flagged as hidden in first person.
+ * @param script Opcode bytes:
+ *   - [1] = 1 = enabled, 0 = disabled
+ */
+int vs_battle_script_62_setFirstPersonRendering(u_char* script, UNUSED short arg1)
 {
-    D_800F19C8 = arg0[1];
+    firstPersonRendering = script[1];
+
     return scriptNext;
 }
 
-int vs_battle_script_63(UNUSED u_char* arg0, UNUSED short arg1)
+/** Clears no statuses (empty mask), so it has no effect. Probably unused. */
+int vs_battle_script_63_statusUnk(UNUSED u_char* script, UNUSED short arg1)
 {
     func_8007C31C();
+
     return scriptNext;
 }
 
-int vs_battle_script_64(u_char* arg0, UNUSED short arg1)
+/**
+ * Shows a room geometry object.
+ * @param script Opcode bytes:
+ *   - [1] = geometry object id
+ */
+int vs_battle_script_64_showGeometry(u_char* script, UNUSED short arg1)
 {
-    func_80091998(arg0[1]);
+    showGeometryObject(script[1]);
+
     return scriptNext;
 }
 
-int vs_battle_script_65(u_char* arg0, UNUSED short arg1)
+/**
+ * Hides a room geometry object.
+ * @param script Opcode bytes:
+ *   - [1] = geometry object id
+ */
+int vs_battle_script_65_hideGeometry(u_char* script, UNUSED short arg1)
 {
-    func_800919D8(arg0[1]);
+    hideGeometryObject(script[1]);
+
     return scriptNext;
 }
 
-int vs_battle_script_66(u_char* arg0, UNUSED short arg1)
+/**
+ * Swaps the render flags of two room geometry objects.
+ * @param script Opcode bytes:
+ *   - [1], [2] = geometry object ids
+ */
+int vs_battle_script_66_swapGeometryFlags(u_char* script, UNUSED short arg1)
 {
-    func_80091A1C(arg0[1], arg0[2]);
+    swapGeometryFlags(script[1], script[2]);
+
     return scriptNext;
 }
 
@@ -3771,7 +3806,7 @@ static void applyCameraState(void)
         D_800F4BA4->nearClip.unk0 = 0;
     }
     if (D_800F4BA4->farClip.unk0 != 0) {
-        setFarClip(D_800F4BA4->farClip.unk2, D_800F4C6A);
+        setFarClip(D_800F4BA4->farClip.unk2, fogDepthOverridden);
         D_800F4BA4->farClip.unk0 = 0;
     }
 }
@@ -5323,7 +5358,7 @@ int func_800BF850(void)
     }
 
     if (D_800F4C34 == 2) {
-        D_800F4C6A = 0;
+        fogDepthOverridden = 0;
         D_800F4C54 = 0;
 
         switch (D_800F4BE0) {

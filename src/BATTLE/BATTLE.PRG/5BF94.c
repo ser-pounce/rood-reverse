@@ -6124,7 +6124,7 @@ void func_800D1B80(D_800F54D8_t* camera)
     setNearClip(camera->nearClip);
     vs_battle_setProjectionDistance(camera->projectionDistance);
     // BUG: arg1 is not passed, so it holds whatever $a1 was left with by the previous
-    // call and whether the far clip reaches func_80098194 is unpredictable
+    // call and whether the far clip reaches setFogDepth is unpredictable
     ((void (*)(int))setFarClip)(camera->farClip);
     func_8007ACB0();
 }

@@ -16,6 +16,8 @@ SAVERA:
     .nop
 .endm
 
+# hasm: cross-function control flow
+# hasm: saved registers outside frame
 glabel InitGeom
     sw         $ra, SAVERA
     jal        _patch_gte

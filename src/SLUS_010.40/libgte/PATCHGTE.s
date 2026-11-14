@@ -4,6 +4,10 @@
 .lcomm SAVERA2, 4
 
 .text
+# hasm: code patching
+# hasm: custom register abi
+# hasm: saved registers outside frame
+# hasm: reserved register usage
 glabel _patch_gte
     sw         $ra, SAVERA2
     jal        EnterCriticalSection

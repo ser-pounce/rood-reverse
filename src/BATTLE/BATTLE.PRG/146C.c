@@ -3395,7 +3395,7 @@ void func_8007053C(void)
         func_800C05B4();
 
         if (!vs_main_actions[D_800F19CC->unk8.actionIndex].unk2_0) {
-            func_800CB114();
+            freeMenuItems();
             func_8006FBCC(0);
             return;
         }
@@ -3584,14 +3584,14 @@ void func_80070F28(int arg0)
     if (arg0 != 0) {
         if (temp_s0 == 0xFF) {
             if (D_800F19CC->unk8.unk4.unk0.hit.targetActor != 0) {
-                func_800CB114();
+                freeMenuItems();
                 func_800E4C64(D_800F19CC->unk8.unk4.unk0.hit.targetActor);
                 D_800F19CC->unk8.actionIndex = 0;
                 func_8006FBCC(0);
                 return;
             }
             if (!(vs_main_actions[D_800F19CC->unk8.actionIndex].unk2_0)) {
-                func_800CB114();
+                freeMenuItems();
                 D_800F19CC->unk8.actionIndex = 0;
                 func_8006FBCC(0);
                 return;
@@ -3615,7 +3615,7 @@ void func_80070F28(int arg0)
     } else {
         func_800D82A8(D_800F19CC->unk8.unk4.unk0.hit.targetActor);
     }
-    func_800CB114();
+    freeMenuItems();
     if (arg0 == 0) {
         func_80070CAC();
     } else if (arg0 == 2) {
@@ -4488,7 +4488,7 @@ void func_8007357C(UNUSED int arg0, UNUSED int arg1)
 
 void func_800735CC(D_800F18EC_t* arg0)
 {
-    func_800CB114();
+    freeMenuItems();
     arg0->unk0 = 0;
     func_8006C40C();
 }
@@ -4959,7 +4959,7 @@ int func_800744B8(void)
         func_8006C40C();
         return 0;
     }
-    func_800C97BC();
+    updateMenu();
     temp_v0 = func_800CB66C();
     if (temp_v0->unk0 == 1) {
         return 1;
@@ -4969,7 +4969,7 @@ int func_800744B8(void)
     } else {
         func_8008D5FC(D_800F1910.unk0);
     }
-    func_800CB114();
+    freeMenuItems();
     func_8006C40C();
     return 0;
 }
@@ -7443,10 +7443,10 @@ void func_800793C0(void)
 
 void func_800797BC(void)
 {
-    func_800C97BC();
+    updateMenu();
     if (func_800CB66C()->unk0 != 1) {
         func_8006C40C();
-        func_800CB114();
+        freeMenuItems();
         func_8006F89C();
     }
 }
@@ -7460,10 +7460,10 @@ void func_8007980C(void)
 
 void func_8007983C(void)
 {
-    func_800C97BC();
+    updateMenu();
     if ((func_800CB66C()->unk0 != 1) && (func_800CB45C() == 0)) {
         func_8006C40C();
-        func_800CB114();
+        freeMenuItems();
         func_800CB50C();
         func_8006F89C();
     }
@@ -7560,7 +7560,7 @@ void vs_battle_exec(void)
 
                             if (D_800F1858 != 0) {
                                 if ((vs_battle_characterState->stats->actionDelay == 0)
-                                    && !(status & 0x4000) && func_800CACD0(0, 0)) {
+                                    && !(status & 0x4000) && openMenu(0, 0)) {
                                     func_8007357C(0, 0);
                                     D_800F1858 = 0;
                                     break;
@@ -7569,7 +7569,7 @@ void vs_battle_exec(void)
                                        && !(vs_main_buttonsPreviousState & PADL2)) {
                                 if ((vs_battle_characterState->stats->actionDelay == 0)
                                     && !(status & 0x4000)) {
-                                    if (func_800CACD0(0, 0)) {
+                                    if (openMenu(0, 0)) {
                                         func_8007357C(0, 0);
                                         break;
                                     }
@@ -7725,7 +7725,7 @@ void vs_battle_exec(void)
 
                         case 5:
                             if (cameraMode == 1) {
-                                func_800C97BC();
+                                updateMenu();
                                 menu = func_800CB66C();
                                 D_800F18EC = menu;
 
@@ -8322,8 +8322,9 @@ void func_8007B4C4(void)
 
 void func_8007B508(void)
 {
-    if (!(getStateFlag(0xB6)) || ((getStateFlag(0xB6)) == 2)
-        || ((getStateFlag(0xB6)) == 3)) {
+    if (!(getStateFlag(menuFSubmenu))
+        || ((getStateFlag(menuFSubmenu)) == menuFTimeAttackEnd)
+        || ((getStateFlag(menuFSubmenu)) == menuFHealBonus)) {
         if (isArtOrAbilityUnlocked() != 0) {
             cameraMode = 5;
             if (D_800F1864 != 0) {
@@ -8397,22 +8398,22 @@ void func_8007B7DC()
 
 void func_8007B834(void)
 {
-    func_800C97BC();
+    updateMenu();
     if (func_800CB66C()->unk0 != 1) {
         func_8007B470();
-        func_800CB114();
+        freeMenuItems();
         func_8007B764();
     }
 }
 
 void func_8007B884(void)
 {
-    func_800C97BC();
+    updateMenu();
     if (func_800CB66C()->unk0 != 1) {
         if (D_800F1864 != 0) {
             func_8007B470();
         }
-        func_800CB114();
+        freeMenuItems();
         if (D_800F1860 != 0) {
             func_8007B4C4();
         } else {
@@ -8430,10 +8431,10 @@ void func_8007B908(void)
 
 void func_8007B938(void)
 {
-    func_800C97BC();
+    updateMenu();
     if ((func_800CB66C()->unk0 != 1) && (func_800CB45C() == 0)) {
         func_8007B470();
-        func_800CB114();
+        freeMenuItems();
         func_800CB50C();
         func_8007B508();
     }

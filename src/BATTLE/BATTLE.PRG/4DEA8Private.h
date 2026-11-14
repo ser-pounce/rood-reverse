@@ -2,11 +2,15 @@
 #include "common.h"
 #include "4DEA8.h"
 
-// Value of scriptSkipMode
 enum ScriptSkipMode {
     scriptSkipOff = 0,
     scriptSkippable = 1, // set by opcode 0x0D; START (or skipRequested) skips
     scriptSkipping = 2, // dispatching through the skip table
+};
+
+enum ScriptMenuState {
+    scriptMenuClosed = 0,
+    scriptMenuOpen = 1,
 };
 
 // Return values of script opcode handlers, as interpreted by func_800BFBB8

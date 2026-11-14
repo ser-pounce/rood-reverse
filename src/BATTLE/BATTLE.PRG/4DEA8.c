@@ -311,7 +311,7 @@ extern char animationBankBase[];
 extern char skipResetPaletteOp[];
 extern char skipTailMarkerOp[];
 extern u_char D_800E9BEC[];
-extern u_char D_800E9BF0[];
+extern u_char cubePuzzleSubmenus[];
 extern short D_800E9BF4[];
 extern short D_800E9BF8[];
 extern void sceneResetScript;
@@ -337,7 +337,7 @@ extern char* D_800F4BC0[];
 extern short D_800F4BE0;
 extern char D_800F4BE4;
 extern void* mpdRoomDoorSection;
-extern char D_800F4BF8;
+extern char scriptMenuState;
 extern char loopCounters[];
 extern short D_800F4C22;
 extern void* D_800F4C24;
@@ -349,7 +349,7 @@ extern short mpdScriptSection;
 extern short D_800F4C54;
 extern char textBoxSelectionPending;
 extern int scriptReturnAddress;
-extern char D_800F4C69;
+extern char scriptMusicSlot;
 extern char D_800F4C6A;
 
 extern char D_800F4B70[];
@@ -2225,37 +2225,48 @@ int vs_battle_script_58_setUiVisible(u_char* script, UNUSED short arg1)
 /**
  * Opens a menu and waits for it to finish. Values 10-14 open MENUF.PRG (not really a
  * menu: it shows the cube puzzle and boss time attack screens, selected by state flag
- * 0xB6); 15 opens the loot or unlock screens; any other value opens the menu screen with
- * that id.
+ * menuFSubmenu); 15 opens the loot or unlock screens; any other value opens the menu
+ * screen with that id.
  * @param script Opcode bytes:
  *   - [1] = menu selector
  */
 int vs_battle_script_59_openMenu(u_char* script, UNUSED short arg1)
 {
+    // Values of script[1]. The first three are in the order of cubePuzzleSubmenus.
+    enum {
+        cubePuzzleQuit = 10,
+        cubePuzzleStart,
+        cubePuzzleEnd,
+        timeAttackStart,
+        timeAttackEnd,
+        loot,
+    };
+
     switch (script[1]) {
-    case 10:
-    case 11:
-    case 12:
-        if (D_800F4BF8 == 0) {
-            vs_battle_setStateFlag(0xB6, D_800E9BF0[script[1] - 10]);
+    case cubePuzzleQuit:
+    case cubePuzzleStart:
+    case cubePuzzleEnd:
+        if (scriptMenuState == scriptMenuClosed) {
+            vs_battle_setStateFlag(
+                menuFSubmenu, cubePuzzleSubmenus[script[1] - cubePuzzleQuit]);
             func_8007B9A0();
-            D_800F4BF8 = 1;
+            scriptMenuState = scriptMenuOpen;
 
             return scriptRepeat;
         }
 
         // Fallthrough
-    case 14:
-        if (D_800F4BF8 == 0) {
+    case timeAttackEnd:
+        if (scriptMenuState == scriptMenuClosed) {
 
-            if (getStateFlag(0xB6) == 1) {
-                vs_battle_setStateFlag(0xB6, 2);
+            if (getStateFlag(menuFSubmenu) == menuFTimeAttackStart) {
+                vs_battle_setStateFlag(menuFSubmenu, menuFTimeAttackEnd);
             }
 
             func_8007B9A0();
 
-            D_800F4C69 = 2;
-            D_800F4BF8 = 1;
+            scriptMusicSlot = 2;
+            scriptMenuState = scriptMenuOpen;
 
             return scriptRepeat;
         }
@@ -2264,31 +2275,31 @@ int vs_battle_script_59_openMenu(u_char* script, UNUSED short arg1)
             return scriptRepeat;
         }
 
-        vs_battle_setStateFlag(0xB6, 0);
-        D_800F4BF8 = 0;
+        vs_battle_setStateFlag(menuFSubmenu, 0);
+        scriptMenuState = scriptMenuClosed;
 
         return scriptYield;
 
-    case 13:
-        if (D_800F4BF8 == 0) {
-            vs_battle_setStateFlag(0xB6, 1);
+    case timeAttackStart:
+        if (scriptMenuState == scriptMenuClosed) {
+            vs_battle_setStateFlag(menuFSubmenu, menuFTimeAttackStart);
             func_8007B9A0();
-            D_800F4BF8 = 1;
+            scriptMenuState = scriptMenuOpen;
 
             return scriptRepeat;
         }
 
         // Fallthrough
-    case 15:
-        if (D_800F4BF8 == 0) {
+    case loot:
+        if (scriptMenuState == scriptMenuClosed) {
             func_8007B9CC();
-            D_800F4BF8 = 1;
+            scriptMenuState = scriptMenuOpen;
 
             return scriptRepeat;
         }
 
         if (func_8007B9FC() == 0) {
-            D_800F4BF8 = 0;
+            scriptMenuState = scriptMenuClosed;
 
             return scriptYield;
         }
@@ -2296,18 +2307,18 @@ int vs_battle_script_59_openMenu(u_char* script, UNUSED short arg1)
         return scriptRepeat;
 
     default:
-        if (D_800F4BF8 == 0) {
-            func_800CACD0(script[1], 2);
-            D_800F4BF8 = 1;
+        if (scriptMenuState == scriptMenuClosed) {
+            openMenu(script[1], 2);
+            scriptMenuState = scriptMenuOpen;
 
             return scriptRepeat;
         }
 
-        func_800C97BC();
+        updateMenu();
 
         if (func_800CB66C()->unk0 == 2) {
-            func_800CB114();
-            D_800F4BF8 = 0;
+            freeMenuItems();
+            scriptMenuState = scriptMenuClosed;
 
             return scriptYield;
         }
@@ -2840,8 +2851,8 @@ int vs_battle_script_89_loadSoundFile(UNUSED u_char* arg0, UNUSED short arg1)
 
 int vs_battle_script_8F_crossfadeMusic(u_char* arg0, UNUSED short arg1)
 {
-    vs_main_fadeMusicVolume(D_800F4C69, 0, arg0[4]);
-    vs_main_playMusicSlotFadeIn(D_800F4C69 = arg0[1], arg0[2], arg0[3]);
+    vs_main_fadeMusicVolume(scriptMusicSlot, 0, arg0[4]);
+    vs_main_playMusicSlotFadeIn(scriptMusicSlot = arg0[1], arg0[2], arg0[3]);
     return scriptNext;
 }
 
@@ -2859,31 +2870,31 @@ int vs_battle_script_91_freeMusic(u_char* arg0, UNUSED short arg1)
 
 int vs_battle_script_92_playMusic(u_char* arg0, UNUSED short arg1)
 {
-    vs_main_playMusicSlot(D_800F4C69 = arg0[1], arg0[2], arg0[3]);
+    vs_main_playMusicSlot(scriptMusicSlot = arg0[1], arg0[2], arg0[3]);
     return scriptNext;
 }
 
 int vs_battle_script_93_fadeMusicVolume(u_char* arg0, UNUSED short arg1)
 {
-    vs_main_fadeMusicVolume(D_800F4C69, arg0[1], arg0[2]);
+    vs_main_fadeMusicVolume(scriptMusicSlot, arg0[1], arg0[2]);
     return scriptNext;
 }
 
 int vs_battle_script_94_fadeMusicTempo(u_char* arg0, UNUSED short arg1)
 {
-    vs_main_fadeMusicTempo(D_800F4C69, (signed char)arg0[1], arg0[2]);
+    vs_main_fadeMusicTempo(scriptMusicSlot, (signed char)arg0[1], arg0[2]);
     return scriptNext;
 }
 
 int vs_battle_script_95_fadeMusicPitch(u_char* arg0, UNUSED short arg1)
 {
-    vs_main_fadeMusicPitch(D_800F4C69, (signed char)arg0[1], arg0[2]);
+    vs_main_fadeMusicPitch(scriptMusicSlot, (signed char)arg0[1], arg0[2]);
     return scriptNext;
 }
 
 int vs_battle_script_96_stopMusic(UNUSED u_char* arg0, UNUSED short arg1)
 {
-    vs_main_stopMusicSlot(D_800F4C69);
+    vs_main_stopMusicSlot(scriptMusicSlot);
     return scriptNext;
 }
 
@@ -2941,7 +2952,7 @@ int vs_battle_script_9C_fadeSfxPan(u_char* arg0, UNUSED short arg1)
 
 int vs_battle_script_9F_queueMusic(u_char* arg0, UNUSED short arg1)
 {
-    vs_main_queueMusicSlot(D_800F4C69 = arg0[1]);
+    vs_main_queueMusicSlot(scriptMusicSlot = arg0[1]);
     return scriptNext;
 }
 
@@ -3085,14 +3096,14 @@ int vs_battle_script_B3(u_char* arg0, UNUSED short arg1)
 
 int vs_battle_script_B4(u_char* arg0, UNUSED short arg1)
 {
-    if (D_800F4BF8 == 0) {
+    if (scriptMenuState == scriptMenuClosed) {
         func_8007BA98(getShort(arg0 + 1), arg0[3], getShort(arg0 + 4), arg0[6]);
-        D_800F4BF8 = 1;
+        scriptMenuState = scriptMenuOpen;
         return scriptRepeat;
     }
 
     if (func_8007B9FC() == 0) {
-        D_800F4BF8 = 0;
+        scriptMenuState = scriptMenuClosed;
         return scriptYield;
     }
     return scriptRepeat;
@@ -3152,18 +3163,18 @@ int vs_battle_script_B7_specialOp(u_char* arg0, UNUSED short arg1)
         func_8007C8F8(arg0[2]);
         break;
     case 1:
-        if (D_800F4BF8 != 0) {
+        if (scriptMenuState != scriptMenuClosed) {
             if (func_8007B9FC() != 0) {
                 return scriptRepeat;
             }
-            vs_battle_setStateFlag(0xB6, 0);
-            D_800F4BF8 = 0;
+            vs_battle_setStateFlag(menuFSubmenu, 0);
+            scriptMenuState = scriptMenuClosed;
             vs_main_showEndingAndReturnToTitle();
             break;
         }
-        vs_battle_setStateFlag(0xB6, 3);
+        vs_battle_setStateFlag(menuFSubmenu, menuFHealBonus);
         func_8007B9A0();
-        D_800F4BF8 = 1;
+        scriptMenuState = scriptMenuOpen;
         return scriptRepeat;
     case 2:
         skipRequested = 1;
@@ -5162,7 +5173,7 @@ void parseEvt(u_char* data)
     D_800F4C4E = 0;
     textBoxSelectionPending = 0;
     D_800F4BE4 = 0;
-    D_800F4BF8 = 0;
+    scriptMenuState = scriptMenuClosed;
     D_800F4BE2 = 0;
     D_800F4BB6 = 0;
     D_800F4C58[0] = 0;
@@ -5178,7 +5189,7 @@ void parseEvt(u_char* data)
 
     D_800F4B8B = 0;
     gimTweens[0].duration = gimTweens[1].duration = gimTweens[2].duration = 0;
-    D_800F4C69 = vs_main_getcurrentMusicSlot();
+    scriptMusicSlot = vs_main_getcurrentMusicSlot();
     evtCdSlot = NULL;
 
     for (i = 16; i < 32; ++i) {

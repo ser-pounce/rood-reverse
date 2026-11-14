@@ -1879,23 +1879,23 @@ int func_800AC168(u_short* colors, int count, int amount, int mode, u_short* ref
     return changed;
 }
 
-void func_800AC37C(int arg0, int arg1)
+void fadeActor(int actorId, int preset)
 {
-    D_800F4538_t* temp_a0 = D_800F4538[arg0];
+    D_800F4538_t* actor = D_800F4538[actorId];
 
-    switch (arg1) {
+    switch (preset) {
     case 0:
-        temp_a0->unk0.unk9_0 = 14;
+        actor->unk0.unk9_0 = 14;
         break;
     case 1:
-        temp_a0->unk0.unk9_0 = 6;
+        actor->unk0.unk9_0 = 6;
         break;
     case 2:
-        temp_a0->unk0.unk9_0 = 9;
+        actor->unk0.unk9_0 = 9;
         break;
     }
-    if (temp_a0->unk17FD > 1) {
-        func_800AC37C(temp_a0->unk17FD, arg1);
+    if (actor->unk17FD > 1) {
+        fadeActor(actor->unk17FD, preset);
     }
 }
 

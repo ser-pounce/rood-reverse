@@ -2815,9 +2815,15 @@ int vs_battle_script_70_transformColors(u_char* script, UNUSED short arg1)
     return scriptNext;
 }
 
-int vs_battle_script_71(u_char* arg0, UNUSED short arg1)
+/** Fades an actor out or in with a flash. Used in cutscenes when an actor teleports.
+ * @param script Opcode bytes:
+ *   - [1-2] = actor
+ *   - [3] = 1 fades out, 2 fades in. 0 is not used by any script (renders invisible).
+ */
+int vs_battle_script_71_fadeActor(u_char* script, UNUSED short arg1)
 {
-    func_800AC37C(resolveActorId(getShort(arg0 + 1)), arg0[3]);
+    fadeActor(resolveActorId(getShort(script + 1)), script[3]);
+
     return scriptNext;
 }
 

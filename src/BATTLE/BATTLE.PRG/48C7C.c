@@ -13,6 +13,8 @@ void func_800B147C(
     int i;
 
     if (step == total) {
+        // Probably unreachable, needs investigating. The only caller keeps step < total.
+        // If this executes it will clobber the start of the struct following `dst`.
         vs_main_memcpy(dst, src, 0x60C);
         return;
     }
@@ -56,6 +58,8 @@ void func_800B147C(
             deltaZ += ONE * 2;
         }
 
+        // Potential bug in original, needs investigating.
+        // With deltaZ == 0 and x/y moving, the previous scaled z is rescaled.
         if ((deltaZ == 0) && ((deltaX != 0) || (deltaY != 0))) {
             deltaZ = previousZ;
         }
@@ -64,6 +68,8 @@ void func_800B147C(
         dst->unk0[i].vy += deltaY * ratio >> 12;
         dst->unk0[i].vz += deltaZ * ratio >> 12;
 
+        // The original zero-extends `src` and `dst` vx in this block (vy and vz are
+        // signed), probably a bug so vx is signed here.
         previousZ = (src->unk150[i].vz - dst->unk150[i].vz) * ratio >> 12;
         dst->unk150[i].vx += (src->unk150[i].vx - dst->unk150[i].vx) * ratio >> 12;
         dst->unk150[i].vy += (src->unk150[i].vy - dst->unk150[i].vy) * ratio >> 12;
@@ -71,6 +77,7 @@ void func_800B147C(
     }
 }
 
+// Looks like this could be RotMatrixZYX_gte
 MATRIX* func_800B17F0(SVECTOR* rotation, MATRIX* m)
 {
     int sinX = rsin(rotation->vx);
@@ -96,6 +103,7 @@ MATRIX* func_800B17F0(SVECTOR* rotation, MATRIX* m)
     return m;
 }
 
+// Byte-identical copy of MulMatrix2 (currently .L80041C6C) in SLUS_010.40
 MATRIX* func_800B196C(MATRIX* m0, MATRIX* m1)
 {
     short product[3][3];

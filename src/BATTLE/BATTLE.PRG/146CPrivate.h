@@ -1,6 +1,7 @@
 #pragma once
 #include "common.h"
 #include "146C.h"
+#include "src/SLUS_010.40/gameState.h"
 
 void func_80069C6C(int);
 VS_HIDDEN(func_80069C6C);
@@ -71,8 +72,9 @@ VS_HIDDEN(func_8007BA98);
 void vs_battle_forgetZoneEnemies(int, int);
 VS_HIDDEN(vs_battle_forgetZoneEnemies);
 
-void func_8007BBD8(int, int, int);
-VS_HIDDEN(func_8007BBD8);
+void startBattleTimer(
+    enum BattleTimerMode mode, enum BattleTimerLifetime lifetime, int time);
+VS_HIDDEN(startBattleTimer);
 
 void func_8007C4D4(void);
 VS_HIDDEN(func_8007C4D4);
@@ -89,8 +91,8 @@ VS_HIDDEN(func_8007CEC0);
 int func_8007CF80(int);
 VS_HIDDEN(func_8007CF80);
 
-void func_8007BCCC(void);
-VS_HIDDEN(func_8007BCCC);
+void stopBattleTimer(void);
+VS_HIDDEN(stopBattleTimer);
 
 void func_8007BD3C(int);
 VS_HIDDEN(func_8007BD3C);

@@ -305,7 +305,7 @@ void func_80085B10(int, D_800F19CC_t2*, D_800F19CC_t2*, int);
 void func_80086754(int, vs_ActorStats*);
 void applyBattleAbilityEffect(HitEntity*);
 void func_80087EF4(vs_ActorStats*);
-int func_800882F4(void);
+int updateBattleTimer(void);
 int func_80088554(void);
 void func_80088CA0(void);
 void func_80089114(void);
@@ -4603,7 +4603,8 @@ void func_800738E4(void)
     func_800DC638();
 
     if ((func_800BEC58(0xA, 0, 0, 0) == 1)
-        || ((vs_main_battleTimer.mode != 0) && (func_800BEC58(0x10, 0, 0, 0) == 1))) {
+        || ((vs_main_battleTimer.mode != battleTimerOff)
+            && (func_800BEC58(0x10, 0, 0, 0) == 1))) {
         func_80073870();
         return;
     }
@@ -8515,20 +8516,28 @@ void func_8007BA98(int id0, int count0, int id1, int count1)
 
 void vs_battle_forgetZoneEnemies(int arg0, int arg1) { forgetZoneEnemies(arg0, arg1); }
 
-void func_8007BBD8(int arg0, int arg1, int arg2)
+/**
+ * Starts the on-screen timer. Its time is copied to state flags 0xA0-0xA3 every frame
+ * (see updateBattleTimer).
+ * @param mode Not battleTimerOff.
+ * @param lifetime When the timer is cleared automatically.
+ * @param time Start time for a countdown, as hours << 24 | minutes << 16 | seconds << 8.
+ */
+void startBattleTimer(
+    enum BattleTimerMode mode, enum BattleTimerLifetime lifetime, int time)
 {
-    vs_main_battleTimer.mode = arg0;
-    vs_main_battleTimer.lifetime = arg1;
+    vs_main_battleTimer.mode = mode;
+    vs_main_battleTimer.lifetime = lifetime;
     vs_main_battleTimer.time.t.h = 0;
     vs_main_battleTimer.time.t.m = 0;
     vs_main_battleTimer.time.t.s = 0;
     vs_main_battleTimer.time.t.f = 0;
 
-    if (arg0 != 1) {
-        vs_main_battleTimer.time.t.f = arg2 % 256;
-        vs_main_battleTimer.time.t.s = (arg2 / 256) % 256;
-        vs_main_battleTimer.time.t.m = (arg2 / 65536) % 256;
-        vs_main_battleTimer.time.t.h = (arg2 / 16777216) % 256;
+    if (mode != battleTimerCountUp) {
+        vs_main_battleTimer.time.t.f = time % 256;
+        vs_main_battleTimer.time.t.s = (time / 256) % 256;
+        vs_main_battleTimer.time.t.m = (time / 65536) % 256;
+        vs_main_battleTimer.time.t.h = (time / 16777216) % 256;
     }
 
     vs_battle_setStateFlag(0xA0, vs_main_battleTimer.time.t.f);
@@ -8538,9 +8547,10 @@ void func_8007BBD8(int arg0, int arg1, int arg2)
     func_800CB550();
 }
 
-void func_8007BCCC(void)
+// Stops the on-screen timer, clears its time and hides it
+void stopBattleTimer(void)
 {
-    vs_main_battleTimer.mode = 0;
+    vs_main_battleTimer.mode = battleTimerOff;
     vs_main_battleTimer.time.t.h = 0;
     vs_main_battleTimer.time.t.m = 0;
     vs_main_battleTimer.time.t.s = 0;
@@ -8556,7 +8566,7 @@ void func_8007BD3C(int arg0)
 {
     if (arg0 != 0) {
         int temp_v1 = vs_main_battleTimer.mode;
-        vs_main_battleTimer.mode = 0;
+        vs_main_battleTimer.mode = battleTimerOff;
         vs_main_battleTimer.savedMode = temp_v1;
         func_800CB560();
         return;
@@ -14428,7 +14438,7 @@ void func_80087EF4(vs_ActorStats* stats)
     }
 }
 
-int func_800882F4(void)
+int updateBattleTimer(void)
 {
     int var_s1 = 0;
     int var_s2 = 0;
@@ -14437,7 +14447,7 @@ int func_800882F4(void)
         return var_s1;
     }
 
-    if (vs_main_battleTimer.mode == 1) {
+    if (vs_main_battleTimer.mode == battleTimerCountUp) {
         if (vs_main_battleTimer.time.t.h <= 0) {
             vs_main_battleTimer.time.t.f += vs_gametime_tickspeed;
             if (vs_main_battleTimer.time.t.f > 59) {
@@ -14665,7 +14675,7 @@ int func_80088554(void)
         D_800E8494 = (D_800E8494 + 1) % 6;
     }
 
-    var_s1 = func_800882F4();
+    var_s1 = updateBattleTimer();
 
     if (var_s1 != 0) {
         var_s5 = var_s1;
@@ -14699,8 +14709,8 @@ void func_80088CA0(void) { D_800E8498 = 0; }
 
 void func_80088CAC(void)
 {
-    if (vs_main_battleTimer.lifetime == 2) {
-        func_8007BCCC();
+    if (vs_main_battleTimer.lifetime == battleTimerClearOnSceneChange) {
+        stopBattleTimer();
     }
     clearZoneEnemyCache();
 }
@@ -14775,8 +14785,8 @@ void finishLoadZnd(int id)
 
     zoneContext.zndCdFile = NULL;
 
-    if (vs_main_battleTimer.lifetime == 1) {
-        func_8007BCCC();
+    if (vs_main_battleTimer.lifetime == battleTimerClearOnZoneLoad) {
+        stopBattleTimer();
     }
 
     header = zoneContext.zndData;
@@ -15243,8 +15253,8 @@ void func_80089DC0(int arg0)
         func_80088CAC();
     }
 
-    if (vs_main_battleTimer.lifetime == 0) {
-        func_8007BCCC();
+    if (vs_main_battleTimer.lifetime == battleTimerClearOnMapLoad) {
+        stopBattleTimer();
     }
 
     D_800F19A0 = 1;

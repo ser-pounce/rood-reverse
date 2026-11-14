@@ -45,7 +45,7 @@ static int (*skipOpcodeTableInit[])(u_char*, short) = { vs_battle_script_invalid
     vs_battle_script_53_forgetZoneEnemies, vs_battle_script_nop,
     vs_battle_script_55_setActorsAwake, vs_battle_script_56_setFlagToButtons,
     vs_battle_script_57_fullyRestoreActor, vs_battle_script_58_setUiVisible,
-    vs_battle_script_59_openMenu, vs_battle_script_5A,
+    vs_battle_script_59_openMenu, vs_battle_script_5A_setBattleTimer,
     vs_battle_script_5B_setTextBoxSpeaker, vs_battle_script_5C, vs_battle_script_5D,
     vs_battle_script_yield, vs_battle_script_5F, vs_battle_script_60, vs_battle_script_61,
     vs_battle_script_62, vs_battle_script_63, vs_battle_script_64, vs_battle_script_65,

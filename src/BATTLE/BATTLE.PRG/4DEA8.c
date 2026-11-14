@@ -312,8 +312,8 @@ extern char skipResetPaletteOp[];
 extern char skipTailMarkerOp[];
 extern u_char D_800E9BEC[];
 extern u_char cubePuzzleSubmenus[];
-extern short D_800E9BF4[];
-extern short D_800E9BF8[];
+extern short battleTimerModes[];
+extern short battleTimerLifetimes[];
 extern void sceneResetScript;
 extern short D_800E9C00[];
 extern u_char D_800E9C1C[];
@@ -2327,14 +2327,23 @@ int vs_battle_script_59_openMenu(u_char* script, UNUSED short arg1)
     }
 }
 
-int vs_battle_script_5A(u_char* arg0, UNUSED short arg1)
+/**
+ * Starts or stops the on-screen timer.
+ * @param script Opcode bytes:
+ *   - [1] = 0 = stop and clear the timer, nonzero = start
+ *   - [2] = lifetime index (see startBattleTimer)
+ *   - [3] = mode index, 0 = counts up, 1 = counts down
+ *   - [4-6] = hours, minutes and seconds to count down from
+ */
+int vs_battle_script_5A_setBattleTimer(u_char* script, UNUSED short arg1)
 {
-    if (arg0[1] != 0) {
-        func_8007BBD8(D_800E9BF4[arg0[3]], D_800E9BF8[arg0[2]],
-            (arg0[4] << 0x18) | (arg0[5] << 0x10) | (arg0[6] << 8));
+    if (script[1] != 0) {
+        startBattleTimer(battleTimerModes[script[3]], battleTimerLifetimes[script[2]],
+            (script[4] << 24) | (script[5] << 16) | (script[6] << 8));
     } else {
-        func_8007BCCC();
+        stopBattleTimer();
     }
+
     return scriptNext;
 }
 

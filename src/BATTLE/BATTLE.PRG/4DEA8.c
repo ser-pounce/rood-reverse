@@ -2454,17 +2454,28 @@ int vs_battle_script_5D_setActorSway(u_char* script, UNUSED short arg1)
     return scriptNext;
 }
 
-int vs_battle_script_5E(u_char* arg0, short arg1)
+/**
+ * Waits for a number of frames, or until one of the given buttons is pressed.
+ * @param script Opcode bytes:
+ *   - [1] = mask of pad buttons, only the low byte (L2, R2, L1, R1 and the face buttons)
+ *   - [2] = frames to wait, must not be 0
+ * @param slot Script slot running the opcode.
+ */
+int vs_battle_script_5E_waitFramesOrButton(u_char* script, short slot)
 {
-    if (D_800F4C58[arg1] == 0) {
-        D_800F4C58[arg1] = arg0[2];
+    if (scriptWaitFrames[slot] == 0) {
+        scriptWaitFrames[slot] = script[2];
+
         return scriptRepeat;
     }
-    if ((vs_main_buttonsPressed.all & arg0[1]) || (--D_800F4C58[arg1] <= 0)) {
-        D_800F4C58[arg1] = 0;
+
+    if ((vs_main_buttonsPressed.all & script[1]) || (--scriptWaitFrames[slot] <= 0)) {
+        scriptWaitFrames[slot] = 0;
         vs_main_buttonsPressed.all = 0;
+
         return scriptNext;
     }
+
     return scriptRepeat;
 }
 
@@ -3383,15 +3394,15 @@ int vs_battle_script_E1(u_char* arg0, UNUSED short arg1)
 
 int vs_battle_script_F0(u_char* arg0, short arg1)
 {
-    if (D_800F4C58[arg1] == 0) {
-        D_800F4C58[arg1] = arg0[1];
+    if (scriptWaitFrames[arg1] == 0) {
+        scriptWaitFrames[arg1] = arg0[1];
         return scriptRepeat;
     }
 
-    --D_800F4C58[arg1];
+    --scriptWaitFrames[arg1];
 
-    if ((D_800F4C58[arg1] << 0x10) <= 0) {
-        D_800F4C58[arg1] = 0;
+    if ((scriptWaitFrames[arg1] << 0x10) <= 0) {
+        scriptWaitFrames[arg1] = 0;
         return scriptNext;
     }
     return scriptRepeat;
@@ -5247,7 +5258,7 @@ void parseEvt(u_char* data)
 
     vs_battle_setStateFlag(168, 0);
 
-    D_800F4C58[1] = D_800F4C58[2] = D_800F4C58[3] = 0;
+    scriptWaitFrames[1] = scriptWaitFrames[2] = scriptWaitFrames[3] = 0;
     D_800F4BB9 = 0;
     D_800F4C4E = 0;
     textBoxSelectionPending = 0;
@@ -5255,7 +5266,7 @@ void parseEvt(u_char* data)
     scriptMenuState = scriptMenuClosed;
     D_800F4BE2 = 0;
     D_800F4BB6 = 0;
-    D_800F4C58[0] = 0;
+    scriptWaitFrames[0] = 0;
     D_800F4C22 = 0;
 
     for (i = 0; i < 8; ++i) {

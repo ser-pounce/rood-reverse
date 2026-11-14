@@ -74,8 +74,8 @@ VS_HIDDEN(stopMusicOnSkip);
 extern char scriptSkipMode;
 VS_HIDDEN(scriptSkipMode);
 
-extern short D_800F4C58[];
-VS_HIDDEN(D_800F4C58);
+extern short scriptWaitFrames[];
+VS_HIDDEN(scriptWaitFrames);
 
 extern char skipRequested;
 VS_HIDDEN(skipRequested);

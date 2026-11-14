@@ -32,10 +32,10 @@ short func_800BFBB8(u_char** arg0, short arg1)
     if ((arg1 == 0) && (scriptSkipMode == scriptSkippable)
         && ((vs_main_buttonsPressed.all & PADstart) || (skipRequested != 0))) {
         skipRequested = 0;
-        D_800F4C58[3] = 0;
-        D_800F4C58[2] = 0;
-        D_800F4C58[1] = 0;
-        D_800F4C58[0] = 0;
+        scriptWaitFrames[3] = 0;
+        scriptWaitFrames[2] = 0;
+        scriptWaitFrames[1] = 0;
+        scriptWaitFrames[0] = 0;
         textBoxStatuses[3] = 0;
         textBoxStatuses[2] = 0;
         textBoxStatuses[1] = 0;

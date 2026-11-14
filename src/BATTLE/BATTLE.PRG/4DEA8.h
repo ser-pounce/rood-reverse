@@ -83,7 +83,7 @@ int vs_battle_script_68_warp(u_char*, short);
 int vs_battle_script_6B_setScreenTransitionWipeAngle(u_char*, short);
 int vs_battle_script_6C_setScreenTransition(u_char*, short);
 int vs_battle_script_6F_setUnk(u_char*, short);
-int vs_battle_script_70(u_char*, short);
+int vs_battle_script_70_transformColors(u_char*, short);
 int vs_battle_script_71(u_char*, short);
 int vs_battle_script_72(u_char*, short);
 int vs_battle_script_73(u_char*, short);

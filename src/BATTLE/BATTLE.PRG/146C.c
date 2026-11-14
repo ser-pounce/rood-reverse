@@ -1549,7 +1549,7 @@ void func_8006C39C(void)
 void func_8006C40C(void)
 {
     vs_main_setClutState(1);
-    func_8007B1B8(8, 4, 0, 0, 0);
+    transformSceneColors(8, 4, 0, 0, 0);
     func_8006C250();
     func_8008B4BC(0);
     func_8008D594(0);
@@ -1913,12 +1913,12 @@ void func_8006CE70(SVECTOR* arg0)
 void func_8006D028(int arg0, int arg1)
 {
     D_800F185C = arg0;
-    func_8007B29C(0xE, 8, arg0, 0x10, 0, 0);
+    transformActorColors(0xE, 8, arg0, 0x10, 0, 0);
 }
 
 void func_8006D064(void)
 {
-    func_8007B29C(8, 4, D_800F185C, 0, 0, 0);
+    transformActorColors(8, 4, D_800F185C, 0, 0, 0);
     D_800F185C = 0;
 }
 
@@ -3608,7 +3608,7 @@ void func_80070F28(int arg0)
     }
 
     vs_main_setClutState(1);
-    func_8007B1B8(8, 4, 0, 0, 0);
+    transformSceneColors(8, 4, 0, 0, 0);
     func_8006C250();
     func_80095B70(1);
     func_8008B4C8(0);
@@ -8175,26 +8175,26 @@ void func_8007B10C(int arg0, int arg1, int arg2, short arg3, short arg4)
     vs_main_transformClutSlot(arg0, arg1, 2, arg2, arg3, arg4);
 }
 
-void func_8007B1B8(int arg0, int arg1, short arg2, short arg3, short arg4)
+void transformSceneColors(int mode, int duration, short r, short g, short b)
 {
-    vs_main_transformClutSlot(arg0, arg1, 0, arg2, arg3, arg4);
-    vs_main_transformClutSlot(arg0, arg1, 1, arg2, arg3, arg4);
-    vs_main_transformClutSlot(arg0, arg1, 2, arg2, arg3, arg4);
-    vs_main_transformColorSlot(arg0, arg1, 0, arg2, arg3, arg4);
-    vs_main_transformClutSlot(arg0, arg1, 0xD, arg2, arg3, arg4);
+    vs_main_transformClutSlot(mode, duration, 0, r, g, b);
+    vs_main_transformClutSlot(mode, duration, 1, r, g, b);
+    vs_main_transformClutSlot(mode, duration, 2, r, g, b);
+    vs_main_transformColorSlot(mode, duration, 0, r, g, b);
+    vs_main_transformClutSlot(mode, duration, 0xD, r, g, b);
 }
 
-void func_8007B29C(int arg0, int arg1, int arg2, short arg3, short arg4, short arg5)
+void transformActorColors(int mode, int duration, int actor, short r, short g, short b)
 {
-    if (arg2 < 9) {
-        vs_main_transformClutSlot(arg0, arg1, arg2 + 4, arg3, arg4, arg5);
-        vs_main_transformColorSlot(arg0, arg1, arg2 + 1, arg3, arg4, arg5);
+    if (actor < 9) {
+        vs_main_transformClutSlot(mode, duration, actor + 4, r, g, b);
+        vs_main_transformColorSlot(mode, duration, actor + 1, r, g, b);
     }
 }
 
-void func_8007B344(int arg0, int arg1, short arg2, short arg3, short arg4)
+void transformBackgroundColors(int mode, int duration, short r, short g, short b)
 {
-    vs_main_transformBgColors(arg0, arg1, arg2, arg3, arg4);
+    vs_main_transformBgColors(mode, duration, r, g, b);
 }
 
 void func_8007B378(int arg0, u_short* arg1, int arg2, int arg3)
@@ -8226,7 +8226,7 @@ void func_8007B410(void)
 void func_8007B470(void)
 {
     vs_main_setClutState(1);
-    func_8007B1B8(8, 4, 0, 0, 0);
+    transformSceneColors(8, 4, 0, 0, 0);
     func_8006C250();
     func_8008B4BC(0);
     func_8008E480(0);

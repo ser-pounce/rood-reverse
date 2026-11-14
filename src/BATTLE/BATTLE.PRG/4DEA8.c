@@ -416,7 +416,7 @@ static void endScriptSkip(u_char* script)
 
     for (i = 0; i < 3; ++i) {
         skipResetPaletteOp[1] = (i << 4) | 8;
-        vs_battle_script_70(skipResetPaletteOp, 0);
+        vs_battle_script_70_transformColors(skipResetPaletteOp, 0);
     }
 
     func_800AACDC();
@@ -2772,32 +2772,46 @@ int vs_battle_script_6F_setUnk(u_char* script, UNUSED short arg1)
     return scriptNext;
 }
 
-int vs_battle_script_70(u_char* arg0, UNUSED short arg1)
+/**
+ * Adds a colour offset to the palettes of actors, the scene or the background, either
+ * at once or over a few frames.
+ * @param script Opcode bytes:
+ *   - [1] = target in the high nibble, 0 = actors, 1 = scene, 2 = background, and the
+ *     colour transform mode in the low nibble, 8 = restore the original colours
+ *   - [2-3] = actors to transform, if the target is actors
+ *   - [4] = duration in frames as a power of two, 0 to 4, anything higher is instant
+ *   - [5-7] = signed red, green and blue offsets
+ */
+int vs_battle_script_70_transformColors(u_char* script, UNUSED short arg1)
 {
-    ActorList sp18;
-    int temp_a2;
+    ActorList actors;
 
-    switch (arg0[1] >> 4) {
+    switch (script[1] >> 4) {
     case 0:
-        expandActorSelector(getShort(arg0 + 2), &sp18);
+        expandActorSelector(getShort(script + 2), &actors);
         while (1) {
-            temp_a2 = nextActor(&sp18);
-            if (temp_a2 == 1) {
+            int actor = nextActor(&actors);
+
+            if (actor == 1) {
                 break;
             }
-            func_8007B29C(arg0[1] & 0xF, (1 << arg0[4]) & 0x1F, temp_a2,
-                (signed char)arg0[5], (signed char)arg0[6], (signed char)arg0[7]);
+
+            transformActorColors(script[1] & 0xF, (1 << script[4]) & 0x1F, actor,
+                (signed char)script[5], (signed char)script[6], (signed char)script[7]);
         }
         break;
+
     case 1:
-        func_8007B1B8(arg0[1] & 0xF, (1 << arg0[4]) & 0x1F, (signed char)arg0[5],
-            (signed char)arg0[6], (signed char)arg0[7]);
+        transformSceneColors(script[1] & 0xF, (1 << script[4]) & 0x1F,
+            (signed char)script[5], (signed char)script[6], (signed char)script[7]);
         break;
+
     case 2:
-        func_8007B344(arg0[1] & 0xF, (1 << arg0[4]) & 0x1F, (signed char)arg0[5],
-            (signed char)arg0[6], (signed char)arg0[7]);
+        transformBackgroundColors(script[1] & 0xF, (1 << script[4]) & 0x1F,
+            (signed char)script[5], (signed char)script[6], (signed char)script[7]);
         break;
     }
+
     return scriptNext;
 }
 

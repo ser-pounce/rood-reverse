@@ -178,11 +178,11 @@ VS_HIDDEN(func_8007C8A4);
 int spawnModelActor(u_int slot, int modelId, vs_TilePosition* tile);
 VS_HIDDEN(spawnModelActor);
 
-void func_8007CA20(int, int, int);
-VS_HIDDEN(func_8007CA20);
+void setActorWeaponModels(int, int, int);
+VS_HIDDEN(setActorWeaponModels);
 
-void func_8007CAA4(int);
-VS_HIDDEN(func_8007CAA4);
+void restoreActorWeaponModels(int actorId);
+VS_HIDDEN(restoreActorWeaponModels);
 
 void enqueueEsq(int, int);
 VS_HIDDEN(enqueueEsq);
@@ -269,8 +269,8 @@ VS_HIDDEN(func_800863A4);
 int func_80089104(void);
 VS_HIDDEN(func_80089104);
 
-int func_8008B808(int, int, int, int);
-VS_HIDDEN(func_8008B808);
+int setTileBlocked(int, int, int, int);
+VS_HIDDEN(setTileBlocked);
 
 void setDoorEntered2(int arg0);
 VS_HIDDEN(setDoorEntered2);
@@ -302,8 +302,8 @@ VS_HIDDEN(func_8008DD0C);
 int func_8008DDA8(int arg0, int arg1);
 VS_HIDDEN(func_8008DDA8);
 
-void func_8008E224(int, int);
-VS_HIDDEN(func_8008E224);
+void setCloudstoneMoving(int index, int moving);
+VS_HIDDEN(setCloudstoneMoving);
 
 int func_8008E320(int arg0);
 VS_HIDDEN(func_8008E320);
@@ -359,8 +359,8 @@ VS_HIDDEN(func_80090B28);
 extern int D_800F1868;
 VS_HIDDEN(D_800F1868);
 
-extern int D_800F19C8;
-VS_HIDDEN(D_800F19C8);
+extern int firstPersonRendering;
+VS_HIDDEN(firstPersonRendering);
 
 extern u_short D_800F1CDC;
 VS_HIDDEN(D_800F1CDC);

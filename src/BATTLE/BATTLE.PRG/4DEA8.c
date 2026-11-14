@@ -240,11 +240,6 @@ typedef struct {
     SVECTOR c;
 } CameraShakeScratch;
 
-typedef struct {
-    u_char low;
-    u_char high;
-} ScriptBytePair;
-
 // Comparison selected by the high nibble of a conditional opcode's second byte, applied
 // as `flag <op> operand`
 enum flagComparison {
@@ -350,10 +345,9 @@ extern short D_800F4C54;
 extern char textBoxSelectionPending;
 extern int scriptReturnAddress;
 extern char scriptMusicSlot;
-extern char D_800F4C6A;
+extern char fogDepthOverridden;
 
 extern char D_800F4B70[];
-extern u_short D_800F4B28[];
 extern Gim* gims;
 
 /**
@@ -2420,105 +2414,191 @@ int vs_battle_script_5B_setTextBoxSpeaker(u_char* script, UNUSED short arg1)
     return scriptNext;
 }
 
-int vs_battle_script_5C(u_char* arg0, UNUSED short arg1)
+/**
+ * Changes the weapon models an actor holds.
+ * @param script Opcode bytes:
+ *   - [1-2] = actor selector
+ *   - [3] = blade model id, 0 = none, 0xFF = leave unchanged, 0xFE = take both weapons
+ *     from the actor's equipment
+ *   - [5] = shield model id, 0 = none, 0xFF = leave unchanged
+ */
+int vs_battle_script_5C_setActorWeaponModels(u_char* script, UNUSED short arg1)
 {
-    u_short temp_a0 = resolveActorId(getShort(arg0 + 1));
+    u_short actor = resolveActorId(getShort(script + 1));
 
-    if (arg0[3] == 0xFE) {
-        func_8007CAA4(temp_a0);
+    if (script[3] == 0xFE) {
+        restoreActorWeaponModels(actor);
     } else {
-        func_8007CA20(temp_a0, arg0[3], arg0[5]);
+        setActorWeaponModels(actor, script[3], script[5]);
     }
+
     return scriptNext;
 }
 
-int vs_battle_script_5D(u_char* arg0, UNUSED short arg1)
+/**
+ * Gives an actor a slight swaying motion.
+ * @param script Opcode bytes:
+ *   - [1-2] = actor selector
+ *   - [3] = sway angle at its peak, in 1/4096 of a full turn, 0 = stop swaying
+ */
+int vs_battle_script_5D_setActorSway(u_char* script, UNUSED short arg1)
 {
-    func_8009D7E8(resolveActorId(getShort(arg0 + 1)), arg0[3]);
+    setActorSway(resolveActorId(getShort(script + 1)), script[3]);
+
     return scriptNext;
 }
 
-int vs_battle_script_5E(u_char* arg0, short arg1)
+/**
+ * Waits for a number of frames, or until one of the given buttons is pressed.
+ * @param script Opcode bytes:
+ *   - [1] = mask of pad buttons, only the low byte (L2, R2, L1, R1 and the face buttons)
+ *   - [2] = frames to wait, must not be 0
+ * @param slot Script slot running the opcode.
+ */
+int vs_battle_script_5E_waitFramesOrButton(u_char* script, short slot)
 {
-    if (D_800F4C58[arg1] == 0) {
-        D_800F4C58[arg1] = arg0[2];
+    if (scriptWaitFrames[slot] == 0) {
+        scriptWaitFrames[slot] = script[2];
+
         return scriptRepeat;
     }
-    if ((vs_main_buttonsPressed.all & arg0[1]) || (--D_800F4C58[arg1] <= 0)) {
-        D_800F4C58[arg1] = 0;
+
+    if ((vs_main_buttonsPressed.all & script[1]) || (--scriptWaitFrames[slot] <= 0)) {
+        scriptWaitFrames[slot] = 0;
         vs_main_buttonsPressed.all = 0;
+
         return scriptNext;
     }
+
     return scriptRepeat;
 }
 
-int vs_battle_script_5F(u_char* arg0, UNUSED short arg1)
+/**
+ * Defines one of the four easing curves, numbered 4-7, that tweens can use. It is one of
+ * the built-in curves 0-3 with its progress squared a number of times first.
+ * @param script Opcode bytes:
+ *   - [1] = (slot << 6) | (base curve << 4) | squarings, where squarings is a signed 4
+ *     bit number, an ease-in if positive and an ease-out if negative
+ */
+int vs_battle_script_5F_defineEasing(u_char* script, UNUSED short arg1)
 {
-    int var_v1;
-    u_char* temp_a1;
-    u_short* new_var;
+    int power;
+    CustomEasing* base = customEasings;
+    CustomEasing* easing = &base[script[1] >> 6];
 
-    new_var = D_800F4B28;
-    temp_a1 = (u_char*)((arg0[1] >> 6) + new_var);
-    temp_a1[0] = ((arg0[1] >> 4) & 3);
+    easing->curve = (script[1] >> 4) & 3;
 
-    var_v1 = arg0[1] & 7;
-    if (arg0[1] & 8) {
-        var_v1 |= 0xF8;
+    power = script[1] & 7;
+
+    if (script[1] & 8) {
+        power |= 0xF8;
     }
-    temp_a1[1] = var_v1;
+
+    easing->power = power;
+
     return scriptNext;
 }
 
-int vs_battle_script_60(u_char* arg0, UNUSED short arg1)
+/**
+ * Starts or stops a cloudstone.
+ * @param script Opcode bytes:
+ *   - [1] = index of the cloudstone in the room data
+ *   - [2] = 1 = moving, 0 = stopped
+ */
+int vs_battle_script_60_setCloudstoneMoving(u_char* script, UNUSED short arg1)
 {
-    func_8008E224(arg0[1], arg0[2]);
+    setCloudstoneMoving(script[1], script[2]);
+
     return scriptNext;
 }
 
-int vs_battle_script_61(u_char* arg0, UNUSED short arg1)
+/**
+ * Sets the depth beyond which polygons are dimmed, overriding current setting.
+ * @param script Opcode bytes:
+ *   - [1..2] = depth, with bit 15 toggling the override
+ */
+int vs_battle_script_61_overrideFogDepth(u_char* script, UNUSED short arg1)
 {
-    short temp_v0 = getShort(arg0 + 1);
-    D_800F4C6A = (temp_v0 << 0x10) >> 0x1F;
-    if (D_800F4C6A) {
-        func_80098194(temp_v0 & 0x7FF);
+    short depth = getShort(script + 1);
+
+    fogDepthOverridden = depth >> 15;
+
+    if (fogDepthOverridden) {
+        setFogDepth(depth & 0x7FF);
     }
+
     return scriptNext;
 }
 
-int vs_battle_script_62(u_char* arg0, UNUSED short arg1)
+/**
+ * Enables or disables the close-up render mode used for first person view, which
+ * subdivides large polygons and skips geometry flagged as hidden in first person.
+ * @param script Opcode bytes:
+ *   - [1] = 1 = enabled, 0 = disabled
+ */
+int vs_battle_script_62_setFirstPersonRendering(u_char* script, UNUSED short arg1)
 {
-    D_800F19C8 = arg0[1];
+    firstPersonRendering = script[1];
+
     return scriptNext;
 }
 
-int vs_battle_script_63(UNUSED u_char* arg0, UNUSED short arg1)
+/** Clears no statuses (empty mask), so it has no effect. Probably unused. */
+int vs_battle_script_63_statusUnk(UNUSED u_char* script, UNUSED short arg1)
 {
     func_8007C31C();
+
     return scriptNext;
 }
 
-int vs_battle_script_64(u_char* arg0, UNUSED short arg1)
+/**
+ * Shows a room geometry object.
+ * @param script Opcode bytes:
+ *   - [1] = geometry object id
+ */
+int vs_battle_script_64_showGeometry(u_char* script, UNUSED short arg1)
 {
-    func_80091998(arg0[1]);
+    showGeometryObject(script[1]);
+
     return scriptNext;
 }
 
-int vs_battle_script_65(u_char* arg0, UNUSED short arg1)
+/**
+ * Hides a room geometry object.
+ * @param script Opcode bytes:
+ *   - [1] = geometry object id
+ */
+int vs_battle_script_65_hideGeometry(u_char* script, UNUSED short arg1)
 {
-    func_800919D8(arg0[1]);
+    hideGeometryObject(script[1]);
+
     return scriptNext;
 }
 
-int vs_battle_script_66(u_char* arg0, UNUSED short arg1)
+/**
+ * Swaps the render flags of two room geometry objects.
+ * @param script Opcode bytes:
+ *   - [1], [2] = geometry object ids
+ */
+int vs_battle_script_66_swapGeometryFlags(u_char* script, UNUSED short arg1)
 {
-    func_80091A1C(arg0[1], arg0[2]);
+    swapGeometryFlags(script[1], script[2]);
+
     return scriptNext;
 }
 
-int vs_battle_script_67(u_char* arg0, UNUSED short arg1)
+/**
+ * Blocks or unblocks a tile in the room's walkable area.
+ * @param script Opcode bytes:
+ *   - [1] = tile column
+ *   - [2] = layer, 0 or 1 = layer of the tile grid, 2 and above = cloudstone (layer - 2)
+ *   - [3] = tile row
+ *   - [4] = 1 = blocked, 0 = open
+ */
+int vs_battle_script_67_setTileBlocked(u_char* script, UNUSED short arg1)
 {
-    func_8008B808(arg0[1], arg0[3], arg0[2], arg0[4]);
+    setTileBlocked(script[1], script[3], script[2], script[4]);
+
     return scriptNext;
 }
 
@@ -3367,15 +3447,15 @@ int vs_battle_script_E1(u_char* arg0, UNUSED short arg1)
 
 int vs_battle_script_F0(u_char* arg0, short arg1)
 {
-    if (D_800F4C58[arg1] == 0) {
-        D_800F4C58[arg1] = arg0[1];
+    if (scriptWaitFrames[arg1] == 0) {
+        scriptWaitFrames[arg1] = arg0[1];
         return scriptRepeat;
     }
 
-    --D_800F4C58[arg1];
+    --scriptWaitFrames[arg1];
 
-    if ((D_800F4C58[arg1] << 0x10) <= 0) {
-        D_800F4C58[arg1] = 0;
+    if ((scriptWaitFrames[arg1] << 0x10) <= 0) {
+        scriptWaitFrames[arg1] = 0;
         return scriptNext;
     }
     return scriptRepeat;
@@ -3735,7 +3815,7 @@ static void applyCameraState(void)
         D_800F4BA4->nearClip.unk0 = 0;
     }
     if (D_800F4BA4->farClip.unk0 != 0) {
-        setFarClip(D_800F4BA4->farClip.unk2, D_800F4C6A);
+        setFarClip(D_800F4BA4->farClip.unk2, fogDepthOverridden);
         D_800F4BA4->farClip.unk0 = 0;
     }
 }
@@ -3918,7 +3998,7 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
         CameraScratch* s;
         c->mode = 11;
         c->time = 0;
-        c->ease1 = 0;
+        c->ease1 = easingLinear;
         c->duration = script[2];
         vectorSubtract((VECTOR*)0x1F800098, &c->target, &c->current);
         vecToRotMatrix((VECTOR*)0x1F800098, (MATRIX*)0x1F8000F8);
@@ -4050,7 +4130,7 @@ void func_800BCA8C(D_800F4BA4_t2* c, D_800F4BA4_t2* other)
         int fraction;
         CameraScratch* s;
         vectorAdd(&c->followPosition, &c->followPosition, &c->followDelta);
-        fraction = func_800BFEBC(1, c->time, c->duration);
+        fraction = func_800BFEBC(easingSineOut, c->time, c->duration);
         s = (CameraScratch*)0x1F800088;
         s->value = fraction;
         vectorSubtract((VECTOR*)0x1F800098, &c->computed, &c->followPosition);
@@ -5231,7 +5311,7 @@ void parseEvt(u_char* data)
 
     vs_battle_setStateFlag(168, 0);
 
-    D_800F4C58[1] = D_800F4C58[2] = D_800F4C58[3] = 0;
+    scriptWaitFrames[1] = scriptWaitFrames[2] = scriptWaitFrames[3] = 0;
     D_800F4BB9 = 0;
     D_800F4C4E = 0;
     textBoxSelectionPending = 0;
@@ -5239,7 +5319,7 @@ void parseEvt(u_char* data)
     scriptMenuState = scriptMenuClosed;
     D_800F4BE2 = 0;
     D_800F4BB6 = 0;
-    D_800F4C58[0] = 0;
+    scriptWaitFrames[0] = 0;
     D_800F4C22 = 0;
 
     for (i = 0; i < 8; ++i) {
@@ -5247,7 +5327,7 @@ void parseEvt(u_char* data)
     }
 
     for (i = 0; i < 4; ++i) {
-        ((ScriptBytePair*)D_800F4B28)[i].low = ((ScriptBytePair*)D_800F4B28)[i].high = 0;
+        customEasings[i].curve = customEasings[i].power = 0;
     }
 
     D_800F4B8B = 0;
@@ -5287,7 +5367,7 @@ int func_800BF850(void)
     }
 
     if (D_800F4C34 == 2) {
-        D_800F4C6A = 0;
+        fogDepthOverridden = 0;
         D_800F4C54 = 0;
 
         switch (D_800F4BE0) {

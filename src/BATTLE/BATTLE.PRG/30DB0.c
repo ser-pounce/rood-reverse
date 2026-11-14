@@ -1403,7 +1403,7 @@ setupPalettes:
         }
     }
 
-    func_8009D7E8(object->index, 0);
+    setActorSway(object->index, 0);
     func_8009D468(actor->unk0.unkF);
     actor->unk0.unk13 = 0;
     actor->unk0.unk9_5 = 0;
@@ -2230,16 +2230,20 @@ void func_8009D6F4(void)
     }
 }
 
-void func_8009D7E8(int arg0, int arg1)
+/**
+ * Starts or stops a slight swaying of an actor.
+ * @param amplitude Sway angle at its peak, in 1/4096 of a full turn, 0 to stop.
+ */
+void setActorSway(int actorId, int amplitude)
 {
-    D_800F4538_t* temp_a2 = D_800F4538[arg0];
+    D_800F4538_t* temp_a2 = D_800F4538[actorId];
     if (temp_a2 != NULL) {
-        if (arg1 == 0) {
+        if (amplitude == 0) {
             temp_a2->unk5AC_21 = 0;
         } else {
             temp_a2->unk1802[0] = 0;
             temp_a2->unk5AC_21 = 1;
-            temp_a2->unk1802[1] = arg1 * 2;
+            temp_a2->unk1802[1] = amplitude * 2;
             temp_a2->unk5AC_22 = 0;
         }
     }

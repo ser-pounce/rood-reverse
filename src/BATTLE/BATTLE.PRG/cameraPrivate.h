@@ -11,7 +11,7 @@ VS_HIDDEN(syncCameraAnglesFromPosition);
 void setCameraRoll(int arg0);
 VS_HIDDEN(setCameraRoll);
 
-void setFarClip(int arg0, int arg1);
+void setFarClip(int farClip, int fogDepthOverridden);
 VS_HIDDEN(setFarClip);
 
 void initialiseCameraFromSpherical(VECTOR*, VECTOR*, int, int);

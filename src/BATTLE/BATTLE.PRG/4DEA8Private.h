@@ -74,8 +74,29 @@ VS_HIDDEN(stopMusicOnSkip);
 extern char scriptSkipMode;
 VS_HIDDEN(scriptSkipMode);
 
-extern short D_800F4C58[];
-VS_HIDDEN(D_800F4C58);
+// Easing curves, taken by func_800BFEBC. The first four are built in, the rest are set
+// up with opcode 5F.
+enum Easing {
+    easingLinear,
+    easingSineOut,
+    easingSineInOut,
+    easingSineIn,
+    easingCustom0,
+    easingCustom1,
+    easingCustom2,
+    easingCustom3,
+};
+
+typedef struct {
+    u_char curve;
+    signed char power;
+} CustomEasing;
+
+extern CustomEasing customEasings[4];
+VS_HIDDEN(customEasings);
+
+extern short scriptWaitFrames[];
+VS_HIDDEN(scriptWaitFrames);
 
 extern char skipRequested;
 VS_HIDDEN(skipRequested);

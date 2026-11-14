@@ -72,11 +72,11 @@ static inline SVECTOR* func_800A4A24(int id)
     return NULL;
 }
 
-MpdRoomSection3* func_800A8D64(SVECTOR* arg0, int arg1)
+MpdTile* func_800A8D64(SVECTOR* arg0, int arg1)
 {
     int temp_s1 = arg0->vx / 128;
     int temp_s0 = arg0->vz / 128;
-    MpdRoomSection3* temp_v0 = func_8008B764(temp_s1, temp_s0, arg1);
+    MpdTile* temp_v0 = func_8008B764(temp_s1, temp_s0, arg1);
 
     if (temp_v0 == NULL) {
         return NULL;
@@ -86,35 +86,35 @@ MpdRoomSection3* func_800A8D64(SVECTOR* arg0, int arg1)
     temp_s0 = arg0->vz - (temp_s0 << 7);
 
     // BUG: potentially unhandled values
-    switch (temp_v0->unk0_10) {
-    case 0:
+    switch (temp_v0->shape) {
+    case tileShapeFull:
         return temp_v0;
 
-    case 1:
+    case tileShapeTriangle0:
         if ((temp_s1 + temp_s0) > 0x80) {
             return NULL;
         }
         return temp_v0;
 
-    case 2:
+    case tileShapeTriangle1:
         if ((temp_s1 - temp_s0) > 0) {
             return NULL;
         }
         return temp_v0;
 
-    case 3:
+    case tileShapeTriangle2:
         if ((temp_s1 + temp_s0) < 0x80) {
             return NULL;
         }
         return temp_v0;
 
-    case 4:
+    case tileShapeTriangle3:
         if ((temp_s1 - temp_s0) < 0) {
             return NULL;
         }
         return temp_v0;
 
-    case 5:
+    case tileShapeBlocked:
         return NULL;
     }
 }

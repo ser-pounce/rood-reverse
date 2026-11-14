@@ -38,14 +38,14 @@ VS_HIDDEN(func_800918E8);
 void* func_8009195C(int arg0);
 VS_HIDDEN(func_8009195C);
 
-int func_80091998(int);
-VS_HIDDEN(func_80091998);
+int showGeometryObject(int);
+VS_HIDDEN(showGeometryObject);
 
-int func_800919D8(int);
-VS_HIDDEN(func_800919D8);
+int hideGeometryObject(int);
+VS_HIDDEN(hideGeometryObject);
 
-int func_80091A1C(int, int);
-VS_HIDDEN(func_80091A1C);
+int swapGeometryFlags(int, int);
+VS_HIDDEN(swapGeometryFlags);
 
 int func_80091A78(int, int);
 VS_HIDDEN(func_80091A78);

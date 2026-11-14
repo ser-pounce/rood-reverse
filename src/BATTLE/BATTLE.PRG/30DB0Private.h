@@ -32,8 +32,8 @@ VS_HIDDEN(func_8009D458);
 void func_8009D6F4(void);
 VS_HIDDEN(func_8009D6F4);
 
-void func_8009D7E8(int, int);
-VS_HIDDEN(func_8009D7E8);
+void setActorSway(int actorId, int amplitude);
+VS_HIDDEN(setActorSway);
 
 void func_8009D854(int);
 VS_HIDDEN(func_8009D854);

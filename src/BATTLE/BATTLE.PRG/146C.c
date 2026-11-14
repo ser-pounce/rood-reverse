@@ -214,101 +214,23 @@ typedef struct {
 } MpdObjectSpawn;
 
 int loadMpdRoomSection(int, void* data);
-int dropMisc(vs_Loot*, UiMisc*);
-int dropMiscRand(vs_Loot*, UiMiscRand*);
-void snapLookAtToPosition(VECTOR*);
-void func_8006C350(void);
-void func_8006C39C(void);
-void func_8006C40C(void);
-int func_8006C5AC(int);
-static void forgetZoneEnemies(int, int);
-int removeActorById(u_int, int);
-void applyAccessoryStats(vs_UiAccessory*, AccessoryIntermediate*);
-void applyArmorStats(vs_UiArmor* arg0, ArmorIntermediate* arg1);
-static void copyUiEquipmentStats(vs_InventoryArmor*, vs_UiEquipment* equipment);
-void func_8006B214(void);
-void func_8006B2D4(void);
-void updateEnemyKills(Actor*);
-void drawScreenTransition(void*);
-void updateWeaponKillStreak(int);
-void clampPositionToZoneBounds(VECTOR*, VECTOR*);
-int computeStepAndDisplacement(SVECTOR* arg0, VECTOR*, VECTOR*, int, int);
-int stepTowardTarget(SVECTOR*, int, int);
-void func_8006E158(void);
-void computeCameraTransition(VECTOR*);
-int stepCameraTransition(void);
-void setRoomSeen(void);
-void func_8006F5CC(void);
-void func_8006F89C(void);
-void func_8006FA20(void);
-void func_8006FD1C(void);
-void func_80070278(void);
-void func_8007053C(void);
-void func_80070CAC(void);
-void func_80070F28(int);
-void func_8007138C(void);
-void func_80072BA8(int);
-void func_80072EC4(int, int);
-void endBattleCameraTransition(void);
-void func_80073718(void);
-void func_80073D30(MpdRoomSectionA*, vs_ActorPosition*, int);
-void func_80073E30(MpdRoomSectionA*, int);
-int func_80074798(vs_ActorPosition*, u_char*);
 void func_80074B14(int arg0, vs_TilePosition* arg1);
-void func_80076D50(u_int, int, int, int, int);
-void func_80077130(Actor*, int, int, int, int);
-Actor_dat* func_80077240(int, int, int, int, int, int, vs_TilePosition*, int);
-void func_800773BC(Actor*, int, int, int, int, int);
-Actor* func_800775C0(int, MpdEnemy*, vs_CharInitData*, int);
 int func_80077F70(void);
-void func_800780A8(SVECTOR*);
 int func_80078828(int);
 int func_800792E4(int arg0, int arg1, int arg2);
 void computeSphericalOffset(VECTOR*, VECTOR*, SphericalValues*);
 void setCameraPositionFromAngles(SphericalValues* arg0);
 void setCameraLookAtFromAngles(SphericalValues* arg0);
 void func_8007B10C(int, int, int, short, short);
-void func_8007B410(void);
-void func_8007B63C(void);
-void func_8007B470(void);
-void func_8007B508(void);
-void func_8007B764(void);
-void func_8007B7DC(void);
-void func_8007BF6C(int);
-void func_8007BFF8(int);
 int func_8007C4E0(vs_Warp*, int, int);
 int func_8007C5C0(vs_Warp*, int, int);
 int func_8007C694(int, int, int, int, int);
-int getLocationId(int, int);
-void func_8007D360(void);
-void func_8007D41C(void);
-void calculateWeaponClassAffinity(vs_ActorStats*);
-short getDefenseGemBuff(vs_Action*, vs_ActorStats*, int);
-int doesAttackHit(vs_Action* arg0, HitEntity* arg1, HitEntity* arg2, int arg3, int arg4);
 int func_8007F434(void);
-int hitPrerequisiteCanApplyEffect(int arg0, u_char* arg1);
-int getEnemyClass(u_char*);
-void func_80080000(vs_Action*, HitEntity*, short);
-void func_800801E0(vs_Action*, HitEntity*, short);
-void adjustDpPp(vs_Action*, vs_ActorStats*, vs_ActorStats*, int);
-void func_800803A4(vs_Action*, vs_ActorStats*, vs_ActorStats*, int);
-void triggerArmorAffinityChange(vs_Action*, vs_UiEquipment*, int, int, int);
-void triggerClassChange(vs_Action* arg0, vs_UiEquipment*, int, int, int);
-int applyStatus(int, HitEntity*);
-int clearStatus(int, HitEntity*);
-static short getPhysicalAttackDamage(vs_Action*, HitEntity*, HitEntity*, int, int, int);
-short calculateStatChange(vs_Action*, HitEntity*, HitEntity*, int, int);
 int getActionCost(u_int, vs_ActorStats*, int);
-void func_80085008(HitEntity*);
-void func_80085390(vs_Action* arg0, HitEntity* arg1, HitEntity* arg2, int arg3, int arg4);
 void func_80085B10(int, D_800F19CC_t2*, D_800F19CC_t2*, int);
 void func_80086754(int, vs_ActorStats*);
 void applyBattleAbilityEffect(HitEntity*);
-void func_80087EF4(vs_ActorStats*);
-int updateBattleTimer(void);
-int func_80088554(void);
 void func_80088CA0(void);
-void func_80089114(void);
 void enableDispMask(void);
 void disableDispMask(void);
 int func_8008ABF0(int arg0);
@@ -330,7 +252,6 @@ void func_8008B8F8(char (*arg0)[12]);
 void func_8008B960(int, int, int);
 D_800F1D08_t* func_8008BAC8(int, int, int);
 MpdRoomSectionA* func_8008BC04(int, int, int);
-void func_8008BD74(MpdRoomSectionA*);
 int func_8008BEBC(MpdRoomSectionA* arg0);
 int func_8008BF48(MpdRoomSectionA*);
 void func_8008C0C0(void);
@@ -364,10 +285,6 @@ void func_8008E938(void);
 int func_8008EA90(int arg0);
 void func_8008FA14(D_800F1DD4_t*);
 void func_80090A1C(D_800F1DD4_t*);
-
-void func_800719FC(int);
-void func_80071F68(int);
-void func_80072734(int);
 
 extern D_800F18EC_t* D_800F18EC;
 extern int D_80068C1C[];
@@ -4613,7 +4530,7 @@ void func_800738E4(void)
     setActorsSfxOverride(-1, &sp10);
 
     for (i = 0; i < 16; ++i) {
-        func_8009D7E8(i, 0);
+        setActorSway(i, 0);
         setActorLightColor(i, NULL);
     }
 
@@ -4984,7 +4901,7 @@ void func_80074580(void)
     if (stepCameraTransition() != 0) {
         cameraMode = 1;
         firstPersonViewEnabled = 1;
-        D_800F19C8 = 1;
+        firstPersonRendering = 1;
         func_8008C40C();
     }
 }
@@ -4999,7 +4916,7 @@ void checkFirstPersonViewExit(void)
 
     cameraMode = 2;
     firstPersonViewEnabled = 0;
-    D_800F19C8 = 0;
+    firstPersonRendering = 0;
 
     vs_battle_getActorPosition(0, &sp10);
     func_80074B14(0, &sp10.unk0.unk0);
@@ -5181,7 +5098,7 @@ int func_80074BAC(int actorIndex, ActorLocation* position)
     u_int cellIndex;
     int actorOffset;
     int result = 0;
-    MpdRoomSection3* cell;
+    MpdTile* cell;
     Actor* actor;
     int layer = (u_int)flags >> 14;
 
@@ -5345,7 +5262,7 @@ int func_80074BAC(int actorIndex, ActorLocation* position)
 int func_800751B8(int arg0, ActorLocation* arg1)
 {
     MpdRoomSection9* temp_v0_2;
-    MpdRoomSection3* temp_s4;
+    MpdTile* temp_s4;
     int temp_s3;
     u_int temp_a2;
     u_int temp_v0;
@@ -6345,7 +6262,12 @@ void func_800770FC(UNUSED Actor* arg0, int arg1)
     vs_battle_populateDataSlot(&sp10);
 }
 
-void func_80077130(Actor* actor, int actorId, int wepId, int isShield, int material)
+/**
+ * Replaces one weapon model of an actor.
+ * @param wepId Model id. 0 removes the current model and 0xFF leaves it unchanged.
+ * @param isShield 0 = blade model, 1 = shield model.
+ */
+void setActorWeaponModel(Actor* actor, int actorId, int wepId, int isShield, int material)
 {
     vs_ObjectData sp10;
 
@@ -6415,8 +6337,10 @@ Actor_dat* func_80077240(int arg0, int arg1, int bladeWepId, int bladeMaterial,
         func_80077078(&temp_v0->unk0.unk0.unk0, arg0, arg1, arg6, arg7);
         if (arg1 != 0x7F) {
             func_800770FC(&temp_v0->unk0.unk0.unk0, arg0);
-            func_80077130(&temp_v0->unk0.unk0.unk0, arg0, bladeWepId, 0, bladeMaterial);
-            func_80077130(&temp_v0->unk0.unk0.unk0, arg0, shieldWepId, 1, shieldMaterial);
+            setActorWeaponModel(
+                &temp_v0->unk0.unk0.unk0, arg0, bladeWepId, 0, bladeMaterial);
+            setActorWeaponModel(
+                &temp_v0->unk0.unk0.unk0, arg0, shieldWepId, 1, shieldMaterial);
             func_800771E0((char*)&temp_v0->unk0, arg0,
                 temp_v0->unk0.unk0.unk0.equippedWeaponCategory, arg7);
         }
@@ -7359,7 +7283,6 @@ int func_800792E4(int arg0, int arg1, int arg2)
     return ret;
 }
 
-void func_800793C0(void);
 void func_800793C0(void)
 {
     D_800F19CC_t2* action;
@@ -8274,7 +8197,6 @@ void func_8007B344(int arg0, int arg1, short arg2, short arg3, short arg4)
     vs_main_transformBgColors(arg0, arg1, arg2, arg3, arg4);
 }
 
-UNUSED void func_8007B378(int arg0, u_short* arg1, int arg2, int arg3);
 void func_8007B378(int arg0, u_short* arg1, int arg2, int arg3)
 {
     vs_main_loadClutTransition(arg0, 0, arg1, arg3);
@@ -8283,7 +8205,6 @@ void func_8007B378(int arg0, u_short* arg1, int arg2, int arg3)
     vs_main_loadClutTransition(arg0, 2, arg1 + 0x200);
 }
 
-UNUSED void func_8007B3D0(int arg0, int arg1, u_short* arg2, int arg3);
 void func_8007B3D0(int arg0, int arg1, u_short* arg2, int arg3)
 {
     vs_main_loadClutTransition(arg0, arg1 + 4, arg2, arg3);
@@ -8519,8 +8440,6 @@ void vs_battle_forgetZoneEnemies(int arg0, int arg1) { forgetZoneEnemies(arg0, a
 /**
  * Starts the on-screen timer. Its time is copied to state flags 0xA0-0xA3 every frame
  * (see updateBattleTimer).
- * @param mode Not battleTimerOff.
- * @param lifetime When the timer is cleared automatically.
  * @param time Start time for a countdown, as hours << 24 | minutes << 16 | seconds << 8.
  */
 void startBattleTimer(
@@ -8738,7 +8657,6 @@ int func_8007C218(int arg0)
 /**
  * Restores an actor's HP, MP and limb HP to their maximums, sets its risk and action
  * delay to 0 and removes all status effects.
- * @param actorId Actor to restore.
  */
 void fullyRestoreActor(int actorId)
 {
@@ -8996,38 +8914,49 @@ int spawnModelActor(u_int slot, int modelId, vs_TilePosition* tile)
     return 0;
 }
 
-void func_8007CA20(int actorId, int bladeWepId, int shieldWepId)
+/**
+ * Sets both weapon models of an actor, using the ids as in setActorWeaponModel.
+ */
+void setActorWeaponModels(int actorId, int bladeWepId, int shieldWepId)
 {
-    Actor* temp_s0 = vs_battle_actors[actorId];
-    if (temp_s0 != NULL) {
-        func_80077130(temp_s0, actorId, bladeWepId, 0, 0);
-        func_80077130(temp_s0, actorId, shieldWepId, 1, 0);
+    Actor* actor = vs_battle_actors[actorId];
+
+    if (actor != NULL) {
+        setActorWeaponModel(actor, actorId, bladeWepId, 0, 0);
+        setActorWeaponModel(actor, actorId, shieldWepId, 1, 0);
     }
 }
 
-void func_8007CAA4(int arg0)
+/**
+ * Gives an actor the weapon models of the weapons it has equipped.
+ */
+void restoreActorWeaponModels(int actorId)
 {
-    Actor* temp_s1;
     vs_ActorStats* stats;
+    Actor* actor = vs_battle_actors[actorId];
 
-    temp_s1 = vs_battle_actors[arg0];
-    if (temp_s1 != NULL) {
-        stats = temp_s1->stats;
-        if (stats != NULL) {
-            if (stats->weapon.blade.id != 0) {
-                func_80077130(
-                    temp_s1, arg0, stats->weapon.wepId, 0, stats->weapon.blade.material);
+    if (actor == NULL) {
+        return;
+    }
 
-            } else {
-                func_80077130(temp_s1, arg0, 0, 0, 0);
-            }
-            if (stats->shield.base.id != 0) {
-                func_80077130(
-                    temp_s1, arg0, stats->shield.wepId, 1, stats->shield.base.material);
-            } else {
-                func_80077130(temp_s1, arg0, 0, 0, 0);
-            }
-        }
+    stats = actor->stats;
+
+    if (stats == NULL) {
+        return;
+    }
+
+    if (stats->weapon.blade.id != 0) {
+        setActorWeaponModel(
+            actor, actorId, stats->weapon.wepId, 0, stats->weapon.blade.material);
+    } else {
+        setActorWeaponModel(actor, actorId, 0, 0, 0);
+    }
+
+    if (stats->shield.base.id != 0) {
+        setActorWeaponModel(
+            actor, actorId, stats->shield.wepId, 1, stats->shield.base.material);
+    } else {
+        setActorWeaponModel(actor, actorId, 0, 0, 0);
     }
 }
 
@@ -9087,11 +9016,11 @@ void vs_battle_setProjectionDistance(int projectionDistance)
     SetGeomScreen(projectionDistance);
 }
 
-void setFarClip(int farClip, int arg1)
+void setFarClip(int farClip, int fogDepthOverridden)
 {
     vs_scratch.camera.farClip = farClip;
 
-    if (arg1 == 0) {
+    if (!fogDepthOverridden) {
         if (farClip < 0) {
             farClip += 7;
         }
@@ -9101,7 +9030,7 @@ void setFarClip(int farClip, int arg1)
         } else if (farClip < 0) {
             farClip = 0;
         }
-        func_80098194(farClip);
+        setFogDepth(farClip);
     }
 }
 
@@ -9218,7 +9147,6 @@ int isActorWalkDone(int arg0)
  * (also used for dead actors), so the enemy AI skips it (and drops it from its alert
  * list), is skipped by target selection (unk1C bit 0x8000) and loses its target marker.
  * The model is not affected (see vs_battle_setActorFlags).
- * @param actorId Actor to change.
  * @param awake 0 = make dormant, nonzero = wake (only if currently in state 0x20).
  * @return awake
  */
@@ -9262,7 +9190,6 @@ int setActorsAwake(int awake)
 /**
  * Removes or returns actor from or to the scene's actor list, without freeing it.
  * Not to be confused with setActorAwake, which keeps the actor in the list.
- * @param actorId Actor to change.
  * @param inactive Nonzero = remove from the scene, 0 = put back.
  */
 void setActorInactive(int actorId, int inactive)
@@ -15331,7 +15258,7 @@ void func_80089DC0(int arg0)
     func_80093FEC(0, 0, vs_battle_characterState->stats->statuses & 0x21000, 1);
     func_80086754(0x21000, vs_battle_characterState->stats);
 
-    D_800F19C8 = 0;
+    firstPersonRendering = 0;
     firstPersonViewEnabled = 0;
     D_800F1A50[0] = 1;
     D_800F1868 = 0;
@@ -15872,7 +15799,7 @@ void func_8008B1FC(void* arg0)
     SetTransMatrix((MATRIX*)0x1F800014); // camera.viewMatrix
     func_800983F8(arg0);
     D_800F1CC0 = *(void**)0x1F800000; // camera.unk0
-    func_8009723C(arg0, D_800F19C8);
+    func_8009723C(arg0, firstPersonRendering);
     D_800F1BB8 = *(void**)0x1F800000; // camera.unk0
     if (D_800F1BB0.unk6 != 0) {
         func_80098D6C(D_800F1CC0, D_800F1BB8, &D_800F1BB0, 0);
@@ -15999,7 +15926,7 @@ void func_8008B6B4(void)
     vs_main_bzero(D_800F1D28, sizeof D_800F1D28);
 }
 
-UNUSED MpdRoomSection3* getRoomDataSection3(void) { return vs_battle_roomData.section3; }
+UNUSED MpdTile* getRoomTileMap(void) { return vs_battle_roomData.tileMap; }
 
 int func_8008B6FC(void) { return vs_battle_roomData.section6; }
 
@@ -16020,47 +15947,50 @@ ZoneContextBounds* getMapBounds(UNUSED int arg0)
     return NULL;
 }
 
-MpdRoomSection3* func_8008B764(u_int width, u_int height, int arg2)
+MpdTile* func_8008B764(u_int width, u_int height, int arg2)
 {
-    if (vs_battle_roomData.section3 != NULL) {
+    if (vs_battle_roomData.tileMap != NULL) {
         if (arg2 >= 2) {
-            if (vs_battle_roomData.section12 != NULL) {
-                return &vs_battle_roomData.section12[arg2 - 2].unkB4;
+            if (vs_battle_roomData.cloudstoneSection != NULL) {
+                return &vs_battle_roomData.cloudstoneSection[arg2 - 2].unkB4;
             }
             return NULL;
         }
         if ((width < vs_battle_roomData.collisionMapSection->width)
             && (height < vs_battle_roomData.collisionMapSection->height)) {
             return &vs_battle_roomData
-                        .section3[height * vs_battle_roomData.collisionMapSection->width
-                                  + width];
+                        .tileMap[height * vs_battle_roomData.collisionMapSection->width
+                                 + width];
         }
     }
     return NULL;
 }
 
-int func_8008B808(int arg0, int arg1, int arg2, int arg3)
+/**
+ * Blocks or unblocks a tile in the room's walkable area.
+ * @param layer 0 or 1 = layer of the tile grid, 2 and above = cloudstone (layer - 2)
+ */
+int setTileBlocked(int x, int row, int layer, int blocked)
 {
-    MpdRoomSection3* temp_a0;
+    MpdTile* tile;
 
-    if (vs_battle_roomData.section3 != NULL) {
-        if (arg3 != 0) {
-            arg3 = 5;
+    if (vs_battle_roomData.tileMap != NULL) {
+        if (blocked != 0) {
+            blocked = tileShapeBlocked;
         }
-        if (arg2 >= 2) {
-            if (vs_battle_roomData.section12 != NULL) {
-                temp_a0 = &vs_battle_roomData.section12[arg2 - 2].unkB4;
-                temp_a0->unk0_10 = arg3;
+        if (layer >= 2) {
+            if (vs_battle_roomData.cloudstoneSection != NULL) {
+                tile = &vs_battle_roomData.cloudstoneSection[layer - 2].unkB4;
+                tile->shape = blocked;
                 return 1;
             }
         } else {
-            temp_a0 =
-                &vs_battle_roomData
-                     .section3[(arg2 * vs_battle_roomData.collisionMapSection->width
-                                   * vs_battle_roomData.collisionMapSection->height)
-                               + (arg1 * vs_battle_roomData.collisionMapSection->width)
-                               + arg0];
-            temp_a0->unk0_10 = arg3;
+            tile = &vs_battle_roomData
+                        .tileMap[(layer * vs_battle_roomData.collisionMapSection->width
+                                     * vs_battle_roomData.collisionMapSection->height)
+                                 + (row * vs_battle_roomData.collisionMapSection->width)
+                                 + x];
+            tile->shape = blocked;
             return 1;
         }
     }
@@ -16202,11 +16132,11 @@ MpdRoomSectionA* func_8008BC04(int arg0, int arg1, int arg2)
 
 void func_8008BD74(MpdRoomSectionA* arg0)
 {
-    MpdRoomSection3* var_a0;
+    MpdTile* var_a0;
 
     var_a0 = func_8008B764(arg0->unk0.unk0, arg0->unk0.unk2, arg0->unk0.unk4);
     if (var_a0 != NULL) {
-        var_a0->unk0_10 ^= 5;
+        var_a0->shape ^= tileShapeBlocked;
     }
     var_a0 = NULL;
     switch (arg0->unk0.unk6 - 4) {
@@ -16224,7 +16154,7 @@ void func_8008BD74(MpdRoomSectionA* arg0)
         break;
     }
     if ((arg0->unk0.unk6 >= 4) && (var_a0 != NULL)) {
-        var_a0->unk0_10 ^= 5;
+        var_a0->shape ^= tileShapeBlocked;
     }
 }
 
@@ -16418,8 +16348,8 @@ int func_8008C478(int arg0)
 
 int func_8008C49C(int arg0, int arg1)
 {
-    if (vs_battle_roomData.section12 != NULL) {
-        vs_battle_roomData.section12[arg0].unk4_1 = arg1;
+    if (vs_battle_roomData.cloudstoneSection != NULL) {
+        vs_battle_roomData.cloudstoneSection[arg0].rider = arg1;
         if ((arg1 >= 0) && (D_800F1D68 == 0)) {
             D_800F1D70[arg0] = 0;
         }
@@ -16432,7 +16362,7 @@ void func_8008C518(int arg0) { func_8008C49C(arg0, -1); }
 
 void func_8008C538(void)
 {
-    MpdRoomSection12* var_s2;
+    MpdCloudstone* var_s2;
     int temp_s3;
     int i;
     int* temp_v0;
@@ -16446,19 +16376,19 @@ void func_8008C538(void)
         D_800F1D70[i] = 7;
     }
 
-    if (vs_battle_roomData.section12 != NULL) {
-        temp_s3 = vs_battle_roomData.header.section12Len / 184;
-        var_s2 = vs_battle_roomData.section12;
+    if (vs_battle_roomData.cloudstoneSection != NULL) {
+        temp_s3 = vs_battle_roomData.header.cloudstoneSectionLen / 184;
+        var_s2 = vs_battle_roomData.cloudstoneSection;
         for (i = 0; i < temp_s3; ++i, ++var_s2) {
-            temp_v0 = func_8009195C(var_s2->unk0_0);
+            temp_v0 = func_8009195C(var_s2->geometryId);
             if (temp_v0 != NULL) {
-                if (var_s2->unk0_9) {
+                if (var_s2->stopped) {
                     temp_v0[0] |= 0x100;
                 }
 
-                temp_v0[1] = var_s2->unkA8 / ONE;
-                temp_v0[2] = -(var_s2->unkAC / ONE);
-                temp_v0[3] = var_s2->unkB0 / ONE;
+                temp_v0[1] = var_s2->x / ONE;
+                temp_v0[2] = -(var_s2->y / ONE);
+                temp_v0[3] = var_s2->z / ONE;
             }
         }
     }
@@ -16471,39 +16401,39 @@ void func_8008C538(void)
 
 void func_8008C6B4(int arg0, int arg1)
 {
-    MpdRoomSection12* temp_s0;
+    MpdCloudstone* temp_s0;
     int* temp_v0_5;
 
-    if (vs_battle_roomData.section12 != NULL) {
-        temp_s0 = &vs_battle_roomData.section12[arg0];
+    if (vs_battle_roomData.cloudstoneSection != NULL) {
+        temp_s0 = &vs_battle_roomData.cloudstoneSection[arg0];
         if (arg1 == -1) {
-            arg1 = temp_s0->unk4_8;
+            arg1 = temp_s0->startWaypoint;
         }
         if (arg1 >= 0) {
-            temp_s0->unk0_9 = 0;
-            temp_s0->unk4_1 = 0;
-            temp_s0->unk0_27 = arg1;
-            temp_s0->unk0_14 = arg1;
-            temp_s0->unk0_29 = arg1;
-            temp_s0->unk4_16 = 0;
-            temp_s0->unk4_0 = 0;
+            temp_s0->stopped = 0;
+            temp_s0->rider = 0;
+            temp_s0->toWaypoint = arg1;
+            temp_s0->fromWaypoint = arg1;
+            temp_s0->leg = arg1;
+            temp_s0->timer = 0;
+            temp_s0->docked = 0;
 
-            temp_s0->unkA8 = temp_s0->unk8[temp_s0->unk0_27].vx;
-            temp_s0->unkAC = temp_s0->unk8[temp_s0->unk0_27].vy;
-            temp_s0->unkB0 = temp_s0->unk8[temp_s0->unk0_27].vz;
+            temp_s0->x = temp_s0->waypoints[temp_s0->toWaypoint].vx;
+            temp_s0->y = temp_s0->waypoints[temp_s0->toWaypoint].vy;
+            temp_s0->z = temp_s0->waypoints[temp_s0->toWaypoint].vz;
 
-            if (((temp_s0->unk0_14)) == ((temp_s0->unk0_10))) {
-                temp_s0->unk0_26 = 0;
-                --temp_s0->unk0_27;
+            if (((temp_s0->fromWaypoint)) == ((temp_s0->lastWaypoint))) {
+                temp_s0->pathDirection = 0;
+                --temp_s0->toWaypoint;
             } else {
-                temp_s0->unk0_26 = 1;
-                ++temp_s0->unk0_27;
+                temp_s0->pathDirection = 1;
+                ++temp_s0->toWaypoint;
             }
-            temp_v0_5 = func_8009195C(temp_s0->unk0_0);
+            temp_v0_5 = func_8009195C(temp_s0->geometryId);
             if (temp_v0_5 != NULL) {
-                temp_v0_5[1] = temp_s0->unkA8 / ONE;
-                temp_v0_5[2] = -(temp_s0->unkAC / ONE);
-                temp_v0_5[3] = temp_s0->unkB0 / ONE;
+                temp_v0_5[1] = temp_s0->x / ONE;
+                temp_v0_5[2] = -(temp_s0->y / ONE);
+                temp_v0_5[3] = temp_s0->z / ONE;
             }
         }
     }
@@ -16514,14 +16444,14 @@ static short const D_80068BEC[] = { 8, 14, 16, 11, 7, 3, 1 };
 int func_8008C8A8(void)
 {
     SVECTOR point;
-    MpdRoomSection12* object;
+    MpdCloudstone* object;
     int count;
     int i;
     int tick;
     int* scene;
     u_int temp;
 
-    if (D_800F1BA4 || vs_battle_roomData.section12 == NULL || D_800F1D6E) {
+    if (D_800F1BA4 || vs_battle_roomData.cloudstoneSection == NULL || D_800F1D6E) {
         return;
     }
     if (D_800F1D68 > 0) {
@@ -16538,12 +16468,12 @@ int func_8008C8A8(void)
         return;
     }
 
-    object = vs_battle_roomData.section12;
-    count = vs_battle_roomData.header.section12Len / sizeof *object;
+    object = vs_battle_roomData.cloudstoneSection;
+    count = vs_battle_roomData.header.cloudstoneSectionLen / sizeof *object;
 
     for (i = 0; i < count; ++i, ++object) {
-        if (!object->unk0_9) {
-            if (!object->unk0_8 || (*(u_int*)((char*)object + 4) & 0xFE) != 0xFE) {
+        if (!object->stopped) {
+            if (!object->needsRider || (*(u_int*)((char*)object + 4) & 0xFE) != 0xFE) {
                 for (tick = 0; tick < (vs_gametime_tickspeed >> 1); ++tick) {
                     temp = D_800F1D70[i];
 
@@ -16554,73 +16484,73 @@ int func_8008C8A8(void)
                             D_800F1D70[i] = 7;
                         }
                     }
-                    if (!object->unk4_0) {
-                        object->unkA8 += object->unk48[object->unk0_29].vx;
-                        object->unkAC += object->unk48[object->unk0_29].vy;
-                        object->unkB0 += object->unk48[object->unk0_29].vz;
-                        point.vy = -(object->unkAC / ONE);
-                        point.vx = object->unkA8 / ONE;
-                        point.vz = object->unkB0 / ONE;
+                    if (!object->docked) {
+                        object->x += object->legs[object->leg].vx;
+                        object->y += object->legs[object->leg].vy;
+                        object->z += object->legs[object->leg].vz;
+                        point.vy = -(object->y / ONE);
+                        point.vx = object->x / ONE;
+                        point.vz = object->z / ONE;
 
                         if (func_800A4494(i + 2, &point)) {
-                            object->unkA8 -= object->unk48[object->unk0_29].vx;
-                            object->unkAC -= object->unk48[object->unk0_29].vy;
-                            object->unkB0 -= object->unk48[object->unk0_29].vz;
+                            object->x -= object->legs[object->leg].vx;
+                            object->y -= object->legs[object->leg].vy;
+                            object->z -= object->legs[object->leg].vz;
                         } else {
-                            ++object->unk4_16;
+                            ++object->timer;
 
-                            if (object->unk4_16 >= object->unk48[object->unk0_29].pad) {
-                                object->unk4_16 = 0;
-                                object->unk4_0 = 1;
-                                object->unkA8 = object->unk8[object->unk0_27].vx;
-                                object->unkAC = object->unk8[object->unk0_27].vy;
-                                object->unkB0 = object->unk8[object->unk0_27].vz;
+                            if (object->timer >= object->legs[object->leg].pad) {
+                                object->timer = 0;
+                                object->docked = 1;
+                                object->x = object->waypoints[object->toWaypoint].vx;
+                                object->y = object->waypoints[object->toWaypoint].vy;
+                                object->z = object->waypoints[object->toWaypoint].vz;
 
-                                if (object->unk0_27 == object->unk4_8) {
+                                if (object->toWaypoint == object->startWaypoint) {
                                     object->unkB4.unk0_14 = 1;
                                 }
                             }
                         }
                     } else {
-                        ++object->unk4_16;
+                        ++object->timer;
 
-                        if (object->unk4_16 >= object->unk8[object->unk0_27].pad) {
-                            object->unk4_16 = 0;
-                            object->unk4_0 = 0;
-                            object->unk0_14 = object->unk0_27;
-                            ++object->unk0_29;
+                        if (object->timer >= object->waypoints[object->toWaypoint].pad) {
+                            object->timer = 0;
+                            object->docked = 0;
+                            object->fromWaypoint = object->toWaypoint;
+                            ++object->leg;
                             object->unkB4.unk0_14 = 0;
 
-                            if (object->unk0_14 == 0) {
-                                object->unk0_26 = 1;
-                                object->unk0_29 = 0;
-                            } else if (object->unk0_14 == object->unk0_10) {
-                                object->unk0_26 = 0;
+                            if (object->fromWaypoint == 0) {
+                                object->pathDirection = 1;
+                                object->leg = 0;
+                            } else if (object->fromWaypoint == object->lastWaypoint) {
+                                object->pathDirection = 0;
                             }
-                            if (object->unk0_26) {
-                                ++object->unk0_27;
+                            if (object->pathDirection) {
+                                ++object->toWaypoint;
                             } else {
-                                --object->unk0_27;
+                                --object->toWaypoint;
                             }
                         }
                     }
                 }
             }
 
-            scene = func_8009195C(object->unk0_0);
+            scene = func_8009195C(object->geometryId);
 
             if (scene != NULL) {
                 int y;
 
-                scene[1] = object->unkA8 / ONE;
-                y = object->unkAC / ONE;
+                scene[1] = object->x / ONE;
+                y = object->y / ONE;
                 temp = D_80068BEC[D_800F1D70[i]] - y;
                 scene[2] = temp;
-                scene[3] = object->unkB0 / ONE;
+                scene[3] = object->z / ONE;
                 scene[0] &= ~0x100;
             }
         } else {
-            scene = func_8009195C(object->unk0_0);
+            scene = func_8009195C(object->geometryId);
 
             if (scene != NULL) {
                 scene[0] |= 0x100;
@@ -16631,17 +16561,17 @@ int func_8008C8A8(void)
 
 void func_8008CEB0(void)
 {
-    MpdRoomSection12* object;
+    MpdCloudstone* object;
     int i;
     int count;
 
     SetRotMatrix(&((vs_Scratch*)0x1F800000)->viewMatrix);
     SetTransMatrix(&((vs_Scratch*)0x1F800000)->viewMatrix);
-    if (vs_battle_roomData.section12 == NULL) {
+    if (vs_battle_roomData.cloudstoneSection == NULL) {
         return;
     }
-    object = vs_battle_roomData.section12;
-    count = vs_battle_roomData.header.section12Len / sizeof(MpdRoomSection12);
+    object = vs_battle_roomData.cloudstoneSection;
+    count = vs_battle_roomData.header.cloudstoneSectionLen / sizeof(MpdCloudstone);
     for (i = 0; i < count; ++i, ++object) {
         UNUSED int _[8];
         SVECTOR vertices[4];
@@ -16650,23 +16580,23 @@ void func_8008CEB0(void)
         POLY_F4* polygon;
         int depth;
         int shade;
-        MpdRoomSection3* cell;
+        MpdTile* cell;
         int height;
         int coordinate;
         int y;
 
-        if (object->unk0_9 || func_8009195C(object->unk0_0) == NULL) {
+        if (object->stopped || func_8009195C(object->geometryId) == NULL) {
             continue;
         }
-        cell = func_8008B764(object->unkA8 / (ONE * 128), object->unkB0 / (ONE * 128), 0);
+        cell = func_8008B764(object->x / (ONE * 128), object->z / (ONE * 128), 0);
         if (cell->unk0_17 && (cell->unk0_0 < 15 || cell->unk0_0 >= 19)) {
             continue;
         }
-        coordinate = object->unkA8 / ONE;
-        height = func_8008DC7C(coordinate, object->unkB0 / ONE);
+        coordinate = object->x / ONE;
+        height = func_8008DC7C(coordinate, object->z / ONE);
         height <<= 17;
         height >>= 17;
-        coordinate = object->unkAC;
+        coordinate = object->y;
         y = (coordinate /= -ONE);
         if (height <= y) {
             continue;
@@ -16677,18 +16607,18 @@ void func_8008CEB0(void)
         }
         shade = 255 - shade;
         polygon = ((vs_Scratch*)0x1F800000)->unk0;
-        vertices[0].vx = (short)(object->unkA8 / ONE - 32) - shade / 8;
+        vertices[0].vx = (short)(object->x / ONE - 32) - shade / 8;
         vertices[0].vy = height;
-        vertices[0].vz = (short)(object->unkB0 / ONE - 32) - shade / 8;
-        vertices[1].vx = (short)(object->unkA8 / ONE + 32) + shade / 8;
+        vertices[0].vz = (short)(object->z / ONE - 32) - shade / 8;
+        vertices[1].vx = (short)(object->x / ONE + 32) + shade / 8;
         vertices[1].vy = height;
-        vertices[1].vz = (short)(object->unkB0 / ONE - 32) - shade / 8;
-        vertices[2].vx = (short)(object->unkA8 / ONE - 32) - shade / 8;
+        vertices[1].vz = (short)(object->z / ONE - 32) - shade / 8;
+        vertices[2].vx = (short)(object->x / ONE - 32) - shade / 8;
         vertices[2].vy = height;
-        vertices[2].vz = (short)(object->unkB0 / ONE + 32) + shade / 8;
-        vertices[3].vx = (short)(object->unkA8 / ONE + 32) + shade / 8;
+        vertices[2].vz = (short)(object->z / ONE + 32) + shade / 8;
+        vertices[3].vx = (short)(object->x / ONE + 32) + shade / 8;
         vertices[3].vy = height;
-        vertices[3].vz = (short)(object->unkB0 / ONE + 32) + shade / 8;
+        vertices[3].vz = (short)(object->z / ONE + 32) + shade / 8;
         depth = RotAverage4(&vertices[0], &vertices[1], &vertices[2], &vertices[3],
             (long*)&polygon->x0, (long*)&polygon->x1, (long*)&polygon->x2,
             (long*)&polygon->x3, &projection, &flags);
@@ -16706,7 +16636,7 @@ void func_8008CEB0(void)
 
 int func_8008D2C0(SVECTOR arg0[])
 {
-    MpdRoomSection12* var_t0;
+    MpdCloudstone* var_t0;
     int i;
     int var_t1;
     int temp_t3;
@@ -16714,19 +16644,19 @@ int func_8008D2C0(SVECTOR arg0[])
     SVECTOR* a0 = arg0;
 
     do {
-        if (vs_battle_roomData.section12 != NULL) {
-            var_t0 = vs_battle_roomData.section12;
-            temp_t3 = vs_battle_roomData.header.section12Len / 184;
+        if (vs_battle_roomData.cloudstoneSection != NULL) {
+            var_t0 = vs_battle_roomData.cloudstoneSection;
+            temp_t3 = vs_battle_roomData.header.cloudstoneSectionLen / 184;
             var_t1 = 0;
 
             for (i = 0; i < temp_t3; ++i, ++var_t0) {
-                if (!((var_t0->unk0_9))) {
+                if (!((var_t0->stopped))) {
                     do {
                         int v;
-                        a0->vx = var_t0->unkA8 / ONE;
-                        v = var_t0->unkAC / ONE;
+                        a0->vx = var_t0->x / ONE;
+                        v = var_t0->y / ONE;
                         a0->vy = (D_80068BEC[D_800F1D70[i]] - v);
-                        a0->vz = (var_t0->unkB0 / ONE);
+                        a0->vz = (var_t0->z / ONE);
                         a0->pad = i;
                     } while (0);
                     ++a0;
@@ -16801,7 +16731,7 @@ void func_8008D594(int arg0) { D_800F1D6E = arg0; }
 void func_8008D5A0(int arg0)
 {
 
-    if ((vs_battle_roomData.header.section12Len / 184) != 0) {
+    if ((vs_battle_roomData.header.cloudstoneSectionLen / 184) != 0) {
         if (arg0 != 0) {
             func_8008E4DC(1);
         } else {
@@ -16826,7 +16756,7 @@ void func_8008D5FC(MpdRoomSectionA* arg0)
 
 void func_8008D658(MpdRoomSectionA* arg0)
 {
-    MpdRoomSection3* temp_v0;
+    MpdTile* temp_v0;
 
     if (arg0->unk0.unk8.s16 == 0) {
         vs_main_playSfxDefault(0x7E, 0x3B);
@@ -16840,13 +16770,13 @@ void func_8008D658(MpdRoomSectionA* arg0)
     arg0->unk0.unk8.s16 = arg0->unk0.unk8.s16 == 0;
     temp_v0 = func_8008B764(arg0->unk0.unk0, arg0->unk0.unk2, arg0->unk0.unk4);
     if (temp_v0 != NULL) {
-        temp_v0->unk0_10 = arg0->unk0.unk8.s16 * 5;
+        temp_v0->shape = arg0->unk0.unk8.s16 * tileShapeBlocked;
     }
 }
 
 void func_8008D710(void)
 {
-    MpdRoomSection3* temp_s0;
+    MpdTile* temp_s0;
     MpdRoomSection13* var_s3;
     int temp_s4;
     int i;
@@ -16864,12 +16794,12 @@ void func_8008D710(void)
                 var_s3->unk8 = 1;
                 func_80093824(var_s3->unk6);
                 if (temp_s0 != NULL) {
-                    temp_s0->unk0_10 = 5;
+                    temp_s0->shape = tileShapeBlocked;
                 }
             } else {
                 var_s3->unk8 = 0;
                 if (temp_s0 != NULL) {
-                    temp_s0->unk0_10 = 0;
+                    temp_s0->shape = tileShapeFull;
                 }
             }
         }
@@ -17181,20 +17111,25 @@ void func_8008E19C(int arg0, int arg1, short arg2, u_int arg3)
     (*var_t0)[1] = arg3;
     (*var_t0)[2] = arg3;
     p = D_800E85A0;
-    func_8009723C(p - 0x58, D_800F19C8);
+    func_8009723C(p - 0x58, firstPersonRendering);
 }
 
-void func_8008E224(int arg0, int arg1)
+/**
+ * Starts or stops a cloudstone.
+ * @param index Index of the cloudstone in the room data.
+ * @param moving 1 = moving, 0 = stopped.
+ */
+void setCloudstoneMoving(int index, int moving)
 {
     int* temp_v0;
-    MpdRoomSection12* temp_s0 = vs_battle_roomData.section12;
+    MpdCloudstone* temp_s0 = vs_battle_roomData.cloudstoneSection;
 
     if (temp_s0 != NULL) {
-        temp_s0 = &vs_battle_roomData.section12[arg0];
-        temp_s0->unk0_9 = arg1 - 1;
-        temp_v0 = func_8009195C(temp_s0->unk0_0);
+        temp_s0 = &vs_battle_roomData.cloudstoneSection[index];
+        temp_s0->stopped = moving - 1;
+        temp_v0 = func_8009195C(temp_s0->geometryId);
         if (temp_v0 != NULL) {
-            if (!temp_s0->unk0_9) {
+            if (!temp_s0->stopped) {
                 *temp_v0 &= ~0x100;
             } else {
                 *temp_v0 |= 0x100;
@@ -17205,22 +17140,22 @@ void func_8008E224(int arg0, int arg1)
 
 void* func_8008E2D4(int arg0)
 {
-    MpdRoomSection12* temp_v1 = vs_battle_roomData.section12;
+    MpdCloudstone* temp_v1 = vs_battle_roomData.cloudstoneSection;
 
-    if (vs_battle_roomData.section12 != NULL) {
-        temp_v1 = &vs_battle_roomData.section12[arg0];
-        return ((char*)temp_v1) + 8 + temp_v1->unk0_27 * 16;
+    if (vs_battle_roomData.cloudstoneSection != NULL) {
+        temp_v1 = &vs_battle_roomData.cloudstoneSection[arg0];
+        return ((char*)temp_v1) + 8 + temp_v1->toWaypoint * 16;
     }
     return NULL;
 }
 
 int func_8008E320(int arg0)
 {
-    MpdRoomSection12* temp_v1 = vs_battle_roomData.section12;
-    if (vs_battle_roomData.section12 != NULL) {
-        temp_v1 = &vs_battle_roomData.section12[arg0];
-        if (temp_v1->unk4_0 == 1) {
-            return temp_v1->unk4_16;
+    MpdCloudstone* temp_v1 = vs_battle_roomData.cloudstoneSection;
+    if (vs_battle_roomData.cloudstoneSection != NULL) {
+        temp_v1 = &vs_battle_roomData.cloudstoneSection[arg0];
+        if (temp_v1->docked == 1) {
+            return temp_v1->timer;
         }
     }
     return -1;
@@ -17279,7 +17214,7 @@ void func_8008E4DC(int arg0)
     static u_short const D_80068BFC[0x10] = { 0x10, 1, 0x865, 0xC66, 0x869, 0xCA9, 0x88D,
         0x10AD, 0xCB1, 0x14D1, 0xCD5, 0x14F5, 0xCF9, 0x113A, 0x199B, 0x21FC };
 
-    MpdRoomSection12* var_s0;
+    MpdCloudstone* var_s0;
     int temp_s2;
     int i;
 
@@ -17290,12 +17225,12 @@ void func_8008E4DC(int arg0)
             vs_main_loadClut(D_800F1BA8 + 0x230, 2, 0x30, 0x10);
         }
 
-        var_s0 = vs_battle_roomData.section12;
-        temp_s2 = vs_battle_roomData.header.section12Len / 184;
+        var_s0 = vs_battle_roomData.cloudstoneSection;
+        temp_s2 = vs_battle_roomData.header.cloudstoneSectionLen / 184;
 
         for (i = 0; i < temp_s2; ++i) {
             if (var_s0->unk0_12) {
-                func_80093914(var_s0->unk0_0);
+                func_80093914(var_s0->geometryId);
             }
             ++var_s0;
         }
@@ -17708,7 +17643,7 @@ void func_8008F440(void)
     D_800F1DD4_t* particle;
     int i;
     int j;
-    MpdRoomSection3* cell;
+    MpdTile* cell;
 
     SetRotMatrix(&((vs_Scratch*)0x1F800000)->viewMatrix);
     SetTransMatrix(&((vs_Scratch*)0x1F800000)->viewMatrix);

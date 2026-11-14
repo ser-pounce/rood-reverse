@@ -2649,21 +2649,31 @@ int vs_battle_script_68_warp(u_char* script, UNUSED short arg1)
     return scriptRepeat;
 }
 
-int vs_battle_script_69(u_char* arg0, UNUSED short arg1)
+/**
+ * Transitions the screen out with a fade or wipe, waiting for it to finish.
+ * @param script Opcode bytes:
+ *   - [1] = effect
+ *   - [2] = speed
+ *   - [3] = wipe angle, in 1/256ths of a turn
+ */
+int vs_battle_script_69_screenTransitionOut(u_char* script, UNUSED short arg1)
 {
-    int temp_v0 = func_8007C398();
-    if (temp_v0 != 5) {
-        if (temp_v0 == 0) {
-            func_8007C46C(arg0[1], arg0[2], arg0[3] * 0x10);
+    int phase = getScreenTransitionPhase();
+
+    if (phase != screenTransitionOutDone) {
+        if (phase == screenTransitionIdle) {
+            startScreenTransitionOut(script[1], script[2], script[3] * 0x10);
         }
+
         return scriptRepeat;
     }
+
     return scriptNext;
 }
 
 int vs_battle_script_6A(u_char* arg0, UNUSED short arg1)
 {
-    func_8007C4AC(arg0[1], arg0[2], arg0[3] * 0x10);
+    startScreenTransitionIn(arg0[1], arg0[2], arg0[3] * 0x10);
     return scriptNext;
 }
 
@@ -2712,7 +2722,7 @@ int vs_battle_script_6D(u_char* arg0, UNUSED short arg1)
 
 int vs_battle_script_6E(UNUSED u_char* arg0, UNUSED short arg1)
 {
-    return func_8007C398() != 0 ? scriptRepeat : scriptNext;
+    return getScreenTransitionPhase() != 0 ? scriptRepeat : scriptNext;
 }
 
 int vs_battle_script_6F(u_char* arg0, UNUSED short arg1)

@@ -15951,8 +15951,8 @@ MpdRoomSection3* func_8008B764(u_int width, u_int height, int arg2)
 {
     if (vs_battle_roomData.section3 != NULL) {
         if (arg2 >= 2) {
-            if (vs_battle_roomData.section12 != NULL) {
-                return &vs_battle_roomData.section12[arg2 - 2].unkB4;
+            if (vs_battle_roomData.cloudstoneSection != NULL) {
+                return &vs_battle_roomData.cloudstoneSection[arg2 - 2].unkB4;
             }
             return NULL;
         }
@@ -15975,8 +15975,8 @@ int func_8008B808(int arg0, int arg1, int arg2, int arg3)
             arg3 = 5;
         }
         if (arg2 >= 2) {
-            if (vs_battle_roomData.section12 != NULL) {
-                temp_a0 = &vs_battle_roomData.section12[arg2 - 2].unkB4;
+            if (vs_battle_roomData.cloudstoneSection != NULL) {
+                temp_a0 = &vs_battle_roomData.cloudstoneSection[arg2 - 2].unkB4;
                 temp_a0->unk0_10 = arg3;
                 return 1;
             }
@@ -16345,8 +16345,8 @@ int func_8008C478(int arg0)
 
 int func_8008C49C(int arg0, int arg1)
 {
-    if (vs_battle_roomData.section12 != NULL) {
-        vs_battle_roomData.section12[arg0].unk4_1 = arg1;
+    if (vs_battle_roomData.cloudstoneSection != NULL) {
+        vs_battle_roomData.cloudstoneSection[arg0].unk4_1 = arg1;
         if ((arg1 >= 0) && (D_800F1D68 == 0)) {
             D_800F1D70[arg0] = 0;
         }
@@ -16359,7 +16359,7 @@ void func_8008C518(int arg0) { func_8008C49C(arg0, -1); }
 
 void func_8008C538(void)
 {
-    MpdRoomSection12* var_s2;
+    MpdCloudstone* var_s2;
     int temp_s3;
     int i;
     int* temp_v0;
@@ -16373,13 +16373,13 @@ void func_8008C538(void)
         D_800F1D70[i] = 7;
     }
 
-    if (vs_battle_roomData.section12 != NULL) {
-        temp_s3 = vs_battle_roomData.header.section12Len / 184;
-        var_s2 = vs_battle_roomData.section12;
+    if (vs_battle_roomData.cloudstoneSection != NULL) {
+        temp_s3 = vs_battle_roomData.header.cloudstoneSectionLen / 184;
+        var_s2 = vs_battle_roomData.cloudstoneSection;
         for (i = 0; i < temp_s3; ++i, ++var_s2) {
             temp_v0 = func_8009195C(var_s2->unk0_0);
             if (temp_v0 != NULL) {
-                if (var_s2->unk0_9) {
+                if (var_s2->stopped) {
                     temp_v0[0] |= 0x100;
                 }
 
@@ -16398,16 +16398,16 @@ void func_8008C538(void)
 
 void func_8008C6B4(int arg0, int arg1)
 {
-    MpdRoomSection12* temp_s0;
+    MpdCloudstone* temp_s0;
     int* temp_v0_5;
 
-    if (vs_battle_roomData.section12 != NULL) {
-        temp_s0 = &vs_battle_roomData.section12[arg0];
+    if (vs_battle_roomData.cloudstoneSection != NULL) {
+        temp_s0 = &vs_battle_roomData.cloudstoneSection[arg0];
         if (arg1 == -1) {
             arg1 = temp_s0->unk4_8;
         }
         if (arg1 >= 0) {
-            temp_s0->unk0_9 = 0;
+            temp_s0->stopped = 0;
             temp_s0->unk4_1 = 0;
             temp_s0->unk0_27 = arg1;
             temp_s0->unk0_14 = arg1;
@@ -16441,14 +16441,14 @@ static short const D_80068BEC[] = { 8, 14, 16, 11, 7, 3, 1 };
 int func_8008C8A8(void)
 {
     SVECTOR point;
-    MpdRoomSection12* object;
+    MpdCloudstone* object;
     int count;
     int i;
     int tick;
     int* scene;
     u_int temp;
 
-    if (D_800F1BA4 || vs_battle_roomData.section12 == NULL || D_800F1D6E) {
+    if (D_800F1BA4 || vs_battle_roomData.cloudstoneSection == NULL || D_800F1D6E) {
         return;
     }
     if (D_800F1D68 > 0) {
@@ -16465,11 +16465,11 @@ int func_8008C8A8(void)
         return;
     }
 
-    object = vs_battle_roomData.section12;
-    count = vs_battle_roomData.header.section12Len / sizeof *object;
+    object = vs_battle_roomData.cloudstoneSection;
+    count = vs_battle_roomData.header.cloudstoneSectionLen / sizeof *object;
 
     for (i = 0; i < count; ++i, ++object) {
-        if (!object->unk0_9) {
+        if (!object->stopped) {
             if (!object->unk0_8 || (*(u_int*)((char*)object + 4) & 0xFE) != 0xFE) {
                 for (tick = 0; tick < (vs_gametime_tickspeed >> 1); ++tick) {
                     temp = D_800F1D70[i];
@@ -16558,17 +16558,17 @@ int func_8008C8A8(void)
 
 void func_8008CEB0(void)
 {
-    MpdRoomSection12* object;
+    MpdCloudstone* object;
     int i;
     int count;
 
     SetRotMatrix(&((vs_Scratch*)0x1F800000)->viewMatrix);
     SetTransMatrix(&((vs_Scratch*)0x1F800000)->viewMatrix);
-    if (vs_battle_roomData.section12 == NULL) {
+    if (vs_battle_roomData.cloudstoneSection == NULL) {
         return;
     }
-    object = vs_battle_roomData.section12;
-    count = vs_battle_roomData.header.section12Len / sizeof(MpdRoomSection12);
+    object = vs_battle_roomData.cloudstoneSection;
+    count = vs_battle_roomData.header.cloudstoneSectionLen / sizeof(MpdCloudstone);
     for (i = 0; i < count; ++i, ++object) {
         UNUSED int _[8];
         SVECTOR vertices[4];
@@ -16582,7 +16582,7 @@ void func_8008CEB0(void)
         int coordinate;
         int y;
 
-        if (object->unk0_9 || func_8009195C(object->unk0_0) == NULL) {
+        if (object->stopped || func_8009195C(object->unk0_0) == NULL) {
             continue;
         }
         cell = func_8008B764(object->unkA8 / (ONE * 128), object->unkB0 / (ONE * 128), 0);
@@ -16633,7 +16633,7 @@ void func_8008CEB0(void)
 
 int func_8008D2C0(SVECTOR arg0[])
 {
-    MpdRoomSection12* var_t0;
+    MpdCloudstone* var_t0;
     int i;
     int var_t1;
     int temp_t3;
@@ -16641,13 +16641,13 @@ int func_8008D2C0(SVECTOR arg0[])
     SVECTOR* a0 = arg0;
 
     do {
-        if (vs_battle_roomData.section12 != NULL) {
-            var_t0 = vs_battle_roomData.section12;
-            temp_t3 = vs_battle_roomData.header.section12Len / 184;
+        if (vs_battle_roomData.cloudstoneSection != NULL) {
+            var_t0 = vs_battle_roomData.cloudstoneSection;
+            temp_t3 = vs_battle_roomData.header.cloudstoneSectionLen / 184;
             var_t1 = 0;
 
             for (i = 0; i < temp_t3; ++i, ++var_t0) {
-                if (!((var_t0->unk0_9))) {
+                if (!((var_t0->stopped))) {
                     do {
                         int v;
                         a0->vx = var_t0->unkA8 / ONE;
@@ -16728,7 +16728,7 @@ void func_8008D594(int arg0) { D_800F1D6E = arg0; }
 void func_8008D5A0(int arg0)
 {
 
-    if ((vs_battle_roomData.header.section12Len / 184) != 0) {
+    if ((vs_battle_roomData.header.cloudstoneSectionLen / 184) != 0) {
         if (arg0 != 0) {
             func_8008E4DC(1);
         } else {
@@ -17111,17 +17111,22 @@ void func_8008E19C(int arg0, int arg1, short arg2, u_int arg3)
     func_8009723C(p - 0x58, D_800F19C8);
 }
 
-void func_8008E224(int arg0, int arg1)
+/**
+ * Starts or stops a cloudstone.
+ * @param index Index of the cloudstone in the room data.
+ * @param moving 1 = moving, 0 = stopped.
+ */
+void setCloudstoneMoving(int index, int moving)
 {
     int* temp_v0;
-    MpdRoomSection12* temp_s0 = vs_battle_roomData.section12;
+    MpdCloudstone* temp_s0 = vs_battle_roomData.cloudstoneSection;
 
     if (temp_s0 != NULL) {
-        temp_s0 = &vs_battle_roomData.section12[arg0];
-        temp_s0->unk0_9 = arg1 - 1;
+        temp_s0 = &vs_battle_roomData.cloudstoneSection[index];
+        temp_s0->stopped = moving - 1;
         temp_v0 = func_8009195C(temp_s0->unk0_0);
         if (temp_v0 != NULL) {
-            if (!temp_s0->unk0_9) {
+            if (!temp_s0->stopped) {
                 *temp_v0 &= ~0x100;
             } else {
                 *temp_v0 |= 0x100;
@@ -17132,10 +17137,10 @@ void func_8008E224(int arg0, int arg1)
 
 void* func_8008E2D4(int arg0)
 {
-    MpdRoomSection12* temp_v1 = vs_battle_roomData.section12;
+    MpdCloudstone* temp_v1 = vs_battle_roomData.cloudstoneSection;
 
-    if (vs_battle_roomData.section12 != NULL) {
-        temp_v1 = &vs_battle_roomData.section12[arg0];
+    if (vs_battle_roomData.cloudstoneSection != NULL) {
+        temp_v1 = &vs_battle_roomData.cloudstoneSection[arg0];
         return ((char*)temp_v1) + 8 + temp_v1->unk0_27 * 16;
     }
     return NULL;
@@ -17143,9 +17148,9 @@ void* func_8008E2D4(int arg0)
 
 int func_8008E320(int arg0)
 {
-    MpdRoomSection12* temp_v1 = vs_battle_roomData.section12;
-    if (vs_battle_roomData.section12 != NULL) {
-        temp_v1 = &vs_battle_roomData.section12[arg0];
+    MpdCloudstone* temp_v1 = vs_battle_roomData.cloudstoneSection;
+    if (vs_battle_roomData.cloudstoneSection != NULL) {
+        temp_v1 = &vs_battle_roomData.cloudstoneSection[arg0];
         if (temp_v1->unk4_0 == 1) {
             return temp_v1->unk4_16;
         }
@@ -17206,7 +17211,7 @@ void func_8008E4DC(int arg0)
     static u_short const D_80068BFC[0x10] = { 0x10, 1, 0x865, 0xC66, 0x869, 0xCA9, 0x88D,
         0x10AD, 0xCB1, 0x14D1, 0xCD5, 0x14F5, 0xCF9, 0x113A, 0x199B, 0x21FC };
 
-    MpdRoomSection12* var_s0;
+    MpdCloudstone* var_s0;
     int temp_s2;
     int i;
 
@@ -17217,8 +17222,8 @@ void func_8008E4DC(int arg0)
             vs_main_loadClut(D_800F1BA8 + 0x230, 2, 0x30, 0x10);
         }
 
-        var_s0 = vs_battle_roomData.section12;
-        temp_s2 = vs_battle_roomData.header.section12Len / 184;
+        var_s0 = vs_battle_roomData.cloudstoneSection;
+        temp_s2 = vs_battle_roomData.header.cloudstoneSectionLen / 184;
 
         for (i = 0; i < temp_s2; ++i) {
             if (var_s0->unk0_12) {

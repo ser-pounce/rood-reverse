@@ -2499,9 +2499,16 @@ int vs_battle_script_5F_defineEasing(u_char* script, UNUSED short arg1)
     return scriptNext;
 }
 
-int vs_battle_script_60(u_char* arg0, UNUSED short arg1)
+/**
+ * Starts or stops a cloudstone.
+ * @param script Opcode bytes:
+ *   - [1] = index of the cloudstone in the room data
+ *   - [2] = 1 = moving, 0 = stopped
+ */
+int vs_battle_script_60_setCloudstoneMoving(u_char* script, UNUSED short arg1)
 {
-    func_8008E224(arg0[1], arg0[2]);
+    setCloudstoneMoving(script[1], script[2]);
+
     return scriptNext;
 }
 

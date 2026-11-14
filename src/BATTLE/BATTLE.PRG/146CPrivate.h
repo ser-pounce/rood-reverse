@@ -302,8 +302,8 @@ VS_HIDDEN(func_8008DD0C);
 int func_8008DDA8(int arg0, int arg1);
 VS_HIDDEN(func_8008DDA8);
 
-void func_8008E224(int, int);
-VS_HIDDEN(func_8008E224);
+void setCloudstoneMoving(int index, int moving);
+VS_HIDDEN(setCloudstoneMoving);
 
 int func_8008E320(int arg0);
 VS_HIDDEN(func_8008E320);

@@ -118,7 +118,7 @@ typedef struct {
 typedef struct {
     u_int unk0_0 : 8;
     u_int unk0_8 : 1;
-    u_int unk0_9 : 1;
+    u_int stopped : 1;
     u_int unk0_10 : 2;
     u_int unk0_12 : 2;
     u_int unk0_14 : 2;
@@ -138,7 +138,7 @@ typedef struct {
     int unkAC;
     int unkB0;
     MpdRoomSection3 unkB4;
-} MpdRoomSection12;
+} MpdCloudstone;
 
 typedef struct {
     short unk0;
@@ -183,7 +183,7 @@ typedef struct {
         u_int sectionFLen;
         u_int section10Len;
         u_int section11Len;
-        u_int section12Len;
+        u_int cloudstoneSectionLen;
         u_int section13Len;
         u_int akaoSectionLen;
         u_int section15Len;
@@ -208,7 +208,7 @@ typedef struct {
     vs_Scene* sectionF;
     u_short* section10;
     MpdRoomSection11* section11;
-    MpdRoomSection12* section12;
+    MpdCloudstone* cloudstoneSection;
     MpdRoomSection13* section13;
     u_int* section14;
     int section15;

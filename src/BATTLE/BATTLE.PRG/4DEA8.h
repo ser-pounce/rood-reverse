@@ -64,7 +64,7 @@ int vs_battle_script_53_forgetZoneEnemies(u_char*, short);
 int vs_battle_script_55_setActorsAwake(u_char*, short);
 int vs_battle_script_56_setFlagToButtons(u_char*, short);
 int vs_battle_script_57_fullyRestoreActor(u_char*, short);
-int vs_battle_script_58(u_char*, short);
+int vs_battle_script_58_setUiVisible(u_char*, short);
 int vs_battle_script_59(u_char*, short);
 int vs_battle_script_5A(u_char*, short);
 int vs_battle_script_5B_setTextBoxSpeaker(u_char*, short);

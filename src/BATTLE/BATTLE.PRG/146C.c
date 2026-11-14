@@ -4619,7 +4619,7 @@ void func_800738E4(void)
     func_80093A14();
     setFarClip(0x1000, 1);
     setCameraRoll(0);
-    func_8007BD8C(0);
+    setUiHidden(0);
     if (vs_main_soundData.currentMusicHandle == 0xFFFF) {
         if (D_800F18AC != 0) {
             vs_main_playMusicSlot(D_800F18AC, 0x7F, 0);
@@ -8564,16 +8564,23 @@ void func_8007BD3C(int arg0)
     func_800CB550();
 }
 
-int func_8007BD8C(int arg0)
+/**
+ * Hides or shows the UI (D_800EB9AF, see the status renderer in
+ * 5BF94.c) and the minimap (D_800F1CD6).
+ * @param hidden Nonzero = hide both, 0 = show both.
+ * @return hidden
+ */
+int setUiHidden(int hidden)
 {
-    if (arg0 != 0) {
+    if (hidden != 0) {
         func_800CB654(1);
         func_8008B4C8(0);
     } else {
         func_800CB654(0);
         func_8008B4C8(1);
     }
-    return arg0;
+
+    return hidden;
 }
 
 int func_8007BDD8(int arg0)

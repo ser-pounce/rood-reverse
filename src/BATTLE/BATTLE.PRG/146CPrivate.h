@@ -35,8 +35,8 @@ VS_HIDDEN(func_8006CE50);
 void func_8006CE70(SVECTOR*);
 VS_HIDDEN(func_8006CE70);
 
-int func_8007BD8C(int);
-VS_HIDDEN(func_8007BD8C);
+int setUiHidden(int);
+VS_HIDDEN(setUiHidden);
 
 void func_8007A824(void* prim);
 VS_HIDDEN(func_8007A824);

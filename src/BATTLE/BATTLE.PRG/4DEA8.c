@@ -2209,9 +2209,16 @@ int vs_battle_script_57_fullyRestoreActor(u_char* script, UNUSED short arg1)
     return scriptNext;
 }
 
-int vs_battle_script_58(u_char* arg0, UNUSED short arg1)
+/**
+ * Shows or hides the UI (HP, MP and risk bars, limb and status
+ * panel) and the minimap.
+ * @param script Opcode bytes:
+ *   - [1] = 0 = hide, 1 = show
+ */
+int vs_battle_script_58_setUiVisible(u_char* script, UNUSED short arg1)
 {
-    func_8007BD8C(arg0[1] ^ 1);
+    setUiHidden(script[1] ^ 1);
+
     return scriptNext;
 }
 

@@ -8717,23 +8717,32 @@ int func_8007C218(int arg0)
     return 0;
 }
 
-void func_8007C28C(int arg0)
+/**
+ * Restores an actor's HP, MP and limb HP to their maximums, sets its risk and action
+ * delay to 0 and removes all status effects.
+ * @param actorId Actor to restore.
+ */
+void fullyRestoreActor(int actorId)
 {
-    int i;
-    vs_ActorStats* stats;
 
-    if (vs_battle_actors[arg0] != NULL) {
-        stats = vs_battle_actors[arg0]->stats;
+    if (vs_battle_actors[actorId] != NULL) {
+
+        vs_ActorStats* stats = vs_battle_actors[actorId]->stats;
 
         if (stats != NULL) {
+            int i;
+
             stats->risk = 0;
             stats->actionDelay = 0;
             stats->currentHP = stats->maxHP;
             stats->currentMP = stats->maxMP;
+
             for (i = 0; i < 6; ++i) {
                 stats->limbs[i].hp = stats->limbs[i].maxHp;
             }
+
             func_80086754(0x7FFFFFFF, stats);
+
             D_800F5160 = 0;
         }
     }

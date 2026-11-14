@@ -134,8 +134,8 @@ VS_HIDDEN(setWeaponDrawn);
 int func_8007C218(int);
 VS_HIDDEN(func_8007C218);
 
-void func_8007C28C(int);
-VS_HIDDEN(func_8007C28C);
+void fullyRestoreActor(int);
+VS_HIDDEN(fullyRestoreActor);
 
 void func_8007C31C(void);
 VS_HIDDEN(func_8007C31C);

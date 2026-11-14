@@ -2196,9 +2196,16 @@ int vs_battle_script_56_setFlagToButtons(u_char* script, UNUSED short arg1)
     return scriptNext;
 }
 
-int vs_battle_script_57(u_char* arg0, UNUSED short arg1)
+/**
+ * Fully restores an actor: HP, MP and every limb's HP to their maximums, risk and action
+ * delay to 0, and all status effects removed.
+ * @param script Opcode bytes:
+ *   - [1-2] = actor selector
+ */
+int vs_battle_script_57_fullyRestoreActor(u_char* script, UNUSED short arg1)
 {
-    func_8007C28C(resolveActorId(getShort(arg0 + 1)));
+    fullyRestoreActor(resolveActorId(getShort(script + 1)));
+
     return scriptNext;
 }
 

@@ -4530,7 +4530,7 @@ void func_800738E4(void)
     setActorsSfxOverride(-1, &sp10);
 
     for (i = 0; i < 16; ++i) {
-        func_8009D7E8(i, 0);
+        setActorSway(i, 0);
         setActorLightColor(i, NULL);
     }
 

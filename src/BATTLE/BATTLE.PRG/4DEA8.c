@@ -2441,9 +2441,16 @@ int vs_battle_script_5C_setActorWeaponModels(u_char* script, UNUSED short arg1)
     return scriptNext;
 }
 
-int vs_battle_script_5D(u_char* arg0, UNUSED short arg1)
+/**
+ * Gives an actor a slight swaying motion.
+ * @param script Opcode bytes:
+ *   - [1-2] = actor selector
+ *   - [3] = sway angle at its peak, in 1/4096 of a full turn, 0 = stop swaying
+ */
+int vs_battle_script_5D_setActorSway(u_char* script, UNUSED short arg1)
 {
-    func_8009D7E8(resolveActorId(getShort(arg0 + 1)), arg0[3]);
+    setActorSway(resolveActorId(getShort(script + 1)), script[3]);
+
     return scriptNext;
 }
 

@@ -2178,12 +2178,21 @@ int vs_battle_script_55_setActorsAwake(u_char* script, UNUSED short arg1)
     return scriptNext;
 }
 
-int vs_battle_script_56_setFlagIfButton(u_char* arg0, UNUSED short arg1)
+/**
+ * Stores the pad state of the first controller in a state flag. Only the low byte of the
+ * pad is read: L2, R2, L1, R1, triangle, circle, cross and square.
+ * @param script Opcode bytes:
+ *   - [1-2] = bits 0-9: state flag id, bit 15: 1 = buttons newly pressed this frame,
+ *     0 = buttons held
+ */
+int vs_battle_script_56_setFlagToButtons(u_char* script, UNUSED short arg1)
 {
-    short temp_v0 = getShort(arg0 + 1);
-    vs_battle_setStateFlag(temp_v0 & 0x3FF, temp_v0 & 0x8000
-                                                ? vs_main_buttonsPressed.pad[0].low
-                                                : vs_main_buttonsPreviousState);
+    short flagAndMode = getShort(script + 1);
+
+    vs_battle_setStateFlag(flagAndMode & 0x3FF, flagAndMode & 0x8000
+                                                    ? vs_main_buttonsPressed.pad[0].low
+                                                    : vs_main_buttonsPreviousState);
+
     return scriptNext;
 }
 

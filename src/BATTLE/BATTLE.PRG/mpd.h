@@ -11,6 +11,15 @@ typedef struct {
     short unk6;
 } MpdRoomCollisionMapSection;
 
+enum MpdTileShape {
+    tileShapeFull,
+    tileShapeTriangle0,
+    tileShapeTriangle1,
+    tileShapeTriangle2,
+    tileShapeTriangle3,
+    tileShapeBlocked
+};
+
 typedef struct {
     u_int unk0_0 : 5;
     u_int unk0_5 : 1;
@@ -18,7 +27,7 @@ typedef struct {
     u_int unk0_7 : 1;
     u_int unk0_8 : 1;
     u_int unk0_9 : 1;
-    u_int unk0_10 : 3;
+    u_int shape : 3;
     u_int unk0_13 : 1;
     u_int unk0_14 : 1;
     u_int unk0_15 : 1;
@@ -26,7 +35,7 @@ typedef struct {
     u_int unk0_17 : 1;
     u_int unk0_18 : 2;
     u_int unk0_20 : 12;
-} MpdRoomSection3;
+} MpdTile;
 
 typedef struct {
     short unk0;
@@ -137,7 +146,7 @@ typedef struct {
     int x;
     int y;
     int z;
-    MpdRoomSection3 unkB4;
+    MpdTile unkB4;
 } MpdCloudstone;
 
 typedef struct {
@@ -168,7 +177,7 @@ typedef struct {
     struct {
         u_int geometrySectionLen;
         u_int collisionMapSectionLen;
-        u_int section3Len;
+        u_int tileMapLen;
         u_int doorSectionLen;
         u_int lightingSectionLen;
         u_int section6Len;
@@ -193,7 +202,7 @@ typedef struct {
     } header;
     int* geometrySection;
     MpdRoomCollisionMapSection* collisionMapSection;
-    MpdRoomSection3* section3;
+    MpdTile* tileMap;
     vs_Warp* doorSection;
     int lightingSection;
     int section6;

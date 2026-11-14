@@ -5098,7 +5098,7 @@ int func_80074BAC(int actorIndex, ActorLocation* position)
     u_int cellIndex;
     int actorOffset;
     int result = 0;
-    MpdRoomSection3* cell;
+    MpdTile* cell;
     Actor* actor;
     int layer = (u_int)flags >> 14;
 
@@ -5262,7 +5262,7 @@ int func_80074BAC(int actorIndex, ActorLocation* position)
 int func_800751B8(int arg0, ActorLocation* arg1)
 {
     MpdRoomSection9* temp_v0_2;
-    MpdRoomSection3* temp_s4;
+    MpdTile* temp_s4;
     int temp_s3;
     u_int temp_a2;
     u_int temp_v0;
@@ -15926,7 +15926,7 @@ void func_8008B6B4(void)
     vs_main_bzero(D_800F1D28, sizeof D_800F1D28);
 }
 
-UNUSED MpdRoomSection3* getRoomDataSection3(void) { return vs_battle_roomData.section3; }
+UNUSED MpdTile* getRoomTileMap(void) { return vs_battle_roomData.tileMap; }
 
 int func_8008B6FC(void) { return vs_battle_roomData.section6; }
 
@@ -15947,9 +15947,9 @@ ZoneContextBounds* getMapBounds(UNUSED int arg0)
     return NULL;
 }
 
-MpdRoomSection3* func_8008B764(u_int width, u_int height, int arg2)
+MpdTile* func_8008B764(u_int width, u_int height, int arg2)
 {
-    if (vs_battle_roomData.section3 != NULL) {
+    if (vs_battle_roomData.tileMap != NULL) {
         if (arg2 >= 2) {
             if (vs_battle_roomData.cloudstoneSection != NULL) {
                 return &vs_battle_roomData.cloudstoneSection[arg2 - 2].unkB4;
@@ -15959,8 +15959,8 @@ MpdRoomSection3* func_8008B764(u_int width, u_int height, int arg2)
         if ((width < vs_battle_roomData.collisionMapSection->width)
             && (height < vs_battle_roomData.collisionMapSection->height)) {
             return &vs_battle_roomData
-                        .section3[height * vs_battle_roomData.collisionMapSection->width
-                                  + width];
+                        .tileMap[height * vs_battle_roomData.collisionMapSection->width
+                                 + width];
         }
     }
     return NULL;
@@ -15972,25 +15972,25 @@ MpdRoomSection3* func_8008B764(u_int width, u_int height, int arg2)
  */
 int setTileBlocked(int x, int row, int layer, int blocked)
 {
-    MpdRoomSection3* tile;
+    MpdTile* tile;
 
-    if (vs_battle_roomData.section3 != NULL) {
+    if (vs_battle_roomData.tileMap != NULL) {
         if (blocked != 0) {
-            blocked = 5;
+            blocked = tileShapeBlocked;
         }
         if (layer >= 2) {
             if (vs_battle_roomData.cloudstoneSection != NULL) {
                 tile = &vs_battle_roomData.cloudstoneSection[layer - 2].unkB4;
-                tile->unk0_10 = blocked;
+                tile->shape = blocked;
                 return 1;
             }
         } else {
             tile = &vs_battle_roomData
-                        .section3[(layer * vs_battle_roomData.collisionMapSection->width
-                                      * vs_battle_roomData.collisionMapSection->height)
-                                  + (row * vs_battle_roomData.collisionMapSection->width)
-                                  + x];
-            tile->unk0_10 = blocked;
+                        .tileMap[(layer * vs_battle_roomData.collisionMapSection->width
+                                     * vs_battle_roomData.collisionMapSection->height)
+                                 + (row * vs_battle_roomData.collisionMapSection->width)
+                                 + x];
+            tile->shape = blocked;
             return 1;
         }
     }
@@ -16132,11 +16132,11 @@ MpdRoomSectionA* func_8008BC04(int arg0, int arg1, int arg2)
 
 void func_8008BD74(MpdRoomSectionA* arg0)
 {
-    MpdRoomSection3* var_a0;
+    MpdTile* var_a0;
 
     var_a0 = func_8008B764(arg0->unk0.unk0, arg0->unk0.unk2, arg0->unk0.unk4);
     if (var_a0 != NULL) {
-        var_a0->unk0_10 ^= 5;
+        var_a0->shape ^= tileShapeBlocked;
     }
     var_a0 = NULL;
     switch (arg0->unk0.unk6 - 4) {
@@ -16154,7 +16154,7 @@ void func_8008BD74(MpdRoomSectionA* arg0)
         break;
     }
     if ((arg0->unk0.unk6 >= 4) && (var_a0 != NULL)) {
-        var_a0->unk0_10 ^= 5;
+        var_a0->shape ^= tileShapeBlocked;
     }
 }
 
@@ -16580,7 +16580,7 @@ void func_8008CEB0(void)
         POLY_F4* polygon;
         int depth;
         int shade;
-        MpdRoomSection3* cell;
+        MpdTile* cell;
         int height;
         int coordinate;
         int y;
@@ -16756,7 +16756,7 @@ void func_8008D5FC(MpdRoomSectionA* arg0)
 
 void func_8008D658(MpdRoomSectionA* arg0)
 {
-    MpdRoomSection3* temp_v0;
+    MpdTile* temp_v0;
 
     if (arg0->unk0.unk8.s16 == 0) {
         vs_main_playSfxDefault(0x7E, 0x3B);
@@ -16770,13 +16770,13 @@ void func_8008D658(MpdRoomSectionA* arg0)
     arg0->unk0.unk8.s16 = arg0->unk0.unk8.s16 == 0;
     temp_v0 = func_8008B764(arg0->unk0.unk0, arg0->unk0.unk2, arg0->unk0.unk4);
     if (temp_v0 != NULL) {
-        temp_v0->unk0_10 = arg0->unk0.unk8.s16 * 5;
+        temp_v0->shape = arg0->unk0.unk8.s16 * tileShapeBlocked;
     }
 }
 
 void func_8008D710(void)
 {
-    MpdRoomSection3* temp_s0;
+    MpdTile* temp_s0;
     MpdRoomSection13* var_s3;
     int temp_s4;
     int i;
@@ -16794,12 +16794,12 @@ void func_8008D710(void)
                 var_s3->unk8 = 1;
                 func_80093824(var_s3->unk6);
                 if (temp_s0 != NULL) {
-                    temp_s0->unk0_10 = 5;
+                    temp_s0->shape = tileShapeBlocked;
                 }
             } else {
                 var_s3->unk8 = 0;
                 if (temp_s0 != NULL) {
-                    temp_s0->unk0_10 = 0;
+                    temp_s0->shape = tileShapeFull;
                 }
             }
         }
@@ -17643,7 +17643,7 @@ void func_8008F440(void)
     D_800F1DD4_t* particle;
     int i;
     int j;
-    MpdRoomSection3* cell;
+    MpdTile* cell;
 
     SetRotMatrix(&((vs_Scratch*)0x1F800000)->viewMatrix);
     SetTransMatrix(&((vs_Scratch*)0x1F800000)->viewMatrix);

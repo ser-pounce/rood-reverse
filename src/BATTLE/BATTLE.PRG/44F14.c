@@ -721,7 +721,7 @@ void func_800AE828(int arg0, D_800F4538_t* arg1, int arg2)
     int sp14;
     int id;
     int floor;
-    MpdRoomSection3* room;
+    MpdTile* room;
 
     if ((u_char)(arg1->animationId - 0xCA) < 18) {
         return;

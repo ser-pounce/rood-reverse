@@ -2,7 +2,7 @@
 #include "common.h"
 #include "40564.h"
 
-MpdRoomSection3* func_800A8D64(SVECTOR* arg0, int arg1);
+MpdTile* func_800A8D64(SVECTOR* arg0, int arg1);
 VS_HIDDEN(func_800A8D64);
 
 int func_800A8E84(D_800F4538_t* actor, SVECTOR* position);

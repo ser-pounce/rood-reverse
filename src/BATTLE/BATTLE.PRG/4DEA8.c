@@ -2711,9 +2711,15 @@ int vs_battle_script_6C_setScreenTransition(u_char* script, UNUSED short arg1)
     return scriptNext;
 }
 
-int vs_battle_script_6D(u_char* arg0, UNUSED short arg1)
+/**
+ * Switches the screen, the room and the actors on or off. Each takes a 2-bit field of the
+ * operand, 0 = off, 1 = on, 2 or 3 = leave as is.
+ * @param script Opcode bytes:
+ *   - [1] = bits 0-1 screen output, bits 2-3 room geometry, bits 4-5 all actors
+ */
+int vs_battle_script_6D_setSceneVisibility(u_char* script, UNUSED short arg1)
 {
-    switch (arg0[1] & 3) {
+    switch (script[1] & 3) {
     case 0:
         vs_battle_disableDispMask();
         break;
@@ -2722,23 +2728,24 @@ int vs_battle_script_6D(u_char* arg0, UNUSED short arg1)
         break;
     }
 
-    switch ((arg0[1] >> 2) & 3) {
+    switch ((script[1] >> 2) & 3) {
     case 0:
-        func_8007BF4C();
+        hideCurrentRoom();
         break;
     case 1:
-        func_8007BF2C();
+        showCurrentRoom();
         break;
     }
 
-    switch ((arg0[1] >> 4) & 3) {
+    switch ((script[1] >> 4) & 3) {
     case 0:
-        func_8007C050();
+        disableAllActors();
         break;
     case 1:
-        func_8007BFC0();
+        enableAllActors();
         break;
     }
+
     return scriptNext;
 }
 

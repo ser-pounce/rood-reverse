@@ -240,8 +240,8 @@ int func_8008B4C8(char arg0);
 static void loadZnd(int id);
 void loadMpd(int arg0);
 void loadZndTims(void*);
-int func_8008AB80(int);
-int func_8008ABB8(int);
+int showRoom(int);
+int hideRoom(int);
 void func_8008B2E0(void* arg0, int arg1, int arg2, int arg3);
 void func_8008B4BC(int arg0);
 void vsBattleNop2(int arg0);
@@ -8559,39 +8559,39 @@ void func_8007BF04(void) { }
 
 int func_8007BF0C(void) { return func_800CEEBC() != 0; }
 
-void func_8007BF2C(void) { func_8008AB80(0); }
+void showCurrentRoom(void) { showRoom(0); }
 
-void func_8007BF4C(void) { func_8008ABB8(0); }
+void hideCurrentRoom(void) { hideRoom(0); }
 
-void func_8007BF6C(int arg0)
+void enableActor(int actorId)
 {
-    if (vs_battle_actors[arg0] != NULL) {
-        vs_battle_setActorFlags(arg0, vs_battle_getActorFlags(arg0) | 1);
+    if (vs_battle_actors[actorId] != NULL) {
+        vs_battle_setActorFlags(actorId, vs_battle_getActorFlags(actorId) | 1);
     }
 }
 
-void func_8007BFC0(void)
+void enableAllActors(void)
 {
     int i;
 
     for (i = 0; i < 16; ++i) {
-        func_8007BF6C(i);
+        enableActor(i);
     }
 }
 
-void func_8007BFF8(int arg0)
+void disableActor(int actorId)
 {
-    if (vs_battle_actors[arg0] != NULL) {
-        vs_battle_setActorFlags(arg0, vs_battle_getActorFlags(arg0) & ~1);
+    if (vs_battle_actors[actorId] != NULL) {
+        vs_battle_setActorFlags(actorId, vs_battle_getActorFlags(actorId) & ~1);
     }
 }
 
-void func_8007C050(void)
+void disableAllActors(void)
 {
     int i;
 
     for (i = 0; i < 16; ++i) {
-        func_8007BFF8(i);
+        disableActor(i);
     }
 }
 
@@ -15336,8 +15336,8 @@ void func_80089DC0(int arg0)
             func_8008EA90(1);
             func_80073718();
         } else {
-            func_8007BF2C();
-            func_8007BFC0();
+            showCurrentRoom();
+            enableAllActors();
             func_8008EA90(0);
             func_80093A14();
             func_8006F5CC();
@@ -15628,18 +15628,18 @@ void vs_battle_setDoorEntered(void)
     vs_main_stateFlags.doorEntered = vs_battle_doorEntered + 1;
 }
 
-int func_8008AB80(int arg0)
+int showRoom(int id)
 {
-    if ((vs_battle_roomData.unk0 == 1) && (vs_battle_roomData.unk2 == arg0)) {
+    if ((vs_battle_roomData.unk0 == 1) && (vs_battle_roomData.unk2 == id)) {
         vs_battle_roomData.unk1 = vs_battle_roomData.unk0;
         return 1;
     }
     return 0;
 }
 
-int func_8008ABB8(int arg0)
+int hideRoom(int id)
 {
-    if ((vs_battle_roomData.unk0 == 1) && (vs_battle_roomData.unk2 == arg0)) {
+    if ((vs_battle_roomData.unk0 == 1) && (vs_battle_roomData.unk2 == id)) {
         vs_battle_roomData.unk1 = 0;
         return 1;
     }

@@ -16346,7 +16346,7 @@ int func_8008C478(int arg0)
 int func_8008C49C(int arg0, int arg1)
 {
     if (vs_battle_roomData.cloudstoneSection != NULL) {
-        vs_battle_roomData.cloudstoneSection[arg0].unk4_1 = arg1;
+        vs_battle_roomData.cloudstoneSection[arg0].rider = arg1;
         if ((arg1 >= 0) && (D_800F1D68 == 0)) {
             D_800F1D70[arg0] = 0;
         }
@@ -16377,15 +16377,15 @@ void func_8008C538(void)
         temp_s3 = vs_battle_roomData.header.cloudstoneSectionLen / 184;
         var_s2 = vs_battle_roomData.cloudstoneSection;
         for (i = 0; i < temp_s3; ++i, ++var_s2) {
-            temp_v0 = func_8009195C(var_s2->unk0_0);
+            temp_v0 = func_8009195C(var_s2->geometryId);
             if (temp_v0 != NULL) {
                 if (var_s2->stopped) {
                     temp_v0[0] |= 0x100;
                 }
 
-                temp_v0[1] = var_s2->unkA8 / ONE;
-                temp_v0[2] = -(var_s2->unkAC / ONE);
-                temp_v0[3] = var_s2->unkB0 / ONE;
+                temp_v0[1] = var_s2->x / ONE;
+                temp_v0[2] = -(var_s2->y / ONE);
+                temp_v0[3] = var_s2->z / ONE;
             }
         }
     }
@@ -16404,33 +16404,33 @@ void func_8008C6B4(int arg0, int arg1)
     if (vs_battle_roomData.cloudstoneSection != NULL) {
         temp_s0 = &vs_battle_roomData.cloudstoneSection[arg0];
         if (arg1 == -1) {
-            arg1 = temp_s0->unk4_8;
+            arg1 = temp_s0->startWaypoint;
         }
         if (arg1 >= 0) {
             temp_s0->stopped = 0;
-            temp_s0->unk4_1 = 0;
-            temp_s0->unk0_27 = arg1;
-            temp_s0->unk0_14 = arg1;
-            temp_s0->unk0_29 = arg1;
-            temp_s0->unk4_16 = 0;
-            temp_s0->unk4_0 = 0;
+            temp_s0->rider = 0;
+            temp_s0->toWaypoint = arg1;
+            temp_s0->fromWaypoint = arg1;
+            temp_s0->leg = arg1;
+            temp_s0->timer = 0;
+            temp_s0->docked = 0;
 
-            temp_s0->unkA8 = temp_s0->unk8[temp_s0->unk0_27].vx;
-            temp_s0->unkAC = temp_s0->unk8[temp_s0->unk0_27].vy;
-            temp_s0->unkB0 = temp_s0->unk8[temp_s0->unk0_27].vz;
+            temp_s0->x = temp_s0->waypoints[temp_s0->toWaypoint].vx;
+            temp_s0->y = temp_s0->waypoints[temp_s0->toWaypoint].vy;
+            temp_s0->z = temp_s0->waypoints[temp_s0->toWaypoint].vz;
 
-            if (((temp_s0->unk0_14)) == ((temp_s0->unk0_10))) {
-                temp_s0->unk0_26 = 0;
-                --temp_s0->unk0_27;
+            if (((temp_s0->fromWaypoint)) == ((temp_s0->lastWaypoint))) {
+                temp_s0->pathDirection = 0;
+                --temp_s0->toWaypoint;
             } else {
-                temp_s0->unk0_26 = 1;
-                ++temp_s0->unk0_27;
+                temp_s0->pathDirection = 1;
+                ++temp_s0->toWaypoint;
             }
-            temp_v0_5 = func_8009195C(temp_s0->unk0_0);
+            temp_v0_5 = func_8009195C(temp_s0->geometryId);
             if (temp_v0_5 != NULL) {
-                temp_v0_5[1] = temp_s0->unkA8 / ONE;
-                temp_v0_5[2] = -(temp_s0->unkAC / ONE);
-                temp_v0_5[3] = temp_s0->unkB0 / ONE;
+                temp_v0_5[1] = temp_s0->x / ONE;
+                temp_v0_5[2] = -(temp_s0->y / ONE);
+                temp_v0_5[3] = temp_s0->z / ONE;
             }
         }
     }
@@ -16470,7 +16470,7 @@ int func_8008C8A8(void)
 
     for (i = 0; i < count; ++i, ++object) {
         if (!object->stopped) {
-            if (!object->unk0_8 || (*(u_int*)((char*)object + 4) & 0xFE) != 0xFE) {
+            if (!object->needsRider || (*(u_int*)((char*)object + 4) & 0xFE) != 0xFE) {
                 for (tick = 0; tick < (vs_gametime_tickspeed >> 1); ++tick) {
                     temp = D_800F1D70[i];
 
@@ -16481,73 +16481,73 @@ int func_8008C8A8(void)
                             D_800F1D70[i] = 7;
                         }
                     }
-                    if (!object->unk4_0) {
-                        object->unkA8 += object->unk48[object->unk0_29].vx;
-                        object->unkAC += object->unk48[object->unk0_29].vy;
-                        object->unkB0 += object->unk48[object->unk0_29].vz;
-                        point.vy = -(object->unkAC / ONE);
-                        point.vx = object->unkA8 / ONE;
-                        point.vz = object->unkB0 / ONE;
+                    if (!object->docked) {
+                        object->x += object->legs[object->leg].vx;
+                        object->y += object->legs[object->leg].vy;
+                        object->z += object->legs[object->leg].vz;
+                        point.vy = -(object->y / ONE);
+                        point.vx = object->x / ONE;
+                        point.vz = object->z / ONE;
 
                         if (func_800A4494(i + 2, &point)) {
-                            object->unkA8 -= object->unk48[object->unk0_29].vx;
-                            object->unkAC -= object->unk48[object->unk0_29].vy;
-                            object->unkB0 -= object->unk48[object->unk0_29].vz;
+                            object->x -= object->legs[object->leg].vx;
+                            object->y -= object->legs[object->leg].vy;
+                            object->z -= object->legs[object->leg].vz;
                         } else {
-                            ++object->unk4_16;
+                            ++object->timer;
 
-                            if (object->unk4_16 >= object->unk48[object->unk0_29].pad) {
-                                object->unk4_16 = 0;
-                                object->unk4_0 = 1;
-                                object->unkA8 = object->unk8[object->unk0_27].vx;
-                                object->unkAC = object->unk8[object->unk0_27].vy;
-                                object->unkB0 = object->unk8[object->unk0_27].vz;
+                            if (object->timer >= object->legs[object->leg].pad) {
+                                object->timer = 0;
+                                object->docked = 1;
+                                object->x = object->waypoints[object->toWaypoint].vx;
+                                object->y = object->waypoints[object->toWaypoint].vy;
+                                object->z = object->waypoints[object->toWaypoint].vz;
 
-                                if (object->unk0_27 == object->unk4_8) {
+                                if (object->toWaypoint == object->startWaypoint) {
                                     object->unkB4.unk0_14 = 1;
                                 }
                             }
                         }
                     } else {
-                        ++object->unk4_16;
+                        ++object->timer;
 
-                        if (object->unk4_16 >= object->unk8[object->unk0_27].pad) {
-                            object->unk4_16 = 0;
-                            object->unk4_0 = 0;
-                            object->unk0_14 = object->unk0_27;
-                            ++object->unk0_29;
+                        if (object->timer >= object->waypoints[object->toWaypoint].pad) {
+                            object->timer = 0;
+                            object->docked = 0;
+                            object->fromWaypoint = object->toWaypoint;
+                            ++object->leg;
                             object->unkB4.unk0_14 = 0;
 
-                            if (object->unk0_14 == 0) {
-                                object->unk0_26 = 1;
-                                object->unk0_29 = 0;
-                            } else if (object->unk0_14 == object->unk0_10) {
-                                object->unk0_26 = 0;
+                            if (object->fromWaypoint == 0) {
+                                object->pathDirection = 1;
+                                object->leg = 0;
+                            } else if (object->fromWaypoint == object->lastWaypoint) {
+                                object->pathDirection = 0;
                             }
-                            if (object->unk0_26) {
-                                ++object->unk0_27;
+                            if (object->pathDirection) {
+                                ++object->toWaypoint;
                             } else {
-                                --object->unk0_27;
+                                --object->toWaypoint;
                             }
                         }
                     }
                 }
             }
 
-            scene = func_8009195C(object->unk0_0);
+            scene = func_8009195C(object->geometryId);
 
             if (scene != NULL) {
                 int y;
 
-                scene[1] = object->unkA8 / ONE;
-                y = object->unkAC / ONE;
+                scene[1] = object->x / ONE;
+                y = object->y / ONE;
                 temp = D_80068BEC[D_800F1D70[i]] - y;
                 scene[2] = temp;
-                scene[3] = object->unkB0 / ONE;
+                scene[3] = object->z / ONE;
                 scene[0] &= ~0x100;
             }
         } else {
-            scene = func_8009195C(object->unk0_0);
+            scene = func_8009195C(object->geometryId);
 
             if (scene != NULL) {
                 scene[0] |= 0x100;
@@ -16582,18 +16582,18 @@ void func_8008CEB0(void)
         int coordinate;
         int y;
 
-        if (object->stopped || func_8009195C(object->unk0_0) == NULL) {
+        if (object->stopped || func_8009195C(object->geometryId) == NULL) {
             continue;
         }
-        cell = func_8008B764(object->unkA8 / (ONE * 128), object->unkB0 / (ONE * 128), 0);
+        cell = func_8008B764(object->x / (ONE * 128), object->z / (ONE * 128), 0);
         if (cell->unk0_17 && (cell->unk0_0 < 15 || cell->unk0_0 >= 19)) {
             continue;
         }
-        coordinate = object->unkA8 / ONE;
-        height = func_8008DC7C(coordinate, object->unkB0 / ONE);
+        coordinate = object->x / ONE;
+        height = func_8008DC7C(coordinate, object->z / ONE);
         height <<= 17;
         height >>= 17;
-        coordinate = object->unkAC;
+        coordinate = object->y;
         y = (coordinate /= -ONE);
         if (height <= y) {
             continue;
@@ -16604,18 +16604,18 @@ void func_8008CEB0(void)
         }
         shade = 255 - shade;
         polygon = ((vs_Scratch*)0x1F800000)->unk0;
-        vertices[0].vx = (short)(object->unkA8 / ONE - 32) - shade / 8;
+        vertices[0].vx = (short)(object->x / ONE - 32) - shade / 8;
         vertices[0].vy = height;
-        vertices[0].vz = (short)(object->unkB0 / ONE - 32) - shade / 8;
-        vertices[1].vx = (short)(object->unkA8 / ONE + 32) + shade / 8;
+        vertices[0].vz = (short)(object->z / ONE - 32) - shade / 8;
+        vertices[1].vx = (short)(object->x / ONE + 32) + shade / 8;
         vertices[1].vy = height;
-        vertices[1].vz = (short)(object->unkB0 / ONE - 32) - shade / 8;
-        vertices[2].vx = (short)(object->unkA8 / ONE - 32) - shade / 8;
+        vertices[1].vz = (short)(object->z / ONE - 32) - shade / 8;
+        vertices[2].vx = (short)(object->x / ONE - 32) - shade / 8;
         vertices[2].vy = height;
-        vertices[2].vz = (short)(object->unkB0 / ONE + 32) + shade / 8;
-        vertices[3].vx = (short)(object->unkA8 / ONE + 32) + shade / 8;
+        vertices[2].vz = (short)(object->z / ONE + 32) + shade / 8;
+        vertices[3].vx = (short)(object->x / ONE + 32) + shade / 8;
         vertices[3].vy = height;
-        vertices[3].vz = (short)(object->unkB0 / ONE + 32) + shade / 8;
+        vertices[3].vz = (short)(object->z / ONE + 32) + shade / 8;
         depth = RotAverage4(&vertices[0], &vertices[1], &vertices[2], &vertices[3],
             (long*)&polygon->x0, (long*)&polygon->x1, (long*)&polygon->x2,
             (long*)&polygon->x3, &projection, &flags);
@@ -16650,10 +16650,10 @@ int func_8008D2C0(SVECTOR arg0[])
                 if (!((var_t0->stopped))) {
                     do {
                         int v;
-                        a0->vx = var_t0->unkA8 / ONE;
-                        v = var_t0->unkAC / ONE;
+                        a0->vx = var_t0->x / ONE;
+                        v = var_t0->y / ONE;
                         a0->vy = (D_80068BEC[D_800F1D70[i]] - v);
-                        a0->vz = (var_t0->unkB0 / ONE);
+                        a0->vz = (var_t0->z / ONE);
                         a0->pad = i;
                     } while (0);
                     ++a0;
@@ -17124,7 +17124,7 @@ void setCloudstoneMoving(int index, int moving)
     if (temp_s0 != NULL) {
         temp_s0 = &vs_battle_roomData.cloudstoneSection[index];
         temp_s0->stopped = moving - 1;
-        temp_v0 = func_8009195C(temp_s0->unk0_0);
+        temp_v0 = func_8009195C(temp_s0->geometryId);
         if (temp_v0 != NULL) {
             if (!temp_s0->stopped) {
                 *temp_v0 &= ~0x100;
@@ -17141,7 +17141,7 @@ void* func_8008E2D4(int arg0)
 
     if (vs_battle_roomData.cloudstoneSection != NULL) {
         temp_v1 = &vs_battle_roomData.cloudstoneSection[arg0];
-        return ((char*)temp_v1) + 8 + temp_v1->unk0_27 * 16;
+        return ((char*)temp_v1) + 8 + temp_v1->toWaypoint * 16;
     }
     return NULL;
 }
@@ -17151,8 +17151,8 @@ int func_8008E320(int arg0)
     MpdCloudstone* temp_v1 = vs_battle_roomData.cloudstoneSection;
     if (vs_battle_roomData.cloudstoneSection != NULL) {
         temp_v1 = &vs_battle_roomData.cloudstoneSection[arg0];
-        if (temp_v1->unk4_0 == 1) {
-            return temp_v1->unk4_16;
+        if (temp_v1->docked == 1) {
+            return temp_v1->timer;
         }
     }
     return -1;
@@ -17227,7 +17227,7 @@ void func_8008E4DC(int arg0)
 
         for (i = 0; i < temp_s2; ++i) {
             if (var_s0->unk0_12) {
-                func_80093914(var_s0->unk0_0);
+                func_80093914(var_s0->geometryId);
             }
             ++var_s0;
         }

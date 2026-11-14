@@ -116,27 +116,27 @@ typedef struct {
 } MpdRoomSection11;
 
 typedef struct {
-    u_int unk0_0 : 8;
-    u_int unk0_8 : 1;
+    u_int geometryId : 8;
+    u_int needsRider : 1;
     u_int stopped : 1;
-    u_int unk0_10 : 2;
+    u_int lastWaypoint : 2;
     u_int unk0_12 : 2;
-    u_int unk0_14 : 2;
+    u_int fromWaypoint : 2;
     u_int unk0_16 : 7;
     u_int unk0_23 : 3;
-    u_int unk0_26 : 1;
-    u_int unk0_27 : 2;
-    u_int unk0_29 : 3;
-    u_int unk4_0 : 1;
-    u_int unk4_1 : 7;
-    u_int unk4_8 : 2;
+    u_int pathDirection : 1; // 1 = heading to a higher waypoint, 0 = to a lower one
+    u_int toWaypoint : 2;
+    u_int leg : 3;
+    u_int docked : 1; // 1 = waiting at a waypoint, 0 = travelling
+    u_int rider : 7; // actor standing on it, 0x7F = nobody
+    u_int startWaypoint : 2;
     u_int unk4_10 : 6;
-    u_int unk4_16 : 16;
-    VECTOR unk8[4];
-    VECTOR unk48[6];
-    int unkA8;
-    int unkAC;
-    int unkB0;
+    u_int timer : 16;
+    VECTOR waypoints[4]; // pad = frames to wait there
+    VECTOR legs[6]; // movement per step, pad = number of steps
+    int x;
+    int y;
+    int z;
     MpdRoomSection3 unkB4;
 } MpdCloudstone;
 

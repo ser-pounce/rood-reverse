@@ -214,101 +214,23 @@ typedef struct {
 } MpdObjectSpawn;
 
 int loadMpdRoomSection(int, void* data);
-int dropMisc(vs_Loot*, UiMisc*);
-int dropMiscRand(vs_Loot*, UiMiscRand*);
-void snapLookAtToPosition(VECTOR*);
-void func_8006C350(void);
-void func_8006C39C(void);
-void func_8006C40C(void);
-int func_8006C5AC(int);
-static void forgetZoneEnemies(int, int);
-int removeActorById(u_int, int);
-void applyAccessoryStats(vs_UiAccessory*, AccessoryIntermediate*);
-void applyArmorStats(vs_UiArmor* arg0, ArmorIntermediate* arg1);
-static void copyUiEquipmentStats(vs_InventoryArmor*, vs_UiEquipment* equipment);
-void func_8006B214(void);
-void func_8006B2D4(void);
-void updateEnemyKills(Actor*);
-void drawScreenTransition(void*);
-void updateWeaponKillStreak(int);
-void clampPositionToZoneBounds(VECTOR*, VECTOR*);
-int computeStepAndDisplacement(SVECTOR* arg0, VECTOR*, VECTOR*, int, int);
-int stepTowardTarget(SVECTOR*, int, int);
-void func_8006E158(void);
-void computeCameraTransition(VECTOR*);
-int stepCameraTransition(void);
-void setRoomSeen(void);
-void func_8006F5CC(void);
-void func_8006F89C(void);
-void func_8006FA20(void);
-void func_8006FD1C(void);
-void func_80070278(void);
-void func_8007053C(void);
-void func_80070CAC(void);
-void func_80070F28(int);
-void func_8007138C(void);
-void func_80072BA8(int);
-void func_80072EC4(int, int);
-void endBattleCameraTransition(void);
-void func_80073718(void);
-void func_80073D30(MpdRoomSectionA*, vs_ActorPosition*, int);
-void func_80073E30(MpdRoomSectionA*, int);
-int func_80074798(vs_ActorPosition*, u_char*);
 void func_80074B14(int arg0, vs_TilePosition* arg1);
-void func_80076D50(u_int, int, int, int, int);
-void setActorWeaponModel(Actor*, int, int, int, int);
-Actor_dat* func_80077240(int, int, int, int, int, int, vs_TilePosition*, int);
-void func_800773BC(Actor*, int, int, int, int, int);
-Actor* func_800775C0(int, MpdEnemy*, vs_CharInitData*, int);
 int func_80077F70(void);
-void func_800780A8(SVECTOR*);
 int func_80078828(int);
 int func_800792E4(int arg0, int arg1, int arg2);
 void computeSphericalOffset(VECTOR*, VECTOR*, SphericalValues*);
 void setCameraPositionFromAngles(SphericalValues* arg0);
 void setCameraLookAtFromAngles(SphericalValues* arg0);
 void func_8007B10C(int, int, int, short, short);
-void func_8007B410(void);
-void func_8007B63C(void);
-void func_8007B470(void);
-void func_8007B508(void);
-void func_8007B764(void);
-void func_8007B7DC(void);
-void func_8007BF6C(int);
-void func_8007BFF8(int);
 int func_8007C4E0(vs_Warp*, int, int);
 int func_8007C5C0(vs_Warp*, int, int);
 int func_8007C694(int, int, int, int, int);
-int getLocationId(int, int);
-void func_8007D360(void);
-void func_8007D41C(void);
-void calculateWeaponClassAffinity(vs_ActorStats*);
-short getDefenseGemBuff(vs_Action*, vs_ActorStats*, int);
-int doesAttackHit(vs_Action* arg0, HitEntity* arg1, HitEntity* arg2, int arg3, int arg4);
 int func_8007F434(void);
-int hitPrerequisiteCanApplyEffect(int arg0, u_char* arg1);
-int getEnemyClass(u_char*);
-void func_80080000(vs_Action*, HitEntity*, short);
-void func_800801E0(vs_Action*, HitEntity*, short);
-void adjustDpPp(vs_Action*, vs_ActorStats*, vs_ActorStats*, int);
-void func_800803A4(vs_Action*, vs_ActorStats*, vs_ActorStats*, int);
-void triggerArmorAffinityChange(vs_Action*, vs_UiEquipment*, int, int, int);
-void triggerClassChange(vs_Action* arg0, vs_UiEquipment*, int, int, int);
-int applyStatus(int, HitEntity*);
-int clearStatus(int, HitEntity*);
-static short getPhysicalAttackDamage(vs_Action*, HitEntity*, HitEntity*, int, int, int);
-short calculateStatChange(vs_Action*, HitEntity*, HitEntity*, int, int);
 int getActionCost(u_int, vs_ActorStats*, int);
-void func_80085008(HitEntity*);
-void func_80085390(vs_Action* arg0, HitEntity* arg1, HitEntity* arg2, int arg3, int arg4);
 void func_80085B10(int, D_800F19CC_t2*, D_800F19CC_t2*, int);
 void func_80086754(int, vs_ActorStats*);
 void applyBattleAbilityEffect(HitEntity*);
-void func_80087EF4(vs_ActorStats*);
-int updateBattleTimer(void);
-int func_80088554(void);
 void func_80088CA0(void);
-void func_80089114(void);
 void enableDispMask(void);
 void disableDispMask(void);
 int func_8008ABF0(int arg0);
@@ -330,7 +252,6 @@ void func_8008B8F8(char (*arg0)[12]);
 void func_8008B960(int, int, int);
 D_800F1D08_t* func_8008BAC8(int, int, int);
 MpdRoomSectionA* func_8008BC04(int, int, int);
-void func_8008BD74(MpdRoomSectionA*);
 int func_8008BEBC(MpdRoomSectionA* arg0);
 int func_8008BF48(MpdRoomSectionA*);
 void func_8008C0C0(void);
@@ -364,10 +285,6 @@ void func_8008E938(void);
 int func_8008EA90(int arg0);
 void func_8008FA14(D_800F1DD4_t*);
 void func_80090A1C(D_800F1DD4_t*);
-
-void func_800719FC(int);
-void func_80071F68(int);
-void func_80072734(int);
 
 extern D_800F18EC_t* D_800F18EC;
 extern int D_80068C1C[];
@@ -7366,7 +7283,6 @@ int func_800792E4(int arg0, int arg1, int arg2)
     return ret;
 }
 
-void func_800793C0(void);
 void func_800793C0(void)
 {
     D_800F19CC_t2* action;
@@ -8281,7 +8197,6 @@ void func_8007B344(int arg0, int arg1, short arg2, short arg3, short arg4)
     vs_main_transformBgColors(arg0, arg1, arg2, arg3, arg4);
 }
 
-UNUSED void func_8007B378(int arg0, u_short* arg1, int arg2, int arg3);
 void func_8007B378(int arg0, u_short* arg1, int arg2, int arg3)
 {
     vs_main_loadClutTransition(arg0, 0, arg1, arg3);
@@ -8290,7 +8205,6 @@ void func_8007B378(int arg0, u_short* arg1, int arg2, int arg3)
     vs_main_loadClutTransition(arg0, 2, arg1 + 0x200);
 }
 
-UNUSED void func_8007B3D0(int arg0, int arg1, u_short* arg2, int arg3);
 void func_8007B3D0(int arg0, int arg1, u_short* arg2, int arg3)
 {
     vs_main_loadClutTransition(arg0, arg1 + 4, arg2, arg3);

@@ -78,7 +78,7 @@ int vs_battle_script_63_statusUnk(u_char*, short);
 int vs_battle_script_64_showGeometry(u_char*, short);
 int vs_battle_script_65_hideGeometry(u_char*, short);
 int vs_battle_script_66_swapGeometryFlags(u_char*, short);
-int vs_battle_script_67(u_char*, short);
+int vs_battle_script_67_setTileBlocked(u_char*, short);
 int vs_battle_script_68(u_char*, short);
 int vs_battle_script_6B(u_char*, short);
 int vs_battle_script_6C(u_char*, short);

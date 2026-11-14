@@ -2587,9 +2587,18 @@ int vs_battle_script_66_swapGeometryFlags(u_char* script, UNUSED short arg1)
     return scriptNext;
 }
 
-int vs_battle_script_67(u_char* arg0, UNUSED short arg1)
+/**
+ * Blocks or unblocks a tile in the room's walkable area.
+ * @param script Opcode bytes:
+ *   - [1] = tile column
+ *   - [2] = layer, 0 or 1 = layer of the tile grid, 2 and above = cloudstone (layer - 2)
+ *   - [3] = tile row
+ *   - [4] = 1 = blocked, 0 = open
+ */
+int vs_battle_script_67_setTileBlocked(u_char* script, UNUSED short arg1)
 {
-    func_8008B808(arg0[1], arg0[3], arg0[2], arg0[4]);
+    setTileBlocked(script[1], script[3], script[2], script[4]);
+
     return scriptNext;
 }
 

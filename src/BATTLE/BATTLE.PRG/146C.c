@@ -15966,28 +15966,31 @@ MpdRoomSection3* func_8008B764(u_int width, u_int height, int arg2)
     return NULL;
 }
 
-int func_8008B808(int arg0, int arg1, int arg2, int arg3)
+/**
+ * Blocks or unblocks a tile in the room's walkable area.
+ * @param layer 0 or 1 = layer of the tile grid, 2 and above = cloudstone (layer - 2)
+ */
+int setTileBlocked(int x, int row, int layer, int blocked)
 {
-    MpdRoomSection3* temp_a0;
+    MpdRoomSection3* tile;
 
     if (vs_battle_roomData.section3 != NULL) {
-        if (arg3 != 0) {
-            arg3 = 5;
+        if (blocked != 0) {
+            blocked = 5;
         }
-        if (arg2 >= 2) {
+        if (layer >= 2) {
             if (vs_battle_roomData.cloudstoneSection != NULL) {
-                temp_a0 = &vs_battle_roomData.cloudstoneSection[arg2 - 2].unkB4;
-                temp_a0->unk0_10 = arg3;
+                tile = &vs_battle_roomData.cloudstoneSection[layer - 2].unkB4;
+                tile->unk0_10 = blocked;
                 return 1;
             }
         } else {
-            temp_a0 =
-                &vs_battle_roomData
-                     .section3[(arg2 * vs_battle_roomData.collisionMapSection->width
-                                   * vs_battle_roomData.collisionMapSection->height)
-                               + (arg1 * vs_battle_roomData.collisionMapSection->width)
-                               + arg0];
-            temp_a0->unk0_10 = arg3;
+            tile = &vs_battle_roomData
+                        .section3[(layer * vs_battle_roomData.collisionMapSection->width
+                                      * vs_battle_roomData.collisionMapSection->height)
+                                  + (row * vs_battle_roomData.collisionMapSection->width)
+                                  + x];
+            tile->unk0_10 = blocked;
             return 1;
         }
     }

@@ -222,8 +222,8 @@ void computeSphericalOffset(VECTOR*, VECTOR*, SphericalValues*);
 void setCameraPositionFromAngles(SphericalValues* arg0);
 void setCameraLookAtFromAngles(SphericalValues* arg0);
 void func_8007B10C(int, int, int, short, short);
-int func_8007C4E0(vs_Warp*, int, int);
-int func_8007C5C0(vs_Warp*, int, int);
+int warpToMap(vs_Warp*, int, int);
+int warpToZone(vs_Warp*, int, int);
 int func_8007C694(int, int, int, int, int);
 int func_8007F434(void);
 int getActionCost(u_int, vs_ActorStats*, int);
@@ -5190,9 +5190,9 @@ int func_80074BAC(int actorIndex, ActorLocation* position)
                         }
 
                         if (door->zndId == zoneContext.zndId) {
-                            func_8007C4E0(door, 0, 8);
+                            warpToMap(door, 0, 8);
                         } else {
-                            func_8007C5C0(door, 0, 8);
+                            warpToZone(door, 0, 8);
                         }
 
                         func_800A0ABC(actorIndex);
@@ -5227,9 +5227,9 @@ int func_80074BAC(int actorIndex, ActorLocation* position)
             destination.faceCamera = 0;
 
             if (destination.zndId == zoneContext.zndId) {
-                func_8007C4E0(&destination, 0, 8);
+                warpToMap(&destination, 0, 8);
             } else {
-                func_8007C5C0(&destination, 0, 8);
+                warpToZone(&destination, 0, 8);
             }
 
             func_800A0ABC(actorIndex);
@@ -5249,7 +5249,7 @@ int func_80074BAC(int actorIndex, ActorLocation* position)
 
         actor->stats->currentHP -= 20;
         vs_battle_setDoorEntered();
-        func_8007C4E0(&vs_battle_spawnPoint, 0, 8);
+        warpToMap(&vs_battle_spawnPoint, 0, 8);
         func_80093B68(actor->stats->unk957, 0, 0x80000014, 0);
         func_800A0ABC(actorIndex);
         func_8008B8F8((void*)&vs_battle_spawnPoint);
@@ -8759,14 +8759,15 @@ void func_8007C4AC(int effect, int arg1, int arg2)
 
 void func_8007C4D4(void) { D_800F19A0 = 0; }
 
-int func_8007C4E0(vs_Warp* arg0, int effect, int speed)
+/** Starts a warp to a map in the current zone, with a screen transition. */
+int warpToMap(vs_Warp* warp, int effect, int speed)
 {
-    vs_battle_spawnPoint = *arg0;
+    vs_battle_spawnPoint = *warp;
     vs_battle_screenTransitionStep = 1;
     vs_battle_screenTransitionEffect = effect;
     vs_battle_screenTransitionSpeed = speed;
     vs_battle_spawnPoint.zndId = zoneContext.zndId;
-    loadMpd(arg0->mpdId);
+    loadMpd(warp->mpdId);
     func_8009E5C4(0);
     func_800A0A1C(0, 1);
     func_8008B8F8(NULL);
@@ -8774,33 +8775,37 @@ int func_8007C4E0(vs_Warp* arg0, int effect, int speed)
     return 1;
 }
 
-void func_8007C580(vs_Warp* arg0, int arg1, int arg2)
+/** As warpToMap, but records the door within one tile of the player as the one entered.
+ */
+void warpToMapThroughDoor(vs_Warp* warp, int effect, int speed)
 {
     vs_ActorPosition sp10;
 
-    func_8007C4E0(arg0, arg1, arg2);
+    warpToMap(warp, effect, speed);
     vs_battle_getActorPosition(0, &sp10);
     func_8008B960(sp10.unk0.unk0.x, sp10.unk0.unk0.z, sp10.unk0.unk0.surface);
 }
 
-int func_8007C5C0(vs_Warp* arg0, int effect, int speed)
+/** Starts a warp to a map in another zone, with a screen transition. */
+int warpToZone(vs_Warp* warp, int effect, int speed)
 {
-    vs_battle_spawnPoint = *arg0;
+    vs_battle_spawnPoint = *warp;
     vs_battle_screenTransitionStep = 2;
     vs_battle_screenTransitionEffect = effect;
     vs_battle_screenTransitionSpeed = speed;
-    loadZnd(arg0->zndId);
+    loadZnd(warp->zndId);
     func_8009E5C4(0);
     func_800A0A1C(0, 1);
     func_8008B8F8(NULL);
     return 1;
 }
 
-void func_8007C654(vs_Warp* arg0, int arg1, int arg2)
+/** As warpToZone, but records the door within a tile of the player as the one entered. */
+void warpToZoneThroughDoor(vs_Warp* warp, int effect, int speed)
 {
     vs_ActorPosition sp10;
 
-    func_8007C5C0(arg0, arg1, arg2);
+    warpToZone(warp, effect, speed);
     vs_battle_getActorPosition(0, &sp10);
     func_8008B960(sp10.unk0.unk0.x, sp10.unk0.unk0.z, sp10.unk0.unk0.surface);
 }

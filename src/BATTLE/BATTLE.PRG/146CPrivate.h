@@ -166,11 +166,11 @@ VS_HIDDEN(func_8007C46C);
 void func_8007C4AC(int, int, int);
 VS_HIDDEN(func_8007C4AC);
 
-void func_8007C580(vs_Warp*, int, int);
-VS_HIDDEN(func_8007C580);
+void warpToMapThroughDoor(vs_Warp*, int, int);
+VS_HIDDEN(warpToMapThroughDoor);
 
-void func_8007C654(vs_Warp*, int, int);
-VS_HIDDEN(func_8007C654);
+void warpToZoneThroughDoor(vs_Warp*, int, int);
+VS_HIDDEN(warpToZoneThroughDoor);
 
 void func_8007C8A4(int, int);
 VS_HIDDEN(func_8007C8A4);

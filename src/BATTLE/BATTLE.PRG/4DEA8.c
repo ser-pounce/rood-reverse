@@ -356,6 +356,9 @@ extern char D_800F4B70[];
 extern u_short D_800F4B28[];
 extern Gim* gims;
 
+/**
+ * Handler for opcode values that are not defined.
+ */
 int vs_battle_script_invalidOpcode(u_char* arg0, short arg1)
 {
     char buf[64];
@@ -365,10 +368,19 @@ int vs_battle_script_invalidOpcode(u_char* arg0, short arg1)
     return scriptNext;
 }
 
+/**
+ * Does nothing.
+ */
 int vs_battle_script_nop(UNUSED u_char* arg0, UNUSED short arg1) { return scriptNext; }
 
+/**
+ * Does nothing and waits until the next frame before carrying on.
+ */
 int vs_battle_script_yield(UNUSED u_char* arg0, UNUSED short arg1) { return scriptYield; }
 
+/**
+ * Waits until the event file that is being loaded, if any, has finished loading.
+ */
 int vs_battle_script_0A_waitEvtLoad(UNUSED u_char* arg0, UNUSED short arg1)
 {
     if ((evtCdSlot != 0) && (evtCdSlot->state != CdQueueStateLoaded)) {
@@ -378,12 +390,16 @@ int vs_battle_script_0A_waitEvtLoad(UNUSED u_char* arg0, UNUSED short arg1)
     return scriptNext;
 }
 
+/**
+ * Waits until the GIM that is being loaded has finished loading.
+ */
 int vs_battle_script_0C_waitGimLoad(UNUSED u_char* arg0, UNUSED short arg1)
 {
     return gims->loading;
 }
 
 /**
+ * Begins a section of the script that the player can skip with START.
  * @param script Opcode bytes:
  *   - [1] bit 0 = keep the music playing if the section is skipped
  */
@@ -394,6 +410,11 @@ int vs_battle_script_0D_beginSkippable(u_char* script, UNUSED short arg1)
     return (skipRequested != 0) ? scriptYield : scriptNext;
 }
 
+/**
+ * Cleans up when a skipped section ends. Resets the effects of the skipped part and
+ * clears the skipping flag.
+ * @param script The opcode that ended the skip, 0E or 0F.
+ */
 static void endScriptSkip(u_char* script)
 {
     short i;
@@ -421,6 +442,9 @@ static void endScriptSkip(u_char* script)
 }
 
 /**
+ * Ends the body of a skippable section. The skip handler follows it, up to the 0F opcode.
+ * If the section was not skipped, jumps past the handler; if it was, finishes the skip
+ * and carries on into the handler.
  * @param script Opcode bytes:
  *   - [1-2] offset from this opcode to jump to if the section was not skipped
  * @return scriptYield if the section was skipped, otherwise the address to
@@ -439,6 +463,10 @@ int vs_battle_script_0E_endSkippableBody(u_char* script, UNUSED short arg1)
     return (int)&script[getShort(script + 1)];
 }
 
+/**
+ * Ends the skip handler of a skippable section. Only has an effect if the section was
+ * being skipped, in which case it finishes the skip like 0E.
+ */
 int vs_battle_script_0F_endSkipHandler(u_char* arg0, UNUSED short arg1)
 {
     char prevMode = scriptSkipMode;
@@ -453,6 +481,7 @@ int vs_battle_script_0F_endSkipHandler(u_char* arg0, UNUSED short arg1)
 }
 
 /**
+ * Creates a text box at a fixed position on the screen.
  * @param script Opcode bytes:
  *   - [1] = (parentBoxId << 4) | boxId
  *   - [2-3] = flags/type (passed to arg1 of initTextBox)
@@ -497,6 +526,7 @@ int vs_battle_script_10_initTextBox(u_char* script, UNUSED short arg1)
 }
 
 /**
+ * Prints a string in a text box, and waits for it to be read unless told not to.
  * @param script Opcode bytes:
  *   - [1] = boxId
  *   - [2] = string index
@@ -536,6 +566,7 @@ int vs_battle_script_11_showTextBox(u_char* script, UNUSED short arg1)
 }
 
 /**
+ * Closes a text box.
  * @param script Opcode bytes:
  *   - [1] = boxId
  */
@@ -592,6 +623,7 @@ static int tryTextBoxPlacement(
 }
 
 /**
+ * Creates a text box next to an actor, using the placement that fits on the screen.
  * @param script Opcode bytes:
  *   - [1] = boxId
  *   - [2-3] = actor to place the box next to (resolved by resolveActorId)
@@ -650,6 +682,7 @@ int vs_battle_script_13_initTextBoxNearActor(u_char* script, UNUSED short arg1)
 }
 
 /**
+ * Closes a text box and waits until it has finished closing.
  * @param script Opcode bytes:
  *   - [1] = boxId
  */
@@ -659,6 +692,7 @@ int vs_battle_script_14_dismissTextBoxAndWait(u_char* script, UNUSED short arg1)
 }
 
 /**
+ * Waits until one of the given buttons is pressed.
  * @param script Opcode bytes:
  *   - [1] = mask of pad buttons, only the low byte (L2, R2, L1, R1 and the face buttons)
  */
@@ -672,6 +706,7 @@ int vs_battle_script_15_waitButtonPressed(u_char* script, UNUSED short arg1)
 }
 
 /**
+ * Loads a GIM image file.
  * @param script Opcode bytes:
  *   - [1-2] = GIM index
  *   - [3] = first VRAM page slot
@@ -684,6 +719,7 @@ int vs_battle_script_16_loadGim(u_char* script, UNUSED short arg1)
 }
 
 /**
+ * Shows an image of the loaded GIM, setting its position, scale and brightness.
  * @param script Opcode bytes:
  *   - [1] = (image << 6) | mode, image is 0-2 within the GIM and mode selects the draw
  *     function
@@ -719,6 +755,8 @@ int vs_battle_script_17_showGimImage(u_char* script, UNUSED short arg1)
 }
 
 /**
+ * Smoothly changes a shown GIM image's position, scale and brightness. Waits first if
+ * the image is still being tweened.
  * @param script Opcode bytes:
  *   - [1] = x offset from the screen centre, signed, in units of 2 pixels
  *   - [2] = y offset from the screen centre, signed, in units of 2 pixels
@@ -753,6 +791,9 @@ int vs_battle_script_18_tweenGimImage(u_char* script, UNUSED short arg1)
     return scriptNext;
 }
 
+/**
+ * Unloads the GIM.
+ */
 int vs_battle_script_19_unloadGim(UNUSED u_char* arg0, UNUSED short arg1)
 {
     unloadGim();
@@ -760,6 +801,9 @@ int vs_battle_script_19_unloadGim(UNUSED u_char* arg0, UNUSED short arg1)
     return (scriptSkipMode == scriptSkipping) ? scriptYield : scriptNext;
 }
 
+/**
+ * Waits until all the GIM image tweens have finished.
+ */
 int vs_battle_script_1A_waitGimTweens(UNUSED u_char* arg0, UNUSED short arg1)
 {
     return (gimTweens[0].duration | gimTweens[1].duration | gimTweens[2].duration) != 0
@@ -768,6 +812,7 @@ int vs_battle_script_1A_waitGimTweens(UNUSED u_char* arg0, UNUSED short arg1)
 }
 
 /**
+ * Sets an integer argument of the printf-style text in the text boxes from state flags.
  * @param script Opcode bytes:
  *   - [1] = printf argument integer to set (0-9)
  *   - [2-3] = state flag id in bits 0-9, type in bits 14-15: 0 = unsigned byte,
@@ -802,6 +847,7 @@ int vs_battle_script_1B_setPrintfArgInt(u_char* script, UNUSED short arg1)
 }
 
 /**
+ * Sets the duration of a text box's animation.
  * @param script Opcode bytes:
  *   - [1] = (boxId << 5) | animation duration (0-31)
  */
@@ -813,6 +859,8 @@ int vs_battle_script_1D_setTextBoxAnimationDuration(u_char* script, UNUSED short
 }
 
 /**
+ * Lets the player choose between text boxes, and stores the choice in the first scratch
+ * flag. Waits until a choice is made.
  * @param script Opcode bytes:
  *   - [1] = mask of the text boxes to choose between, bit n is box n
  */
@@ -843,6 +891,7 @@ int vs_battle_script_1C_selectTextBox(u_char* script, UNUSED short arg1)
 }
 
 /**
+ * Kills an actor or a group of actors.
  * @param script Opcode bytes:
  *   - [1-2] = actor selector, a single actor or a group
  *   - [3] = nonzero: play the death animation first, 0: start the fade-out directly
@@ -867,6 +916,7 @@ int vs_battle_script_1E_actorDeath(u_char* script, UNUSED short arg1)
 }
 
 /**
+ * Stores the tile an actor is standing on in state flags.
  * @param script Opcode bytes:
  *   - [1-2] = actor selector
  *   - [3-4] = first of three consecutive state flags that receive the actor's tile
@@ -905,6 +955,7 @@ int vs_battle_script_1F_getActorTile(u_char* script, UNUSED short arg1)
 }
 
 /**
+ * Creates an actor from a model on a tile.
  * @param script Opcode bytes:
  *   - [1-2] = actor selector for the empty slot to create the actor in
  *   - [3-4] = model index (OBJ/xx.SHP), doubles as the id the actor is looked up by
@@ -956,6 +1007,7 @@ int vs_battle_script_21_walkActorToTile(u_char* script, UNUSED short arg1)
 }
 
 /**
+ * Plays an animation on an actor.
  * @param script Opcode bytes:
  *   - [1-2] = actor selector
  *   - [3] = animation index within the bank
@@ -971,6 +1023,8 @@ int vs_battle_script_22_playAnimation(u_char* script, UNUSED short arg1)
 }
 
 /**
+ * Sets the flags of an actor or a group of actors, including whether it is active (see
+ * setActorInactive).
  * @param script Opcode bytes:
  *   - [1-2] = actor selector
  *   - [3] = actor flags: bit 0 enabled, bit 1 visible, bit 2 frozen, bit 6 unknown

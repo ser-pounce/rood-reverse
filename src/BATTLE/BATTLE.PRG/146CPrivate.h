@@ -1,6 +1,7 @@
 #pragma once
 #include "common.h"
 #include "146C.h"
+#include "src/SLUS_010.40/gameState.h"
 
 void func_80069C6C(int);
 VS_HIDDEN(func_80069C6C);
@@ -35,8 +36,8 @@ VS_HIDDEN(func_8006CE50);
 void func_8006CE70(SVECTOR*);
 VS_HIDDEN(func_8006CE70);
 
-int func_8007BD8C(int);
-VS_HIDDEN(func_8007BD8C);
+int setUiHidden(int);
+VS_HIDDEN(setUiHidden);
 
 void func_8007A824(void* prim);
 VS_HIDDEN(func_8007A824);
@@ -71,8 +72,9 @@ VS_HIDDEN(func_8007BA98);
 void vs_battle_forgetZoneEnemies(int, int);
 VS_HIDDEN(vs_battle_forgetZoneEnemies);
 
-void func_8007BBD8(int, int, int);
-VS_HIDDEN(func_8007BBD8);
+void startBattleTimer(
+    enum BattleTimerMode mode, enum BattleTimerLifetime lifetime, int time);
+VS_HIDDEN(startBattleTimer);
 
 void func_8007C4D4(void);
 VS_HIDDEN(func_8007C4D4);
@@ -89,8 +91,8 @@ VS_HIDDEN(func_8007CEC0);
 int func_8007CF80(int);
 VS_HIDDEN(func_8007CF80);
 
-void func_8007BCCC(void);
-VS_HIDDEN(func_8007BCCC);
+void stopBattleTimer(void);
+VS_HIDDEN(stopBattleTimer);
 
 void func_8007BD3C(int);
 VS_HIDDEN(func_8007BD3C);
@@ -134,8 +136,8 @@ VS_HIDDEN(setWeaponDrawn);
 int func_8007C218(int);
 VS_HIDDEN(func_8007C218);
 
-void func_8007C28C(int);
-VS_HIDDEN(func_8007C28C);
+void fullyRestoreActor(int);
+VS_HIDDEN(fullyRestoreActor);
 
 void func_8007C31C(void);
 VS_HIDDEN(func_8007C31C);
@@ -215,11 +217,11 @@ VS_HIDDEN(walkActorToCoordinate);
 int isActorWalkDone(int);
 VS_HIDDEN(isActorWalkDone);
 
-int func_8007D08C(int, int);
-VS_HIDDEN(func_8007D08C);
+int setActorAwake(int, int);
+VS_HIDDEN(setActorAwake);
 
-int func_8007D15C(int);
-VS_HIDDEN(func_8007D15C);
+int setActorsAwake(int);
+VS_HIDDEN(setActorsAwake);
 
 void setActorInactive(int actorId, int inactive);
 VS_HIDDEN(setActorInactive);

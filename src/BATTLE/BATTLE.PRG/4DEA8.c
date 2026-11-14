@@ -311,9 +311,9 @@ extern char animationBankBase[];
 extern char skipResetPaletteOp[];
 extern char skipTailMarkerOp[];
 extern u_char D_800E9BEC[];
-extern u_char D_800E9BF0[];
-extern short D_800E9BF4[];
-extern short D_800E9BF8[];
+extern u_char cubePuzzleSubmenus[];
+extern short battleTimerModes[];
+extern short battleTimerLifetimes[];
 extern void sceneResetScript;
 extern short D_800E9C00[];
 extern u_char D_800E9C1C[];
@@ -337,7 +337,7 @@ extern char* D_800F4BC0[];
 extern short D_800F4BE0;
 extern char D_800F4BE4;
 extern void* mpdRoomDoorSection;
-extern char D_800F4BF8;
+extern char scriptMenuState;
 extern char loopCounters[];
 extern short D_800F4C22;
 extern void* D_800F4C24;
@@ -349,13 +349,16 @@ extern short mpdScriptSection;
 extern short D_800F4C54;
 extern char textBoxSelectionPending;
 extern int scriptReturnAddress;
-extern char D_800F4C69;
+extern char scriptMusicSlot;
 extern char D_800F4C6A;
 
 extern char D_800F4B70[];
 extern u_short D_800F4B28[];
 extern Gim* gims;
 
+/**
+ * Handler for opcode values that are not defined.
+ */
 int vs_battle_script_invalidOpcode(u_char* arg0, short arg1)
 {
     char buf[64];
@@ -365,10 +368,19 @@ int vs_battle_script_invalidOpcode(u_char* arg0, short arg1)
     return scriptNext;
 }
 
+/**
+ * Does nothing.
+ */
 int vs_battle_script_nop(UNUSED u_char* arg0, UNUSED short arg1) { return scriptNext; }
 
+/**
+ * Does nothing and waits until the next frame before carrying on.
+ */
 int vs_battle_script_yield(UNUSED u_char* arg0, UNUSED short arg1) { return scriptYield; }
 
+/**
+ * Waits until the event file that is being loaded, if any, has finished loading.
+ */
 int vs_battle_script_0A_waitEvtLoad(UNUSED u_char* arg0, UNUSED short arg1)
 {
     if ((evtCdSlot != 0) && (evtCdSlot->state != CdQueueStateLoaded)) {
@@ -378,12 +390,16 @@ int vs_battle_script_0A_waitEvtLoad(UNUSED u_char* arg0, UNUSED short arg1)
     return scriptNext;
 }
 
+/**
+ * Waits until the GIM that is being loaded has finished loading.
+ */
 int vs_battle_script_0C_waitGimLoad(UNUSED u_char* arg0, UNUSED short arg1)
 {
     return gims->loading;
 }
 
 /**
+ * Begins a section of the script that the player can skip with START.
  * @param script Opcode bytes:
  *   - [1] bit 0 = keep the music playing if the section is skipped
  */
@@ -394,6 +410,11 @@ int vs_battle_script_0D_beginSkippable(u_char* script, UNUSED short arg1)
     return (skipRequested != 0) ? scriptYield : scriptNext;
 }
 
+/**
+ * Cleans up when a skipped section ends. Resets the effects of the skipped part and
+ * clears the skipping flag.
+ * @param script The opcode that ended the skip, 0E or 0F.
+ */
 static void endScriptSkip(u_char* script)
 {
     short i;
@@ -421,6 +442,9 @@ static void endScriptSkip(u_char* script)
 }
 
 /**
+ * Ends the body of a skippable section. The skip handler follows it, up to the 0F opcode.
+ * If the section was not skipped, jumps past the handler; if it was, finishes the skip
+ * and carries on into the handler.
  * @param script Opcode bytes:
  *   - [1-2] offset from this opcode to jump to if the section was not skipped
  * @return scriptYield if the section was skipped, otherwise the address to
@@ -439,6 +463,10 @@ int vs_battle_script_0E_endSkippableBody(u_char* script, UNUSED short arg1)
     return (int)&script[getShort(script + 1)];
 }
 
+/**
+ * Ends the skip handler of a skippable section. Only has an effect if the section was
+ * being skipped, in which case it finishes the skip like 0E.
+ */
 int vs_battle_script_0F_endSkipHandler(u_char* arg0, UNUSED short arg1)
 {
     char prevMode = scriptSkipMode;
@@ -453,6 +481,7 @@ int vs_battle_script_0F_endSkipHandler(u_char* arg0, UNUSED short arg1)
 }
 
 /**
+ * Creates a text box at a fixed position on the screen.
  * @param script Opcode bytes:
  *   - [1] = (parentBoxId << 4) | boxId
  *   - [2-3] = flags/type (passed to arg1 of initTextBox)
@@ -460,7 +489,7 @@ int vs_battle_script_0F_endSkipHandler(u_char* arg0, UNUSED short arg1)
  *   - [5] = y (scaled - 0x20)
  *   - [6] = width in characters
  *   - [7] = height in lines
- *   - [8-9] = speaker actor (>= 0x2000: none)
+ *   - [8-9] = speaker actor (actorSelectorNone: none)
  *   - [10] = speaker animation
  */
 int vs_battle_script_10_initTextBox(u_char* script, UNUSED short arg1)
@@ -489,7 +518,7 @@ int vs_battle_script_10_initTextBox(u_char* script, UNUSED short arg1)
 
     speakerSelector = getShort(&script[8]);
 
-    if (speakerSelector < 0x2000) {
+    if (speakerSelector < actorSelectorNone) {
         box->unk0.speakerActor = resolveActorId(speakerSelector);
     }
 
@@ -497,6 +526,7 @@ int vs_battle_script_10_initTextBox(u_char* script, UNUSED short arg1)
 }
 
 /**
+ * Prints a string in a text box, and waits for it to be read unless told not to.
  * @param script Opcode bytes:
  *   - [1] = boxId
  *   - [2] = string index
@@ -536,6 +566,7 @@ int vs_battle_script_11_showTextBox(u_char* script, UNUSED short arg1)
 }
 
 /**
+ * Closes a text box.
  * @param script Opcode bytes:
  *   - [1] = boxId
  */
@@ -592,6 +623,7 @@ static int tryTextBoxPlacement(
 }
 
 /**
+ * Creates a text box next to an actor, using the placement that fits on the screen.
  * @param script Opcode bytes:
  *   - [1] = boxId
  *   - [2-3] = actor to place the box next to (resolved by resolveActorId)
@@ -650,6 +682,7 @@ int vs_battle_script_13_initTextBoxNearActor(u_char* script, UNUSED short arg1)
 }
 
 /**
+ * Closes a text box and waits until it has finished closing.
  * @param script Opcode bytes:
  *   - [1] = boxId
  */
@@ -659,6 +692,7 @@ int vs_battle_script_14_dismissTextBoxAndWait(u_char* script, UNUSED short arg1)
 }
 
 /**
+ * Waits until one of the given buttons is pressed.
  * @param script Opcode bytes:
  *   - [1] = mask of pad buttons, only the low byte (L2, R2, L1, R1 and the face buttons)
  */
@@ -672,6 +706,7 @@ int vs_battle_script_15_waitButtonPressed(u_char* script, UNUSED short arg1)
 }
 
 /**
+ * Loads a GIM image file.
  * @param script Opcode bytes:
  *   - [1-2] = GIM index
  *   - [3] = first VRAM page slot
@@ -684,6 +719,7 @@ int vs_battle_script_16_loadGim(u_char* script, UNUSED short arg1)
 }
 
 /**
+ * Shows an image of the loaded GIM, setting its position, scale and brightness.
  * @param script Opcode bytes:
  *   - [1] = (image << 6) | mode, image is 0-2 within the GIM and mode selects the draw
  *     function
@@ -719,6 +755,8 @@ int vs_battle_script_17_showGimImage(u_char* script, UNUSED short arg1)
 }
 
 /**
+ * Smoothly changes a shown GIM image's position, scale and brightness. Waits first if
+ * the image is still being tweened.
  * @param script Opcode bytes:
  *   - [1] = x offset from the screen centre, signed, in units of 2 pixels
  *   - [2] = y offset from the screen centre, signed, in units of 2 pixels
@@ -753,6 +791,9 @@ int vs_battle_script_18_tweenGimImage(u_char* script, UNUSED short arg1)
     return scriptNext;
 }
 
+/**
+ * Unloads the GIM.
+ */
 int vs_battle_script_19_unloadGim(UNUSED u_char* arg0, UNUSED short arg1)
 {
     unloadGim();
@@ -760,6 +801,9 @@ int vs_battle_script_19_unloadGim(UNUSED u_char* arg0, UNUSED short arg1)
     return (scriptSkipMode == scriptSkipping) ? scriptYield : scriptNext;
 }
 
+/**
+ * Waits until all the GIM image tweens have finished.
+ */
 int vs_battle_script_1A_waitGimTweens(UNUSED u_char* arg0, UNUSED short arg1)
 {
     return (gimTweens[0].duration | gimTweens[1].duration | gimTweens[2].duration) != 0
@@ -768,6 +812,7 @@ int vs_battle_script_1A_waitGimTweens(UNUSED u_char* arg0, UNUSED short arg1)
 }
 
 /**
+ * Sets an integer argument of the printf-style text in the text boxes from state flags.
  * @param script Opcode bytes:
  *   - [1] = printf argument integer to set (0-9)
  *   - [2-3] = state flag id in bits 0-9, type in bits 14-15: 0 = unsigned byte,
@@ -802,6 +847,7 @@ int vs_battle_script_1B_setPrintfArgInt(u_char* script, UNUSED short arg1)
 }
 
 /**
+ * Sets the duration of a text box's animation.
  * @param script Opcode bytes:
  *   - [1] = (boxId << 5) | animation duration (0-31)
  */
@@ -813,6 +859,8 @@ int vs_battle_script_1D_setTextBoxAnimationDuration(u_char* script, UNUSED short
 }
 
 /**
+ * Lets the player choose between text boxes, and stores the choice in the first scratch
+ * flag. Waits until a choice is made.
  * @param script Opcode bytes:
  *   - [1] = mask of the text boxes to choose between, bit n is box n
  */
@@ -843,6 +891,7 @@ int vs_battle_script_1C_selectTextBox(u_char* script, UNUSED short arg1)
 }
 
 /**
+ * Kills an actor or a group of actors.
  * @param script Opcode bytes:
  *   - [1-2] = actor selector, a single actor or a group
  *   - [3] = nonzero: play the death animation first, 0: start the fade-out directly
@@ -867,6 +916,7 @@ int vs_battle_script_1E_actorDeath(u_char* script, UNUSED short arg1)
 }
 
 /**
+ * Stores the tile an actor is standing on in state flags.
  * @param script Opcode bytes:
  *   - [1-2] = actor selector
  *   - [3-4] = first of three consecutive state flags that receive the actor's tile
@@ -878,7 +928,7 @@ int vs_battle_script_1F_getActorTile(u_char* script, UNUSED short arg1)
     u_short actor = getShort(script + 1);
     u_short flag = getShort(script + 3);
 
-    if (actor & 0x1000) {
+    if (actor & actorSelectorSlot) {
 
         actor &= 0x1F;
 
@@ -905,6 +955,7 @@ int vs_battle_script_1F_getActorTile(u_char* script, UNUSED short arg1)
 }
 
 /**
+ * Creates an actor from a model on a tile.
  * @param script Opcode bytes:
  *   - [1-2] = actor selector for the empty slot to create the actor in
  *   - [3-4] = model index (OBJ/xx.SHP), doubles as the id the actor is looked up by
@@ -956,6 +1007,7 @@ int vs_battle_script_21_walkActorToTile(u_char* script, UNUSED short arg1)
 }
 
 /**
+ * Plays an animation on an actor.
  * @param script Opcode bytes:
  *   - [1-2] = actor selector
  *   - [3] = animation index within the bank
@@ -971,6 +1023,8 @@ int vs_battle_script_22_playAnimation(u_char* script, UNUSED short arg1)
 }
 
 /**
+ * Sets the flags of an actor or a group of actors, including whether it is active (see
+ * setActorInactive).
  * @param script Opcode bytes:
  *   - [1-2] = actor selector
  *   - [3] = actor flags: bit 0 enabled, bit 1 visible, bit 2 frozen, bit 6 unknown
@@ -1210,7 +1264,8 @@ int vs_battle_script_28_slideActorToCoordinate(u_char* script, UNUSED short arg1
 }
 
 /**
- * Attaches an actor to a bone of a parent actor. A parent selector >= 0x2000 detaches it.
+ * Attaches an actor to a bone of a parent actor. A parent selector of actorSelectorNone
+ * detaches it.
  * @param script Opcode bytes:
  *   - [1-2] = actor selector
  *   - [3-4] = parent actor selector
@@ -1222,7 +1277,7 @@ int vs_battle_script_29_attachActor(u_char* script, UNUSED short arg1)
     u_short actor = resolveActorId(getShort(script + 1));
     u_short parent = resolveActorId(getShort(script + 3));
 
-    if (parent >= 0x2000) {
+    if (parent >= actorSelectorNone) {
         detachActor(actor, parent);
     } else {
         attachActor(actor, parent, script[5], script[6]);
@@ -1579,7 +1634,7 @@ int vs_battle_script_37_setActorMoveAnimation(u_char* script, UNUSED short arg1)
  * Turns the actor's head towards another actor.
  * @param script Opcode bytes:
  *   - [1-2] = actor selector
- *   - [3-4] = target actor selector, 0x2000 = stop looking at anything
+ *   - [3-4] = target actor selector, actorSelectorNone = stop looking at anything
  *   - [5] = speed, 0 = unlimited
  */
 int vs_battle_script_38_setActorLookTarget(u_char* script, UNUSED short arg1)
@@ -1591,7 +1646,7 @@ int vs_battle_script_38_setActorLookTarget(u_char* script, UNUSED short arg1)
 
     int mode = -2;
 
-    if (target != 0x2000) {
+    if (target != actorSelectorNone) {
         mode = target;
     }
 
@@ -2165,142 +2220,203 @@ int vs_battle_script_54_playWeaponSfx(u_char* script, UNUSED short arg1)
     return scriptNext;
 }
 
-int vs_battle_script_55(u_char* arg0, UNUSED short arg1)
+/**
+ * Wakes every actor except actor 0 (the player), or puts them all into the dormant state:
+ * inert, no AI, not targetable (see setActorAwake).
+ * @param script Opcode bytes:
+ *   - [1] = 0 = dormant, nonzero = awake
+ */
+int vs_battle_script_55_setActorsAwake(u_char* script, UNUSED short arg1)
 {
-    func_8007D15C(arg0[1]);
+    setActorsAwake(script[1]);
+
     return scriptNext;
 }
 
-int vs_battle_script_56_setFlagIfButton(u_char* arg0, UNUSED short arg1)
+/**
+ * Stores the pad state of the first controller in a state flag. Only the low byte of the
+ * pad is read: L2, R2, L1, R1, triangle, circle, cross and square.
+ * @param script Opcode bytes:
+ *   - [1-2] = bits 0-9: state flag id, bit 15: 1 = buttons newly pressed this frame,
+ *     0 = buttons held
+ */
+int vs_battle_script_56_setFlagToButtons(u_char* script, UNUSED short arg1)
 {
-    short temp_v0 = getShort(arg0 + 1);
-    vs_battle_setStateFlag(temp_v0 & 0x3FF, temp_v0 & 0x8000
-                                                ? vs_main_buttonsPressed.pad[0].low
-                                                : vs_main_buttonsPreviousState);
+    short flagAndMode = getShort(script + 1);
+
+    vs_battle_setStateFlag(flagAndMode & 0x3FF, flagAndMode & 0x8000
+                                                    ? vs_main_buttonsPressed.pad[0].low
+                                                    : vs_main_buttonsPreviousState);
+
     return scriptNext;
 }
 
-int vs_battle_script_57(u_char* arg0, UNUSED short arg1)
+/**
+ * Fully restores an actor: HP, MP and every limb's HP to their maximums, risk and action
+ * delay to 0, and all status effects removed.
+ * @param script Opcode bytes:
+ *   - [1-2] = actor selector
+ */
+int vs_battle_script_57_fullyRestoreActor(u_char* script, UNUSED short arg1)
 {
-    func_8007C28C(resolveActorId(getShort(arg0 + 1)));
+    fullyRestoreActor(resolveActorId(getShort(script + 1)));
+
     return scriptNext;
 }
 
-int vs_battle_script_58(u_char* arg0, UNUSED short arg1)
+/**
+ * Shows or hides the UI (HP, MP and risk bars, limb and status
+ * panel) and the minimap.
+ * @param script Opcode bytes:
+ *   - [1] = 0 = hide, 1 = show
+ */
+int vs_battle_script_58_setUiVisible(u_char* script, UNUSED short arg1)
 {
-    func_8007BD8C(arg0[1] ^ 1);
+    setUiHidden(script[1] ^ 1);
+
     return scriptNext;
 }
 
-int vs_battle_script_59(u_char* script, UNUSED short arg1)
+/**
+ * Opens a menu and waits for it to finish. Values 10-14 open MENUF.PRG (not really a
+ * menu: it shows the cube puzzle and boss time attack screens, selected by state flag
+ * menuFSubmenu); 15 opens the loot or unlock screens; any other value opens the menu
+ * screen with that id.
+ * @param script Opcode bytes:
+ *   - [1] = menu selector
+ */
+int vs_battle_script_59_openMenu(u_char* script, UNUSED short arg1)
 {
+    // Values of script[1]. The first three are in the order of cubePuzzleSubmenus.
+    enum {
+        cubePuzzleQuit = 10,
+        cubePuzzleStart,
+        cubePuzzleEnd,
+        timeAttackStart,
+        timeAttackEnd,
+        loot,
+    };
+
     switch (script[1]) {
-    case 10:
-    case 11:
-    case 12:
-        if (D_800F4BF8 == 0) {
-            vs_battle_setStateFlag(0xB6, D_800E9BF0[script[1] - 10]);
+    case cubePuzzleQuit:
+    case cubePuzzleStart:
+    case cubePuzzleEnd:
+        if (scriptMenuState == scriptMenuClosed) {
+            vs_battle_setStateFlag(
+                menuFSubmenu, cubePuzzleSubmenus[script[1] - cubePuzzleQuit]);
             func_8007B9A0();
-            D_800F4BF8 = 1;
+            scriptMenuState = scriptMenuOpen;
+
             return scriptRepeat;
         }
 
-        goto finishState;
+        // Fallthrough
+    case timeAttackEnd:
+        if (scriptMenuState == scriptMenuClosed) {
 
-    case 14:
-        if (D_800F4BF8 == 0) {
-            if (getStateFlag(0xB6) == 1) {
-                vs_battle_setStateFlag(0xB6, 2);
+            if (getStateFlag(menuFSubmenu) == menuFTimeAttackStart) {
+                vs_battle_setStateFlag(menuFSubmenu, menuFTimeAttackEnd);
             }
 
             func_8007B9A0();
-            D_800F4C69 = 2;
-            D_800F4BF8 = 1;
+
+            scriptMusicSlot = 2;
+            scriptMenuState = scriptMenuOpen;
+
             return scriptRepeat;
         }
 
-    finishState:
         if (func_8007B9FC() != 0) {
             return scriptRepeat;
         }
 
-        vs_battle_setStateFlag(0xB6, 0);
-        D_800F4BF8 = 0;
+        vs_battle_setStateFlag(menuFSubmenu, 0);
+        scriptMenuState = scriptMenuClosed;
+
         return scriptYield;
 
-    case 13:
-        if (D_800F4BF8 == 0) {
-            vs_battle_setStateFlag(0xB6, 1);
+    case timeAttackStart:
+        if (scriptMenuState == scriptMenuClosed) {
+            vs_battle_setStateFlag(menuFSubmenu, menuFTimeAttackStart);
             func_8007B9A0();
-            D_800F4BF8 = 1;
+            scriptMenuState = scriptMenuOpen;
+
             return scriptRepeat;
         }
 
-        goto finishTransition;
-
-    case 15:
-        if (D_800F4BF8 == 0) {
+        // Fallthrough
+    case loot:
+        if (scriptMenuState == scriptMenuClosed) {
             func_8007B9CC();
-            D_800F4BF8 = 1;
+            scriptMenuState = scriptMenuOpen;
+
             return scriptRepeat;
         }
 
-    finishTransition:
         if (func_8007B9FC() == 0) {
-            D_800F4BF8 = 0;
+            scriptMenuState = scriptMenuClosed;
+
             return scriptYield;
         }
 
         return scriptRepeat;
 
     default:
-        if (D_800F4BF8 == 0) {
-            func_800CACD0(script[1], 2);
-            D_800F4BF8 = 1;
+        if (scriptMenuState == scriptMenuClosed) {
+            openMenu(script[1], 2);
+            scriptMenuState = scriptMenuOpen;
+
             return scriptRepeat;
         }
 
-        func_800C97BC();
+        updateMenu();
 
         if (func_800CB66C()->unk0 == 2) {
-            func_800CB114();
-            D_800F4BF8 = 0;
-            break;
+            freeMenuItems();
+            scriptMenuState = scriptMenuClosed;
+
+            return scriptYield;
         }
 
         return scriptRepeat;
     }
-
-    return scriptYield;
 }
 
-int vs_battle_script_5A(u_char* arg0, UNUSED short arg1)
+/**
+ * Starts or stops the on-screen timer.
+ * @param script Opcode bytes:
+ *   - [1] = 0 = stop and clear the timer, nonzero = start
+ *   - [2] = lifetime index (see startBattleTimer)
+ *   - [3] = mode index, 0 = counts up, 1 = counts down
+ *   - [4-6] = hours, minutes and seconds to count down from
+ */
+int vs_battle_script_5A_setBattleTimer(u_char* script, UNUSED short arg1)
 {
-    if (arg0[1] != 0) {
-        func_8007BBD8(D_800E9BF4[arg0[3]], D_800E9BF8[arg0[2]],
-            (arg0[4] << 0x18) | (arg0[5] << 0x10) | (arg0[6] << 8));
+    if (script[1] != 0) {
+        startBattleTimer(battleTimerModes[script[3]], battleTimerLifetimes[script[2]],
+            (script[4] << 24) | (script[5] << 16) | (script[6] << 8));
     } else {
-        func_8007BCCC();
+        stopBattleTimer();
     }
+
     return scriptNext;
 }
 
-int vs_battle_script_5B_setTextBoxSpeaker(u_char* arg0, UNUSED short arg1)
+/**
+ * Sets which actor speaks a text box and their animation.
+ * @param script Opcode bytes:
+ *   - [1] = box id in the low nibble, speaker animation in the high nibble
+ *   - [2-3] = actor selector, or actorSelectorNone for no speaker
+ */
+int vs_battle_script_5B_setTextBoxSpeaker(u_char* script, UNUSED short arg1)
 {
-    vs_TextBox* temp_s1;
-    u_short temp_s0;
-    int var_a0;
+    u_short speakerSelector = getShort(script + 2);
+    vs_TextBox* box = vs_battle_getTextBox(script[1] & 0xF);
 
-    temp_s0 = getShort(arg0 + 2);
-    temp_s1 = vs_battle_getTextBox(arg0[1] & 0xF);
+    box->unk0.speakerActor =
+        speakerSelector < actorSelectorNone ? resolveActorId(speakerSelector) : 0x20;
+    box->speakerAnimation = script[1] >> 4;
 
-    if (temp_s0 < 0x2000) {
-        var_a0 = resolveActorId(temp_s0);
-    } else {
-        var_a0 = 0x20;
-    }
-    temp_s1->unk0.speakerActor = var_a0;
-    temp_s1->speakerAnimation = arg0[1] >> 4;
     return scriptNext;
 }
 
@@ -2798,8 +2914,8 @@ int vs_battle_script_89_loadSoundFile(UNUSED u_char* arg0, UNUSED short arg1)
 
 int vs_battle_script_8F_crossfadeMusic(u_char* arg0, UNUSED short arg1)
 {
-    vs_main_fadeMusicVolume(D_800F4C69, 0, arg0[4]);
-    vs_main_playMusicSlotFadeIn(D_800F4C69 = arg0[1], arg0[2], arg0[3]);
+    vs_main_fadeMusicVolume(scriptMusicSlot, 0, arg0[4]);
+    vs_main_playMusicSlotFadeIn(scriptMusicSlot = arg0[1], arg0[2], arg0[3]);
     return scriptNext;
 }
 
@@ -2817,31 +2933,31 @@ int vs_battle_script_91_freeMusic(u_char* arg0, UNUSED short arg1)
 
 int vs_battle_script_92_playMusic(u_char* arg0, UNUSED short arg1)
 {
-    vs_main_playMusicSlot(D_800F4C69 = arg0[1], arg0[2], arg0[3]);
+    vs_main_playMusicSlot(scriptMusicSlot = arg0[1], arg0[2], arg0[3]);
     return scriptNext;
 }
 
 int vs_battle_script_93_fadeMusicVolume(u_char* arg0, UNUSED short arg1)
 {
-    vs_main_fadeMusicVolume(D_800F4C69, arg0[1], arg0[2]);
+    vs_main_fadeMusicVolume(scriptMusicSlot, arg0[1], arg0[2]);
     return scriptNext;
 }
 
 int vs_battle_script_94_fadeMusicTempo(u_char* arg0, UNUSED short arg1)
 {
-    vs_main_fadeMusicTempo(D_800F4C69, (signed char)arg0[1], arg0[2]);
+    vs_main_fadeMusicTempo(scriptMusicSlot, (signed char)arg0[1], arg0[2]);
     return scriptNext;
 }
 
 int vs_battle_script_95_fadeMusicPitch(u_char* arg0, UNUSED short arg1)
 {
-    vs_main_fadeMusicPitch(D_800F4C69, (signed char)arg0[1], arg0[2]);
+    vs_main_fadeMusicPitch(scriptMusicSlot, (signed char)arg0[1], arg0[2]);
     return scriptNext;
 }
 
 int vs_battle_script_96_stopMusic(UNUSED u_char* arg0, UNUSED short arg1)
 {
-    vs_main_stopMusicSlot(D_800F4C69);
+    vs_main_stopMusicSlot(scriptMusicSlot);
     return scriptNext;
 }
 
@@ -2899,7 +3015,7 @@ int vs_battle_script_9C_fadeSfxPan(u_char* arg0, UNUSED short arg1)
 
 int vs_battle_script_9F_queueMusic(u_char* arg0, UNUSED short arg1)
 {
-    vs_main_queueMusicSlot(D_800F4C69 = arg0[1]);
+    vs_main_queueMusicSlot(scriptMusicSlot = arg0[1]);
     return scriptNext;
 }
 
@@ -3036,21 +3152,21 @@ int vs_battle_script_B3(u_char* arg0, UNUSED short arg1)
         if (temp_a0 == 1) {
             break;
         }
-        func_8007D08C(temp_a0, arg0[3]);
+        setActorAwake(temp_a0, arg0[3]);
     }
     return scriptNext;
 }
 
 int vs_battle_script_B4(u_char* arg0, UNUSED short arg1)
 {
-    if (D_800F4BF8 == 0) {
+    if (scriptMenuState == scriptMenuClosed) {
         func_8007BA98(getShort(arg0 + 1), arg0[3], getShort(arg0 + 4), arg0[6]);
-        D_800F4BF8 = 1;
+        scriptMenuState = scriptMenuOpen;
         return scriptRepeat;
     }
 
     if (func_8007B9FC() == 0) {
-        D_800F4BF8 = 0;
+        scriptMenuState = scriptMenuClosed;
         return scriptYield;
     }
     return scriptRepeat;
@@ -3098,7 +3214,7 @@ void func_800BAF6C(short arg0)
         }
     }
 
-    func_8007D15C(arg0);
+    setActorsAwake(arg0);
 }
 
 int vs_battle_script_B7_specialOp(u_char* arg0, UNUSED short arg1)
@@ -3110,18 +3226,18 @@ int vs_battle_script_B7_specialOp(u_char* arg0, UNUSED short arg1)
         func_8007C8F8(arg0[2]);
         break;
     case 1:
-        if (D_800F4BF8 != 0) {
+        if (scriptMenuState != scriptMenuClosed) {
             if (func_8007B9FC() != 0) {
                 return scriptRepeat;
             }
-            vs_battle_setStateFlag(0xB6, 0);
-            D_800F4BF8 = 0;
+            vs_battle_setStateFlag(menuFSubmenu, 0);
+            scriptMenuState = scriptMenuClosed;
             vs_main_showEndingAndReturnToTitle();
             break;
         }
-        vs_battle_setStateFlag(0xB6, 3);
+        vs_battle_setStateFlag(menuFSubmenu, menuFHealBonus);
         func_8007B9A0();
-        D_800F4BF8 = 1;
+        scriptMenuState = scriptMenuOpen;
         return scriptRepeat;
     case 2:
         skipRequested = 1;
@@ -3337,7 +3453,7 @@ void expandActorSelector(u_short arg0, ActorList* arg1)
     arg1->remaining = 0;
     arg1->next = 0;
 
-    if (arg0 & 0x2000) {
+    if (arg0 & actorSelectorAll) {
         short i;
         short var_a0 = -1;
         if (arg0 == 0x2003) {
@@ -5120,7 +5236,7 @@ void parseEvt(u_char* data)
     D_800F4C4E = 0;
     textBoxSelectionPending = 0;
     D_800F4BE4 = 0;
-    D_800F4BF8 = 0;
+    scriptMenuState = scriptMenuClosed;
     D_800F4BE2 = 0;
     D_800F4BB6 = 0;
     D_800F4C58[0] = 0;
@@ -5136,7 +5252,7 @@ void parseEvt(u_char* data)
 
     D_800F4B8B = 0;
     gimTweens[0].duration = gimTweens[1].duration = gimTweens[2].duration = 0;
-    D_800F4C69 = vs_main_getcurrentMusicSlot();
+    scriptMusicSlot = vs_main_getcurrentMusicSlot();
     evtCdSlot = NULL;
 
     for (i = 16; i < 32; ++i) {

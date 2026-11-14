@@ -305,7 +305,7 @@ void func_80085B10(int, D_800F19CC_t2*, D_800F19CC_t2*, int);
 void func_80086754(int, vs_ActorStats*);
 void applyBattleAbilityEffect(HitEntity*);
 void func_80087EF4(vs_ActorStats*);
-int func_800882F4(void);
+int updateBattleTimer(void);
 int func_80088554(void);
 void func_80088CA0(void);
 void func_80089114(void);
@@ -3395,7 +3395,7 @@ void func_8007053C(void)
         func_800C05B4();
 
         if (!vs_main_actions[D_800F19CC->unk8.actionIndex].unk2_0) {
-            func_800CB114();
+            freeMenuItems();
             func_8006FBCC(0);
             return;
         }
@@ -3584,14 +3584,14 @@ void func_80070F28(int arg0)
     if (arg0 != 0) {
         if (temp_s0 == 0xFF) {
             if (D_800F19CC->unk8.unk4.unk0.hit.targetActor != 0) {
-                func_800CB114();
+                freeMenuItems();
                 func_800E4C64(D_800F19CC->unk8.unk4.unk0.hit.targetActor);
                 D_800F19CC->unk8.actionIndex = 0;
                 func_8006FBCC(0);
                 return;
             }
             if (!(vs_main_actions[D_800F19CC->unk8.actionIndex].unk2_0)) {
-                func_800CB114();
+                freeMenuItems();
                 D_800F19CC->unk8.actionIndex = 0;
                 func_8006FBCC(0);
                 return;
@@ -3615,7 +3615,7 @@ void func_80070F28(int arg0)
     } else {
         func_800D82A8(D_800F19CC->unk8.unk4.unk0.hit.targetActor);
     }
-    func_800CB114();
+    freeMenuItems();
     if (arg0 == 0) {
         func_80070CAC();
     } else if (arg0 == 2) {
@@ -4488,7 +4488,7 @@ void func_8007357C(UNUSED int arg0, UNUSED int arg1)
 
 void func_800735CC(D_800F18EC_t* arg0)
 {
-    func_800CB114();
+    freeMenuItems();
     arg0->unk0 = 0;
     func_8006C40C();
 }
@@ -4603,7 +4603,8 @@ void func_800738E4(void)
     func_800DC638();
 
     if ((func_800BEC58(0xA, 0, 0, 0) == 1)
-        || ((vs_main_battleTimer.mode != 0) && (func_800BEC58(0x10, 0, 0, 0) == 1))) {
+        || ((vs_main_battleTimer.mode != battleTimerOff)
+            && (func_800BEC58(0x10, 0, 0, 0) == 1))) {
         func_80073870();
         return;
     }
@@ -4619,7 +4620,7 @@ void func_800738E4(void)
     func_80093A14();
     setFarClip(0x1000, 1);
     setCameraRoll(0);
-    func_8007BD8C(0);
+    setUiHidden(0);
     if (vs_main_soundData.currentMusicHandle == 0xFFFF) {
         if (D_800F18AC != 0) {
             vs_main_playMusicSlot(D_800F18AC, 0x7F, 0);
@@ -4959,7 +4960,7 @@ int func_800744B8(void)
         func_8006C40C();
         return 0;
     }
-    func_800C97BC();
+    updateMenu();
     temp_v0 = func_800CB66C();
     if (temp_v0->unk0 == 1) {
         return 1;
@@ -4969,7 +4970,7 @@ int func_800744B8(void)
     } else {
         func_8008D5FC(D_800F1910.unk0);
     }
-    func_800CB114();
+    freeMenuItems();
     func_8006C40C();
     return 0;
 }
@@ -7443,10 +7444,10 @@ void func_800793C0(void)
 
 void func_800797BC(void)
 {
-    func_800C97BC();
+    updateMenu();
     if (func_800CB66C()->unk0 != 1) {
         func_8006C40C();
-        func_800CB114();
+        freeMenuItems();
         func_8006F89C();
     }
 }
@@ -7460,10 +7461,10 @@ void func_8007980C(void)
 
 void func_8007983C(void)
 {
-    func_800C97BC();
+    updateMenu();
     if ((func_800CB66C()->unk0 != 1) && (func_800CB45C() == 0)) {
         func_8006C40C();
-        func_800CB114();
+        freeMenuItems();
         func_800CB50C();
         func_8006F89C();
     }
@@ -7560,7 +7561,7 @@ void vs_battle_exec(void)
 
                             if (D_800F1858 != 0) {
                                 if ((vs_battle_characterState->stats->actionDelay == 0)
-                                    && !(status & 0x4000) && func_800CACD0(0, 0)) {
+                                    && !(status & 0x4000) && openMenu(0, 0)) {
                                     func_8007357C(0, 0);
                                     D_800F1858 = 0;
                                     break;
@@ -7569,7 +7570,7 @@ void vs_battle_exec(void)
                                        && !(vs_main_buttonsPreviousState & PADL2)) {
                                 if ((vs_battle_characterState->stats->actionDelay == 0)
                                     && !(status & 0x4000)) {
-                                    if (func_800CACD0(0, 0)) {
+                                    if (openMenu(0, 0)) {
                                         func_8007357C(0, 0);
                                         break;
                                     }
@@ -7725,7 +7726,7 @@ void vs_battle_exec(void)
 
                         case 5:
                             if (cameraMode == 1) {
-                                func_800C97BC();
+                                updateMenu();
                                 menu = func_800CB66C();
                                 D_800F18EC = menu;
 
@@ -8322,8 +8323,9 @@ void func_8007B4C4(void)
 
 void func_8007B508(void)
 {
-    if (!(getStateFlag(0xB6)) || ((getStateFlag(0xB6)) == 2)
-        || ((getStateFlag(0xB6)) == 3)) {
+    if (!(getStateFlag(menuFSubmenu))
+        || ((getStateFlag(menuFSubmenu)) == menuFTimeAttackEnd)
+        || ((getStateFlag(menuFSubmenu)) == menuFHealBonus)) {
         if (isArtOrAbilityUnlocked() != 0) {
             cameraMode = 5;
             if (D_800F1864 != 0) {
@@ -8397,22 +8399,22 @@ void func_8007B7DC()
 
 void func_8007B834(void)
 {
-    func_800C97BC();
+    updateMenu();
     if (func_800CB66C()->unk0 != 1) {
         func_8007B470();
-        func_800CB114();
+        freeMenuItems();
         func_8007B764();
     }
 }
 
 void func_8007B884(void)
 {
-    func_800C97BC();
+    updateMenu();
     if (func_800CB66C()->unk0 != 1) {
         if (D_800F1864 != 0) {
             func_8007B470();
         }
-        func_800CB114();
+        freeMenuItems();
         if (D_800F1860 != 0) {
             func_8007B4C4();
         } else {
@@ -8430,10 +8432,10 @@ void func_8007B908(void)
 
 void func_8007B938(void)
 {
-    func_800C97BC();
+    updateMenu();
     if ((func_800CB66C()->unk0 != 1) && (func_800CB45C() == 0)) {
         func_8007B470();
-        func_800CB114();
+        freeMenuItems();
         func_800CB50C();
         func_8007B508();
     }
@@ -8514,20 +8516,28 @@ void func_8007BA98(int id0, int count0, int id1, int count1)
 
 void vs_battle_forgetZoneEnemies(int arg0, int arg1) { forgetZoneEnemies(arg0, arg1); }
 
-void func_8007BBD8(int arg0, int arg1, int arg2)
+/**
+ * Starts the on-screen timer. Its time is copied to state flags 0xA0-0xA3 every frame
+ * (see updateBattleTimer).
+ * @param mode Not battleTimerOff.
+ * @param lifetime When the timer is cleared automatically.
+ * @param time Start time for a countdown, as hours << 24 | minutes << 16 | seconds << 8.
+ */
+void startBattleTimer(
+    enum BattleTimerMode mode, enum BattleTimerLifetime lifetime, int time)
 {
-    vs_main_battleTimer.mode = arg0;
-    vs_main_battleTimer.lifetime = arg1;
+    vs_main_battleTimer.mode = mode;
+    vs_main_battleTimer.lifetime = lifetime;
     vs_main_battleTimer.time.t.h = 0;
     vs_main_battleTimer.time.t.m = 0;
     vs_main_battleTimer.time.t.s = 0;
     vs_main_battleTimer.time.t.f = 0;
 
-    if (arg0 != 1) {
-        vs_main_battleTimer.time.t.f = arg2 % 256;
-        vs_main_battleTimer.time.t.s = (arg2 / 256) % 256;
-        vs_main_battleTimer.time.t.m = (arg2 / 65536) % 256;
-        vs_main_battleTimer.time.t.h = (arg2 / 16777216) % 256;
+    if (mode != battleTimerCountUp) {
+        vs_main_battleTimer.time.t.f = time % 256;
+        vs_main_battleTimer.time.t.s = (time / 256) % 256;
+        vs_main_battleTimer.time.t.m = (time / 65536) % 256;
+        vs_main_battleTimer.time.t.h = (time / 16777216) % 256;
     }
 
     vs_battle_setStateFlag(0xA0, vs_main_battleTimer.time.t.f);
@@ -8537,9 +8547,10 @@ void func_8007BBD8(int arg0, int arg1, int arg2)
     func_800CB550();
 }
 
-void func_8007BCCC(void)
+// Stops the on-screen timer, clears its time and hides it
+void stopBattleTimer(void)
 {
-    vs_main_battleTimer.mode = 0;
+    vs_main_battleTimer.mode = battleTimerOff;
     vs_main_battleTimer.time.t.h = 0;
     vs_main_battleTimer.time.t.m = 0;
     vs_main_battleTimer.time.t.s = 0;
@@ -8555,7 +8566,7 @@ void func_8007BD3C(int arg0)
 {
     if (arg0 != 0) {
         int temp_v1 = vs_main_battleTimer.mode;
-        vs_main_battleTimer.mode = 0;
+        vs_main_battleTimer.mode = battleTimerOff;
         vs_main_battleTimer.savedMode = temp_v1;
         func_800CB560();
         return;
@@ -8564,16 +8575,23 @@ void func_8007BD3C(int arg0)
     func_800CB550();
 }
 
-int func_8007BD8C(int arg0)
+/**
+ * Hides or shows the UI (D_800EB9AF, see the status renderer in
+ * 5BF94.c) and the minimap (D_800F1CD6).
+ * @param hidden Nonzero = hide both, 0 = show both.
+ * @return hidden
+ */
+int setUiHidden(int hidden)
 {
-    if (arg0 != 0) {
+    if (hidden != 0) {
         func_800CB654(1);
         func_8008B4C8(0);
     } else {
         func_800CB654(0);
         func_8008B4C8(1);
     }
-    return arg0;
+
+    return hidden;
 }
 
 int func_8007BDD8(int arg0)
@@ -8717,23 +8735,32 @@ int func_8007C218(int arg0)
     return 0;
 }
 
-void func_8007C28C(int arg0)
+/**
+ * Restores an actor's HP, MP and limb HP to their maximums, sets its risk and action
+ * delay to 0 and removes all status effects.
+ * @param actorId Actor to restore.
+ */
+void fullyRestoreActor(int actorId)
 {
-    int i;
-    vs_ActorStats* stats;
 
-    if (vs_battle_actors[arg0] != NULL) {
-        stats = vs_battle_actors[arg0]->stats;
+    if (vs_battle_actors[actorId] != NULL) {
+
+        vs_ActorStats* stats = vs_battle_actors[actorId]->stats;
 
         if (stats != NULL) {
+            int i;
+
             stats->risk = 0;
             stats->actionDelay = 0;
             stats->currentHP = stats->maxHP;
             stats->currentMP = stats->maxMP;
+
             for (i = 0; i < 6; ++i) {
                 stats->limbs[i].hp = stats->limbs[i].maxHp;
             }
+
             func_80086754(0x7FFFFFFF, stats);
+
             D_800F5160 = 0;
         }
     }
@@ -9186,52 +9213,79 @@ int isActorWalkDone(int arg0)
     return temp_v0 == 2;
 }
 
-int func_8007D08C(int arg0, int arg1)
+/**
+ * Wakes an actor, or puts it into a dormant state. A dormant actor is in state 0x20
+ * (also used for dead actors), so the enemy AI skips it (and drops it from its alert
+ * list), is skipped by target selection (unk1C bit 0x8000) and loses its target marker.
+ * The model is not affected (see vs_battle_setActorFlags).
+ * @param actorId Actor to change.
+ * @param awake 0 = make dormant, nonzero = wake (only if currently in state 0x20).
+ * @return awake
+ */
+int setActorAwake(int actorId, int awake)
 {
-    if (arg1 != 0) {
-        if (vs_battle_actors[arg0] != NULL) {
-            if (vs_battle_actors[arg0]->unk8 == 0x20) {
-                vs_battle_actors[arg0]->unk8 = 0;
-                vs_battle_actors[arg0]->unk1C &= 0x7FFF;
+    if (awake != 0) {
+        if (vs_battle_actors[actorId] != NULL) {
+            if (vs_battle_actors[actorId]->unk8 == 0x20) {
+                vs_battle_actors[actorId]->unk8 = 0;
+                vs_battle_actors[actorId]->unk1C &= 0x7FFF;
             }
         }
     } else {
-        if (vs_battle_actors[arg0] != NULL) {
-            vs_battle_actors[arg0]->unk8 = 0x20;
-            vs_battle_actors[arg0]->unk1C |= 0x8000;
-            func_80095B7C(arg0, 0);
-            func_80095B7C(arg0, 0x40);
+        if (vs_battle_actors[actorId] != NULL) {
+            vs_battle_actors[actorId]->unk8 = 0x20;
+            vs_battle_actors[actorId]->unk1C |= 0x8000;
+            func_80095B7C(actorId, 0);
+            func_80095B7C(actorId, 0x40);
         }
     }
-    return arg1;
+
+    return awake;
 }
 
-int func_8007D15C(int arg0)
+/**
+ * Applies setActorAwake to every actor except actor 0 (the player).
+ * @param awake 0 = make dormant, nonzero = wake.
+ * @return awake
+ */
+int setActorsAwake(int awake)
 {
     int i;
 
     for (i = 1; i < 16; ++i) {
-        func_8007D08C(i, arg0);
+        setActorAwake(i, awake);
     }
-    return arg0;
+
+    return awake;
 }
 
+/**
+ * Removes or returns actor from or to the scene's actor list, without freeing it.
+ * Not to be confused with setActorAwake, which keeps the actor in the list.
+ * @param actorId Actor to change.
+ * @param inactive Nonzero = remove from the scene, 0 = put back.
+ */
 void setActorInactive(int actorId, int inactive)
 {
-    int temp_s0;
-    Actor* temp_a0 = vs_battle_actors[actorId];
-    if (temp_a0 != NULL) {
+    int listChanged;
+    Actor* actor = vs_battle_actors[actorId];
+
+    if (actor != NULL) {
         if (inactive != 0) {
-            temp_s0 = removeActor(temp_a0);
+            listChanged = removeActor(actor);
+
             setActorInactiveFlag(actorId, inactive);
-            if (temp_s0 != 0) {
+
+            if (listChanged != 0) {
                 func_800E7608(actorId);
                 func_800DEC88(NULL);
             }
         } else {
-            temp_s0 = insertActor(temp_a0);
+            listChanged = insertActor(actor);
+
             setActorInactiveFlag(actorId, 0);
-            if (temp_s0 != 0) {
+
+            if (listChanged != 0) {
                 func_800E5998();
                 func_800DEC88(NULL);
             }
@@ -14384,7 +14438,7 @@ void func_80087EF4(vs_ActorStats* stats)
     }
 }
 
-int func_800882F4(void)
+int updateBattleTimer(void)
 {
     int var_s1 = 0;
     int var_s2 = 0;
@@ -14393,7 +14447,7 @@ int func_800882F4(void)
         return var_s1;
     }
 
-    if (vs_main_battleTimer.mode == 1) {
+    if (vs_main_battleTimer.mode == battleTimerCountUp) {
         if (vs_main_battleTimer.time.t.h <= 0) {
             vs_main_battleTimer.time.t.f += vs_gametime_tickspeed;
             if (vs_main_battleTimer.time.t.f > 59) {
@@ -14621,7 +14675,7 @@ int func_80088554(void)
         D_800E8494 = (D_800E8494 + 1) % 6;
     }
 
-    var_s1 = func_800882F4();
+    var_s1 = updateBattleTimer();
 
     if (var_s1 != 0) {
         var_s5 = var_s1;
@@ -14655,8 +14709,8 @@ void func_80088CA0(void) { D_800E8498 = 0; }
 
 void func_80088CAC(void)
 {
-    if (vs_main_battleTimer.lifetime == 2) {
-        func_8007BCCC();
+    if (vs_main_battleTimer.lifetime == battleTimerClearOnSceneChange) {
+        stopBattleTimer();
     }
     clearZoneEnemyCache();
 }
@@ -14731,8 +14785,8 @@ void finishLoadZnd(int id)
 
     zoneContext.zndCdFile = NULL;
 
-    if (vs_main_battleTimer.lifetime == 1) {
-        func_8007BCCC();
+    if (vs_main_battleTimer.lifetime == battleTimerClearOnZoneLoad) {
+        stopBattleTimer();
     }
 
     header = zoneContext.zndData;
@@ -15199,8 +15253,8 @@ void func_80089DC0(int arg0)
         func_80088CAC();
     }
 
-    if (vs_main_battleTimer.lifetime == 0) {
-        func_8007BCCC();
+    if (vs_main_battleTimer.lifetime == battleTimerClearOnMapLoad) {
+        stopBattleTimer();
     }
 
     D_800F19A0 = 1;
@@ -15281,7 +15335,7 @@ void func_80089DC0(int arg0)
     firstPersonViewEnabled = 0;
     D_800F1A50[0] = 1;
     D_800F1868 = 0;
-    func_8007D15C(1);
+    setActorsAwake(1);
     vs_main_unused1 = 0;
     vs_main_unused2 = 0;
     vs_main_unused0 = 0;

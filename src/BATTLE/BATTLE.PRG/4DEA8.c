@@ -460,7 +460,7 @@ int vs_battle_script_0F_endSkipHandler(u_char* arg0, UNUSED short arg1)
  *   - [5] = y (scaled - 0x20)
  *   - [6] = width in characters
  *   - [7] = height in lines
- *   - [8-9] = speaker actor (>= 0x2000: none)
+ *   - [8-9] = speaker actor (actorSelectorNone: none)
  *   - [10] = speaker animation
  */
 int vs_battle_script_10_initTextBox(u_char* script, UNUSED short arg1)
@@ -489,7 +489,7 @@ int vs_battle_script_10_initTextBox(u_char* script, UNUSED short arg1)
 
     speakerSelector = getShort(&script[8]);
 
-    if (speakerSelector < 0x2000) {
+    if (speakerSelector < actorSelectorNone) {
         box->unk0.speakerActor = resolveActorId(speakerSelector);
     }
 
@@ -878,7 +878,7 @@ int vs_battle_script_1F_getActorTile(u_char* script, UNUSED short arg1)
     u_short actor = getShort(script + 1);
     u_short flag = getShort(script + 3);
 
-    if (actor & 0x1000) {
+    if (actor & actorSelectorSlot) {
 
         actor &= 0x1F;
 
@@ -1210,7 +1210,8 @@ int vs_battle_script_28_slideActorToCoordinate(u_char* script, UNUSED short arg1
 }
 
 /**
- * Attaches an actor to a bone of a parent actor. A parent selector >= 0x2000 detaches it.
+ * Attaches an actor to a bone of a parent actor. A parent selector of actorSelectorNone
+ * detaches it.
  * @param script Opcode bytes:
  *   - [1-2] = actor selector
  *   - [3-4] = parent actor selector
@@ -1222,7 +1223,7 @@ int vs_battle_script_29_attachActor(u_char* script, UNUSED short arg1)
     u_short actor = resolveActorId(getShort(script + 1));
     u_short parent = resolveActorId(getShort(script + 3));
 
-    if (parent >= 0x2000) {
+    if (parent >= actorSelectorNone) {
         detachActor(actor, parent);
     } else {
         attachActor(actor, parent, script[5], script[6]);
@@ -1579,7 +1580,7 @@ int vs_battle_script_37_setActorMoveAnimation(u_char* script, UNUSED short arg1)
  * Turns the actor's head towards another actor.
  * @param script Opcode bytes:
  *   - [1-2] = actor selector
- *   - [3-4] = target actor selector, 0x2000 = stop looking at anything
+ *   - [3-4] = target actor selector, actorSelectorNone = stop looking at anything
  *   - [5] = speed, 0 = unlimited
  */
 int vs_battle_script_38_setActorLookTarget(u_char* script, UNUSED short arg1)
@@ -1591,7 +1592,7 @@ int vs_battle_script_38_setActorLookTarget(u_char* script, UNUSED short arg1)
 
     int mode = -2;
 
-    if (target != 0x2000) {
+    if (target != actorSelectorNone) {
         mode = target;
     }
 
@@ -2351,7 +2352,7 @@ int vs_battle_script_5A_setBattleTimer(u_char* script, UNUSED short arg1)
  * Sets which actor speaks a text box and their animation.
  * @param script Opcode bytes:
  *   - [1] = box id in the low nibble, speaker animation in the high nibble
- *   - [2-3] = actor selector, or 0x2000 and above for no speaker
+ *   - [2-3] = actor selector, or actorSelectorNone for no speaker
  */
 int vs_battle_script_5B_setTextBoxSpeaker(u_char* script, UNUSED short arg1)
 {
@@ -2359,7 +2360,7 @@ int vs_battle_script_5B_setTextBoxSpeaker(u_char* script, UNUSED short arg1)
     vs_TextBox* box = vs_battle_getTextBox(script[1] & 0xF);
 
     box->unk0.speakerActor =
-        speakerSelector < 0x2000 ? resolveActorId(speakerSelector) : 0x20;
+        speakerSelector < actorSelectorNone ? resolveActorId(speakerSelector) : 0x20;
     box->speakerAnimation = script[1] >> 4;
 
     return scriptNext;
@@ -3398,7 +3399,7 @@ void expandActorSelector(u_short arg0, ActorList* arg1)
     arg1->remaining = 0;
     arg1->next = 0;
 
-    if (arg0 & 0x2000) {
+    if (arg0 & actorSelectorAll) {
         short i;
         short var_a0 = -1;
         if (arg0 == 0x2003) {

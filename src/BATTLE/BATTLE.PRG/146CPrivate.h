@@ -145,8 +145,19 @@ VS_HIDDEN(func_8007C31C);
 void triggerActorDeath(int, int);
 VS_HIDDEN(triggerActorDeath);
 
-int func_8007C398(void);
-VS_HIDDEN(func_8007C398);
+// Transitions fade to black or white, or wipe, the screen out and back in
+enum ScreenTransitionPhase {
+    screenTransitionIdle = 0,
+    screenTransitionWarpOut = 1, // a warp has begun, transitioning out
+    screenTransitionWarpLoading = 2, // transitioned out, the new room is being set up
+    screenTransitionWarpIn = 3, // transitioning in after a warp
+    screenTransitionOut = 4, // transitioning out for a script
+    screenTransitionOutDone = 5, // transitioned out, held until transitioned in
+    screenTransitionIn = 6, // transitioning in for a script
+};
+
+int getScreenTransitionPhase(void);
+VS_HIDDEN(getScreenTransitionPhase);
 
 void vs_battle_enableDispMask(void);
 VS_HIDDEN(vs_battle_enableDispMask);
@@ -160,11 +171,11 @@ VS_HIDDEN(setScreenTransition);
 void setScreenTransitionWipeAngle(int);
 VS_HIDDEN(setScreenTransitionWipeAngle);
 
-void func_8007C46C(int, int, int);
-VS_HIDDEN(func_8007C46C);
+void startScreenTransitionOut(int, int, int);
+VS_HIDDEN(startScreenTransitionOut);
 
-void func_8007C4AC(int, int, int);
-VS_HIDDEN(func_8007C4AC);
+void startScreenTransitionIn(int, int, int);
+VS_HIDDEN(startScreenTransitionIn);
 
 void warpToMapThroughDoor(vs_Warp*, int, int);
 VS_HIDDEN(warpToMapThroughDoor);

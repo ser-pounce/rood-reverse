@@ -8699,25 +8699,25 @@ int func_8007C36C(int arg0)
     return vs_gametime_tickspeed;
 }
 
-int func_8007C398(void)
+int getScreenTransitionPhase(void)
 {
     switch (vs_battle_screenTransitionStep) {
     case 1:
     case 2:
-        return 1;
+        return screenTransitionWarpOut;
     case 3:
-        return 2;
+        return screenTransitionWarpLoading;
     case 4:
-        return 3;
+        return screenTransitionWarpIn;
     case 5:
-        return 4;
+        return screenTransitionOut;
     case 6:
-        return 5;
+        return screenTransitionOutDone;
     case 7:
-        return 6;
+        return screenTransitionIn;
     case 0:
     default:
-        return 0;
+        return screenTransitionIdle;
     }
 }
 
@@ -8737,7 +8737,7 @@ void setScreenTransitionWipeAngle(int arg0)
     vs_battle_screenTransitionWipeAngle = arg0;
 }
 
-void func_8007C46C(int effect, int speed, int angle)
+void startScreenTransitionOut(int effect, int speed, int angle)
 {
     if (vs_battle_screenTransitionStep == 1 || vs_battle_screenTransitionStep == 2) {
         return;
@@ -8749,12 +8749,12 @@ void func_8007C46C(int effect, int speed, int angle)
     vs_battle_screenTransitionWipeAngle = angle;
 }
 
-void func_8007C4AC(int effect, int arg1, int arg2)
+void startScreenTransitionIn(int effect, int speed, int angle)
 {
     vs_battle_screenTransitionStep = 7;
     vs_battle_screenTransitionEffect = effect;
-    vs_battle_screenTransitionSpeed = arg1;
-    vs_battle_screenTransitionWipeAngle = arg2;
+    vs_battle_screenTransitionSpeed = speed;
+    vs_battle_screenTransitionWipeAngle = angle;
 }
 
 void func_8007C4D4(void) { D_800F19A0 = 0; }

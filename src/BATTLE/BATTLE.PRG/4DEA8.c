@@ -2347,22 +2347,21 @@ int vs_battle_script_5A_setBattleTimer(u_char* script, UNUSED short arg1)
     return scriptNext;
 }
 
-int vs_battle_script_5B_setTextBoxSpeaker(u_char* arg0, UNUSED short arg1)
+/**
+ * Sets which actor speaks a text box and their animation.
+ * @param script Opcode bytes:
+ *   - [1] = box id in the low nibble, speaker animation in the high nibble
+ *   - [2-3] = actor selector, or 0x2000 and above for no speaker
+ */
+int vs_battle_script_5B_setTextBoxSpeaker(u_char* script, UNUSED short arg1)
 {
-    vs_TextBox* temp_s1;
-    u_short temp_s0;
-    int var_a0;
+    u_short speakerSelector = getShort(script + 2);
+    vs_TextBox* box = vs_battle_getTextBox(script[1] & 0xF);
 
-    temp_s0 = getShort(arg0 + 2);
-    temp_s1 = vs_battle_getTextBox(arg0[1] & 0xF);
+    box->unk0.speakerActor =
+        speakerSelector < 0x2000 ? resolveActorId(speakerSelector) : 0x20;
+    box->speakerAnimation = script[1] >> 4;
 
-    if (temp_s0 < 0x2000) {
-        var_a0 = resolveActorId(temp_s0);
-    } else {
-        var_a0 = 0x20;
-    }
-    temp_s1->unk0.speakerActor = var_a0;
-    temp_s1->speakerAnimation = arg0[1] >> 4;
     return scriptNext;
 }
 

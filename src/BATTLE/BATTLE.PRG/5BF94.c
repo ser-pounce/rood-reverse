@@ -2514,7 +2514,7 @@ int func_800C930C(int mode)
     return 0;
 }
 
-void func_800C97BC(void)
+void updateMenu(void)
 {
     vs_MenuItem* var_s2;
     int temp_s1;
@@ -3138,7 +3138,7 @@ int func_800CABE0(int arg0)
     return ret;
 }
 
-int func_800CACD0(int menuState, int arg1)
+int openMenu(int menuId, int mode)
 {
     int i;
     u_short var_a1;
@@ -3148,12 +3148,12 @@ int func_800CACD0(int menuState, int arg1)
     if (vs_battle_menuState.currentMenu == 0x3F) {
         vs_battle_shortcutInvoked = 0;
         D_800F4FDB = 0;
-        D_800F4EA0 = func_800CABE0(arg1);
+        D_800F4EA0 = func_800CABE0(mode);
         D_800F4E98.unk2 = 0;
-        vs_battle_menuState.currentMenu = menuState;
+        vs_battle_menuState.currentMenu = menuId;
         D_800F4E98.unk0 = 1;
 
-        if (arg1 == 0) {
+        if (mode == 0) {
             vs_battle_playSfx10();
         }
 
@@ -3269,7 +3269,7 @@ int validateShortcutSelection(int shortcut)
         D_800F4E98.unk2 = 0;
         D_800F4E98.unk0 = 2;
     } else {
-        menuState = func_800CACD0(menuState, 0);
+        menuState = openMenu(menuState, 0);
         vs_battle_shortcutInvoked = shortcut;
         D_800F4FDB = 1;
     }
@@ -3277,7 +3277,7 @@ int validateShortcutSelection(int shortcut)
     return menuState;
 }
 
-void func_800CB114(void)
+void freeMenuItems(void)
 {
     if (vs_battle_menuItems != 0) {
         func_8007E1C0(6);
@@ -3290,19 +3290,19 @@ void func_800CB158(vs_LootListNode* arg0)
 {
     D_800EB9C4 = arg0;
     D_800EB9C8 = NULL;
-    func_800CACD0(0xC, 2);
+    openMenu(0xC, 2);
 }
 
 void func_800CB18C(vs_Loot* arg0)
 {
     D_800EB9C8 = arg0;
     D_800EB9C4 = NULL;
-    func_800CACD0(0xC, 2);
+    openMenu(0xC, 2);
 }
 
 void func_800CB1C0(int arg0)
 {
-    func_800CACD0(7, 2);
+    openMenu(7, 2);
     D_800F4E6B = arg0 + 0x40;
     D_800F4EA0 |= 0x400;
 }
@@ -3311,12 +3311,12 @@ void setArtAndAbilityToUnlock(int art, int battleAbility)
 {
     vs_battle_unlockedBreakArt = art;
     vs_battle_unlockedBattleAbility = battleAbility;
-    func_800CACD0(3, 2);
+    openMenu(3, 2);
 }
 
 void func_800CB23C(void)
 {
-    func_800CACD0(0xF, 2);
+    openMenu(0xF, 2);
     D_800F4FDB = 1;
 }
 

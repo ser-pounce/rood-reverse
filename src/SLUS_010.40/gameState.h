@@ -122,6 +122,19 @@ typedef struct {
     vs_InventoryMisc misc[64]; // 0xE00
 } vs_Inventory;
 
+enum BattleTimerMode {
+    battleTimerOff,
+    battleTimerCountUp, // stopwatch
+    battleTimerCountDown,
+};
+
+enum BattleTimerLifetime {
+    battleTimerClearOnMapLoad,
+    battleTimerClearOnZoneLoad,
+    battleTimerClearOnSceneChange,
+    battleTimerNeverClear,
+};
+
 typedef struct {
     char mode;
     char savedMode;

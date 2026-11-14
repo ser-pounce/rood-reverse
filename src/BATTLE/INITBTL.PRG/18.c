@@ -572,7 +572,7 @@ void func_800FA35C(UNUSED int startState)
     vs_gametime_tickspeed = 2;
     vs_main_projectionDistance = 0x200;
     vs_main_nearClip = 0x40;
-    vs_main_battleTimer.mode = 0;
+    vs_main_battleTimer.mode = battleTimerOff;
     vs_main_battleTimer.time.t.h = 0;
     vs_main_battleTimer.time.t.m = 0;
     vs_main_battleTimer.time.t.s = 0;

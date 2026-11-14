@@ -2757,13 +2757,18 @@ int vs_battle_script_6E_waitForScreenTransition(UNUSED u_char* script, UNUSED sh
     return getScreenTransitionPhase() != screenTransitionIdle ? scriptRepeat : scriptNext;
 }
 
-int vs_battle_script_6F(u_char* arg0, UNUSED short arg1)
+/**
+ * Turns something unknown on (nonzero operand) or off. Both handlers are empty, so it has
+ * no effect. Only used with [1] = 0xF6, in events 5, 14 and 15.
+ */
+int vs_battle_script_6F_setUnk(u_char* script, UNUSED short arg1)
 {
-    if (arg0[1] != 0) {
+    if (script[1] != 0) {
         func_8007B104();
     } else {
         func_8007B0FC();
     }
+
     return scriptNext;
 }
 

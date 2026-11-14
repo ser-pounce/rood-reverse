@@ -2631,10 +2631,10 @@ int vs_battle_script_68_warp(u_char* script, UNUSED short arg1)
         warp.faceCamera = script[7] >> 1;
 
         if (script[1] == 0) {
-            func_8007C580(&warp, script[8], script[9]);
+            warpToMapThroughDoor(&warp, script[8], script[9]);
         } else {
             func_8007BE10((script[7] >> 3) & 1);
-            func_8007C654(&warp, script[8], script[9]);
+            warpToZoneThroughDoor(&warp, script[8], script[9]);
         }
 
         scriptWarpState = (script[7] & 4) ? scriptWarpResume : scriptWarpEnd;

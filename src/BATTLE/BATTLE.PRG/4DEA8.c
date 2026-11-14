@@ -2602,34 +2602,50 @@ int vs_battle_script_67_setTileBlocked(u_char* script, UNUSED short arg1)
     return scriptNext;
 }
 
-int vs_battle_script_68(u_char* arg0, UNUSED short arg1)
+/**
+ * Warps the player to another room with a screen transition, waiting until it has loaded.
+ * @param script Opcode bytes:
+ *   - [1] = zone, 0 = the current zone
+ *   - [2] = map within the zone
+ *   - [3] = tile column
+ *   - [4] = arrival surface
+ *   - [5] = tile row
+ *   - [6] = facing
+ *   - [7] = bit 0 walk forward, bit 1 face the camera, bit 2 continue script in the
+ *     new room (otherwise the event ends), bit 3 switch to the new zone's music
+ *   - [8] = screen transition effect
+ *   - [9] = screen transition speed
+ */
+int vs_battle_script_68_warp(u_char* script, UNUSED short arg1)
 {
-    vs_Warp sp10;
+    if (scriptWarpState == scriptWarpIdle) {
+        vs_Warp warp;
 
-    if (D_800F4BE2 == 0) {
+        warp.zndId = script[1];
+        warp.mpdId = script[2];
+        warp.x = script[3];
+        warp.z = script[5];
+        warp.targetTile.arrivalSurface = script[4];
+        warp.facing = script[6];
+        warp.walkForward = script[7];
+        warp.faceCamera = script[7] >> 1;
 
-        sp10.zndId = arg0[1];
-        sp10.mpdId = arg0[2];
-        sp10.x = arg0[3];
-        sp10.z = arg0[5];
-        sp10.targetTile.arrivalSurface = arg0[4];
-        sp10.facing = arg0[6];
-        sp10.walkForward = arg0[7];
-        sp10.faceCamera = arg0[7] >> 1;
-
-        if (arg0[1] == 0) {
-            func_8007C580(&sp10, arg0[8], arg0[9]);
+        if (script[1] == 0) {
+            func_8007C580(&warp, script[8], script[9]);
         } else {
-            func_8007BE10((arg0[7] >> 3) & 1);
-            func_8007C654(&sp10, arg0[8], arg0[9]);
+            func_8007BE10((script[7] >> 3) & 1);
+            func_8007C654(&warp, script[8], script[9]);
         }
-        D_800F4BE2 = arg0[7] & 4 ? 1 : 3;
+
+        scriptWarpState = (script[7] & 4) ? scriptWarpResume : scriptWarpEnd;
     }
 
-    if (D_800F4BE2 == 2) {
-        D_800F4BE2 = 0;
+    if (scriptWarpState == scriptWarpArrived) {
+        scriptWarpState = scriptWarpIdle;
+
         return scriptNext;
     }
+
     return scriptRepeat;
 }
 
@@ -4873,14 +4889,14 @@ int loadMpdClearedScriptDoorSections(void* clearedSection, u_short clearedSectio
         mpdRoomDoorSection = NULL;
     }
 
-    if (D_800F4BE2 == 1) {
-        D_800F4BE2 = 2;
+    if (scriptWarpState == scriptWarpResume) {
+        scriptWarpState = scriptWarpArrived;
         return 1;
     }
 
-    if (D_800F4BE2 == 3) {
+    if (scriptWarpState == scriptWarpEnd) {
         D_800F4C34 = 0;
-        D_800F4BE2 = 0;
+        scriptWarpState = scriptWarpIdle;
         D_800F4BB8 = 0;
     }
 
@@ -4898,7 +4914,7 @@ short func_800BEB10(void) { return (D_800F4BE0 << 0xC) | evtFile; }
 
 void func_800BEB34(void)
 {
-    if (D_800F4BE2 == 3) {
+    if (scriptWarpState == scriptWarpEnd) {
         func_800BFD9C();
     }
     if (mpdClearedSection != 0) {
@@ -5317,7 +5333,7 @@ void parseEvt(u_char* data)
     textBoxSelectionPending = 0;
     D_800F4BE4 = 0;
     scriptMenuState = scriptMenuClosed;
-    D_800F4BE2 = 0;
+    scriptWarpState = scriptWarpIdle;
     D_800F4BB6 = 0;
     scriptWaitFrames[0] = 0;
     D_800F4C22 = 0;
@@ -5411,7 +5427,7 @@ int func_800BF850(void)
 
     if (D_800F4C22 == 0) {
         if (func_800BFBB8(D_800F4C38, 0) != 0) {
-            if (D_800F4BB6 == 0 && D_800F4C54 == 0 && D_800F4BE2 == 0) {
+            if (D_800F4BB6 == 0 && D_800F4C54 == 0 && scriptWarpState == scriptWarpIdle) {
                 func_800BC1CC(-1, -1);
             }
 

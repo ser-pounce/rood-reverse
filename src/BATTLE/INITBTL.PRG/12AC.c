@@ -52,7 +52,7 @@ static int (*skipOpcodeTableInit[])(u_char*, short) = { vs_battle_script_invalid
     vs_battle_script_61_overrideFogDepth, vs_battle_script_62_setFirstPersonRendering,
     vs_battle_script_63_statusUnk, vs_battle_script_64_showGeometry,
     vs_battle_script_65_hideGeometry, vs_battle_script_66_swapGeometryFlags,
-    vs_battle_script_67_setTileBlocked, vs_battle_script_68, vs_battle_script_nop,
+    vs_battle_script_67_setTileBlocked, vs_battle_script_68_warp, vs_battle_script_nop,
     vs_battle_script_nop, vs_battle_script_6B, vs_battle_script_6C, vs_battle_script_nop,
     vs_battle_script_yield, vs_battle_script_6F, vs_battle_script_70, vs_battle_script_71,
     vs_battle_script_72, vs_battle_script_73, vs_battle_script_74, vs_battle_script_75,
@@ -116,7 +116,7 @@ static int (*skipOpcodeTableInit[])(u_char*, short) = { vs_battle_script_invalid
 void initScriptFunctionTable(void)
 {
     D_800F4C08 = 0;
-    D_800F4BE2 = 0;
+    scriptWarpState = 0;
     D_800F4C30 = vs_main_allocHeap(0x1800);
     D_800F4C48 = vs_main_allocHeap(0x80);
     vs_battle_skipOpcodeTable = vs_main_allocHeap(0x400);

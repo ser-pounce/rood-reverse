@@ -13,6 +13,13 @@ enum ScriptMenuState {
     scriptMenuOpen = 1,
 };
 
+enum ScriptWarpState {
+    scriptWarpIdle = 0,
+    scriptWarpResume = 1, // warp requested, the script carries on in the new room
+    scriptWarpArrived = 2, // the new room is loaded
+    scriptWarpEnd = 3, // warp requested, the event ends in the new room
+};
+
 // Actor selectors, as taken by many script opcodes: the top nibble is the kind, the rest
 // the operand (see resolveActorId and expandActorSelector)
 enum ActorSelector {

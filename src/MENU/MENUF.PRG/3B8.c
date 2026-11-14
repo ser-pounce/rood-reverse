@@ -35,7 +35,7 @@ int vs_menuF_exec(u_char* state)
 
     switch (*state) {
     case none:
-        *state = 1;
+        *state = init;
 
         // Fallthrough
     case init:
@@ -44,7 +44,7 @@ int vs_menuF_exec(u_char* state)
 
     case wait:
         if (execMenu() != 0) {
-            *state = 0;
+            *state = none;
             return 1;
         }
         break;

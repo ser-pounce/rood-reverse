@@ -2222,7 +2222,15 @@ int vs_battle_script_58_setUiVisible(u_char* script, UNUSED short arg1)
     return scriptNext;
 }
 
-int vs_battle_script_59(u_char* script, UNUSED short arg1)
+/**
+ * Opens a menu and waits for it to finish. Values 10-14 open MENUF.PRG (not really a
+ * menu: it shows the cube puzzle and boss time attack screens, selected by state flag
+ * 0xB6); 15 opens the loot or unlock screens; any other value opens the menu screen with
+ * that id.
+ * @param script Opcode bytes:
+ *   - [1] = menu selector
+ */
+int vs_battle_script_59_openMenu(u_char* script, UNUSED short arg1)
 {
     switch (script[1]) {
     case 10:
@@ -2232,30 +2240,33 @@ int vs_battle_script_59(u_char* script, UNUSED short arg1)
             vs_battle_setStateFlag(0xB6, D_800E9BF0[script[1] - 10]);
             func_8007B9A0();
             D_800F4BF8 = 1;
+
             return scriptRepeat;
         }
 
-        goto finishState;
-
+        // Fallthrough
     case 14:
         if (D_800F4BF8 == 0) {
+
             if (getStateFlag(0xB6) == 1) {
                 vs_battle_setStateFlag(0xB6, 2);
             }
 
             func_8007B9A0();
+
             D_800F4C69 = 2;
             D_800F4BF8 = 1;
+
             return scriptRepeat;
         }
 
-    finishState:
         if (func_8007B9FC() != 0) {
             return scriptRepeat;
         }
 
         vs_battle_setStateFlag(0xB6, 0);
         D_800F4BF8 = 0;
+
         return scriptYield;
 
     case 13:
@@ -2263,21 +2274,22 @@ int vs_battle_script_59(u_char* script, UNUSED short arg1)
             vs_battle_setStateFlag(0xB6, 1);
             func_8007B9A0();
             D_800F4BF8 = 1;
+
             return scriptRepeat;
         }
 
-        goto finishTransition;
-
+        // Fallthrough
     case 15:
         if (D_800F4BF8 == 0) {
             func_8007B9CC();
             D_800F4BF8 = 1;
+
             return scriptRepeat;
         }
 
-    finishTransition:
         if (func_8007B9FC() == 0) {
             D_800F4BF8 = 0;
+
             return scriptYield;
         }
 
@@ -2287,6 +2299,7 @@ int vs_battle_script_59(u_char* script, UNUSED short arg1)
         if (D_800F4BF8 == 0) {
             func_800CACD0(script[1], 2);
             D_800F4BF8 = 1;
+
             return scriptRepeat;
         }
 
@@ -2295,13 +2308,12 @@ int vs_battle_script_59(u_char* script, UNUSED short arg1)
         if (func_800CB66C()->unk0 == 2) {
             func_800CB114();
             D_800F4BF8 = 0;
-            break;
+
+            return scriptYield;
         }
 
         return scriptRepeat;
     }
-
-    return scriptYield;
 }
 
 int vs_battle_script_5A(u_char* arg0, UNUSED short arg1)

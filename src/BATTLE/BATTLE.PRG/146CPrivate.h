@@ -48,14 +48,14 @@ VS_HIDDEN(func_8007B0FC);
 void func_8007B104(void);
 VS_HIDDEN(func_8007B104);
 
-void func_8007B1B8(int, int, short, short, short);
-VS_HIDDEN(func_8007B1B8);
+void transformSceneColors(int, int, short, short, short);
+VS_HIDDEN(transformSceneColors);
 
-void func_8007B29C(int, int, int, short, short, short);
-VS_HIDDEN(func_8007B29C);
+void transformActorColors(int, int, int, short, short, short);
+VS_HIDDEN(transformActorColors);
 
-void func_8007B344(int, int, short, short, short);
-VS_HIDDEN(func_8007B344);
+void transformBackgroundColors(int, int, short, short, short);
+VS_HIDDEN(transformBackgroundColors);
 
 void func_8007B9A0(void);
 VS_HIDDEN(func_8007B9A0);

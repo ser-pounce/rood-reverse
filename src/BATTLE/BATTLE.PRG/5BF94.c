@@ -7126,7 +7126,7 @@ int func_800D5F8C(D_800F53B8_t* arg0, func_800D5780_t* arg1)
     if (temp_s0->unk0 == arg0->unkD1C.unk30->unk2) {
         if ((arg0->unkD1C.unkC.type == 4)
             && (vs_battle_getActorFlags(arg0->unkD1C.unkC.value.actor.actor) & 2)) {
-            func_8007B29C(temp_s0->unk7, temp_s0->unk2,
+            transformActorColors(temp_s0->unk7, temp_s0->unk2,
                 arg0->unkD1C.unkC.value.actor.actor, temp_s0->unk4 - 0x80,
                 temp_s0->unk5 - 0x80, temp_s0->unk6 - 0x80);
         }
@@ -7150,15 +7150,16 @@ int func_800D6048(D_800F53B8_t* arg0, func_800D5780_t* arg1, int arg2)
         for (i = 0; i < D_800F5230.count; ++i) {
             if ((effect->targets[i].type == 4)
                 && (vs_battle_getActorFlags(effect->targets[i].value.actor.actor) & 2)) {
-                func_8007B29C(entry->unk7, entry->unk2,
+                transformActorColors(entry->unk7, entry->unk2,
                     effect->targets[i].value.actor.actor, entry->unk4 - 128,
                     entry->unk5 - 128, entry->unk6 - 128);
             }
         }
     } else if ((arg0->unkD1C.unk24.type == 4)
                && (vs_battle_getActorFlags(arg0->unkD1C.unk24.value.actor.actor) & 2)) {
-        func_8007B29C(entry->unk7, entry->unk2, arg0->unkD1C.unk24.value.actor.actor,
-            entry->unk4 - 128, entry->unk5 - 128, entry->unk6 - 128);
+        transformActorColors(entry->unk7, entry->unk2,
+            arg0->unkD1C.unk24.value.actor.actor, entry->unk4 - 128, entry->unk5 - 128,
+            entry->unk6 - 128);
     }
     return func_800D5780(arg1);
 }
@@ -7171,7 +7172,7 @@ int func_800D61AC(D_800F53B8_t* arg0, func_800D5780_t* arg1)
     if (temp_s2->unk0 == arg0->unkD1C.unk30->unk2) {
         for (i = 0; i < D_800F5230.otherCount; ++i) {
             if (vs_battle_getActorFlags(D_800F5230.others[i]) & 2) {
-                func_8007B29C(temp_s2->unk7, temp_s2->unk2, D_800F5230.others[i],
+                transformActorColors(temp_s2->unk7, temp_s2->unk2, D_800F5230.others[i],
                     temp_s2->unk4 - 0x80, (temp_s2->unk5 - 0x80), (temp_s2->unk6 - 0x80));
             }
         }
@@ -7185,7 +7186,7 @@ int func_800D6298(D_800F53B8_t* arg0, func_800D5780_t* arg1)
     func_800D6310_t* temp_a3 = (func_800D6310_t*)arg1->unk0 + (arg1->unk6);
 
     if (temp_a3->unk0 == arg0->unkD1C.unk30->unk2) {
-        func_8007B1B8(temp_a3->unk7, temp_a3->unk2, temp_a3->unk4 - 0x80,
+        transformSceneColors(temp_a3->unk7, temp_a3->unk2, temp_a3->unk4 - 0x80,
             temp_a3->unk5 - 0x80, (temp_a3->unk6 - 0x80));
         return func_800D5780(arg1);
     }
@@ -7197,7 +7198,7 @@ int func_800D6310(D_800F53B8_t* arg0, func_800D5780_t* arg1)
     func_800D6310_t* temp_a3 = (func_800D6310_t*)(arg1->unk0 + arg1->unk6 * 2);
 
     if (temp_a3->unk0 == arg0->unkD1C.unk30->unk2) {
-        func_8007B344(temp_a3->unk7, temp_a3->unk2, temp_a3->unk4 - 0x80,
+        transformBackgroundColors(temp_a3->unk7, temp_a3->unk2, temp_a3->unk4 - 0x80,
             temp_a3->unk5 - 0x80, temp_a3->unk6 - 0x80);
         return func_800D5780(arg1);
     }

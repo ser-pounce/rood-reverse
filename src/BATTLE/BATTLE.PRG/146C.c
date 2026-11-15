@@ -17202,7 +17202,7 @@ MpdRoomSection9* func_8008E400(int* arg0)
     return NULL;
 }
 
-int func_8008E470(void) { return (u_int)vs_battle_roomData.section14 < 1; }
+int roomHasNoSoundBank(void) { return (u_int)vs_battle_roomData.section14 < 1; }
 
 void func_8008E480(int arg0)
 {
@@ -17320,7 +17320,7 @@ void func_8008E88C(void)
     backgroundImageBuffer = NULL;
     D_800F1DD4 = NULL;
     backgroundVisible = 0;
-    D_800F1DBC = -2;
+    particleEffectSound = -2;
     D_800F1DCA = 0;
     particleEffectDrift = 1;
     func_8008E938();

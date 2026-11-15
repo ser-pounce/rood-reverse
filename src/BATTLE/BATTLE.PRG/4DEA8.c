@@ -338,7 +338,7 @@ extern short D_800F4C22;
 extern void* D_800F4C24;
 extern char D_800F4C34;
 extern u_char* D_800F4C38[];
-extern short D_800F4C4C;
+extern short particleEffectSoundToRestore;
 extern char weaponAnimating;
 extern short mpdScriptSection;
 extern short D_800F4C54;
@@ -2995,22 +2995,29 @@ int vs_battle_script_78_freezeParticleEffect(u_char* script, UNUSED short arg1)
     return scriptNext;
 }
 
-int vs_battle_script_7A(u_char* arg0, UNUSED short arg1)
+/**
+ * Acquires or relinquishes control of the particle effect sound, such as the rain loop.
+ * Scripts must call this before using 0x80 with bank 2.
+ * @param script Opcode bytes:
+ *   - [1] = !0 acquires control, 0 returns control
+ */
+int vs_battle_script_7A_setParticleEffectSoundScripted(u_char* script, UNUSED short arg1)
 {
-    if (arg0[1] != 0) {
-        if (D_800F4C08 != 0) {
+    if (script[1] != 0) {
+
+        if (particleEffectSoundScripted != 0) {
             return scriptNext;
         }
 
-        D_800F4C08 = func_8008E470();
+        particleEffectSoundScripted = roomHasNoSoundBank();
 
-        if (D_800F4C08) {
-            D_800F4C4C = func_800913BC(-1);
+        if (particleEffectSoundScripted) {
+            particleEffectSoundToRestore = setParticleEffectSound(-1);
         }
 
-    } else if (D_800F4C08 != 0) {
-        func_800913BC(D_800F4C4C);
-        D_800F4C08 = 0;
+    } else if (particleEffectSoundScripted != 0) {
+        setParticleEffectSound(particleEffectSoundToRestore);
+        particleEffectSoundScripted = 0;
     }
 
     return scriptNext;
@@ -3060,11 +3067,11 @@ int vs_battle_script_7E(u_char* arg0, UNUSED short arg1)
 
 int vs_battle_script_80_playSfx(u_char* arg0, UNUSED short arg1)
 {
-    if (arg0[1] == 2 && D_800F4C08 == 0) {
+    if (arg0[1] == 2 && particleEffectSoundScripted == 0) {
         return scriptNext;
     }
     if (arg0[1] == 2) {
-        D_800F4C4C = arg0[2];
+        particleEffectSoundToRestore = arg0[2];
     }
     vs_main_playSfx(D_800E9B34[arg0[1]], arg0[2], arg0[3], arg0[4]);
     return scriptNext;

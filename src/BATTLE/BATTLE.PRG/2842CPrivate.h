@@ -23,8 +23,8 @@ VS_HIDDEN(setParticleEffectDirection);
 void func_80091378(void);
 VS_HIDDEN(func_80091378);
 
-int func_800913BC(int);
-VS_HIDDEN(func_800913BC);
+int setParticleEffectSound(int);
+VS_HIDDEN(setParticleEffectSound);
 
 void func_80091468(int, int);
 VS_HIDDEN(func_80091468);

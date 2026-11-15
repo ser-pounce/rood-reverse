@@ -93,7 +93,7 @@ int vs_battle_script_76_unloadBackground(u_char*, short);
 int vs_battle_script_77_setParticleEffect(u_char*, short);
 int vs_battle_script_78_freezeParticleEffect(u_char*, short);
 int vs_battle_script_79(u_char*, short);
-int vs_battle_script_7A(u_char*, short);
+int vs_battle_script_7A_setParticleEffectSoundScripted(u_char*, short);
 int vs_battle_script_7B(u_char*, short);
 int vs_battle_script_7C(u_char*, short);
 int vs_battle_script_7D(u_char*, short);
@@ -148,6 +148,6 @@ int vs_battle_script_F7(u_char*, short);
 int vs_battle_script_FE_FF(u_char*, short);
 
 extern short scriptWarpState;
-extern char D_800F4C08;
+extern char particleEffectSoundScripted;
 extern void* D_800F4C30;
 extern void* D_800F4C48;

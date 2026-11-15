@@ -60,8 +60,9 @@ static int (*skipOpcodeTableInit[])(u_char*, short) = { vs_battle_script_invalid
     vs_battle_script_73_setBackgroundVisible, vs_battle_script_74_loadBackground,
     vs_battle_script_75_waitBackgroundLoad, vs_battle_script_76_unloadBackground,
     vs_battle_script_77_setParticleEffect, vs_battle_script_78_freezeParticleEffect,
-    vs_battle_script_79, vs_battle_script_7A, vs_battle_script_7B, vs_battle_script_7C,
-    vs_battle_script_7D, vs_battle_script_7E, vs_battle_script_invalidOpcode,
+    vs_battle_script_79, vs_battle_script_7A_setParticleEffectSoundScripted,
+    vs_battle_script_7B, vs_battle_script_7C, vs_battle_script_7D, vs_battle_script_7E,
+    vs_battle_script_invalidOpcode,
     vs_battle_script_nop, vs_battle_script_nop, vs_battle_script_nop,
     vs_battle_script_83_stopAllSfx, vs_battle_script_84_evictSfx,
     vs_battle_script_85_loadSfxSlot, vs_battle_script_86_freeSfxSlot,
@@ -118,7 +119,7 @@ static int (*skipOpcodeTableInit[])(u_char*, short) = { vs_battle_script_invalid
 
 void initScriptFunctionTable(void)
 {
-    D_800F4C08 = 0;
+    particleEffectSoundScripted = 0;
     scriptWarpState = 0;
     D_800F4C30 = vs_main_allocHeap(0x1800);
     D_800F4C48 = vs_main_allocHeap(0x80);

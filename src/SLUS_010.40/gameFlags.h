@@ -4,7 +4,18 @@
 enum itemIdentifiers { bronzeKey = 458, chamomileSigil = 466 };
 
 // Indices into vs_main_stateFlags, an alternative to accessing its members by name
-enum stateFlagIds { scriptScratch = 0x10 };
+enum stateFlagIds { scriptScratch = 0x10, menuFSubmenu = 0xB6 };
+
+// Values of vs_main_stateFlags.menuFSubmenu, selecting the screen shown by MENUF.PRG
+enum MenuFSubmenu {
+    menuFCongratulations,
+    menuFTimeAttackStart,
+    menuFTimeAttackEnd,
+    menuFHealBonus, // no screen, only updates the score
+    menuFCubePuzzleStart,
+    menuFCubePuzzleEnd,
+    menuFCubePuzzleQuit,
+};
 
 typedef struct {
     char clearCount;

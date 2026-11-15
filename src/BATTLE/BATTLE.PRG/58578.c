@@ -1006,12 +1006,12 @@ void func_800C2B0C(SVECTOR* position, u_int row)
         int value = 0x10000;
 
         if ((x < width) & (z < height)) {
-            MpdRoomSection3* room = func_8008B764(x, z, 0);
+            MpdTile* room = func_8008B764(x, z, 0);
 
             if (room->unk0_6) {
                 value = 0xF0800000;
                 D_800EB9B8->unk4AB8[row * 9 + column] = 0;
-            } else if (room->unk0_10 < 5 || (room->unk0_18 >> 1)) {
+            } else if (room->shape < tileShapeBlocked || (room->unk0_18 >> 1)) {
                 int offset;
                 int low;
                 int high;
@@ -1055,9 +1055,9 @@ void func_800C2B0C(SVECTOR* position, u_int row)
                 if (value != 0) {
                     value = low == high;
                 }
-                if (room->unk0_10 - 1 < 4u) {
+                if (room->shape - 1 < 4u) {
                     low = high;
-                    D_800EB9B8->unk4AB8[row * 9 + column] = room->unk0_10 * 6;
+                    D_800EB9B8->unk4AB8[row * 9 + column] = room->shape * 6;
                 }
                 value |= ((top + 0x30) << 17) | ((low & 0x7FFF) << 2);
             }

@@ -53,7 +53,7 @@ extern int D_800E90BC;
 extern u_char D_800E91AC[];
 extern u_char D_800F1D6E[];
 extern short D_800F4B0A;
-extern MpdRoomSection3* D_800F49F0;
+extern MpdTile* D_800F49F0;
 extern SVECTOR D_800F4B08;
 
 inline SVECTOR* func_800A4A24(int);
@@ -2199,7 +2199,7 @@ int func_800A6AA0(D_800F4538_t* actor, int speed)
 int func_800A6EE8(SVECTOR* arg0, int arg1, int arg2, int arg3)
 {
     SVECTOR sp;
-    MpdRoomSection3* ent;
+    MpdTile* ent;
     int h;
     int r;
     int los;
@@ -2473,7 +2473,7 @@ int func_800A76BC(D_800F4538_t* actor, SVECTOR* motion, int* result, int probeOn
     SVECTOR opposite;
     SVECTOR xProbe;
     SVECTOR zProbe;
-    MpdRoomSection3* probeTiles[2];
+    MpdTile* probeTiles[2];
     int sideOffset;
     int cornerStep;
     int diagonal;
@@ -3033,7 +3033,7 @@ slideZ:
 
 int func_800A8B34(SVECTOR* arg0, int arg1)
 {
-    MpdRoomSection3* ent;
+    MpdTile* ent;
     int h;
     int elev2;
     int gx;

@@ -545,7 +545,7 @@ void* func_8009195C(int arg0)
     return NULL;
 }
 
-int func_80091998(int arg0)
+int showGeometryObject(int arg0)
 {
     int* temp_v0 = func_8009195C(arg0);
     if (temp_v0 != NULL) {
@@ -555,7 +555,7 @@ int func_80091998(int arg0)
     return 0;
 }
 
-int func_800919D8(int arg0)
+int hideGeometryObject(int arg0)
 {
     int* temp_v0 = func_8009195C(arg0);
     if (temp_v0 != NULL) {
@@ -565,7 +565,7 @@ int func_800919D8(int arg0)
     return 0;
 }
 
-int func_80091A1C(int arg0, int arg1)
+int swapGeometryFlags(int arg0, int arg1)
 {
     int* temp_s0 = func_8009195C(arg0);
     int* temp_a1 = func_8009195C(arg1);
@@ -1154,7 +1154,7 @@ int func_80092F74(func_80092F74_t* arg0, UNUSED func_80092F74_t2* arg1)
 
 int func_80092F98(func_80092F74_t* arg0, func_80092F74_t2* arg1)
 {
-    func_80091998(arg1->unk4[0].s32);
+    showGeometryObject(arg1->unk4[0].s32);
     return 0;
 }
 
@@ -1283,7 +1283,7 @@ int func_800935F8(UNUSED func_80092F74_t* arg0, func_80092F74_t2* arg1)
 
 int func_8009361C(UNUSED func_80092F74_t* unk0, func_80092F74_t2* arg1)
 {
-    func_800919D8(arg1->unk4[0].s32);
+    hideGeometryObject(arg1->unk4[0].s32);
     return 0;
 }
 

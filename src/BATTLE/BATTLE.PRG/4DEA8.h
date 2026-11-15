@@ -94,7 +94,7 @@ int vs_battle_script_77_setParticleEffect(u_char*, short);
 int vs_battle_script_78_freezeParticleEffect(u_char*, short);
 int vs_battle_script_79_controlRoomTask(u_char*, short);
 int vs_battle_script_7A_setParticleEffectSoundScripted(u_char*, short);
-int vs_battle_script_7B(u_char*, short);
+int vs_battle_script_7B_setBackgroundOffset(u_char*, short);
 int vs_battle_script_7C(u_char*, short);
 int vs_battle_script_7D(u_char*, short);
 int vs_battle_script_7E(u_char*, short);

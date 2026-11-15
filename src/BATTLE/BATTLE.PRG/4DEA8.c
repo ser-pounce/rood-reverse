@@ -3133,65 +3133,129 @@ int vs_battle_script_80_playSfx(u_char* script, UNUSED short arg1)
     return scriptNext;
 }
 
-int vs_battle_script_81(u_char* arg0, UNUSED short arg1)
+/**
+ * Plays one of an actor's sound effects.
+ * @param script Opcode bytes:
+ *   - [1..2] = actor ID
+ *   - [3] = sound effect type
+ */
+int vs_battle_script_81_playActorSfx(u_char* script, UNUSED short arg1)
 {
-    func_8007C8A4(resolveActorId(getShort(arg0 + 1)), arg0[3]);
+    playActorSfx(resolveActorId(getShort(script + 1)), script[3]);
+
     return scriptNext;
 }
 
-int vs_battle_script_82_fadeSfxVolume(u_char* arg0, UNUSED short arg1)
+/**
+ * Fades a sound effect to a volume. An ID of 0 fades every sound in the group.
+ * @param script Opcode bytes:
+ *   - [1] = sound group, as in opcode 80
+ *   - [2] = sound ID
+ *   - [3] = target volume
+ *   - [4] = fade duration
+ */
+int vs_battle_script_82_fadeSfxVolume(u_char* script, UNUSED short arg1)
 {
-    vs_main_fadeSfxVolume(scriptSfxGroups[arg0[1]], arg0[2], arg0[3], arg0[4]);
+    vs_main_fadeSfxVolume(scriptSfxGroups[script[1]], script[2], script[3], script[4]);
+
     return scriptNext;
 }
 
+/** Stops all sound effects. */
 int vs_battle_script_83_stopAllSfx(UNUSED u_char* arg0, UNUSED short arg1)
 {
     vs_main_stopAllSfx();
+
     return scriptNext;
 }
 
-int vs_battle_script_84_evictSfx(u_char* arg0, UNUSED short arg1)
+/**
+ * Stops a sound effect. An ID of 0 stops every sound in the group.
+ * @param script Opcode bytes:
+ *   - [1] = sound group, as in opcode 80
+ *   - [2] = sound ID
+ */
+int vs_battle_script_84_stopSfx(u_char* script, UNUSED short arg1)
 {
-    vs_main_evictSfx(scriptSfxGroups[arg0[1]], arg0[2]);
+    vs_main_stopSfx(scriptSfxGroups[script[1]], script[2]);
+
     return scriptNext;
 }
 
-int vs_battle_script_85_loadSfxSlot(u_char* arg0, UNUSED short arg1)
+/**
+ * Starts loading a sound effect file from disc into a slot. Opcode 86 waits for the
+ * load to finish.
+ * @param script Opcode bytes:
+ *   - [1] = sound effect file ID
+ *   - [2] = slot, 1 to 3
+ */
+int vs_battle_script_85_loadSfxSlot(u_char* script, UNUSED short arg1)
 {
-    vs_main_loadSfxSlot(arg0[1], arg0[2]);
+    vs_main_loadSfxSlot(script[1], script[2]);
+
     return scriptNext;
 }
 
-int vs_battle_script_86_freeSfxSlot(u_char* arg0, UNUSED short arg1)
+/**
+ * Waits until the sound effect file being loaded into a slot by opcode 85 is ready.
+ * @param script Opcode bytes:
+ *   - [1] = slot, 1 to 3
+ */
+int vs_battle_script_86_waitSfxLoad(u_char* script, UNUSED short arg1)
 {
-    return vs_main_freeSfxQueueSlot(arg0[1]) != 0 ? scriptRepeat : scriptNext;
+    return vs_main_finishSfxLoad(script[1]) != 0 ? scriptRepeat : scriptNext;
 }
 
-int vs_battle_script_87_freeSfx(u_char* arg0, UNUSED short arg1)
+/**
+ * Stops the sounds from a slot's sound effect file and unloads it.
+ * @param script Opcode bytes:
+ *   - [1] = slot, 1 to 3
+ */
+int vs_battle_script_87_freeSfx(u_char* script, UNUSED short arg1)
 {
-    vs_main_freeSfx(arg0[1]);
+    vs_main_freeSfx(script[1]);
+
     return (scriptSkipMode == scriptSkipping) ? scriptYield : scriptNext;
 }
 
-int vs_battle_script_88_setCurrentSfx(u_char* arg0, UNUSED short arg1)
+/**
+ * Selects the loaded sound effect slot that sound group 3 plays from.
+ * @param script Opcode bytes:
+ *   - [1] = slot, 1 to 3
+ */
+int vs_battle_script_88_setCurrentSfx(u_char* script, UNUSED short arg1)
 {
-    vs_main_setCurrentSfx(arg0[1]);
+    vs_main_setCurrentSfx(script[1]);
+
     return scriptNext;
 }
 
-int vs_battle_script_89_loadSoundFile(UNUSED u_char* arg0, UNUSED short arg1)
+/**
+ * Starts loading the area's music into music slot 3, along with its sound file. Scripts
+ * use it to bring the area music back after a cutscene track.
+ */
+int vs_battle_script_89_loadAreaMusic(UNUSED u_char* script, UNUSED short arg1)
 {
-    short temp_v0 = func_80089104();
-    vs_main_loadMusicSlot(temp_v0, 3);
-    vs_main_loadSoundFile(temp_v0);
+    short musicId = func_80089104();
+    vs_main_loadMusicSlot(musicId, 3);
+    vs_main_loadSoundFile(musicId);
+
     return scriptNext;
 }
 
-int vs_battle_script_8F_crossfadeMusic(u_char* arg0, UNUSED short arg1)
+/**
+ * Fades out the current script music and fades in the music in another slot.
+ * @param script Opcode bytes:
+ *   - [1] = music slot to play
+ *   - [2] = volume
+ *   - [3] = fade in duration
+ *   - [4] = fade out duration
+ */
+int vs_battle_script_8F_crossfadeMusic(u_char* script, UNUSED short arg1)
 {
-    vs_main_fadeMusicVolume(scriptMusicSlot, 0, arg0[4]);
-    vs_main_playMusicSlotFadeIn(scriptMusicSlot = arg0[1], arg0[2], arg0[3]);
+    vs_main_fadeMusicVolume(scriptMusicSlot, 0, script[4]);
+    vs_main_playMusicSlotFadeIn(scriptMusicSlot = script[1], script[2], script[3]);
+
     return scriptNext;
 }
 
@@ -3255,9 +3319,9 @@ int vs_battle_script_98_pushMusicState(UNUSED u_char* arg0, UNUSED short arg1)
     return scriptNext;
 }
 
-int vs_battle_script_99_clearMusicLoadSlot(u_char* arg0, UNUSED short arg1)
+int vs_battle_script_99_waitMusicLoad(u_char* arg0, UNUSED short arg1)
 {
-    return vs_main_clearMusicLoadSlot(arg0[1]) == 1 ? scriptRepeat : scriptNext;
+    return vs_main_finishMusicLoad(arg0[1]) == 1 ? scriptRepeat : scriptNext;
 }
 
 int vs_battle_script_9D_loadSoundFile2(u_char* arg0, UNUSED short arg1)

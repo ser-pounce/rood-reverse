@@ -3270,9 +3270,9 @@ void func_80070278(void)
             func_8009F8DC(temp_s0->unk4.unk0.hit.targetActor) * 2;
     }
 
-    vs_main_evictSfx(0x7E, 0x34);
-    vs_main_evictSfx(0x7E, 0x35);
-    vs_main_evictSfx(0x7E, 0x36);
+    vs_main_stopSfx(0x7E, 0x34);
+    vs_main_stopSfx(0x7E, 0x35);
+    vs_main_stopSfx(0x7E, 0x36);
     func_800CB50C();
 
     D_800F19CC->unk2C03 = 0;
@@ -8874,7 +8874,7 @@ int vs_battle_getCurrentRoomId(void)
     return getLocationId(zoneContext.zndId, zoneContext.mapId);
 }
 
-void func_8007C8A4(int arg0, int arg1)
+void playActorSfx(int arg0, int arg1)
 {
     if ((vs_battle_actors[arg0] != 0) && (arg0 < 16)) {
         func_800AE4FC(vs_battle_actors[arg0]->unk44, arg1);

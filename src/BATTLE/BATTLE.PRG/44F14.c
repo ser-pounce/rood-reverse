@@ -112,11 +112,11 @@ loop:
 
     switch (op) {
     case 14:
-        func_8006C480(id, script[1]);
+        startActorTrail(id, script[1]);
         break;
 
     case 15:
-        func_8006C4A4(id, script[1]);
+        stopActorTrails(id, script[1]);
         break;
 
     case 29:

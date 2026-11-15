@@ -118,7 +118,7 @@ int vs_battle_script_A4_waitEffectStageReady(u_char*, short);
 int vs_battle_script_A5_cancelEffect(u_char*, short);
 int vs_battle_script_A6_rearmEffectStage(u_char*, short);
 int vs_battle_script_A8_setMusicTargetCue(u_char*, short);
-int vs_battle_script_AA(u_char*, short);
+int vs_battle_script_AA_setActorTrail(u_char*, short);
 int vs_battle_script_B1(u_char*, short);
 int vs_battle_script_B2(u_char*, short);
 int vs_battle_script_B3(u_char*, short);

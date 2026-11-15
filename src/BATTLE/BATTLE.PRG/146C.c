@@ -1562,9 +1562,9 @@ void func_8006C40C(void)
 
 void nop1(void) { }
 
-void func_8006C480(int arg0, int arg1) { func_800CF7A8(arg0, arg1, 0, 0); }
+void startActorTrail(int actor, int bone) { startTrailEffect(actor, bone, 0, 0); }
 
-void func_8006C4A4(int arg0, int arg1) { func_800CF830(arg0, arg1); }
+void stopActorTrails(int actor, int bone) { fadeOutTrails(actor, bone); }
 
 void func_8006C4C4(int effectId, HitEntity* arg1, int targetLimb)
 {
@@ -3116,7 +3116,7 @@ void func_8006FCBC(void)
 
     cameraMode = 10;
     temp_s0 = &D_800F19CC->unk854[0];
-    func_8006C4A4(temp_s0->unk4.unk0.hit.targetActor,
+    stopActorTrails(temp_s0->unk4.unk0.hit.targetActor,
         func_800A152C(temp_s0->unk4.unk0.hit.targetActor, 0xF0, 0));
 }
 

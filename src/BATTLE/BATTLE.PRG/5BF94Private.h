@@ -98,11 +98,11 @@ VS_HIDDEN(func_800CF3F8);
 int func_800CF48C(void);
 VS_HIDDEN(func_800CF48C);
 
-void func_800CF7A8(int, int, int, int);
-VS_HIDDEN(func_800CF7A8);
+void startTrailEffect(int, int, int, int);
+VS_HIDDEN(startTrailEffect);
 
-void func_800CF830(int, int);
-VS_HIDDEN(func_800CF830);
+void fadeOutTrails(int, int);
+VS_HIDDEN(fadeOutTrails);
 
 void func_800CF8BC(void);
 VS_HIDDEN(func_800CF8BC);

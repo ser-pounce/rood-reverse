@@ -18,11 +18,11 @@ VS_HIDDEN(func_8006CA20);
 void func_8006CB04(int, SVECTOR*);
 VS_HIDDEN(func_8006CB04);
 
-void func_8006C480(int, int);
-VS_HIDDEN(func_8006C480);
+void startActorTrail(int, int);
+VS_HIDDEN(startActorTrail);
 
-void func_8006C4A4(int, int);
-VS_HIDDEN(func_8006C4A4);
+void stopActorTrails(int, int);
+VS_HIDDEN(stopActorTrails);
 
 int func_8006C84C(int);
 VS_HIDDEN(func_8006C84C);

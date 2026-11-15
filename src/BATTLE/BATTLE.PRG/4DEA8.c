@@ -3605,15 +3605,24 @@ int vs_battle_script_A9_playVibration(u_char* script, UNUSED short arg1)
     return scriptNext;
 }
 
-int vs_battle_script_AA(u_char* arg0, UNUSED short arg1)
+/**
+ * Starts or stops a motion trail following one of an actor's bones. Stopping fades out
+ * every active trail, not only the actor's.
+ * @param script Opcode bytes:
+ *   - [1] = 1 to start, 0 to stop
+ *   - [2-3] = actor
+ *   - [4] = bone
+ */
+int vs_battle_script_AA_setActorTrail(u_char* script, UNUSED short arg1)
 {
-    short temp_v0 = resolveActorId(getShort(arg0 + 2));
+    short actor = resolveActorId(getShort(script + 2));
 
-    if (arg0[1] != 0) {
-        func_8006C480(temp_v0, arg0[4]);
+    if (script[1] != 0) {
+        startActorTrail(actor, script[4]);
     } else {
-        func_8006C4A4(temp_v0, arg0[4]);
+        stopActorTrails(actor, script[4]);
     }
+
     return scriptNext;
 }
 

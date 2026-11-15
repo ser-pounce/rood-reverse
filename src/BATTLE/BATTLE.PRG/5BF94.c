@@ -5228,7 +5228,7 @@ void func_800CF70C(D_800F53B8_t* arg0, func_800D4910_t* arg1)
     vs_main_freeHeapR(arg1);
 }
 
-void func_800CF7A8(int arg0, int arg1, int arg2, int arg3)
+void startTrailEffect(int actor, int bone, int color, int texture)
 {
     ActionEffectRequest request;
 
@@ -5239,11 +5239,12 @@ void func_800CF7A8(int arg0, int arg1, int arg2, int arg3)
     setVector(&request.source.value.position, 0, 0, 0);
     setVector(&request.targets[0].value.position, 0, 0, 0);
     request.otherCount = 0;
-    func_800CF3F8(&request, (arg0 & 0xFF) | ((arg1 & 0xFF) << 8) | ((arg2 & 0xF) << 0x10)
-                                | ((arg3 & 0xF) << 0x14) | 0xFF000000);
+    func_800CF3F8(&request, (actor & 0xFF) | ((bone & 0xFF) << 8)
+                                | ((color & 0xF) << 0x10) | ((texture & 0xF) << 0x14)
+                                | 0xFF000000);
 }
 
-void func_800CF830(int arg0, int arg1)
+void fadeOutTrails(UNUSED int actor, UNUSED int bone)
 {
     D_800F53B8_t* var_s1 = D_800F54B0;
 
@@ -7235,11 +7236,12 @@ void func_800D6418(D_800F53B8_t* arg0)
 void func_800D6448(D_800F53B8_t* arg0, u_char arg1, u_char arg2)
 {
     func_800D78B8();
-    func_800CF7A8(arg0->unk1C[arg1].actor, arg0->unk1C[arg1].bone, arg2 % 10, arg2 / 10);
+    startTrailEffect(
+        arg0->unk1C[arg1].actor, arg0->unk1C[arg1].bone, arg2 % 10, arg2 / 10);
     func_800D78CC();
 }
 
-void func_800D64E4(void) { func_800CF830(0, 0); }
+void func_800D64E4(void) { fadeOutTrails(0, 0); }
 
 void func_800D6508(func_800D6508_t* arg0, char arg1)
 {

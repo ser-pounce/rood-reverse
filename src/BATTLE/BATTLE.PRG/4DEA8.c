@@ -2827,57 +2827,59 @@ int vs_battle_script_71_fadeActor(u_char* script, UNUSED short arg1)
     return scriptNext;
 }
 
-int vs_battle_script_72(u_char* arg0, UNUSED short arg1)
-{
-    u_int flags;
-    int mask;
-    int t;
-    int u;
-    int c;
-    int ret;
+static inline void setWeaponAnimating(int animating) { D_800F4C4E = animating; }
 
+/**
+ * Makes Ashley draw or sheathe his weapon, waiting for the animation to finish. Does
+ * nothing if his weapon was not drawn when the event began (state flag 0xAC).
+ * Cutscenes sheathe at the start and draw again at the end.
+ * @param script Opcode bytes:
+ *   - [1] = 0 sheathes, 1 draws
+ *   - [2] = 0 changes at once, 1 plays the quick animation the player uses, 2 plays
+ *     a slower one seen only in cutscenes
+ */
+int vs_battle_script_72_drawSheatheAshleyWeapon(u_char* script, UNUSED short arg1)
+{
     if (D_800F4C4E == 0) {
+        int variantOffset;
+        int animation;
+
         if (!getStateFlag(0xAC)) {
             return scriptNext;
         }
 
-        setWeaponDrawn(0, weaponDrawnModes[arg0[1]]);
+        setWeaponDrawn(0, weaponDrawnModes[script[1]]);
 
-        if (scriptSkipMode == scriptSkipping || arg0[2] == 0) {
-        block_5:
+        if (scriptSkipMode == scriptSkipping || script[2] == 0) {
+            u_short flags;
+
+        applyAtOnce:
             flags = vs_battle_getActorFlags(0);
-            c = arg0[1];
-            mask = flags;
-
-            if (c != 0) {
-                mask = 0x1800;
-                mask = (flags | mask) & 0xFFFF;
-            } else {
-                mask &= 0xE7FF;
-            }
-
-            vs_battle_setActorFlags(0, mask);
-
+            vs_battle_setActorFlags(0, script[1] != 0 ? flags | 0x1800 : flags & ~0x1800);
             func_8009D88C(0);
+
             return scriptNext;
         }
 
-        t = arg0[2] - 1;
-        t *= 2;
-        u = (arg0[1] ^ 1) + 0x6D;
-        vs_battle_setActorAnimation(0, t + u, 0, 0xA);
-        playWeaponSfx(0, arg0[1] ^ 1);
-        ret = 1;
-        D_800F4C4E = ret;
+        variantOffset = (script[2] - 1) * 2;
+        animation = (script[1] ^ 1) + 0x6D;
+
+        vs_battle_setActorAnimation(0, variantOffset + animation, 0, 0xA);
+        playWeaponSfx(0, script[1] ^ 1);
+        setWeaponAnimating(1);
+
     } else {
+
         if (scriptSkipMode == scriptSkipping) {
-            D_800F4C4E = 0;
-            goto block_5;
+            setWeaponAnimating(0);
+
+            goto applyAtOnce;
         }
 
         if (vs_battle_getActorFlags(0) & 0x80) {
-            vs_battle_setActorAnimation(0, arg0[1] != 0 ? 0x65 : 6, 0, 0xA);
-            D_800F4C4E = 0;
+            vs_battle_setActorAnimation(0, script[1] != 0 ? 0x65 : 6, 0, 0xA);
+            setWeaponAnimating(0);
+
             return scriptNext;
         }
     }

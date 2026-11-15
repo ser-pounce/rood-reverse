@@ -339,7 +339,7 @@ extern void* D_800F4C24;
 extern char D_800F4C34;
 extern u_char* D_800F4C38[];
 extern short D_800F4C4C;
-extern char D_800F4C4E;
+extern char weaponAnimating;
 extern short mpdScriptSection;
 extern short D_800F4C54;
 extern char textBoxSelectionPending;
@@ -1047,8 +1047,8 @@ int vs_battle_script_23_setActorFlags(u_char* script, UNUSED short arg1)
         }
 
         flags = vs_battle_getActorFlags(actor);
-        bladeFlag = flags & 0x800;
-        shieldFlag = flags & 0x1000;
+        bladeFlag = flags & vsBattleActorFlagBladeVisible;
+        shieldFlag = flags & vsBattleActorFlagShieldVisible;
         options = script[4];
 
         if (!(options & 2)) {
@@ -1056,7 +1056,7 @@ int vs_battle_script_23_setActorFlags(u_char* script, UNUSED short arg1)
         }
 
         if (!(options & 8)) {
-            shieldFlag = (options << 0xA) & 0x1000;
+            shieldFlag = (options << 0xA) & vsBattleActorFlagShieldVisible;
         }
 
         setActorInactive(actor, (options >> 5) & 1);
@@ -2827,7 +2827,7 @@ int vs_battle_script_71_fadeActor(u_char* script, UNUSED short arg1)
     return scriptNext;
 }
 
-static inline void setWeaponAnimating(int animating) { D_800F4C4E = animating; }
+static inline void setWeaponAnimating(int animating) { weaponAnimating = animating; }
 
 /**
  * Makes Ashley draw or sheathe his weapon, waiting for the animation to finish. Does
@@ -2840,7 +2840,7 @@ static inline void setWeaponAnimating(int animating) { D_800F4C4E = animating; }
  */
 int vs_battle_script_72_drawSheatheAshleyWeapon(u_char* script, UNUSED short arg1)
 {
-    if (D_800F4C4E == 0) {
+    if (weaponAnimating == 0) {
         int variantOffset;
         int animation;
 
@@ -2855,7 +2855,9 @@ int vs_battle_script_72_drawSheatheAshleyWeapon(u_char* script, UNUSED short arg
 
         applyAtOnce:
             flags = vs_battle_getActorFlags(0);
-            vs_battle_setActorFlags(0, script[1] != 0 ? flags | 0x1800 : flags & ~0x1800);
+            vs_battle_setActorFlags(0, script[1] != 0
+                                           ? flags | vsBattleActorFlagWeaponsVisible
+                                           : flags & ~vsBattleActorFlagWeaponsVisible);
             func_8009D88C(0);
 
             return scriptNext;
@@ -5398,7 +5400,7 @@ void parseEvt(u_char* data)
 
     scriptWaitFrames[1] = scriptWaitFrames[2] = scriptWaitFrames[3] = 0;
     D_800F4BB9 = 0;
-    D_800F4C4E = 0;
+    weaponAnimating = 0;
     textBoxSelectionPending = 0;
     D_800F4BE4 = 0;
     scriptMenuState = scriptMenuClosed;

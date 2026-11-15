@@ -463,6 +463,7 @@ loopCounters = 0x800F4C10;
 stopMusicOnSkip = 0x800F4C20;
 vs_battle_skipOpcodeTable = 0x800F4C28;
 scriptSkipMode = 0x800F4C2C;
+weaponAnimating = 0x800F4C4E; // size:0x1
 mpdScriptSection = 0x800F4C50;
 evtFile = 0x800F4C52;
 scriptWaitFrames = 0x800F4C58;

@@ -249,7 +249,7 @@ extern SVECTOR D_800F2280;
 static char const D_80068EB4[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x20, 0x40, 0x5E,
     0x67, 0x6E, 0x74, 0x79, 0x7C, 0x7E, 0x7F };
 
-void func_80090C2C(int arg0)
+void setParticleEffect(int arg0)
 {
     MpdRoomSectionB* room = vs_battle_roomData.sectionB;
 
@@ -321,7 +321,7 @@ void func_80090EEC(void)
         return;
     }
 
-    if ((D_800F1BA4 == 0) && (D_800F1DCB != 0)) {
+    if ((D_800F1BA4 == 0) && (particleEffectDrift != 0)) {
         int changed = 0;
 
         if ((D_800F1CDC & masks[room->unk3A]) == 0) {
@@ -411,16 +411,16 @@ void func_8009121C(void)
     D_800F1DA4 = scale + (scale >> 1) + (scale >> 2);
 }
 
-void func_80091314(int arg0) { D_800F1DCB = arg0; }
+void setParticleEffectDrift(int enabled) { particleEffectDrift = enabled; }
 
-void func_80091320(int arg0)
+void setParticleEffectIntensity(int arg0)
 {
     D_800F1DC4 = arg0;
     func_8009121C();
     func_80090B28();
 }
 
-void func_8009134C(int arg0, int arg1)
+void setParticleEffectDirection(int arg0, int arg1)
 {
     D_800F1D98[5] = arg0;
     D_800F1D98[4] = arg1;

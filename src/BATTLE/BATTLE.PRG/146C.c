@@ -17322,7 +17322,7 @@ void func_8008E88C(void)
     backgroundVisible = 0;
     D_800F1DBC = -2;
     D_800F1DCA = 0;
-    D_800F1DCB = 1;
+    particleEffectDrift = 1;
     func_8008E938();
 }
 
@@ -17387,9 +17387,9 @@ int func_8008EA90(int arg0)
         MpdRoomSectionB* new_var4 = new_var2;
         new_var2 = vs_battle_roomData.sectionB;
         if ((arg0 == 0) || (new_var4->unk34 != 1)) {
-            func_80090C2C(new_var4->unk34);
+            setParticleEffect(new_var4->unk34);
         } else {
-            func_80090C2C(0);
+            setParticleEffect(0);
         }
         return 1;
     }

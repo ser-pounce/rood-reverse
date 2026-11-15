@@ -369,16 +369,16 @@ extern short D_800F1D68;
 extern u_char D_800F1D6E;
 extern char D_800F1D6F;
 extern u_char D_800F1D70[];
-extern vs_CdQueueSlot* D_800F1DAC;
-extern vs_CdQueueSlot* D_800F1DB0;
+extern vs_CdQueueSlot* backgroundImageCdSlot;
+extern vs_CdQueueSlot* backgroundLayoutCdSlot;
 extern short D_800F1DB8;
 extern short D_800F1DBA;
-extern short D_800F1DBE;
+extern short backgroundTexturePageCount;
 extern char D_800F1DC6;
-extern char D_800F1DC8;
-extern u_char D_800F1DC9;
-extern BackgroundLayout* D_800F1DCC;
-extern u_long* D_800F1DD0;
+extern char backgroundTexturePage;
+extern u_char backgroundVisible;
+extern BackgroundLayout* backgroundLayout;
+extern u_long* backgroundImageBuffer;
 extern short D_800F5160;
 
 extern u_int D_800F196C;
@@ -15650,7 +15650,7 @@ int func_8008ABF0(int arg0)
 {
     if (vs_battle_roomData.unk0 == 1) {
         if (vs_battle_roomData.unk2 == arg0) {
-            func_8008F234();
+            unloadBackground();
             func_80091378();
             func_80092A18();
             if (vs_battle_roomData.geometrySection != 0) {
@@ -17314,12 +17314,12 @@ int func_8008E7BC(int arg0, int arg1, u_int arg2)
 
 void func_8008E88C(void)
 {
-    D_800F1DAC = NULL;
-    D_800F1DB0 = NULL;
-    D_800F1DCC = NULL;
-    D_800F1DD0 = NULL;
+    backgroundImageCdSlot = NULL;
+    backgroundLayoutCdSlot = NULL;
+    backgroundLayout = NULL;
+    backgroundImageBuffer = NULL;
     D_800F1DD4 = NULL;
-    D_800F1DC9 = 0;
+    backgroundVisible = 0;
     D_800F1DBC = -2;
     D_800F1DCA = 0;
     D_800F1DCB = 1;
@@ -17402,7 +17402,7 @@ void func_8008EAE4(int arg0, int arg1)
     D_800F1DBA = arg1;
 }
 
-void func_8008EAF8(int arg0) { D_800F1DC9 = arg0; }
+void setBackgroundVisible(int arg0) { backgroundVisible = arg0; }
 
 void func_8008EB04(int* arg0, int* arg1)
 {
@@ -17460,13 +17460,14 @@ void func_8008EC48(VECTOR* arg0)
     int green;
     int blue;
 
-    if ((D_800F1DC9 != 0) && (D_800F1DCC != NULL)) {
-        if (((D_800F1DCC->width - 1) < 31u) && ((D_800F1DCC->height - 1) < 31u)) {
+    if ((backgroundVisible != 0) && (backgroundLayout != NULL)) {
+        if (((backgroundLayout->width - 1) < 31u)
+            && ((backgroundLayout->height - 1) < 31u)) {
             int x = (((vs_Scratch*)0x1F800000)->camera.angles.vy * D_800F1DB8) / ONE
                   - D_800F1DB4;
             int y = (((vs_Scratch*)0x1F800000)->camera.angles.vx * D_800F1DBA) / ONE;
             y = D_800F1DB6 - y;
-            func_8009147C(D_800F1DCC, x, y, D_800F1DC8);
+            func_8009147C(backgroundLayout, x, y, backgroundTexturePage);
         }
     } else if (D_800F1DC6 != 0) {
         prim = ((vs_Scratch*)0x1F800000)->unk0;
@@ -17517,7 +17518,7 @@ void func_8008EC48(VECTOR* arg0)
     }
 }
 
-int func_8008EFCC(int arg0)
+int loadBackground(int texturePage)
 {
     u_short* temp_s0;
     int new_var;
@@ -17527,10 +17528,10 @@ int func_8008EFCC(int arg0)
     int var_s0;
 
     temp_s0 = vs_battle_roomData.section10;
-    D_800F1DC8 = arg0;
+    backgroundTexturePage = texturePage;
     if (temp_s0 != 0) {
-        D_800F1DBE = *temp_s0;
-        if (func_8007DFF0(D_800F1DC8, D_800F1DBE, 5) != 0) {
+        backgroundTexturePageCount = *temp_s0;
+        if (func_8007DFF0(backgroundTexturePage, backgroundTexturePageCount, 5) != 0) {
             new_var = 0x800;
             temp_s2 = (vs_CdFile*)(temp_s0 + 0x20);
             temp_s3 = (vs_CdFile*)(temp_s0 + 0x42);
@@ -17542,61 +17543,61 @@ int func_8008EFCC(int arg0)
             if ((var_s0 & 0x7FF) != 0) {
                 var_s0 = (var_s0 + new_var) - (var_s0 & 0x7FF);
             }
-            D_800F1DD0 = vs_main_allocHeapR(var_a0);
-            D_800F1DCC = vs_main_allocHeapR(var_s0);
-            if ((D_800F1DD0 == 0) || (D_800F1DCC == 0)) {
+            backgroundImageBuffer = vs_main_allocHeapR(var_a0);
+            backgroundLayout = vs_main_allocHeapR(var_s0);
+            if ((backgroundImageBuffer == 0) || (backgroundLayout == 0)) {
                 return 0;
             }
-            D_800F1DAC = vs_main_allocateCdQueueSlot(temp_s2);
-            D_800F1DB0 = vs_main_allocateCdQueueSlot(temp_s3);
-            vs_main_cdEnqueue(D_800F1DAC, D_800F1DD0);
-            vs_main_cdEnqueue(D_800F1DB0, D_800F1DCC);
+            backgroundImageCdSlot = vs_main_allocateCdQueueSlot(temp_s2);
+            backgroundLayoutCdSlot = vs_main_allocateCdQueueSlot(temp_s3);
+            vs_main_cdEnqueue(backgroundImageCdSlot, backgroundImageBuffer);
+            vs_main_cdEnqueue(backgroundLayoutCdSlot, backgroundLayout);
             return 1;
         }
     }
-    D_800F1DAC = 0;
-    D_800F1DB0 = 0;
+    backgroundImageCdSlot = 0;
+    backgroundLayoutCdSlot = 0;
     return 0;
 }
 
-int func_8008F0FC(void)
+int pollBackgroundLoad(void)
 {
-    if ((D_800F1DAC != NULL) && (D_800F1DAC->state == 4)) {
+    if ((backgroundImageCdSlot != NULL) && (backgroundImageCdSlot->state == 4)) {
         TIM_IMAGE tim;
 
-        *D_800F1DD0 = 0x10;
-        vs_battle_parseTim(D_800F1DD0, &tim);
+        *backgroundImageBuffer = 0x10;
+        vs_battle_parseTim(backgroundImageBuffer, &tim);
         if (tim.paddr != NULL) {
-            tim.prect->x = (tim.prect->x & 0x3F) + ((D_800F1DC8 & 0xF) << 6);
-            tim.prect->y = (char)tim.prect->y + ((D_800F1DC8 & 0x10) * 0x10);
+            tim.prect->x = (tim.prect->x & 0x3F) + ((backgroundTexturePage & 0xF) << 6);
+            tim.prect->y = (char)tim.prect->y + ((backgroundTexturePage & 0x10) * 0x10);
             LoadImage(tim.prect, (u_long*)tim.paddr);
         }
         if (tim.caddr != NULL) {
             vs_main_loadClut((void*)tim.caddr, 0xE, 0, 0x100);
         }
-        vs_main_freeCdQueueSlot(D_800F1DAC);
-        D_800F1DAC = NULL;
+        vs_main_freeCdQueueSlot(backgroundImageCdSlot);
+        backgroundImageCdSlot = NULL;
         return 0;
     }
 
-    if ((D_800F1DB0 != NULL) && (D_800F1DB0->state == 4)) {
-        vs_main_freeHeapR(D_800F1DD0);
-        D_800F1DD0 = NULL;
-        vs_main_freeCdQueueSlot(D_800F1DB0);
-        D_800F1DB0 = NULL;
+    if ((backgroundLayoutCdSlot != NULL) && (backgroundLayoutCdSlot->state == 4)) {
+        vs_main_freeHeapR(backgroundImageBuffer);
+        backgroundImageBuffer = NULL;
+        vs_main_freeCdQueueSlot(backgroundLayoutCdSlot);
+        backgroundLayoutCdSlot = NULL;
         return 1;
     }
     return 0;
 }
 
-int func_8008F234(void)
+int unloadBackground(void)
 {
-    D_800F1DC9 = 0;
-    if (D_800F1DCC != NULL) {
-        D_800F1DC9 = 0;
-        func_8007E0A8(D_800F1DC8, D_800F1DBE, 5);
-        vs_main_freeHeapR(D_800F1DCC);
-        D_800F1DCC = NULL;
+    backgroundVisible = 0;
+    if (backgroundLayout != NULL) {
+        backgroundVisible = 0;
+        func_8007E0A8(backgroundTexturePage, backgroundTexturePageCount, 5);
+        vs_main_freeHeapR(backgroundLayout);
+        backgroundLayout = NULL;
         return 1;
     }
     return 0;

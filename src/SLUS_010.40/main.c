@@ -2770,7 +2770,7 @@ int vs_main_fadeMusicVolume(int slot, int volume, int duration)
     return 0;
 }
 
-int vs_main_fadeMusicTempo(int slot, int tempo, int duration)
+int vs_main_rampMusicTempo(int slot, int tempo, int duration)
 {
     if (vs_main_soundData.currentMusicSlot == slot) {
         Sound_FadeTempoScale(duration, tempo);
@@ -2780,7 +2780,7 @@ int vs_main_fadeMusicTempo(int slot, int tempo, int duration)
     return 0;
 }
 
-int vs_main_fadeMusicPitch(int slot, int pitch, int duration)
+int vs_main_rampMusicPitch(int slot, int pitch, int duration)
 {
     if (vs_main_soundData.currentMusicSlot == slot) {
         Sound_FadeMasterPitchScale(duration, pitch);
@@ -3035,7 +3035,7 @@ void vs_main_fadeSfxVolume(int group, int id, int volume, char duration)
     }
 }
 
-void vs_main_fadeSfxPitch(int group, int id, int pitch, char duration)
+void vs_main_rampSfxPitch(int group, int id, int pitch, char duration)
 {
     if (id != 0) {
         void const* sfx = resolveSfxData(group, id);
@@ -3051,7 +3051,7 @@ void vs_main_fadeSfxPitch(int group, int id, int pitch, char duration)
     }
 }
 
-void vs_main_fadeSfxPan(int group, int id, int pan, char duration)
+void vs_main_rampSfxPan(int group, int id, int pan, char duration)
 {
     if (id != 0) {
         void const* sfx = resolveSfxData(group, id);
@@ -3472,7 +3472,7 @@ static void loadSoundFile(int file)
     vs_main_cdEnqueue(vs_main_soundData.soundQueueSlot, vs_main_soundData.soundData);
 }
 
-void vs_main_loadSoundFile(int id) { loadSoundFile(soundFileMap[id]); }
+void vs_main_loadInstrumentBank(int id) { loadSoundFile(soundFileMap[id]); }
 
 static inline void releaseSoundQueue(void)
 {
@@ -3486,7 +3486,7 @@ static inline void releaseSoundQueue(void)
     vs_main_soundData.soundFileId = 0;
 }
 
-int vs_main_processSoundQueue(void)
+int vs_main_processInstrumentBankLoad(void)
 {
     if (vs_main_soundData.soundQueueSlot != NULL) {
         if (vs_main_soundData.soundQueueSlot->state == CdQueueStateDispatched) {
@@ -3528,11 +3528,11 @@ int vs_main_processSoundQueue(void)
     return 0;
 }
 
-void vs_main_loadAndWaitSoundSlot(int id)
+void vs_main_loadAndWaitInstrumentBank(int id)
 {
-    vs_main_loadSoundFile(id);
+    vs_main_loadInstrumentBank(id);
 
-    while (vs_main_processSoundQueue() != 0) {
+    while (vs_main_processInstrumentBankLoad() != 0) {
         vs_main_gametimeUpdate(0);
     }
 }

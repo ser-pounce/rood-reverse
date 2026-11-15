@@ -14749,7 +14749,7 @@ void finishLoadZnd(int id)
             zoneContext.musicSlot = 0;
 
             if (musicId != 0) {
-                vs_main_loadAndWaitSoundSlot(musicId);
+                vs_main_loadAndWaitInstrumentBank(musicId);
                 zoneContext.musicSlot = vs_main_loadAndWaitMusicSlot(musicId, 3);
             }
         }

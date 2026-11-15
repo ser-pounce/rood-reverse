@@ -97,7 +97,7 @@ int vs_battle_script_7A_setParticleEffectSoundScripted(u_char*, short);
 int vs_battle_script_7B_setBackgroundOffset(u_char*, short);
 int vs_battle_script_7C_cullOccludingGeometry(u_char*, short);
 int vs_battle_script_7D_adjustGeometryDepth(u_char*, short);
-int vs_battle_script_7E(u_char*, short);
+int vs_battle_script_7E_setBackgroundParallax(u_char*, short);
 int vs_battle_script_83_stopAllSfx(u_char*, short);
 int vs_battle_script_84_evictSfx(u_char*, short);
 int vs_battle_script_85_loadSfxSlot(u_char*, short);

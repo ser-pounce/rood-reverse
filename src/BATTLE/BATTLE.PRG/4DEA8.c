@@ -3094,9 +3094,17 @@ int vs_battle_script_7D_adjustGeometryDepth(u_char* script, UNUSED short arg1)
     return scriptNext;
 }
 
-int vs_battle_script_7E(u_char* arg0, UNUSED short arg1)
+/**
+ * Sets how far the background image shifts as the camera turns and tilts.
+ * @param script Opcode bytes:
+ *   - [1] = shift for horizontal turning (signed)
+ *   - [2] = shift for vertical tilting (signed)
+ */
+int vs_battle_script_7E_setBackgroundParallax(u_char* script, UNUSED short arg1)
 {
-    func_8008EAE4((signed char)arg0[1] << 7, (signed char)arg0[2] << 7);
+    setBackgroundParallax(
+        (signed char)script[1] * (ONE / 32), (signed char)script[2] * (ONE / 32));
+
     return scriptNext;
 }
 

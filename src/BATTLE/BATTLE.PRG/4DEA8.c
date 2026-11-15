@@ -300,7 +300,7 @@ static VECTOR* vectorCopy(VECTOR* arg0, VECTOR* arg1);
 static VECTOR* sVectorToFixedPointVector(VECTOR* arg0, SVECTOR* arg1);
 static void toNormalIntegerVector(VECTOR*, VECTOR*);
 
-extern int D_800E9B34[];
+extern int scriptSfxGroups[];
 extern int weaponDrawnModes[];
 extern char animationBankBase[];
 extern char skipResetPaletteOp[];
@@ -3108,15 +3108,28 @@ int vs_battle_script_7E_setBackgroundParallax(u_char* script, UNUSED short arg1)
     return scriptNext;
 }
 
-int vs_battle_script_80_playSfx(u_char* arg0, UNUSED short arg1)
+/**
+ * Plays a sound effect. Group 2 is ignored unless opcode 7A has taken control of the
+ * particle effect sound.
+ * @param script Opcode bytes:
+ *   - [1] = sound group: 1 = general sound effects, 2 = the particle effect sound,
+ *     3 = effects from the bank selected by opcode 88
+ *   - [2] = sound ID, or the index within the bank for group 3
+ *   - [3] = pan, 0x80 is centre
+ *   - [4] = volume, up to 0x7F
+ */
+int vs_battle_script_80_playSfx(u_char* script, UNUSED short arg1)
 {
-    if (arg0[1] == 2 && particleEffectSoundScripted == 0) {
+    if (script[1] == 2 && particleEffectSoundScripted == 0) {
         return scriptNext;
     }
-    if (arg0[1] == 2) {
-        particleEffectSoundToRestore = arg0[2];
+
+    if (script[1] == 2) {
+        particleEffectSoundToRestore = script[2];
     }
-    vs_main_playSfx(D_800E9B34[arg0[1]], arg0[2], arg0[3], arg0[4]);
+
+    vs_main_playSfx(scriptSfxGroups[script[1]], script[2], script[3], script[4]);
+
     return scriptNext;
 }
 
@@ -3128,7 +3141,7 @@ int vs_battle_script_81(u_char* arg0, UNUSED short arg1)
 
 int vs_battle_script_82_fadeSfxVolume(u_char* arg0, UNUSED short arg1)
 {
-    vs_main_fadeSfxVolume(D_800E9B34[arg0[1]], arg0[2], arg0[3], arg0[4]);
+    vs_main_fadeSfxVolume(scriptSfxGroups[arg0[1]], arg0[2], arg0[3], arg0[4]);
     return scriptNext;
 }
 
@@ -3140,7 +3153,7 @@ int vs_battle_script_83_stopAllSfx(UNUSED u_char* arg0, UNUSED short arg1)
 
 int vs_battle_script_84_evictSfx(u_char* arg0, UNUSED short arg1)
 {
-    vs_main_evictSfx(D_800E9B34[arg0[1]], arg0[2]);
+    vs_main_evictSfx(scriptSfxGroups[arg0[1]], arg0[2]);
     return scriptNext;
 }
 
@@ -3266,13 +3279,14 @@ int vs_battle_script_9A_waitMusicBar(u_char* arg0, UNUSED short arg1)
 
 int vs_battle_script_9B_fadeSfxPitch(u_char* arg0, UNUSED short arg1)
 {
-    vs_main_fadeSfxPitch(D_800E9B34[arg0[1]], arg0[2], (signed char)arg0[3], arg0[4]);
+    vs_main_fadeSfxPitch(
+        scriptSfxGroups[arg0[1]], arg0[2], (signed char)arg0[3], arg0[4]);
     return scriptNext;
 }
 
 int vs_battle_script_9C_fadeSfxPan(u_char* arg0, UNUSED short arg1)
 {
-    vs_main_fadeSfxPan(D_800E9B34[arg0[1]], arg0[2], arg0[3], arg0[4]);
+    vs_main_fadeSfxPan(scriptSfxGroups[arg0[1]], arg0[2], arg0[3], arg0[4]);
     return scriptNext;
 }
 

@@ -371,6 +371,7 @@ loadShpState = 0x800E8F2A;
 loadEtmState = 0x800E8F2D;
 weaponMaterialPaletteMap = 0x800E8FC8;
 weaponCategorySfx = 0x800E9090;
+scriptSfxGroups = 0x800E9B34;
 weaponDrawnModes = 0x800E9B4C;
 animationBankBase = 0x800E9B58;
 sceneResetScript = 0x800E9B5C;

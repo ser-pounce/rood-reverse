@@ -5,20 +5,20 @@
 short clamp(short arg0, int arg1, int arg2);
 VS_HIDDEN(clamp);
 
-void func_80090C2C(int arg0);
-VS_HIDDEN(func_80090C2C);
+void setParticleEffect(int arg0);
+VS_HIDDEN(setParticleEffect);
 
 void func_80090EEC(void);
 VS_HIDDEN(func_80090EEC);
 
-void func_80091314(int);
-VS_HIDDEN(func_80091314);
+void setParticleEffectDrift(int);
+VS_HIDDEN(setParticleEffectDrift);
 
-void func_80091320(int);
-VS_HIDDEN(func_80091320);
+void setParticleEffectIntensity(int);
+VS_HIDDEN(setParticleEffectIntensity);
 
-void func_8009134C(int, int);
-VS_HIDDEN(func_8009134C);
+void setParticleEffectDirection(int, int);
+VS_HIDDEN(setParticleEffectDirection);
 
 void func_80091378(void);
 VS_HIDDEN(func_80091378);

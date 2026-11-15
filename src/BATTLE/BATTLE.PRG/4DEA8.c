@@ -178,18 +178,18 @@ typedef struct {
 typedef struct {
     char unk0;
     char unk1;
-    char unk2;
-    char unk3;
-    short unk4;
-    short unk6;
-    short unk8;
-    short unkA;
-    short unkC;
-    short unkE;
-    short unk10;
-    short unk12;
-    short unk14;
-} D_800F4B88_t;
+    char elapsed;
+    char duration;
+    short direction;
+    short startDirection;
+    short deltaDirection;
+    short fallAngle;
+    short startFallAngle;
+    short deltaFallAngle;
+    short intensity;
+    short startIntensity;
+    short deltaIntensity;
+} ParticleTween;
 
 typedef struct {
     int unk0;
@@ -317,7 +317,7 @@ extern u_char D_800E9C28;
 extern u_char D_800E9C2C;
 extern u_short D_800F4B20;
 extern GimTween gimTweens[];
-extern D_800F4B88_t D_800F4B88;
+extern ParticleTween particleTween;
 extern char D_800F4B8B;
 extern char D_800F4BA0;
 extern D_800F4BA4_t* D_800F4BA4;
@@ -2931,40 +2931,67 @@ int vs_battle_script_76_unloadBackground(UNUSED u_char* script, UNUSED short arg
     return (scriptSkipMode == scriptSkipping) ? scriptYield : scriptNext;
 }
 
-int vs_battle_script_77(u_char* arg0, UNUSED short arg1)
+/**
+ * Sets the particle effect, either at once or ramping over a number of frames.
+ * The values are only a starting point, as they then drift within the limits set by the
+ * room.
+ * @param script Opcode bytes:
+ *   - [1] = effect in the high nibble (0 none, 1 rain, 2 snow, 3 heavy snow, 4 dark
+ *     particles rising from the floor), intensity in the low nibble
+ *   - [2] = direction the particles are blown, 256 steps per turn
+ *   - [3] = fall angle, 0x80 falls straight down
+ *   - [4] = 0 sets the values at once, otherwise the number of frames to blend over
+ */
+int vs_battle_script_77_setParticleEffect(u_char* script, UNUSED short arg1)
 {
-    func_80090C2C(arg0[1] >> 4);
-    if (arg0[4] == 0) {
-        D_800F4B88.unk10 = arg0[1] & 0xF;
-        func_80091320(D_800F4B88.unk10);
-        D_800F4B88.unk4 = arg0[2] * 16;
-        D_800F4B88.unkA = arg0[3] * 4 + ONE / 8;
-        func_8009134C(D_800F4B88.unk4, D_800F4B88.unkA);
-    } else {
-        int v = arg0[1] & 0xF;
-        short base;
-        int delta;
+    setParticleEffect(script[1] >> 4);
 
-        D_800F4B88.unk12 = D_800F4B88.unk10;
-        D_800F4B88.unk14 = v - D_800F4B88.unk10;
-        D_800F4B88.unkE =
-            arg0[3] * 4 - (base = (D_800F4B88.unkC = D_800F4B88.unkA) - ONE / 8);
-        delta = arg0[2] * 16 - (D_800F4B88.unk6 = D_800F4B88.unk4);
-        if (delta < -ONE / 2) {
-            delta += ONE;
-        } else if (delta > ONE / 2) {
-            delta -= ONE;
+    if (script[4] == 0) {
+
+        particleTween.intensity = script[1] & 0xF;
+
+        setParticleEffectIntensity(particleTween.intensity);
+
+        particleTween.direction = script[2] * 16;
+        particleTween.fallAngle = script[3] * 4 + ONE / 8;
+
+        setParticleEffectDirection(particleTween.direction, particleTween.fallAngle);
+    } else {
+        int targetIntensity = script[1] & 0xF;
+        short currentDirection = particleTween.direction;
+        int directionDelta;
+
+        particleTween.startIntensity = particleTween.intensity;
+        particleTween.deltaIntensity = targetIntensity - particleTween.intensity;
+        particleTween.deltaFallAngle = script[3] * 4 + ONE / 8 - particleTween.fallAngle;
+        particleTween.startFallAngle = particleTween.fallAngle;
+
+        directionDelta = script[2] * 16 - currentDirection;
+        particleTween.startDirection = currentDirection;
+
+        if (directionDelta < -ONE / 2) {
+            directionDelta += ONE;
+        } else if (directionDelta > ONE / 2) {
+            directionDelta -= ONE;
         }
-        D_800F4B88.unk8 = delta;
-        D_800F4B88.unk3 = arg0[4];
-        D_800F4B88.unk2 = 0;
+
+        particleTween.deltaDirection = directionDelta;
+        particleTween.duration = script[4];
+        particleTween.elapsed = 0;
     }
+
     return scriptNext;
 }
 
-int vs_battle_script_78(u_char* arg0, UNUSED short arg1)
+/**
+ * Stops or resumes the particle effect drifting within the room's limits.
+ * @param script Opcode bytes:
+ *   - [1] = 1 stops the drift, 0 resumes it
+ */
+int vs_battle_script_78_freezeParticleEffect(u_char* script, UNUSED short arg1)
 {
-    func_80091314(arg0[1] ^ 1);
+    setParticleEffectDrift(script[1] ^ 1);
+
     return scriptNext;
 }
 
@@ -3750,16 +3777,19 @@ void func_800BB9B0(void)
 
 void func_800BBAFC(void)
 {
-    if (D_800F4B88.unk3 != 0) {
-        short temp_lo = ((++D_800F4B88.unk2 << 0xC) / D_800F4B88.unk3);
-        D_800F4B88.unk4 =
-            (D_800F4B88.unk6 + ((D_800F4B88.unk8 * temp_lo) >> 0xC)) & 0xFFF;
-        D_800F4B88.unkA = D_800F4B88.unkC + ((D_800F4B88.unkE * temp_lo) >> 0xC);
-        D_800F4B88.unk10 = (D_800F4B88.unk12 + ((D_800F4B88.unk14 * temp_lo) >> 0xC));
-        func_8009134C(D_800F4B88.unk4, D_800F4B88.unkA);
-        func_80091320(D_800F4B88.unk10);
-        if (D_800F4B88.unk2 == D_800F4B88.unk3) {
-            D_800F4B88.unk3 = 0;
+    if (particleTween.duration != 0) {
+        short temp_lo = ((++particleTween.elapsed << 0xC) / particleTween.duration);
+        particleTween.direction = (particleTween.startDirection
+                                      + ((particleTween.deltaDirection * temp_lo) >> 0xC))
+                                & 0xFFF;
+        particleTween.fallAngle = particleTween.startFallAngle
+                                + ((particleTween.deltaFallAngle * temp_lo) >> 0xC);
+        particleTween.intensity = (particleTween.startIntensity
+                                   + ((particleTween.deltaIntensity * temp_lo) >> 0xC));
+        setParticleEffectDirection(particleTween.direction, particleTween.fallAngle);
+        setParticleEffectIntensity(particleTween.intensity);
+        if (particleTween.elapsed == particleTween.duration) {
+            particleTween.duration = 0;
         }
     }
 }

@@ -400,8 +400,8 @@ VS_HIDDEN(D_800F1DC4);
 extern char D_800F1DCA;
 VS_HIDDEN(D_800F1DCA);
 
-extern char D_800F1DCB;
-VS_HIDDEN(D_800F1DCB);
+extern char particleEffectDrift;
+VS_HIDDEN(particleEffectDrift);
 
 extern D_800F1DD4_t* D_800F1DD4;
 VS_HIDDEN(D_800F1DD4);

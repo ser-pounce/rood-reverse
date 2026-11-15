@@ -580,13 +580,16 @@ int swapGeometryFlags(int arg0, int arg1)
     return 0;
 }
 
-int func_80091A78(int arg0, int arg1)
+int adjustGeometryObjectDepth(int index, int amount)
 {
-    u_short* temp_v0 = func_8009195C(arg0);
-    if (temp_v0 != NULL) {
-        temp_v0[1] = (u_short)(temp_v0[1] + arg1);
+    u_short* object = func_8009195C(index);
+
+    if (object != NULL) {
+        object[1] += amount;
+
         return 1;
     }
+
     return 0;
 }
 

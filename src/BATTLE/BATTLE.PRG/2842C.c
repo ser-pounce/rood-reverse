@@ -974,7 +974,7 @@ void func_800927AC(D_800F1DD8_t* arg0)
 
 void func_80092914(void) { }
 
-int func_8009291C(int arg0)
+int startRoomTask(int arg0)
 {
     if (arg0 < D_800F225A) {
         D_800F1DD8[arg0].unk0 = 1;
@@ -1278,7 +1278,7 @@ int func_800935B8(func_80092F74_t* arg0, func_80092F74_t2* arg1)
 
 int func_800935F8(UNUSED func_80092F74_t* arg0, func_80092F74_t2* arg1)
 {
-    func_8009291C(arg1->unk4[0].s32);
+    startRoomTask(arg1->unk4[0].s32);
     return 0;
 }
 
@@ -1304,7 +1304,7 @@ int func_800936F0(UNUSED func_80092F74_t* arg0, UNUSED func_80092F74_t2* arg1)
     return 0;
 }
 
-int func_800936F8(int arg0)
+int toggleRoomTaskPaused(int arg0)
 {
     if (arg0 < D_800F225A) {
         D_800F1DD8[arg0].unk2 = D_800F1DD8[arg0].unk2 < 1U;
@@ -1317,9 +1317,9 @@ int func_800936F8(int arg0)
     return 0;
 }
 
-int func_80093764(int arg0) { return D_800F1DD8[arg0].unk0; }
+int isRoomTaskRunning(int arg0) { return D_800F1DD8[arg0].unk0; }
 
-void func_80093788(int arg0)
+void finishRoomTask(int arg0)
 {
     D_800F1DD8_t2* temp_a2;
     int temp_a1;

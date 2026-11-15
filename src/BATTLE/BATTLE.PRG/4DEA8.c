@@ -3023,21 +3023,33 @@ int vs_battle_script_7A_setParticleEffectSoundScripted(u_char* script, UNUSED sh
     return scriptNext;
 }
 
-int vs_battle_script_79(u_char* arg0, UNUSED short arg1)
+/**
+ * Starts a room task, or pauses and resumes it. Room tasks run every frame, animating
+ * textures, moving geometry objects and playing the room's sounds. Some start running
+ * when the room loads.
+ * @param script Opcode bytes:
+ *   - [1] = 0 starts the task (if the same task is already executing it is completed
+ *     first), 1 pauses or resumes
+ *   - [2] = task index, with the room's scripted tasks starting at 0x40
+ */
+int vs_battle_script_79_controlRoomTask(u_char* script, UNUSED short arg1)
 {
-    int temp_s0 = arg0[2];
+    int task = script[2];
 
-    switch (arg0[1]) {
+    switch (script[1]) {
     case 0:
-        if ((scriptSkipMode == scriptSkipping) && (func_80093764(temp_s0) != 0)) {
-            func_80093788(temp_s0);
+        if ((scriptSkipMode == scriptSkipping) && (isRoomTaskRunning(task) != 0)) {
+            finishRoomTask(task);
         }
-        func_8009291C(temp_s0);
+
+        startRoomTask(task);
         break;
+
     case 1:
-        func_800936F8(temp_s0);
+        toggleRoomTaskPaused(task);
         break;
     }
+
     return scriptNext;
 }
 

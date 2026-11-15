@@ -97,8 +97,8 @@ VS_HIDDEN(stopBattleTimer);
 void func_8007BD3C(int);
 VS_HIDDEN(func_8007BD3C);
 
-int func_8007BDD8(int);
-VS_HIDDEN(func_8007BDD8);
+int cullOccludingGeometry(int);
+VS_HIDDEN(cullOccludingGeometry);
 
 int func_8007BE10(int);
 VS_HIDDEN(func_8007BE10);

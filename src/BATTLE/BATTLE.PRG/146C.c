@@ -316,7 +316,7 @@ extern int D_800F185C;
 extern int D_800F1860;
 extern int D_800F1864;
 extern void* D_800F1870;
-extern int firstPersonViewEnabled;
+extern int renderAllGeometry;
 extern vs_CharInitData* D_800F188C;
 extern int D_800F18A8;
 extern int D_800F18AC;
@@ -429,7 +429,7 @@ void func_80069D78(void)
 {
     syncCameraAnglesFromPosition(NULL);
     vs_scratch.firstPersonViewFacing =
-        ((vs_scratch.firstPersonViewFacing & 0x7FFF) | (firstPersonViewEnabled << 0x10));
+        ((vs_scratch.firstPersonViewFacing & 0x7FFF) | (renderAllGeometry << 0x10));
 }
 
 static void clearZoneEnemyCache(void)
@@ -4508,7 +4508,7 @@ void func_800738E4(void)
 
     func_8008D594(0);
     func_80095B70(0);
-    firstPersonViewEnabled = 0;
+    renderAllGeometry = 0;
 
     for (i = 0; i < 16; ++i) {
         if ((vs_battle_actors[i] != NULL) && (vs_battle_actors[i]->unk8 == 0x10)) {
@@ -4900,7 +4900,7 @@ void func_80074580(void)
 
     if (stepCameraTransition() != 0) {
         cameraMode = 1;
-        firstPersonViewEnabled = 1;
+        renderAllGeometry = 1;
         firstPersonRendering = 1;
         func_8008C40C();
     }
@@ -4915,7 +4915,7 @@ void checkFirstPersonViewExit(void)
     }
 
     cameraMode = 2;
-    firstPersonViewEnabled = 0;
+    renderAllGeometry = 0;
     firstPersonRendering = 0;
 
     vs_battle_getActorPosition(0, &sp10);
@@ -8513,10 +8513,10 @@ int setUiHidden(int hidden)
     return hidden;
 }
 
-int func_8007BDD8(int arg0)
+int cullOccludingGeometry(int cull)
 {
     func_8008C40C();
-    return firstPersonViewEnabled = ~arg0 & 1;
+    return renderAllGeometry = ~cull & 1;
 }
 
 int func_8007BE10(int arg0) { return D_800F18B0 = arg0; }
@@ -15264,7 +15264,7 @@ void func_80089DC0(int arg0)
     func_80086754(0x21000, vs_battle_characterState->stats);
 
     firstPersonRendering = 0;
-    firstPersonViewEnabled = 0;
+    renderAllGeometry = 0;
     D_800F1A50[0] = 1;
     D_800F1868 = 0;
     setActorsAwake(1);

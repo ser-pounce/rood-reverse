@@ -56,8 +56,8 @@ VS_HIDDEN(Sound_SfxHasVoiceFlag);
 void Sound_SetSpeakerMode(int);
 VS_HIDDEN(Sound_SetSpeakerMode);
 
-void Sound_SetMusicJumpThreshold(int);
-VS_HIDDEN(Sound_SetMusicJumpThreshold);
+void Sound_SetMusicTargetCue(int);
+VS_HIDDEN(Sound_SetMusicTargetCue);
 
 void Sound_FadeSfxVolumeMod(u_long, int, int, int);
 VS_HIDDEN(Sound_FadeSfxVolumeMod);

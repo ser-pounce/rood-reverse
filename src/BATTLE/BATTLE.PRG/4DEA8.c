@@ -328,7 +328,7 @@ extern char switchValue;
 extern short D_800F4BB6;
 extern char D_800F4BB8;
 extern u_char effectCancelled;
-extern char* D_800F4BC0[];
+extern char* vibrationPatterns[];
 extern short D_800F4BE0;
 extern char D_800F4BE4;
 extern void* mpdRoomDoorSection;
@@ -3570,27 +3570,38 @@ int vs_battle_script_A6_rearmEffectStage(u_char* script, UNUSED short arg1)
     return scriptNext;
 }
 
-int vs_battle_script_A8_setMusicJumpThreshold(u_char* arg0, UNUSED short arg1)
+/**
+ * Sets the cue the playing music should reach. The music does not jump at once, but
+ * takes its own route there at its next branch point.
+ * @param script Opcode bytes:
+ *   - [1] = cue
+ */
+int vs_battle_script_A8_setMusicTargetCue(u_char* script, UNUSED short arg1)
 {
-    vs_main_setMusicJumpThreshold(arg0[1]);
+    vs_main_setMusicTargetCue(script[1]);
+
     return scriptNext;
 }
 
-int vs_battle_script_A9(u_char* arg0, UNUSED short arg1)
+/**
+ * Starts a controller vibration pattern from the script's pattern table, or stops
+ * vibration. Adding 8 to the index copies the pattern before playing.
+ * @param script Opcode bytes:
+ *   - [1] = pattern index, or 0xFF to stop vibration
+ */
+int vs_battle_script_A9_playVibration(u_char* script, UNUSED short arg1)
 {
-    short a0 = arg0[1];
-    if (a0 == 0xFF) {
+    short pattern = script[1];
+
+    if (pattern == 0xFF) {
         vs_main_stopVibration(0, 2);
-    } else {
-        if (a0 & 8) {
-            vs_main_memcpy(D_800F4C48, D_800F4BC0[a0 & 7], 0x80);
-            vs_main_setVibrationBank(D_800F4C48 + 8, 0xFF, 2);
-        } else {
-            if (D_800F4BC0[a0] != 0) {
-                vs_main_setVibrationBank(D_800F4BC0[a0] + 8, 0xFF, 2);
-            }
-        }
+    } else if (pattern & 8) {
+        vs_main_memcpy(vibrationPatternCopy, vibrationPatterns[pattern & 7], 0x80);
+        vs_main_setVibrationBank(vibrationPatternCopy + 8, 0xFF, 2);
+    } else if (vibrationPatterns[pattern] != NULL) {
+        vs_main_setVibrationBank(vibrationPatterns[pattern] + 8, 0xFF, 2);
     }
+
     return scriptNext;
 }
 
@@ -5714,7 +5725,8 @@ void parseEvt(u_char* data)
     table = data + *(u_short*)(data + 6);
 
     for (i = 0; i < 8; ++i) {
-        D_800F4BC0[i] = ((u_short*)table)[i] ? (char*)table + ((u_short*)table)[i] : 0;
+        vibrationPatterns[i] =
+            ((u_short*)table)[i] ? (char*)table + ((u_short*)table)[i] : 0;
     }
 
     D_800F4C38[0] = data + 16;

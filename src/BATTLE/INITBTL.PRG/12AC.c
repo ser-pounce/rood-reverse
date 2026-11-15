@@ -81,7 +81,7 @@ static int (*skipOpcodeTableInit[])(u_char*, short) = { vs_battle_script_invalid
     vs_battle_script_A2_waitEffectState, vs_battle_script_A3_yieldIfSkipping,
     vs_battle_script_A4_waitEffectStageReady, vs_battle_script_A5_cancelEffect,
     vs_battle_script_A6_rearmEffectStage, vs_battle_script_invalidOpcode,
-    vs_battle_script_A8_setMusicJumpThreshold, vs_battle_script_nop, vs_battle_script_AA,
+    vs_battle_script_A8_setMusicTargetCue, vs_battle_script_nop, vs_battle_script_AA,
     vs_battle_script_invalidOpcode, vs_battle_script_invalidOpcode,
     vs_battle_script_invalidOpcode, vs_battle_script_invalidOpcode,
     vs_battle_script_invalidOpcode, vs_battle_script_invalidOpcode, vs_battle_script_B1,
@@ -125,7 +125,7 @@ void initScriptFunctionTable(void)
     particleEffectSoundScripted = 0;
     scriptWarpState = 0;
     D_800F4C30 = vs_main_allocHeap(0x1800);
-    D_800F4C48 = vs_main_allocHeap(0x80);
+    vibrationPatternCopy = vs_main_allocHeap(0x80);
     vs_battle_skipOpcodeTable = vs_main_allocHeap(0x400);
     vs_main_memcpy(vs_battle_skipOpcodeTable, skipOpcodeTableInit, 0x400);
 }

@@ -2532,7 +2532,8 @@ int vs_battle_script_61_overrideFogDepth(u_char* script, UNUSED short arg1)
 
 /**
  * Enables or disables the close-up render mode used for first person view, which
- * subdivides large polygons and skips geometry flagged as hidden in first person.
+ * subdivides large polygons, renders geometry usually culled in 3rd person view,
+ * and skips geometry flagged as hidden in first person.
  * @param script Opcode bytes:
  *   - [1] = 1 = enabled, 0 = disabled
  */
@@ -3066,9 +3067,16 @@ int vs_battle_script_7B_setBackgroundOffset(u_char* script, UNUSED short arg1)
     return scriptNext;
 }
 
-int vs_battle_script_7C(u_char* arg0, UNUSED short arg1)
+/**
+ * Culls room geometry that occludes the view depending on the camera angle.
+ * Usually disabled and renabled at the start and end of cutscenes.
+ * @param script Opcode bytes:
+ *   - [1] = 0 renders all geometry, anything else culls by camera angle
+ */
+int vs_battle_script_7C_cullOccludingGeometry(u_char* script, UNUSED short arg1)
 {
-    func_8007BDD8(arg0[1] != 0);
+    cullOccludingGeometry(script[1] != 0);
+
     return scriptNext;
 }
 

@@ -2514,7 +2514,7 @@ int func_800C930C(int mode)
     return 0;
 }
 
-void func_800C97BC(void)
+void updateMenu(void)
 {
     vs_MenuItem* var_s2;
     int temp_s1;
@@ -3138,7 +3138,7 @@ int func_800CABE0(int arg0)
     return ret;
 }
 
-int func_800CACD0(int menuState, int arg1)
+int openMenu(int menuId, int mode)
 {
     int i;
     u_short var_a1;
@@ -3148,12 +3148,12 @@ int func_800CACD0(int menuState, int arg1)
     if (vs_battle_menuState.currentMenu == 0x3F) {
         vs_battle_shortcutInvoked = 0;
         D_800F4FDB = 0;
-        D_800F4EA0 = func_800CABE0(arg1);
+        D_800F4EA0 = func_800CABE0(mode);
         D_800F4E98.unk2 = 0;
-        vs_battle_menuState.currentMenu = menuState;
+        vs_battle_menuState.currentMenu = menuId;
         D_800F4E98.unk0 = 1;
 
-        if (arg1 == 0) {
+        if (mode == 0) {
             vs_battle_playSfx10();
         }
 
@@ -3269,7 +3269,7 @@ int validateShortcutSelection(int shortcut)
         D_800F4E98.unk2 = 0;
         D_800F4E98.unk0 = 2;
     } else {
-        menuState = func_800CACD0(menuState, 0);
+        menuState = openMenu(menuState, 0);
         vs_battle_shortcutInvoked = shortcut;
         D_800F4FDB = 1;
     }
@@ -3277,7 +3277,7 @@ int validateShortcutSelection(int shortcut)
     return menuState;
 }
 
-void func_800CB114(void)
+void freeMenuItems(void)
 {
     if (vs_battle_menuItems != 0) {
         func_8007E1C0(6);
@@ -3290,19 +3290,19 @@ void func_800CB158(vs_LootListNode* arg0)
 {
     D_800EB9C4 = arg0;
     D_800EB9C8 = NULL;
-    func_800CACD0(0xC, 2);
+    openMenu(0xC, 2);
 }
 
 void func_800CB18C(vs_Loot* arg0)
 {
     D_800EB9C8 = arg0;
     D_800EB9C4 = NULL;
-    func_800CACD0(0xC, 2);
+    openMenu(0xC, 2);
 }
 
 void func_800CB1C0(int arg0)
 {
-    func_800CACD0(7, 2);
+    openMenu(7, 2);
     D_800F4E6B = arg0 + 0x40;
     D_800F4EA0 |= 0x400;
 }
@@ -3311,12 +3311,12 @@ void setArtAndAbilityToUnlock(int art, int battleAbility)
 {
     vs_battle_unlockedBreakArt = art;
     vs_battle_unlockedBattleAbility = battleAbility;
-    func_800CACD0(3, 2);
+    openMenu(3, 2);
 }
 
 void func_800CB23C(void)
 {
-    func_800CACD0(0xF, 2);
+    openMenu(0xF, 2);
     D_800F4FDB = 1;
 }
 
@@ -6124,7 +6124,7 @@ void func_800D1B80(D_800F54D8_t* camera)
     setNearClip(camera->nearClip);
     vs_battle_setProjectionDistance(camera->projectionDistance);
     // BUG: arg1 is not passed, so it holds whatever $a1 was left with by the previous
-    // call and whether the far clip reaches func_80098194 is unpredictable
+    // call and whether the far clip reaches setFogDepth is unpredictable
     ((void (*)(int))setFarClip)(camera->farClip);
     func_8007ACB0();
 }
@@ -7126,7 +7126,7 @@ int func_800D5F8C(D_800F53B8_t* arg0, func_800D5780_t* arg1)
     if (temp_s0->unk0 == arg0->unkD1C.unk30->unk2) {
         if ((arg0->unkD1C.unkC.type == 4)
             && (vs_battle_getActorFlags(arg0->unkD1C.unkC.value.actor.actor) & 2)) {
-            func_8007B29C(temp_s0->unk7, temp_s0->unk2,
+            transformActorColors(temp_s0->unk7, temp_s0->unk2,
                 arg0->unkD1C.unkC.value.actor.actor, temp_s0->unk4 - 0x80,
                 temp_s0->unk5 - 0x80, temp_s0->unk6 - 0x80);
         }
@@ -7150,15 +7150,16 @@ int func_800D6048(D_800F53B8_t* arg0, func_800D5780_t* arg1, int arg2)
         for (i = 0; i < D_800F5230.count; ++i) {
             if ((effect->targets[i].type == 4)
                 && (vs_battle_getActorFlags(effect->targets[i].value.actor.actor) & 2)) {
-                func_8007B29C(entry->unk7, entry->unk2,
+                transformActorColors(entry->unk7, entry->unk2,
                     effect->targets[i].value.actor.actor, entry->unk4 - 128,
                     entry->unk5 - 128, entry->unk6 - 128);
             }
         }
     } else if ((arg0->unkD1C.unk24.type == 4)
                && (vs_battle_getActorFlags(arg0->unkD1C.unk24.value.actor.actor) & 2)) {
-        func_8007B29C(entry->unk7, entry->unk2, arg0->unkD1C.unk24.value.actor.actor,
-            entry->unk4 - 128, entry->unk5 - 128, entry->unk6 - 128);
+        transformActorColors(entry->unk7, entry->unk2,
+            arg0->unkD1C.unk24.value.actor.actor, entry->unk4 - 128, entry->unk5 - 128,
+            entry->unk6 - 128);
     }
     return func_800D5780(arg1);
 }
@@ -7171,7 +7172,7 @@ int func_800D61AC(D_800F53B8_t* arg0, func_800D5780_t* arg1)
     if (temp_s2->unk0 == arg0->unkD1C.unk30->unk2) {
         for (i = 0; i < D_800F5230.otherCount; ++i) {
             if (vs_battle_getActorFlags(D_800F5230.others[i]) & 2) {
-                func_8007B29C(temp_s2->unk7, temp_s2->unk2, D_800F5230.others[i],
+                transformActorColors(temp_s2->unk7, temp_s2->unk2, D_800F5230.others[i],
                     temp_s2->unk4 - 0x80, (temp_s2->unk5 - 0x80), (temp_s2->unk6 - 0x80));
             }
         }
@@ -7185,7 +7186,7 @@ int func_800D6298(D_800F53B8_t* arg0, func_800D5780_t* arg1)
     func_800D6310_t* temp_a3 = (func_800D6310_t*)arg1->unk0 + (arg1->unk6);
 
     if (temp_a3->unk0 == arg0->unkD1C.unk30->unk2) {
-        func_8007B1B8(temp_a3->unk7, temp_a3->unk2, temp_a3->unk4 - 0x80,
+        transformSceneColors(temp_a3->unk7, temp_a3->unk2, temp_a3->unk4 - 0x80,
             temp_a3->unk5 - 0x80, (temp_a3->unk6 - 0x80));
         return func_800D5780(arg1);
     }
@@ -7197,7 +7198,7 @@ int func_800D6310(D_800F53B8_t* arg0, func_800D5780_t* arg1)
     func_800D6310_t* temp_a3 = (func_800D6310_t*)(arg1->unk0 + arg1->unk6 * 2);
 
     if (temp_a3->unk0 == arg0->unkD1C.unk30->unk2) {
-        func_8007B344(temp_a3->unk7, temp_a3->unk2, temp_a3->unk4 - 0x80,
+        transformBackgroundColors(temp_a3->unk7, temp_a3->unk2, temp_a3->unk4 - 0x80,
             temp_a3->unk5 - 0x80, temp_a3->unk6 - 0x80);
         return func_800D5780(arg1);
     }

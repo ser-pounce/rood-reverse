@@ -1040,7 +1040,7 @@ glabel func_8009817C
      nop
 endlabel func_8009817C
 
-glabel func_80098194
+glabel setFogDepth
     la         $v0, D_80097590
     la         $v1, D_800978F8
     nop
@@ -1048,7 +1048,7 @@ glabel func_80098194
     sh         $a0, 0x0($v1)
     jr         $ra
      nop
-endlabel func_80098194
+endlabel setFogDepth
 
 glabel func_800981B8
     la         $v0, func_80098014

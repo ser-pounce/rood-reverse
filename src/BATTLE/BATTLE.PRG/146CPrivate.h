@@ -1,6 +1,7 @@
 #pragma once
 #include "common.h"
 #include "146C.h"
+#include "src/SLUS_010.40/gameState.h"
 
 void func_80069C6C(int);
 VS_HIDDEN(func_80069C6C);
@@ -35,8 +36,8 @@ VS_HIDDEN(func_8006CE50);
 void func_8006CE70(SVECTOR*);
 VS_HIDDEN(func_8006CE70);
 
-int func_8007BD8C(int);
-VS_HIDDEN(func_8007BD8C);
+int setUiHidden(int);
+VS_HIDDEN(setUiHidden);
 
 void func_8007A824(void* prim);
 VS_HIDDEN(func_8007A824);
@@ -47,14 +48,14 @@ VS_HIDDEN(func_8007B0FC);
 void func_8007B104(void);
 VS_HIDDEN(func_8007B104);
 
-void func_8007B1B8(int, int, short, short, short);
-VS_HIDDEN(func_8007B1B8);
+void transformSceneColors(int, int, short, short, short);
+VS_HIDDEN(transformSceneColors);
 
-void func_8007B29C(int, int, int, short, short, short);
-VS_HIDDEN(func_8007B29C);
+void transformActorColors(int, int, int, short, short, short);
+VS_HIDDEN(transformActorColors);
 
-void func_8007B344(int, int, short, short, short);
-VS_HIDDEN(func_8007B344);
+void transformBackgroundColors(int, int, short, short, short);
+VS_HIDDEN(transformBackgroundColors);
 
 void func_8007B9A0(void);
 VS_HIDDEN(func_8007B9A0);
@@ -71,8 +72,9 @@ VS_HIDDEN(func_8007BA98);
 void vs_battle_forgetZoneEnemies(int, int);
 VS_HIDDEN(vs_battle_forgetZoneEnemies);
 
-void func_8007BBD8(int, int, int);
-VS_HIDDEN(func_8007BBD8);
+void startBattleTimer(
+    enum BattleTimerMode mode, enum BattleTimerLifetime lifetime, int time);
+VS_HIDDEN(startBattleTimer);
 
 void func_8007C4D4(void);
 VS_HIDDEN(func_8007C4D4);
@@ -89,8 +91,8 @@ VS_HIDDEN(func_8007CEC0);
 int func_8007CF80(int);
 VS_HIDDEN(func_8007CF80);
 
-void func_8007BCCC(void);
-VS_HIDDEN(func_8007BCCC);
+void stopBattleTimer(void);
+VS_HIDDEN(stopBattleTimer);
 
 void func_8007BD3C(int);
 VS_HIDDEN(func_8007BD3C);
@@ -116,17 +118,17 @@ VS_HIDDEN(func_8007BF04);
 int func_8007BF0C(void);
 VS_HIDDEN(func_8007BF0C);
 
-void func_8007BF2C(void);
-VS_HIDDEN(func_8007BF2C);
+void showCurrentRoom(void);
+VS_HIDDEN(showCurrentRoom);
 
-void func_8007BF4C(void);
-VS_HIDDEN(func_8007BF4C);
+void hideCurrentRoom(void);
+VS_HIDDEN(hideCurrentRoom);
 
-void func_8007BFC0(void);
-VS_HIDDEN(func_8007BFC0);
+void enableAllActors(void);
+VS_HIDDEN(enableAllActors);
 
-void func_8007C050(void);
-VS_HIDDEN(func_8007C050);
+void disableAllActors(void);
+VS_HIDDEN(disableAllActors);
 
 void setWeaponDrawn(int, int);
 VS_HIDDEN(setWeaponDrawn);
@@ -134,8 +136,8 @@ VS_HIDDEN(setWeaponDrawn);
 int func_8007C218(int);
 VS_HIDDEN(func_8007C218);
 
-void func_8007C28C(int);
-VS_HIDDEN(func_8007C28C);
+void fullyRestoreActor(int);
+VS_HIDDEN(fullyRestoreActor);
 
 void func_8007C31C(void);
 VS_HIDDEN(func_8007C31C);
@@ -143,8 +145,19 @@ VS_HIDDEN(func_8007C31C);
 void triggerActorDeath(int, int);
 VS_HIDDEN(triggerActorDeath);
 
-int func_8007C398(void);
-VS_HIDDEN(func_8007C398);
+// Transitions fade to black or white, or wipe, the screen out and back in
+enum ScreenTransitionPhase {
+    screenTransitionIdle = 0,
+    screenTransitionWarpOut = 1, // a warp has begun, transitioning out
+    screenTransitionWarpLoading = 2, // transitioned out, the new room is being set up
+    screenTransitionWarpIn = 3, // transitioning in after a warp
+    screenTransitionOut = 4, // transitioning out for a script
+    screenTransitionOutDone = 5, // transitioned out, held until transitioned in
+    screenTransitionIn = 6, // transitioning in for a script
+};
+
+int getScreenTransitionPhase(void);
+VS_HIDDEN(getScreenTransitionPhase);
 
 void vs_battle_enableDispMask(void);
 VS_HIDDEN(vs_battle_enableDispMask);
@@ -158,17 +171,17 @@ VS_HIDDEN(setScreenTransition);
 void setScreenTransitionWipeAngle(int);
 VS_HIDDEN(setScreenTransitionWipeAngle);
 
-void func_8007C46C(int, int, int);
-VS_HIDDEN(func_8007C46C);
+void startScreenTransitionOut(int, int, int);
+VS_HIDDEN(startScreenTransitionOut);
 
-void func_8007C4AC(int, int, int);
-VS_HIDDEN(func_8007C4AC);
+void startScreenTransitionIn(int, int, int);
+VS_HIDDEN(startScreenTransitionIn);
 
-void func_8007C580(vs_Warp*, int, int);
-VS_HIDDEN(func_8007C580);
+void warpToMapThroughDoor(vs_Warp*, int, int);
+VS_HIDDEN(warpToMapThroughDoor);
 
-void func_8007C654(vs_Warp*, int, int);
-VS_HIDDEN(func_8007C654);
+void warpToZoneThroughDoor(vs_Warp*, int, int);
+VS_HIDDEN(warpToZoneThroughDoor);
 
 void func_8007C8A4(int, int);
 VS_HIDDEN(func_8007C8A4);
@@ -176,11 +189,11 @@ VS_HIDDEN(func_8007C8A4);
 int spawnModelActor(u_int slot, int modelId, vs_TilePosition* tile);
 VS_HIDDEN(spawnModelActor);
 
-void func_8007CA20(int, int, int);
-VS_HIDDEN(func_8007CA20);
+void setActorWeaponModels(int, int, int);
+VS_HIDDEN(setActorWeaponModels);
 
-void func_8007CAA4(int);
-VS_HIDDEN(func_8007CAA4);
+void restoreActorWeaponModels(int actorId);
+VS_HIDDEN(restoreActorWeaponModels);
 
 void enqueueEsq(int, int);
 VS_HIDDEN(enqueueEsq);
@@ -215,11 +228,11 @@ VS_HIDDEN(walkActorToCoordinate);
 int isActorWalkDone(int);
 VS_HIDDEN(isActorWalkDone);
 
-int func_8007D08C(int, int);
-VS_HIDDEN(func_8007D08C);
+int setActorAwake(int, int);
+VS_HIDDEN(setActorAwake);
 
-int func_8007D15C(int);
-VS_HIDDEN(func_8007D15C);
+int setActorsAwake(int);
+VS_HIDDEN(setActorsAwake);
 
 void setActorInactive(int actorId, int inactive);
 VS_HIDDEN(setActorInactive);
@@ -267,8 +280,8 @@ VS_HIDDEN(func_800863A4);
 int func_80089104(void);
 VS_HIDDEN(func_80089104);
 
-int func_8008B808(int, int, int, int);
-VS_HIDDEN(func_8008B808);
+int setTileBlocked(int, int, int, int);
+VS_HIDDEN(setTileBlocked);
 
 void setDoorEntered2(int arg0);
 VS_HIDDEN(setDoorEntered2);
@@ -300,8 +313,8 @@ VS_HIDDEN(func_8008DD0C);
 int func_8008DDA8(int arg0, int arg1);
 VS_HIDDEN(func_8008DDA8);
 
-void func_8008E224(int, int);
-VS_HIDDEN(func_8008E224);
+void setCloudstoneMoving(int index, int moving);
+VS_HIDDEN(setCloudstoneMoving);
 
 int func_8008E320(int arg0);
 VS_HIDDEN(func_8008E320);
@@ -357,8 +370,8 @@ VS_HIDDEN(func_80090B28);
 extern int D_800F1868;
 VS_HIDDEN(D_800F1868);
 
-extern int D_800F19C8;
-VS_HIDDEN(D_800F19C8);
+extern int firstPersonRendering;
+VS_HIDDEN(firstPersonRendering);
 
 extern u_short D_800F1CDC;
 VS_HIDDEN(D_800F1CDC);

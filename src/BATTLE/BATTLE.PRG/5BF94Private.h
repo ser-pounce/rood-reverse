@@ -23,8 +23,8 @@ VS_HIDDEN(activateGimImage);
 void unloadGim(void);
 VS_HIDDEN(unloadGim);
 
-void func_800C97BC(void);
-VS_HIDDEN(func_800C97BC);
+void updateMenu(void);
+VS_HIDDEN(updateMenu);
 
 void func_800CAB40(void);
 VS_HIDDEN(func_800CAB40);
@@ -35,8 +35,8 @@ VS_HIDDEN(func_800CB23C);
 D_800F18EC_t* func_800CB66C(void);
 VS_HIDDEN(func_800CB66C);
 
-void func_800CB114(void);
-VS_HIDDEN(func_800CB114);
+void freeMenuItems(void);
+VS_HIDDEN(freeMenuItems);
 
 void func_800CB158(vs_LootListNode*);
 VS_HIDDEN(func_800CB158);
@@ -122,8 +122,8 @@ VS_HIDDEN(func_800C9F88);
 void func_800CA2DC(void);
 VS_HIDDEN(func_800CA2DC);
 
-int func_800CACD0(int menuState, int arg1);
-VS_HIDDEN(func_800CACD0);
+int openMenu(int menuId, int mode);
+VS_HIDDEN(openMenu);
 
 void func_800CB83C(void);
 VS_HIDDEN(func_800CB83C);

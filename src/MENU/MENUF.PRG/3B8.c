@@ -31,20 +31,25 @@ static int execMenu(void);
 
 int vs_menuF_exec(u_char* state)
 {
+    enum state { none, init, wait };
+
     switch (*state) {
-    case 0:
-        *state = 1;
+    case none:
+        *state = init;
+
         // Fallthrough
-    case 1:
+    case init:
         *state += (initMenu() != 0);
         break;
-    case 2:
+
+    case wait:
         if (execMenu() != 0) {
-            *state = 0;
+            *state = none;
             return 1;
         }
         break;
     }
+
     return 0;
 }
 

@@ -2,11 +2,31 @@
 #include "common.h"
 #include "4DEA8.h"
 
-// Value of scriptSkipMode
 enum ScriptSkipMode {
     scriptSkipOff = 0,
     scriptSkippable = 1, // set by opcode 0x0D; START (or skipRequested) skips
     scriptSkipping = 2, // dispatching through the skip table
+};
+
+enum ScriptMenuState {
+    scriptMenuClosed = 0,
+    scriptMenuOpen = 1,
+};
+
+enum ScriptWarpState {
+    scriptWarpIdle = 0,
+    scriptWarpResume = 1, // warp requested, the script carries on in the new room
+    scriptWarpArrived = 2, // the new room is loaded
+    scriptWarpEnd = 3, // warp requested, the event ends in the new room
+};
+
+// Actor selectors, as taken by many script opcodes: the top nibble is the kind, the rest
+// the operand (see resolveActorId and expandActorSelector)
+enum ActorSelector {
+    actorSelectorById = 0x0000, // | id of the actor to find (Actor.unk18)
+    actorSelectorSlot = 0x1000, // | slot in vs_battle_actors
+    actorSelectorNone = 0x2000, // where a single actor is expected: no actor
+    actorSelectorAll = 0x2000, // where a list of actors is expected: every actor
 };
 
 // Return values of script opcode handlers, as interpreted by func_800BFBB8
@@ -61,8 +81,29 @@ VS_HIDDEN(stopMusicOnSkip);
 extern char scriptSkipMode;
 VS_HIDDEN(scriptSkipMode);
 
-extern short D_800F4C58[];
-VS_HIDDEN(D_800F4C58);
+// Easing curves, taken by func_800BFEBC. The first four are built in, the rest are set
+// up with opcode 5F.
+enum Easing {
+    easingLinear,
+    easingSineOut,
+    easingSineInOut,
+    easingSineIn,
+    easingCustom0,
+    easingCustom1,
+    easingCustom2,
+    easingCustom3,
+};
+
+typedef struct {
+    u_char curve;
+    signed char power;
+} CustomEasing;
+
+extern CustomEasing customEasings[4];
+VS_HIDDEN(customEasings);
+
+extern short scriptWaitFrames[];
+VS_HIDDEN(scriptWaitFrames);
 
 extern char skipRequested;
 VS_HIDDEN(skipRequested);

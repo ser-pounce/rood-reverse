@@ -42,15 +42,21 @@ static int (*skipOpcodeTableInit[])(u_char*, short) = { vs_battle_script_invalid
     vs_battle_script_invalidOpcode, vs_battle_script_invalidOpcode,
     vs_battle_script_invalidOpcode, vs_battle_script_50_modifyFlagImm,
     vs_battle_script_51_modifyFlag, vs_battle_script_52_setFlagToItemCount,
-    vs_battle_script_53_forgetZoneEnemies, vs_battle_script_nop, vs_battle_script_55,
-    vs_battle_script_56_setFlagIfButton, vs_battle_script_57, vs_battle_script_58,
-    vs_battle_script_59, vs_battle_script_5A, vs_battle_script_5B_setTextBoxSpeaker,
-    vs_battle_script_5C, vs_battle_script_5D, vs_battle_script_yield, vs_battle_script_5F,
-    vs_battle_script_60, vs_battle_script_61, vs_battle_script_62, vs_battle_script_63,
-    vs_battle_script_64, vs_battle_script_65, vs_battle_script_66, vs_battle_script_67,
-    vs_battle_script_68, vs_battle_script_nop, vs_battle_script_nop, vs_battle_script_6B,
-    vs_battle_script_6C, vs_battle_script_nop, vs_battle_script_yield,
-    vs_battle_script_6F, vs_battle_script_70, vs_battle_script_71, vs_battle_script_72,
+    vs_battle_script_53_forgetZoneEnemies, vs_battle_script_nop,
+    vs_battle_script_55_setActorsAwake, vs_battle_script_56_setFlagToButtons,
+    vs_battle_script_57_fullyRestoreActor, vs_battle_script_58_setUiVisible,
+    vs_battle_script_59_openMenu, vs_battle_script_5A_setBattleTimer,
+    vs_battle_script_5B_setTextBoxSpeaker, vs_battle_script_5C_setActorWeaponModels,
+    vs_battle_script_5D_setActorSway, vs_battle_script_yield,
+    vs_battle_script_5F_defineEasing, vs_battle_script_60_setCloudstoneMoving,
+    vs_battle_script_61_overrideFogDepth, vs_battle_script_62_setFirstPersonRendering,
+    vs_battle_script_63_statusUnk, vs_battle_script_64_showGeometry,
+    vs_battle_script_65_hideGeometry, vs_battle_script_66_swapGeometryFlags,
+    vs_battle_script_67_setTileBlocked, vs_battle_script_68_warp, vs_battle_script_nop,
+    vs_battle_script_nop, vs_battle_script_6B_setScreenTransitionWipeAngle,
+    vs_battle_script_6C_setScreenTransition, vs_battle_script_nop, vs_battle_script_yield,
+    vs_battle_script_6F_setUnk, vs_battle_script_70_transformColors,
+    vs_battle_script_71_fadeActor, vs_battle_script_72_drawSheatheAshleyWeapon,
     vs_battle_script_73, vs_battle_script_74, vs_battle_script_75, vs_battle_script_76,
     vs_battle_script_77, vs_battle_script_78, vs_battle_script_79, vs_battle_script_7A,
     vs_battle_script_7B, vs_battle_script_7C, vs_battle_script_7D, vs_battle_script_7E,
@@ -111,7 +117,7 @@ static int (*skipOpcodeTableInit[])(u_char*, short) = { vs_battle_script_invalid
 void initScriptFunctionTable(void)
 {
     D_800F4C08 = 0;
-    D_800F4BE2 = 0;
+    scriptWarpState = 0;
     D_800F4C30 = vs_main_allocHeap(0x1800);
     D_800F4C48 = vs_main_allocHeap(0x80);
     vs_battle_skipOpcodeTable = vs_main_allocHeap(0x400);

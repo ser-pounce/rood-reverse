@@ -26,8 +26,8 @@ VS_HIDDEN(func_80098D6C);
 void func_80098160(int);
 VS_HIDDEN(func_80098160);
 
-void func_80098194(int);
-VS_HIDDEN(func_80098194);
+void setFogDepth(int);
+VS_HIDDEN(setFogDepth);
 
 int func_80098B38(int, int, CVECTOR*);
 VS_HIDDEN(func_80098B38);

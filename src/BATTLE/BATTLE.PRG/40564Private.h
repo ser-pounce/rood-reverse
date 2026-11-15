@@ -2,7 +2,7 @@
 #include "common.h"
 #include "40564.h"
 
-MpdRoomSection3* func_800A8D64(SVECTOR* arg0, int arg1);
+MpdTile* func_800A8D64(SVECTOR* arg0, int arg1);
 VS_HIDDEN(func_800A8D64);
 
 int func_800A8E84(D_800F4538_t* actor, SVECTOR* position);
@@ -83,8 +83,8 @@ VS_HIDDEN(func_800AB788);
 void func_800AB9A4(void*);
 VS_HIDDEN(func_800AB9A4);
 
-void func_800AC37C(int, int);
-VS_HIDDEN(func_800AC37C);
+void fadeActor(int, int);
+VS_HIDDEN(fadeActor);
 
 void func_800AC440(D_800F4538_t* arg0, int arg1, int arg2);
 VS_HIDDEN(func_800AC440);

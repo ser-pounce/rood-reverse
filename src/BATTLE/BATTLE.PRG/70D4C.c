@@ -118,6 +118,9 @@ int func_800D96C8(
 
     adjacent = dx < 2 && dz < 2;
 
+    // In the original, arg0->unk3 is stored to $t3 before the potential call to
+    // func_800D98E8, where it is clobbered. This looks like a bug and so the
+    // accesses of arg0->unk3 are in theory more correct. Needs investigation.
     if (adjacent) {
         if (!((((D_1F8003D0_t*)0x1F8003D0)->unk2 >> arg3) & 1)) {
             leftover = 1 << arg3;

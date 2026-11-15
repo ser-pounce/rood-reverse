@@ -53,6 +53,13 @@ enum statuses {
     vsBattleStatusWaterDefUp = 1 << 28
 };
 
+enum ActorFlags {
+    vsBattleActorFlagBladeVisible = 1 << 11,
+    vsBattleActorFlagShieldVisible = 1 << 12,
+    vsBattleActorFlagWeaponsVisible =
+        vsBattleActorFlagBladeVisible | vsBattleActorFlagShieldVisible
+};
+
 typedef struct {
     char name[24];
     short currentHP;

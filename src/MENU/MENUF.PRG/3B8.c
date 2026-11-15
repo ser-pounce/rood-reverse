@@ -811,8 +811,8 @@ int renderCongratulationsScreen(void)
 
                     vs_main_fadeSfxVolume(0x7E, 0x74, 0x40, 0x30);
                     vs_main_fadeSfxVolume(0x7E, 0x75, 0x40, 0x30);
-                    vs_main_fadeSfxPitch(0x7E, 0x74, -0x10, 0x30);
-                    vs_main_fadeSfxPitch(0x7E, 0x75, -0x10, 0x30);
+                    vs_main_rampSfxPitch(0x7E, 0x74, -0x10, 0x30);
+                    vs_main_rampSfxPitch(0x7E, 0x75, -0x10, 0x30);
                 }
 
                 renderPressButtonPrompt(214, 187, 48, screenTimer);

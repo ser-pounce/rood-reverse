@@ -3231,14 +3231,14 @@ int vs_battle_script_88_setCurrentSfx(u_char* script, UNUSED short arg1)
 }
 
 /**
- * Starts loading the area's music into music slot 3, along with its sound file. Scripts
- * use it to bring the area music back after a cutscene track.
+ * Starts loading the area's music into music slot 3, along with its instrument bank.
+ * Scripts use it to bring the area music back after a cutscene track.
  */
 int vs_battle_script_89_loadAreaMusic(UNUSED u_char* script, UNUSED short arg1)
 {
     short musicId = func_80089104();
     vs_main_loadMusicSlot(musicId, 3);
-    vs_main_loadSoundFile(musicId);
+    vs_main_loadInstrumentBank(musicId);
 
     return scriptNext;
 }
@@ -3259,104 +3259,206 @@ int vs_battle_script_8F_crossfadeMusic(u_char* script, UNUSED short arg1)
     return scriptNext;
 }
 
-int vs_battle_script_90_loadMusicSlot(u_char* arg0, UNUSED short arg1)
+/**
+ * Starts loading a music track from disc into a music slot. Opcode 99 waits for the
+ * load to finish.
+ * @param script Opcode bytes:
+ *   - [1] = music ID
+ *   - [2] = slot, 1 to 4
+ */
+int vs_battle_script_90_loadMusicSlot(u_char* script, UNUSED short arg1)
 {
-    vs_main_loadMusicSlot(arg0[1], arg0[2]);
+    vs_main_loadMusicSlot(script[1], script[2]);
+
     return scriptNext;
 }
 
-int vs_battle_script_91_freeMusic(u_char* arg0, UNUSED short arg1)
+/**
+ * Stops the music in a slot and unloads it.
+ * @param script Opcode bytes:
+ *   - [1] = slot, 1 to 4
+ */
+int vs_battle_script_91_freeMusic(u_char* script, UNUSED short arg1)
 {
-    vs_main_freeMusic(arg0[1]);
+    vs_main_freeMusic(script[1]);
+
     return (scriptSkipMode == scriptSkipping) ? scriptYield : scriptNext;
 }
 
-int vs_battle_script_92_playMusic(u_char* arg0, UNUSED short arg1)
+/**
+ * Plays the music in a slot.
+ * @param script Opcode bytes:
+ *   - [1] = slot, 1 to 4
+ *   - [2] = volume
+ *   - [3] = fade duration
+ */
+int vs_battle_script_92_playMusic(u_char* script, UNUSED short arg1)
 {
-    vs_main_playMusicSlot(scriptMusicSlot = arg0[1], arg0[2], arg0[3]);
+    vs_main_playMusicSlot(scriptMusicSlot = script[1], script[2], script[3]);
+
     return scriptNext;
 }
 
-int vs_battle_script_93_fadeMusicVolume(u_char* arg0, UNUSED short arg1)
+/**
+ * Fades the script music's volume.
+ * @param script Opcode bytes:
+ *   - [1] = target volume
+ *   - [2] = fade duration
+ */
+int vs_battle_script_93_fadeMusicVolume(u_char* script, UNUSED short arg1)
 {
-    vs_main_fadeMusicVolume(scriptMusicSlot, arg0[1], arg0[2]);
+    vs_main_fadeMusicVolume(scriptMusicSlot, script[1], script[2]);
+
     return scriptNext;
 }
 
-int vs_battle_script_94_fadeMusicTempo(u_char* arg0, UNUSED short arg1)
+/**
+ * Ramps the script music's tempo.
+ * @param script Opcode bytes:
+ *   - [1] = target tempo adjustment (signed), 0 leaves the tempo unchanged, negative is
+ *     slower and positive is faster
+ *   - [2] = ramp duration
+ */
+int vs_battle_script_94_rampMusicTempo(u_char* script, UNUSED short arg1)
 {
-    vs_main_fadeMusicTempo(scriptMusicSlot, (signed char)arg0[1], arg0[2]);
+    vs_main_rampMusicTempo(scriptMusicSlot, (signed char)script[1], script[2]);
+
     return scriptNext;
 }
 
-int vs_battle_script_95_fadeMusicPitch(u_char* arg0, UNUSED short arg1)
+/**
+ * Ramps the script music's pitch.
+ * @param script Opcode bytes:
+ *   - [1] = target pitch (signed)
+ *   - [2] = ramp duration
+ */
+int vs_battle_script_95_rampMusicPitch(u_char* script, UNUSED short arg1)
 {
-    vs_main_fadeMusicPitch(scriptMusicSlot, (signed char)arg0[1], arg0[2]);
+    vs_main_rampMusicPitch(scriptMusicSlot, (signed char)script[1], script[2]);
+
     return scriptNext;
 }
 
+/**
+ * Stops the script music.
+ */
 int vs_battle_script_96_stopMusic(UNUSED u_char* arg0, UNUSED short arg1)
 {
     vs_main_stopMusicSlot(scriptMusicSlot);
+
     return scriptNext;
 }
 
-int vs_battle_script_97_waitMusicSilent(u_char* arg0, UNUSED short arg1)
+/**
+ * Waits until the music in a slot has faded to silence.
+ * @param script Opcode bytes:
+ *   - [1] = slot, 1 to 4
+ */
+int vs_battle_script_97_waitMusicSilent(u_char* script, UNUSED short arg1)
 {
-    int temp_s0 = arg0[1];
-    if (vs_main_getMusicSlotVolume2(temp_s0) != 0) {
-        if (vs_main_getMusicSlotVolume(temp_s0) != 0) {
+    int slot = script[1];
+
+    if (vs_main_getMusicSlotVolume2(slot) != 0) {
+        if (vs_main_getMusicSlotVolume(slot) != 0) {
             return scriptRepeat;
         }
-        vs_main_stopMusicSlot(temp_s0);
+
+        vs_main_stopMusicSlot(slot);
     }
+
     return scriptNext;
 }
 
+/**
+ * Saves a copy of the playing music's state.
+ */
 int vs_battle_script_98_pushMusicState(UNUSED u_char* arg0, UNUSED short arg1)
 {
     vs_main_pushMusicState();
+
     return scriptNext;
 }
 
-int vs_battle_script_99_waitMusicLoad(u_char* arg0, UNUSED short arg1)
+/**
+ * Waits until the music being loaded into a slot by opcode 90 is ready.
+ * @param script Opcode bytes:
+ *   - [1] = slot, 1 to 4
+ */
+int vs_battle_script_99_waitMusicLoad(u_char* script, UNUSED short arg1)
 {
-    return vs_main_finishMusicLoad(arg0[1]) == 1 ? scriptRepeat : scriptNext;
+    return vs_main_finishMusicLoad(script[1]) == 1 ? scriptRepeat : scriptNext;
 }
 
-int vs_battle_script_9D_loadSoundFile2(u_char* arg0, UNUSED short arg1)
+/**
+ * Starts loading the instrument bank a music track plays with, unless it is already
+ * loaded. Opcode 9E waits for it to be ready.
+ * @param script Opcode bytes:
+ *   - [1] = music ID
+ */
+int vs_battle_script_9D_loadInstrumentBank(u_char* script, UNUSED short arg1)
 {
-    vs_main_loadSoundFile(arg0[1]);
+    vs_main_loadInstrumentBank(script[1]);
     return scriptNext;
 }
 
-int vs_battle_script_9E_processSoundQueue(UNUSED u_char* arg0, UNUSED short arg1)
+/** Waits until the instrument bank started by opcode 9D or 89 is loaded and ready. */
+int vs_battle_script_9E_waitInstrumentBankLoad(UNUSED u_char* arg0, UNUSED short arg1)
 {
-    return vs_main_processSoundQueue() == 1 ? scriptRepeat : scriptNext;
+    return vs_main_processInstrumentBankLoad() == 1 ? scriptRepeat : scriptNext;
 }
 
-int vs_battle_script_9A_waitMusicBar(u_char* arg0, UNUSED short arg1)
+/**
+ * Waits until the music has played up to a bar.
+ * @param script Opcode bytes:
+ *   - [1..2] = bar number
+ */
+int vs_battle_script_9A_waitMusicBar(u_char* script, UNUSED short arg1)
 {
-    int temp_s1 = vs_main_getMusicPosition() >> 0x10;
-    return temp_s1 < getShort(arg0 + 1) ? scriptRepeat : scriptNext;
+    int bar = vs_main_getMusicPosition() >> 0x10;
+
+    return bar < getShort(script + 1) ? scriptRepeat : scriptNext;
 }
 
-int vs_battle_script_9B_fadeSfxPitch(u_char* arg0, UNUSED short arg1)
+/**
+ * Ramps a sound effect's pitch. An ID of 0 ramps every sound in the group.
+ * @param script Opcode bytes:
+ *   - [1] = sound group, as in opcode 80
+ *   - [2] = sound ID
+ *   - [3] = target pitch (signed)
+ *   - [4] = ramp duration
+ */
+int vs_battle_script_9B_rampSfxPitch(u_char* script, UNUSED short arg1)
 {
-    vs_main_fadeSfxPitch(
-        scriptSfxGroups[arg0[1]], arg0[2], (signed char)arg0[3], arg0[4]);
+    vs_main_rampSfxPitch(
+        scriptSfxGroups[script[1]], script[2], (signed char)script[3], script[4]);
+
     return scriptNext;
 }
 
-int vs_battle_script_9C_fadeSfxPan(u_char* arg0, UNUSED short arg1)
+/**
+ * Ramps a sound effect's pan. An ID of 0 ramps every sound in the group.
+ * @param script Opcode bytes:
+ *   - [1] = sound group, as in opcode 80
+ *   - [2] = sound ID
+ *   - [3] = target pan, 0x80 is centre
+ *   - [4] = ramp duration
+ */
+int vs_battle_script_9C_rampSfxPan(u_char* script, UNUSED short arg1)
 {
-    vs_main_fadeSfxPan(scriptSfxGroups[arg0[1]], arg0[2], arg0[3], arg0[4]);
+    vs_main_rampSfxPan(scriptSfxGroups[script[1]], script[2], script[3], script[4]);
+
     return scriptNext;
 }
 
-int vs_battle_script_9F_queueMusic(u_char* arg0, UNUSED short arg1)
+/**
+ * Queues the script music in a slot to start once the current music reaches its end.
+ * @param script Opcode bytes:
+ *   - [1] = slot, 1 to 4
+ */
+int vs_battle_script_9F_queueMusic(u_char* script, UNUSED short arg1)
 {
-    vs_main_queueMusicSlot(scriptMusicSlot = arg0[1]);
+    vs_main_queueMusicSlot(scriptMusicSlot = script[1]);
+
     return scriptNext;
 }
 

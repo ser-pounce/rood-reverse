@@ -325,20 +325,20 @@ VS_HIDDEN(func_8008E470);
 void func_8008EAE4(int, int);
 VS_HIDDEN(func_8008EAE4);
 
-void func_8008EAF8(int);
-VS_HIDDEN(func_8008EAF8);
+void setBackgroundVisible(int);
+VS_HIDDEN(setBackgroundVisible);
 
 void func_8008EB04(int* arg0, int* arg1);
 VS_HIDDEN(func_8008EB04);
 
-int func_8008EFCC(int);
-VS_HIDDEN(func_8008EFCC);
+int loadBackground(int);
+VS_HIDDEN(loadBackground);
 
-int func_8008F0FC(void);
-VS_HIDDEN(func_8008F0FC);
+int pollBackgroundLoad(void);
+VS_HIDDEN(pollBackgroundLoad);
 
-int func_8008F234(void);
-VS_HIDDEN(func_8008F234);
+int unloadBackground(void);
+VS_HIDDEN(unloadBackground);
 
 int getCollisionMapDimensions(UNUSED int arg0);
 VS_HIDDEN(getCollisionMapDimensions);

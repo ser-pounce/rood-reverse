@@ -2889,26 +2889,45 @@ int vs_battle_script_72_drawSheatheAshleyWeapon(u_char* script, UNUSED short arg
     return scriptRepeat;
 }
 
-int vs_battle_script_73(u_char* arg0, UNUSED short arg1)
+/**
+ * Shows or hides the background texture.
+ * @param script Opcode bytes:
+ *   - [1] = 0 == hide, !0 == show
+ */
+int vs_battle_script_73_setBackgroundVisible(u_char* script, UNUSED short arg1)
 {
-    func_8008EAF8(arg0[1]);
+    setBackgroundVisible(script[1]);
+
     return scriptNext;
 }
 
-int vs_battle_script_74(u_char* arg0, UNUSED short arg1)
+/**
+ * Starts loading the room's background image into a texture page slot.
+ * @param script Opcode bytes:
+ *   - [1] = texture page slot
+ */
+int vs_battle_script_74_loadBackground(u_char* script, UNUSED short arg1)
 {
-    func_8008EFCC(arg0[1]);
+    loadBackground(script[1]);
+
     return scriptNext;
 }
 
-int vs_battle_script_75(UNUSED u_char* arg0, UNUSED short arg1)
+/**
+ * Waits until the background image started by opcode 74 has finished loading.
+ */
+int vs_battle_script_75_waitBackgroundLoad(UNUSED u_char* script, UNUSED short arg1)
 {
-    return func_8008F0FC() == 0 ? scriptRepeat : scriptNext;
+    return pollBackgroundLoad() == 0 ? scriptRepeat : scriptNext;
 }
 
-int vs_battle_script_76(UNUSED u_char* arg0, UNUSED short arg1)
+/**
+ * Hides the background image and frees its texture page(s).
+ */
+int vs_battle_script_76_unloadBackground(UNUSED u_char* script, UNUSED short arg1)
 {
-    func_8008F234();
+    unloadBackground();
+
     return (scriptSkipMode == scriptSkipping) ? scriptYield : scriptNext;
 }
 

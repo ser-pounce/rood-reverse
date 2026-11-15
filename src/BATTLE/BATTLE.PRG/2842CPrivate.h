@@ -26,8 +26,8 @@ VS_HIDDEN(func_80091378);
 int setParticleEffectSound(int);
 VS_HIDDEN(setParticleEffectSound);
 
-void func_80091468(int, int);
-VS_HIDDEN(func_80091468);
+void setBackgroundOffset(int, int);
+VS_HIDDEN(setBackgroundOffset);
 
 void func_8009147C(BackgroundLayout*, int, int, int);
 VS_HIDDEN(func_8009147C);

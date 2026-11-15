@@ -3053,9 +3053,16 @@ int vs_battle_script_79_controlRoomTask(u_char* script, UNUSED short arg1)
     return scriptNext;
 }
 
-int vs_battle_script_7B(u_char* arg0, UNUSED short arg1)
+/**
+ * Offsets the background image loaded by opcode 74, in pixels.
+ * @param script Opcode bytes:
+ *   - [1..2] = horizontal offset (signed)
+ *   - [3..4] = vertical offset (signed)
+ */
+int vs_battle_script_7B_setBackgroundOffset(u_char* script, UNUSED short arg1)
 {
-    func_80091468(getShort(arg0 + 1), getShort(arg0 + 3));
+    setBackgroundOffset(getShort(script + 1), getShort(script + 3));
+
     return scriptNext;
 }
 

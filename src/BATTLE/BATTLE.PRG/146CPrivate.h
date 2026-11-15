@@ -379,11 +379,11 @@ VS_HIDDEN(D_800F1CDC);
 extern short D_800F1D98[];
 VS_HIDDEN(D_800F1D98);
 
-extern short D_800F1DB4;
-VS_HIDDEN(D_800F1DB4);
+extern short backgroundOffsetX;
+VS_HIDDEN(backgroundOffsetX);
 
-extern short D_800F1DB6;
-VS_HIDDEN(D_800F1DB6);
+extern short backgroundOffsetY;
+VS_HIDDEN(backgroundOffsetY);
 
 extern short particleEffectSound;
 VS_HIDDEN(particleEffectSound);

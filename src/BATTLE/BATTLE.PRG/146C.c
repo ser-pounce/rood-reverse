@@ -17339,8 +17339,8 @@ void func_8008E938(void)
     MpdRoomSectionB* temp_s0;
     int i;
 
-    D_800F1DB4 = 0;
-    D_800F1DB6 = 0;
+    backgroundOffsetX = 0;
+    backgroundOffsetY = 0;
     D_800F1DB8 = 0x1000;
     D_800F1DBA = 0x1000;
 
@@ -17464,9 +17464,9 @@ void func_8008EC48(VECTOR* arg0)
         if (((backgroundLayout->width - 1) < 31u)
             && ((backgroundLayout->height - 1) < 31u)) {
             int x = (((vs_Scratch*)0x1F800000)->camera.angles.vy * D_800F1DB8) / ONE
-                  - D_800F1DB4;
+                  - backgroundOffsetX;
             int y = (((vs_Scratch*)0x1F800000)->camera.angles.vx * D_800F1DBA) / ONE;
-            y = D_800F1DB6 - y;
+            y = backgroundOffsetY - y;
             func_8009147C(backgroundLayout, x, y, backgroundTexturePage);
         }
     } else if (D_800F1DC6 != 0) {

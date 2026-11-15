@@ -455,10 +455,10 @@ int setParticleEffectSound(int arg0)
     return temp_s3;
 }
 
-void func_80091468(int arg0, int arg1)
+void setBackgroundOffset(int arg0, int arg1)
 {
-    D_800F1DB4 = arg0;
-    D_800F1DB6 = arg1;
+    backgroundOffsetX = arg0;
+    backgroundOffsetY = arg1;
 }
 
 void func_8009147C(BackgroundLayout* arg0, int arg1, int arg2, int arg3)

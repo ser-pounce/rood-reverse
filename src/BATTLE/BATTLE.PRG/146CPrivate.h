@@ -322,8 +322,8 @@ VS_HIDDEN(func_8008E320);
 int roomHasNoSoundBank(void);
 VS_HIDDEN(roomHasNoSoundBank);
 
-void func_8008EAE4(int, int);
-VS_HIDDEN(func_8008EAE4);
+void setBackgroundParallax(int, int);
+VS_HIDDEN(setBackgroundParallax);
 
 void setBackgroundVisible(int);
 VS_HIDDEN(setBackgroundVisible);

@@ -371,8 +371,8 @@ extern char D_800F1D6F;
 extern u_char D_800F1D70[];
 extern vs_CdQueueSlot* backgroundImageCdSlot;
 extern vs_CdQueueSlot* backgroundLayoutCdSlot;
-extern short D_800F1DB8;
-extern short D_800F1DBA;
+extern short backgroundParallaxX;
+extern short backgroundParallaxY;
 extern short backgroundTexturePageCount;
 extern char D_800F1DC6;
 extern char backgroundTexturePage;
@@ -17341,8 +17341,8 @@ void func_8008E938(void)
 
     backgroundOffsetX = 0;
     backgroundOffsetY = 0;
-    D_800F1DB8 = 0x1000;
-    D_800F1DBA = 0x1000;
+    backgroundParallaxX = 0x1000;
+    backgroundParallaxY = 0x1000;
 
     if (vs_battle_roomData.sectionB != NULL) {
 
@@ -17396,10 +17396,10 @@ int func_8008EA90(int arg0)
     return 0;
 }
 
-void func_8008EAE4(int arg0, int arg1)
+void setBackgroundParallax(int arg0, int arg1)
 {
-    D_800F1DB8 = arg0;
-    D_800F1DBA = arg1;
+    backgroundParallaxX = arg0;
+    backgroundParallaxY = arg1;
 }
 
 void setBackgroundVisible(int arg0) { backgroundVisible = arg0; }
@@ -17463,9 +17463,11 @@ void func_8008EC48(VECTOR* arg0)
     if ((backgroundVisible != 0) && (backgroundLayout != NULL)) {
         if (((backgroundLayout->width - 1) < 31u)
             && ((backgroundLayout->height - 1) < 31u)) {
-            int x = (((vs_Scratch*)0x1F800000)->camera.angles.vy * D_800F1DB8) / ONE
-                  - backgroundOffsetX;
-            int y = (((vs_Scratch*)0x1F800000)->camera.angles.vx * D_800F1DBA) / ONE;
+            int x =
+                (((vs_Scratch*)0x1F800000)->camera.angles.vy * backgroundParallaxX) / ONE
+                - backgroundOffsetX;
+            int y =
+                (((vs_Scratch*)0x1F800000)->camera.angles.vx * backgroundParallaxY) / ONE;
             y = backgroundOffsetY - y;
             func_8009147C(backgroundLayout, x, y, backgroundTexturePage);
         }

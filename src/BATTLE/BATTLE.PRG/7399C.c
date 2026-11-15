@@ -51,7 +51,11 @@ void func_800DC210(func_800E78F4_t* arg0, int arg1)
 
 int func_800DC284(int arg0, int arg1, int arg2, int arg3)
 {
-    return arg0 * 6 + (short)arg1 * 4 + (short)arg2 + (short)arg3 * 2;
+    short hp = arg1;
+    short mp = arg2;
+    short extra = arg3;
+
+    return arg0 * 6 + hp * 4 + mp + extra * 2;
 }
 
 void func_800DC2E0(func_800DCAA0_t* arg0, func_800DCAA0_t* arg1) { *arg0 = *arg1; }
@@ -193,14 +197,11 @@ void func_800DC574(func_800E78F4_t* arg0, int arg1)
 void func_800DC638(void)
 {
     SVECTOR points[13];
+    int count = func_8008D2C0(points);
+    int mask = 0;
     u_int held;
-    int count;
-    int mask;
     int i;
     int j;
-
-    count = func_8008D2C0(points);
-    mask = 0;
 
     for (i = 0; i < count; ++i) {
         mask |= 1 << points[i].pad;
@@ -247,7 +248,7 @@ void func_800DC638(void)
                 held = 1;
 
                 if (lowX == x) {
-                    lowKey = 1 << (lowKey & 31);
+                    lowKey = 1 << (lowKey & 0x1F);
 
                     if (lowZ == z) {
                         lowKey &= mask;
@@ -259,7 +260,7 @@ void func_800DC638(void)
                 }
             }
 
-            highKey = held << (highKey & 31);
+            highKey = held << (highKey & 0x1F);
             held = 1;
 
             if (cell & 0x4000000) {

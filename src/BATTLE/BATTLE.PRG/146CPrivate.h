@@ -319,8 +319,8 @@ VS_HIDDEN(setCloudstoneMoving);
 int func_8008E320(int arg0);
 VS_HIDDEN(func_8008E320);
 
-int func_8008E470(void);
-VS_HIDDEN(func_8008E470);
+int roomHasNoSoundBank(void);
+VS_HIDDEN(roomHasNoSoundBank);
 
 void func_8008EAE4(int, int);
 VS_HIDDEN(func_8008EAE4);
@@ -385,8 +385,8 @@ VS_HIDDEN(D_800F1DB4);
 extern short D_800F1DB6;
 VS_HIDDEN(D_800F1DB6);
 
-extern short D_800F1DBC;
-VS_HIDDEN(D_800F1DBC);
+extern short particleEffectSound;
+VS_HIDDEN(particleEffectSound);
 
 extern short D_800F1DC0;
 VS_HIDDEN(D_800F1DC0);

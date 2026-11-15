@@ -296,19 +296,19 @@ void setParticleEffect(int arg0)
             break;
         }
 
-        if (D_800F1DBC != -1) {
-            if ((D_800F1DBC >= 0) && (D_800F1DBC != sound)) {
-                vs_main_evictSfx(0x200, D_800F1DBC);
+        if (particleEffectSound != -1) {
+            if ((particleEffectSound >= 0) && (particleEffectSound != sound)) {
+                vs_main_evictSfx(0x200, particleEffectSound);
             }
             if (sound >= 0) {
                 vs_main_playSfxDefault(0x200, sound);
             }
 
-            D_800F1DBC = sound;
+            particleEffectSound = sound;
         }
-    } else if (D_800F1DBC >= 0) {
-        vs_main_evictSfx(0x200, D_800F1DBC);
-        D_800F1DBC = -2;
+    } else if (particleEffectSound >= 0) {
+        vs_main_evictSfx(0x200, particleEffectSound);
+        particleEffectSound = -2;
     }
 }
 
@@ -399,12 +399,12 @@ void func_8009121C(void)
     short scale;
 
     D_800F1DC0 = clamp(D_800F1DC4 * 8, 4, D_800F1DC2);
-    if (D_800F1DBC >= 0) {
+    if (particleEffectSound >= 0) {
         if (D_80068EB4[D_800F1DC4] != 0) {
-            vs_main_playSfxDefault(0x200, D_800F1DBC);
-            vs_main_fadeSfxVolume(0x200, D_800F1DBC, D_80068EB4[D_800F1DC4], 8);
+            vs_main_playSfxDefault(0x200, particleEffectSound);
+            vs_main_fadeSfxVolume(0x200, particleEffectSound, D_80068EB4[D_800F1DC4], 8);
         } else {
-            vs_main_evictSfx(0x200, D_800F1DBC);
+            vs_main_evictSfx(0x200, particleEffectSound);
         }
     }
     scale = clamp((D_800F1DC4 * 4) + (D_800F1DC4 * 2), 12, 90);
@@ -437,17 +437,17 @@ void func_80091378(void)
     D_800F1DD4 = NULL;
 }
 
-int func_800913BC(int arg0)
+int setParticleEffectSound(int arg0)
 {
     int temp_s3;
 
-    temp_s3 = D_800F1DBC;
-    D_800F1DBC = arg0;
+    temp_s3 = particleEffectSound;
+    particleEffectSound = arg0;
 
     if (arg0 >= 0) {
         if (D_80068EB4[D_800F1DC4] != 0) {
             vs_main_playSfxDefault(0x200, (short)arg0);
-            vs_main_fadeSfxVolume(0x200, D_800F1DBC, D_80068EB4[D_800F1DC4], 8);
+            vs_main_fadeSfxVolume(0x200, particleEffectSound, D_80068EB4[D_800F1DC4], 8);
         } else {
             vs_main_evictSfx(0x200, (short)arg0);
         }
@@ -524,11 +524,12 @@ void func_8009147C(BackgroundLayout* arg0, int arg1, int arg2, int arg3)
 
 void func_800918E8(int arg0)
 {
-    if (D_800F1DBC >= 0) {
+    if (particleEffectSound >= 0) {
         if (arg0 != 0) {
-            vs_main_fadeSfxVolume(0x200, D_800F1DBC, D_80068EB4[D_800F1DC4] >> 2, 8);
+            vs_main_fadeSfxVolume(
+                0x200, particleEffectSound, D_80068EB4[D_800F1DC4] >> 2, 8);
         } else {
-            vs_main_fadeSfxVolume(0x200, D_800F1DBC, D_80068EB4[D_800F1DC4], 8);
+            vs_main_fadeSfxVolume(0x200, particleEffectSound, D_80068EB4[D_800F1DC4], 8);
         }
     }
 }

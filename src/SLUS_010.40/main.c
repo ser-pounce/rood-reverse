@@ -2661,7 +2661,7 @@ static int loadMusicIntoFreeSlot(int id)
     return 0;
 }
 
-int vs_main_clearMusicLoadSlot(u_int slot)
+int vs_main_finishMusicLoad(u_int slot)
 {
     if ((slot - 1) < 4) {
         if (vs_main_soundData.musicQueueSlot[slot - 1] != 0) {
@@ -2695,7 +2695,7 @@ int vs_main_clearMusicLoadQueue(void)
     int ret = 0;
 
     for (i = 0; i < 4; ++i) {
-        ret |= vs_main_clearMusicLoadSlot(i + 1);
+        ret |= vs_main_finishMusicLoad(i + 1);
     }
 
     return ret;
@@ -2706,7 +2706,7 @@ int vs_main_loadAndWaitMusicSlot(int id, int targetSlot)
     int ret = vs_main_loadMusicSlot(id, targetSlot);
 
     if (ret != 0) {
-        while (vs_main_clearMusicLoadSlot(targetSlot) != 0) {
+        while (vs_main_finishMusicLoad(targetSlot) != 0) {
             vs_main_gametimeUpdate(0);
         }
     }
@@ -3067,7 +3067,7 @@ void vs_main_fadeSfxPan(int group, int id, int pan, char duration)
     }
 }
 
-void vs_main_evictSfx(int group, int id)
+void vs_main_stopSfx(int group, int id)
 {
     if (id != 0) {
         void const* sfx = resolveSfxData(group, id);
@@ -3132,7 +3132,7 @@ static int loadSfx(int id)
     return 0;
 }
 
-int vs_main_freeSfxQueueSlot(u_int slot)
+int vs_main_finishSfxLoad(u_int slot)
 {
     if ((slot - 1) < 3) {
         if (vs_main_soundData.sfxQueueSlot[slot - 1] != NULL) {
@@ -3166,7 +3166,7 @@ static int freeSfxSlots(void)
     int ret = 0;
 
     for (i = 0; i < 3; ++i) {
-        ret |= vs_main_freeSfxQueueSlot(i + 1);
+        ret |= vs_main_finishSfxLoad(i + 1);
     }
 
     return ret;

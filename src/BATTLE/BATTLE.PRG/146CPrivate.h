@@ -183,8 +183,8 @@ VS_HIDDEN(warpToMapThroughDoor);
 void warpToZoneThroughDoor(vs_Warp*, int, int);
 VS_HIDDEN(warpToZoneThroughDoor);
 
-void func_8007C8A4(int, int);
-VS_HIDDEN(func_8007C8A4);
+void playActorSfx(int, int);
+VS_HIDDEN(playActorSfx);
 
 int spawnModelActor(u_int slot, int modelId, vs_TilePosition* tile);
 VS_HIDDEN(spawnModelActor);

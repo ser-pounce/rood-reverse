@@ -2273,7 +2273,7 @@ static void renderIncrementalScore(int x, int y, int timer, UNUSED int _)
 
         if ((onScreenScore == score) && (incrementingScore != 0)) {
             incrementingScore = 0;
-            vs_main_evictSfx(126, 114);
+            vs_main_stopSfx(126, 114);
             vs_main_playSfxDefault(126, 115);
         }
     }
@@ -2389,7 +2389,7 @@ static void renderIncrementalMapCompletion(int x, int y, int timer, UNUSED int _
         if ((onScreenMapCompletion == mapCompletionPercent)
             && (incrementingMapCompletion != 0)) {
             incrementingMapCompletion = 0;
-            vs_main_evictSfx(126, 114);
+            vs_main_stopSfx(126, 114);
             vs_main_playSfxDefault(126, 115);
         }
     }

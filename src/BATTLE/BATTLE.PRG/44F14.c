@@ -316,11 +316,11 @@ loop:
         break;
 
     case 6:
-        vs_main_evictSfx(0x7E, script[1]);
+        vs_main_stopSfx(0x7E, script[1]);
         break;
 
     case 9:
-        vs_main_evictSfx(0xFF000, script[1]);
+        vs_main_stopSfx(0xFF000, script[1]);
         break;
 
     case 11:

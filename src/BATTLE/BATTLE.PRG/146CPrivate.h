@@ -103,20 +103,20 @@ VS_HIDDEN(cullOccludingGeometry);
 int func_8007BE10(int);
 VS_HIDDEN(func_8007BE10);
 
-void func_8007BE20(int, int);
-VS_HIDDEN(func_8007BE20);
+void startEffect(int, int);
+VS_HIDDEN(startEffect);
 
-void func_8007BEC4(int);
-VS_HIDDEN(func_8007BEC4);
+void triggerEffectStage(int);
+VS_HIDDEN(triggerEffectStage);
 
-int func_8007BEE4(void);
-VS_HIDDEN(func_8007BEE4);
+int getEffectState(void);
+VS_HIDDEN(getEffectState);
 
-void func_8007BF04(void);
-VS_HIDDEN(func_8007BF04);
+void effectNop(void);
+VS_HIDDEN(effectNop);
 
-int func_8007BF0C(void);
-VS_HIDDEN(func_8007BF0C);
+int isEffectStageReady(void);
+VS_HIDDEN(isEffectStageReady);
 
 void showCurrentRoom(void);
 VS_HIDDEN(showCurrentRoom);

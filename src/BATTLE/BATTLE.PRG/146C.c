@@ -8521,7 +8521,7 @@ int cullOccludingGeometry(int cull)
 
 int func_8007BE10(int arg0) { return D_800F18B0 = arg0; }
 
-void func_8007BE20(int arg0, int arg1)
+void startEffect(int effectId, int actorId)
 {
     ActionEffectRequest request;
     int i;
@@ -8531,17 +8531,17 @@ void func_8007BE20(int arg0, int arg1)
 
     request.count = 1;
     request.source.type = 5;
-    request.effectId = arg0;
+    request.effectId = effectId;
     request.otherCount = 0;
     request.source.value.position.vz = 0;
     request.source.value.position.vy = 0;
     request.source.value.position.vx = 0;
     request.targets[0].type = 4;
-    request.targets[0].value.actor.actor = arg1;
+    request.targets[0].value.actor.actor = actorId;
     request.targets[0].value.actor.part = 0;
 
     for (i = 0; i < 16; ++i) {
-        if ((actors[i] != NULL) && (i != arg1)) {
+        if ((actors[i] != NULL) && (i != actorId)) {
             request.others[count] = i;
             ++count;
         }
@@ -8551,13 +8551,13 @@ void func_8007BE20(int arg0, int arg1)
     func_800CF0E8(&request, 0, 0);
 }
 
-void func_8007BEC4(int arg0) { func_800CEF74(arg0); }
+void triggerEffectStage(int arg0) { func_800CEF74(arg0); }
 
-int func_8007BEE4(void) { return func_800CF48C(); }
+int getEffectState(void) { return func_800CF48C(); }
 
-void func_8007BF04(void) { }
+void effectNop(void) { }
 
-int func_8007BF0C(void) { return func_800CEEBC() != 0; }
+int isEffectStageReady(void) { return func_800CEEBC() != 0; }
 
 void showCurrentRoom(void) { showRoom(0); }
 

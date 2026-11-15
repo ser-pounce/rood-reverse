@@ -80,8 +80,8 @@ VS_HIDDEN(decreaseMiscCount);
 int func_800CEEBC(void);
 VS_HIDDEN(func_800CEEBC);
 
-void func_800CEF38(int arg0);
-VS_HIDDEN(func_800CEF38);
+void rearmEffectStage(int arg0);
+VS_HIDDEN(rearmEffectStage);
 
 int func_800CEF74(int);
 VS_HIDDEN(func_800CEF74);
@@ -89,8 +89,8 @@ VS_HIDDEN(func_800CEF74);
 int func_800CF0E8(ActionEffectRequest*, int, int);
 VS_HIDDEN(func_800CF0E8);
 
-void func_800CF1A8(void);
-VS_HIDDEN(func_800CF1A8);
+void cancelEffects(void);
+VS_HIDDEN(cancelEffects);
 
 int func_800CF3F8(ActionEffectRequest*, int);
 VS_HIDDEN(func_800CF3F8);

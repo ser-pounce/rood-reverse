@@ -327,7 +327,7 @@ extern u_short* scriptStrings;
 extern char switchValue;
 extern short D_800F4BB6;
 extern char D_800F4BB8;
-extern u_char D_800F4BB9;
+extern u_char effectCancelled;
 extern char* D_800F4BC0[];
 extern short D_800F4BE0;
 extern char D_800F4BE4;
@@ -3451,7 +3451,7 @@ int vs_battle_script_9C_rampSfxPan(u_char* script, UNUSED short arg1)
 }
 
 /**
- * Queues the script music in a slot to start once the current music reaches its end.
+ * Queues the script music to start once the current music reaches its end.
  * @param script Opcode bytes:
  *   - [1] = slot, 1 to 4
  */
@@ -3462,64 +3462,111 @@ int vs_battle_script_9F_queueMusic(u_char* script, UNUSED short arg1)
     return scriptNext;
 }
 
-int vs_battle_script_A0(u_char* arg0, UNUSED short arg1)
+/**
+ * Loads and starts a visual effect (EFFECT/E###.P: sprites, particles, camera and sound,
+ * as used for spell animations) targeting an actor. Its stages are started by opcode
+ * A1.
+ * @param script Opcode bytes:
+ *   - [1-2] = effect ID
+ *   - [3-4] = target actor
+ */
+int vs_battle_script_A0_startEffect(u_char* script, UNUSED short arg1)
 {
-    func_8007BE20(getShort(arg0 + 1), resolveActorId(getShort(arg0 + 3)));
+    startEffect(getShort(script + 1), resolveActorId(getShort(script + 3)));
+
     return scriptNext;
 }
 
-int vs_battle_script_A1(u_char* arg0, UNUSED short arg1)
+/**
+ * Starts one stage of the visual effect. When skipping, cancels the effect instead.
+ * @param script Opcode bytes:
+ *   - [1] = stage index
+ */
+int vs_battle_script_A1_triggerEffectStage(u_char* script, UNUSED short arg1)
 {
-    func_8007BEC4(arg0[1]);
+    triggerEffectStage(script[1]);
+
     if (scriptSkipMode == scriptSkipping) {
-        func_800CF1A8();
+        cancelEffects();
     }
+
     return scriptNext;
 }
 
-int vs_battle_script_A2(u_char* arg0, UNUSED short arg1)
+/**
+ * Waits until the visual effect system is in the given state. Scripts use it to wait for
+ * the effect to finish, or to be ready for its next stage. Skipping cancels the effect
+ * first.
+ * @param script Opcode bytes:
+ *   - [1] = state to wait for
+ */
+int vs_battle_script_A2_waitEffectState(u_char* script, UNUSED short arg1)
 {
-    if ((scriptSkipMode == scriptSkipping) && ((arg0[1] == 0) || (arg0[1] == 5))) {
-        if (D_800F4BB9 != 0) {
-            if (func_8007BEE4() == arg0[1]) {
-                D_800F4BB9 = 0;
+    if ((scriptSkipMode == scriptSkipping) && ((script[1] == 0) || (script[1] == 5))) {
+
+        if (effectCancelled != 0) {
+            if (getEffectState() == script[1]) {
+                effectCancelled = 0;
                 return scriptNext;
             }
         } else {
-            func_800CF1A8();
-            D_800F4BB9 = 1;
+            cancelEffects();
+            effectCancelled = 1;
         }
+
         return scriptRepeat;
     }
-    return func_8007BEE4() != arg0[1] ? scriptRepeat : scriptNext;
+
+    return getEffectState() != script[1] ? scriptRepeat : scriptNext;
 }
 
-int vs_battle_script_A3(UNUSED u_char* arg0, UNUSED short arg1)
+/**
+ * Yields for a frame while skipping, otherwise does nothing.
+ * @param script Opcode bytes: none
+ */
+int vs_battle_script_A3_yieldIfSkipping(UNUSED u_char* script, UNUSED short arg1)
 {
-    func_8007BF04();
+    effectNop();
+
     return (scriptSkipMode == scriptSkipping) ? scriptYield : scriptNext;
 }
 
-int vs_battle_script_A4(UNUSED u_char* arg0, UNUSED short arg1)
+/**
+ * Waits until the visual effect is loaded and has stages left to trigger.
+ * @param script Opcode bytes: none
+ */
+int vs_battle_script_A4_waitEffectStageReady(UNUSED u_char* script, UNUSED short arg1)
 {
-    return func_8007BF0C() != 1 ? scriptRepeat : scriptNext;
+    return isEffectStageReady() != 1 ? scriptRepeat : scriptNext;
 }
 
-int vs_battle_script_A5(UNUSED u_char* arg0, UNUSED short arg1)
+/**
+ * Cancels the running visual effect and waits until the effect system is idle or
+ * waiting for a stage to be triggered.
+ * @param script Opcode bytes: none
+ */
+int vs_battle_script_A5_cancelEffect(UNUSED u_char* script, UNUSED short arg1)
 {
-    if (D_800F4BB9 == 0) {
-        func_800CF1A8();
-        D_800F4BB9 = 1;
-    } else if ((func_8007BEE4() == 0) || (func_8007BEE4() == 5)) {
-        D_800F4BB9 = 0;
+    if (effectCancelled == 0) {
+        cancelEffects();
+        effectCancelled = 1;
+    } else if ((getEffectState() == 0) || (getEffectState() == 5)) {
+        effectCancelled = 0;
         return scriptNext;
     }
+
     return scriptRepeat;
 }
 
-int vs_battle_script_A6(u_char* arg0, UNUSED short arg1)
+/**
+ * Makes a stage that was already triggered available to trigger again.
+ * @param script Opcode bytes:
+ *   - [1] = stage index
+ */
+int vs_battle_script_A6_rearmEffectStage(u_char* script, UNUSED short arg1)
 {
-    func_800CEF38(arg0[1]);
+    rearmEffectStage(script[1]);
+
     return scriptNext;
 }
 
@@ -5678,7 +5725,7 @@ void parseEvt(u_char* data)
     vs_battle_setStateFlag(168, 0);
 
     scriptWaitFrames[1] = scriptWaitFrames[2] = scriptWaitFrames[3] = 0;
-    D_800F4BB9 = 0;
+    effectCancelled = 0;
     weaponAnimating = 0;
     textBoxSelectionPending = 0;
     D_800F4BE4 = 0;

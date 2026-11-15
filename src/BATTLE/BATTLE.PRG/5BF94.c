@@ -4953,7 +4953,7 @@ int func_800CEF0C(void)
     return var_v1;
 }
 
-void func_800CEF38(int arg0)
+void rearmEffectStage(int arg0)
 {
     D_800F5228 -= 1;
     D_800F521C |= 1 << arg0;
@@ -5024,7 +5024,7 @@ int func_800CF0E8(ActionEffectRequest* arg0, int arg1, int arg2)
     return D_800F5318;
 }
 
-void func_800CF1A8(void)
+void cancelEffects(void)
 {
     D_800F53B8_t* var_s0 = D_800F53B8;
 

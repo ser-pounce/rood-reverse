@@ -59,20 +59,20 @@ VS_HIDDEN(func_80091B04);
 void func_80092548(void);
 VS_HIDDEN(func_80092548);
 
-int func_8009291C(int);
-VS_HIDDEN(func_8009291C);
+int startRoomTask(int);
+VS_HIDDEN(startRoomTask);
 
 int func_80092A18(void);
 VS_HIDDEN(func_80092A18);
 
-int func_800936F8(int);
-VS_HIDDEN(func_800936F8);
+int toggleRoomTaskPaused(int);
+VS_HIDDEN(toggleRoomTaskPaused);
 
-int func_80093764(int);
-VS_HIDDEN(func_80093764);
+int isRoomTaskRunning(int);
+VS_HIDDEN(isRoomTaskRunning);
 
-void func_80093788(int);
-VS_HIDDEN(func_80093788);
+void finishRoomTask(int);
+VS_HIDDEN(finishRoomTask);
 
 void func_80093824(int arg0);
 VS_HIDDEN(func_80093824);

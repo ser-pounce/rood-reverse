@@ -16193,14 +16193,14 @@ int func_8008BF48(MpdRoomSectionA* arg0)
         vs_main_playSfxDefault(0x7E, 0x16);
         vs_main_playSfxDefault(0x7E, 0x17);
     }
-    func_8009291C(arg0->unk0.unk8.lock.unk1);
+    startRoomTask(arg0->unk0.unk8.lock.unk1);
     if (arg0->unkE != 0) {
         func_8008BD74(arg0);
     }
     if (arg0->unk10 != -1) {
         temp_s0 = vs_battle_roomData.sectionA;
         if (temp_s0[arg0->unk10].unk0.unkA != 0) {
-            func_8009291C(temp_s0[arg0->unk10].unk0.unk8.lock.unk1);
+            startRoomTask(temp_s0[arg0->unk10].unk0.unk8.lock.unk1);
             if (temp_s0[arg0->unk10].unkE != 0) {
                 func_8008BD74(&temp_s0[arg0->unk10]);
             }
@@ -16264,7 +16264,7 @@ void func_8008C0C0(void)
 
 int func_8008C1C8(MpdRoomSectionA* arg0)
 {
-    if (func_80093764(arg0->unk0.unk8.lock.unk1) != 0) {
+    if (isRoomTaskRunning(arg0->unk0.unk8.lock.unk1) != 0) {
         return 0;
     }
     if (arg0->unkE == 0) {
@@ -16770,7 +16770,7 @@ void func_8008D658(MpdRoomSectionA* arg0)
         vs_main_playSfxDefault(0x7E, 0x3D);
         vs_main_playSfxDefault(0x7E, 0x3E);
     }
-    func_8009291C(arg0->unk0.unk6);
+    startRoomTask(arg0->unk0.unk6);
     arg0->unk0.unkB = 0;
     arg0->unk0.unk8.s16 = arg0->unk0.unk8.s16 == 0;
     temp_v0 = func_8008B764(arg0->unk0.unk0, arg0->unk0.unk2, arg0->unk0.unk4);
@@ -17241,7 +17241,7 @@ void func_8008E4DC(int arg0)
         }
         if (vs_battle_roomData.sectionB != NULL) {
             if (vs_battle_roomData.sectionB->unk2C >= 0) {
-                func_800936F8(vs_battle_roomData.sectionB->unk2C);
+                toggleRoomTaskPaused(vs_battle_roomData.sectionB->unk2C);
             }
         }
         D_800F1D6F = !D_800F1D6F;

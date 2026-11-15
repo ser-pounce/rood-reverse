@@ -3080,9 +3080,17 @@ int vs_battle_script_7C_cullOccludingGeometry(u_char* script, UNUSED short arg1)
     return scriptNext;
 }
 
-int vs_battle_script_7D(u_char* arg0, UNUSED short arg1)
+/**
+ * Offsets the ordering table position of a geometry object. Can be undone by negating
+ * the original amount.
+ * @param script Opcode bytes:
+ *   - [1] = geometry object index
+ *   - [2] = amount to add (signed)
+ */
+int vs_battle_script_7D_adjustGeometryDepth(u_char* script, UNUSED short arg1)
 {
-    func_80091A78(arg0[1], (signed char)arg0[2]);
+    adjustGeometryObjectDepth(script[1], (signed char)script[2]);
+
     return scriptNext;
 }
 

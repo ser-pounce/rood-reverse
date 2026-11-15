@@ -47,8 +47,8 @@ VS_HIDDEN(hideGeometryObject);
 int swapGeometryFlags(int, int);
 VS_HIDDEN(swapGeometryFlags);
 
-int func_80091A78(int, int);
-VS_HIDDEN(func_80091A78);
+int adjustGeometryObjectDepth(int, int);
+VS_HIDDEN(adjustGeometryObjectDepth);
 
 int func_80091AC0(int arg0);
 VS_HIDDEN(func_80091AC0);

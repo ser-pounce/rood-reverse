@@ -3662,8 +3662,8 @@ int vs_battle_script_B2_setFlagsToActorDistanceAndAngle(u_char* script, UNUSED s
     dz = first.unk0.unk4.vz - second.unk0.unk4.vz;
     distance = SquareRoot0((dx * dx) + (dz * dz)) / script[5];
 
-    vs_battle_setStateFlag(flag, distance < 0x100 ? distance & 0xFF : -1);
-    vs_battle_setStateFlag(flag + 1, (ratan2(dx, dz) >> 4) & 0xFF);
+    vs_battle_setStateFlag(flag, distance < ONE / 16 ? distance : -1);
+    vs_battle_setStateFlag(flag + 1, ratan2(dx, dz) >> 4);
 
     return scriptNext;
 }
@@ -3732,25 +3732,29 @@ int vs_battle_script_B5_removeMiscItem(u_char* script, UNUSED short arg1)
     return scriptNext;
 }
 
-int vs_battle_script_B6(u_char* arg0, UNUSED short arg1)
+/**
+ * Stores the distance between two actors, in whole tiles, in a state flag.
+ * @param script Opcode bytes:
+ *   - [1-2] = first actor
+ *   - [3-4] = second actor
+ *   - [5-6] = state flag id
+ */
+int vs_battle_script_B6_setFlagToActorDistance(u_char* script, UNUSED short arg1)
 {
-    vs_ActorPosition sp10;
-    vs_ActorPosition sp20;
-    short temp_s0;
-    int temp_s0_2;
-    short temp_s1;
-    int var_v0;
+    vs_ActorPosition first;
+    vs_ActorPosition second;
+    short dx;
+    short dz;
 
-    vs_battle_getActorPosition(resolveActorId(getShort(arg0 + 1)), &sp10);
-    vs_battle_getActorPosition(resolveActorId(getShort(arg0 + 3)), &sp20);
-    temp_s0 = sp10.unk0.unk4.vx - sp20.unk0.unk4.vx;
-    temp_s1 = sp10.unk0.unk4.vz - sp20.unk0.unk4.vz;
-    temp_s0_2 = getShort(arg0 + 5);
-    var_v0 = SquareRoot0((temp_s0 * temp_s0) + (temp_s1 * temp_s1));
-    if (var_v0 < 0) {
-        var_v0 += 0x7F;
-    }
-    vs_battle_setStateFlag(temp_s0_2, (var_v0 >> 7) & 0xFF);
+    vs_battle_getActorPosition(resolveActorId(getShort(script + 1)), &first);
+    vs_battle_getActorPosition(resolveActorId(getShort(script + 3)), &second);
+
+    dx = first.unk0.unk4.vx - second.unk0.unk4.vx;
+    dz = first.unk0.unk4.vz - second.unk0.unk4.vz;
+
+    vs_battle_setStateFlag(
+        getShort(script + 5), SquareRoot0((dx * dx) + (dz * dz)) / 128);
+
     return scriptNext;
 }
 

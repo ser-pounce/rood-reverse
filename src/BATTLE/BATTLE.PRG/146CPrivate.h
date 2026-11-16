@@ -76,26 +76,26 @@ void startBattleTimer(
     enum BattleTimerMode mode, enum BattleTimerLifetime lifetime, int time);
 VS_HIDDEN(startBattleTimer);
 
-void func_8007C4D4(void);
-VS_HIDDEN(func_8007C4D4);
+void skipRoomSeen(void);
+VS_HIDDEN(skipRoomSeen);
 
-int func_8007C8F8(int);
-VS_HIDDEN(func_8007C8F8);
+int queueShpLoad(int);
+VS_HIDDEN(queueShpLoad);
 
-void func_8007CE74(int);
-VS_HIDDEN(func_8007CE74);
+void setCameraPitchPreset(int);
+VS_HIDDEN(setCameraPitchPreset);
 
 void func_8007CEC0(void);
 VS_HIDDEN(func_8007CEC0);
 
-int func_8007CF80(int);
-VS_HIDDEN(func_8007CF80);
+int countActorsByRole(enum ActorRole);
+VS_HIDDEN(countActorsByRole);
 
 void stopBattleTimer(void);
 VS_HIDDEN(stopBattleTimer);
 
-void func_8007BD3C(int);
-VS_HIDDEN(func_8007BD3C);
+void pauseBattleTimer(int);
+VS_HIDDEN(pauseBattleTimer);
 
 int cullOccludingGeometry(int);
 VS_HIDDEN(cullOccludingGeometry);

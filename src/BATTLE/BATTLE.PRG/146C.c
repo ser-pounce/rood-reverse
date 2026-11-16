@@ -330,7 +330,7 @@ extern int D_800F18FC;
 extern int D_800F1908;
 extern D_800F1910_t D_800F1910;
 extern Actor* D_800F192C;
-extern int D_800F19A0;
+extern int recordRoomSeen;
 extern u_char D_800F19A8[];
 extern D_800F19CC_t* D_800F19CC;
 extern int D_800F19D8;
@@ -537,10 +537,10 @@ void vs_battle_saveEnemyState(int actorId, int arg1)
     temp_v0->tile = sp10.unk0.unk0;
 }
 
-int insertActor(Actor* actor)
+int insertCombatant(Actor* actor)
 {
 
-    if ((actor->unk1C & 7) && (actor->id != 0)) {
+    if ((actor->role & actorRoleCombatant) && (actor->id != 0)) {
         int i;
 
         for (i = 0; i < 16; ++i) {
@@ -562,7 +562,7 @@ int insertActor(Actor* actor)
     return 0;
 }
 
-int removeActor(Actor* actor)
+int removeCombatant(Actor* actor)
 {
     if (actor->id != 0) {
         int i;
@@ -591,7 +591,7 @@ int removeActorById(u_int actorId, int arg1)
 
             vs_battle_saveEnemyState(actorId, arg1);
 
-            if (actor->unk1C == 0x10) {
+            if (actor->role == actorRoleModelOnly) {
                 func_8009F530(actorId);
                 func_80099D6C(actorId);
             } else {
@@ -1415,7 +1415,7 @@ void updateEnemyKills(Actor* enemy)
 {
     u_int subType = enemy->subType;
 
-    if ((enemy->stats != NULL) && (enemy->unk1C == 4)) {
+    if ((enemy->stats != NULL) && (enemy->role == actorRoleEngagedEnemy)) {
 
         vs_ActorStats* stats = enemy->stats;
 
@@ -2910,14 +2910,14 @@ void setRoomSeen(void)
     u_int scene;
     u_int room;
 
-    if (D_800F19A0 == 0) {
+    if (recordRoomSeen == 0) {
         return;
     }
 
     scene = vs_battle_getCurrentSceneId();
     vs_main_mapStatus.areaFlags[scene >> 5] |= 1 << (scene & 0x1F);
     room = vs_battle_getCurrentRoomId();
-    D_800F19A0 = 0;
+    recordRoomSeen = 0;
     vs_main_mapStatus.roomFlags[room >> 5] |= 1 << (room & 0x1F);
 }
 
@@ -3849,8 +3849,8 @@ void func_800719FC(UNUSED int arg0)
             && (i != D_800F19CC->unk8.unk4.unk0.hit.targetActor
                 || D_800E81B4[vs_main_actions[action].unk2_4])
             && (status & 0x3000001) == 1
-            && (vs_battle_actors[i]->unk1C & D_800E81D4[vs_main_actions[action].unk2_4])
-            && !(vs_battle_actors[i]->unk1C & 0x8000)) {
+            && (vs_battle_actors[i]->role & D_800E81D4[vs_main_actions[action].unk2_4])
+            && !(vs_battle_actors[i]->role & 0x8000)) {
             if (D_800E81C4[vs_main_actions[action].unk2_4]) {
                 int limb;
 
@@ -3942,8 +3942,8 @@ void func_80071F68(int arg0)
             && (i != D_800F19CC->unk8.unk4.unk0.hit.targetActor
                 || D_800E81B4[vs_main_actions[action].unk2_4])
             && (status & 0x3000001) == 1
-            && (vs_battle_actors[i]->unk1C & D_800E81D4[vs_main_actions[action].unk2_4])
-            && !(vs_battle_actors[i]->unk1C & 0x8000)) {
+            && (vs_battle_actors[i]->role & D_800E81D4[vs_main_actions[action].unk2_4])
+            && !(vs_battle_actors[i]->role & 0x8000)) {
             if (D_800E81C4[vs_main_actions[action].unk2_4]) {
                 for (j = 0; j < 6; ++j) {
                     int part = func_800A152C(i, j, 2);
@@ -4093,9 +4093,9 @@ void func_80072734(int arg0)
             if (vs_battle_actors[i] && (status & 0x3000001) == 1
                 && (i != D_800F19CC->unk8.unk4.unk0.hit.targetActor
                     || D_800E81B4[vs_main_actions[action].unk2_4])
-                && (vs_battle_actors[i]->unk1C
+                && (vs_battle_actors[i]->role
                     & D_800E81D4[vs_main_actions[action].unk2_4])
-                && !(vs_battle_actors[i]->unk1C & 0x8000)) {
+                && !(vs_battle_actors[i]->role & 0x8000)) {
                 if (D_800E81C4[vs_main_actions[action].unk2_4]) {
                     int limb;
 
@@ -5392,7 +5392,8 @@ int func_80075554(void)
             continue;
         }
 
-        if (actor->unk1C != 4 && actor->unk1C != 2 && D_800F196C != 3) {
+        if (actor->role != actorRoleEngagedEnemy && actor->role != actorRoleFriendly
+            && D_800F196C != 3) {
             continue;
         }
 
@@ -5901,7 +5902,7 @@ Actor* func_800765B0(
         temp_v0->unk0.unk0.stats = &temp_v0->unk0.unk50;
         temp_v0->unk0.unk0.unk44 = (D_800F4538_t*)&temp_v0->unk9B4;
         temp_v0->unk0.unk0.unk18 = 0xFE;
-        temp_v0->unk0.unk0.unk1C = 0x10;
+        temp_v0->unk0.unk0.role = actorRoleModelOnly;
         temp_v0->unk0.unk0.unk40 = 0;
         temp_v0->unk0.unk0.id = index;
         temp_v0->unk0.unk0.next = NULL;
@@ -6115,24 +6116,24 @@ void func_80076D50(u_int id, int arg1, int arg2, int arg3, int arg4)
 
     switch (id) {
     case 0:
-        temp_s1->unk1C = 1;
+        temp_s1->role = actorRoleAshley;
         break;
     case 1:
-        temp_s1->unk1C = 2;
+        temp_s1->role = actorRoleFriendly;
         break;
     default:
         switch (arg4 & 3) {
         case 1:
-            temp_s1->unk1C = 4;
+            temp_s1->role = actorRoleEngagedEnemy;
             temp_s1->weaponDrawn |= 1;
             func_8009D934(id, 1, 0);
             break;
         case 0:
-            temp_s1->unk1C = 2;
+            temp_s1->role = actorRoleFriendly;
             break;
         case 2:
         case 3:
-            temp_s1->unk1C = 8;
+            temp_s1->role = actorRoleDisengagedEnemy;
             break;
         }
     }
@@ -6193,25 +6194,25 @@ void func_80076F24(int id, vs_CharInitData* arg1, int arg2, int arg3, int arg4, 
 
     switch (id) {
     case 0:
-        temp_s0->unk1C = 1;
+        temp_s0->role = actorRoleAshley;
         break;
     case 1:
         temp_v1 = 2;
-        temp_s0->unk1C = temp_v1;
+        temp_s0->role = temp_v1;
         break;
     default:
         switch (arg4 & 3) {
         case 1:
-            temp_s0->unk1C = 4;
+            temp_s0->role = actorRoleEngagedEnemy;
             temp_s0->weaponDrawn |= 1;
             func_8009D934(id, 1, 0);
             break;
         case 2:
         case 3:
-            temp_s0->unk1C = 8;
+            temp_s0->role = actorRoleDisengagedEnemy;
             break;
         case 0:
-            temp_s0->unk1C = 2;
+            temp_s0->role = actorRoleFriendly;
             break;
         }
     }
@@ -6357,7 +6358,7 @@ void func_800773BC(Actor* arg0, int arg1, int arg2, int arg3, int arg4, int arg5
     func_80076D50(arg1, arg2, arg3, arg4, arg5);
     func_800A0AFC(arg1, 0x9000, 0x12000);
     func_8009DF3C(arg1, 0);
-    if (arg0->unk1C & 7) {
+    if (arg0->role & actorRoleCombatant) {
         if (arg1 != 0) {
             arg0->next = vs_battle_actors[0]->next;
             vs_battle_actors[0]->next = arg0;
@@ -6573,12 +6574,12 @@ Actor* func_800775C0(int id, MpdEnemy* spawn, vs_CharInitData* init, int flags)
         vs_battle_setActorAnimation(id, 0, 0, 0);
         func_800A0AFC(id, actor->stats->unk31 * ONE, actor->stats->unk33 * ONE);
 
-        if (actor->unk1C & 7) {
+        if (actor->role & actorRoleCombatant) {
             actor->next = vs_battle_actors[0]->next;
             vs_battle_actors[0]->next = actor;
         }
 
-        actor->unk1E = spawn->facing;
+        actor->unk1E = spawn->disposition;
         actor->unk1F = spawn->unk26;
         actor->unk27 = spawn->index;
         actor->unk29 = 0;
@@ -8481,7 +8482,7 @@ void stopBattleTimer(void)
     func_800CB560();
 }
 
-void func_8007BD3C(int arg0)
+void pauseBattleTimer(int arg0)
 {
     if (arg0 != 0) {
         int temp_v1 = vs_main_battleTimer.mode;
@@ -8608,12 +8609,12 @@ void setWeaponDrawn(int arg0, int arg1)
             func_8009D934(arg0, 0, 0);
         }
     } else if (arg0 != 0) {
-        if ((vs_battle_actors[arg0]->unk1C == 4)
-            || (vs_battle_actors[arg0]->unk1C == 8)) {
+        if ((vs_battle_actors[arg0]->role == actorRoleEngagedEnemy)
+            || (vs_battle_actors[arg0]->role == actorRoleDisengagedEnemy)) {
             if (arg1 != 0) {
-                vs_battle_actors[arg0]->unk1C = 4;
+                vs_battle_actors[arg0]->role = actorRoleEngagedEnemy;
             } else {
-                vs_battle_actors[arg0]->unk1C = 8;
+                vs_battle_actors[arg0]->role = actorRoleDisengagedEnemy;
             }
         }
     } else {
@@ -8630,10 +8631,10 @@ void func_8007C1D8(int arg0, int arg1)
 {
     if (vs_battle_actors[arg0] != 0) {
         if (arg1 != 0) {
-            vs_battle_actors[arg0]->unk1C = 4;
+            vs_battle_actors[arg0]->role = actorRoleEngagedEnemy;
             return;
         }
-        vs_battle_actors[arg0]->unk1C = 8;
+        vs_battle_actors[arg0]->role = actorRoleDisengagedEnemy;
     }
 }
 
@@ -8757,7 +8758,7 @@ void startScreenTransitionIn(int effect, int speed, int angle)
     vs_battle_screenTransitionWipeAngle = angle;
 }
 
-void func_8007C4D4(void) { D_800F19A0 = 0; }
+void skipRoomSeen(void) { recordRoomSeen = 0; }
 
 /** Starts a warp to a map in the current zone, with a screen transition. */
 int warpToMap(vs_Warp* warp, int effect, int speed)
@@ -8883,14 +8884,20 @@ void playActorSfx(int arg0, int arg1)
 
 int func_8007C8F0(void) { return 0; }
 
-int func_8007C8F8(int arg0)
+/**
+ * Queues the loading of an SHP model file.
+ * @param modelId SHP model id.
+ * @return The slot used plus one, or 0 if no slot was free.
+ */
+int queueShpLoad(int modelId)
 {
-    vs_ObjectData sp10;
+    vs_ObjectData objectData;
 
-    sp10.modelId = arg0;
-    sp10.dataType = 1;
-    sp10.index = 0;
-    return vs_battle_populateDataSlot(&sp10) + 1;
+    objectData.modelId = modelId;
+    objectData.dataType = 1;
+    objectData.index = 0;
+
+    return vs_battle_populateDataSlot(&objectData) + 1;
 }
 
 int spawnModelActor(u_int slot, int modelId, vs_TilePosition* tile)
@@ -9074,10 +9081,14 @@ void initialiseCameraFromSpherical(
         outputPos, outputLookAt, &vs_battle_cameraCurrentSpherical.values);
 }
 
-void func_8007CE74(int arg0)
+/**
+ * Sets the camera's pitch to one of three presets, running from a shallow view to a
+ * steep one. Any value other than the two non-default presets selects the default.
+ */
+void setCameraPitchPreset(int pitch)
 {
-    if ((arg0 == -0x300) || (arg0 == -0x80)) {
-        vs_battle_cameraCurrentSpherical.values.pitch = arg0;
+    if ((pitch == -0x300) || (pitch == -0x80)) {
+        vs_battle_cameraCurrentSpherical.values.pitch = pitch;
         return;
     }
     vs_battle_cameraCurrentSpherical.values.pitch = -0x180;
@@ -9109,18 +9120,18 @@ int func_8007CF18(int arg0)
 
 Actor* getActor(int actorId) { return vs_battle_actors[actorId]; }
 
-int func_8007CF80(int arg0)
+int countActorsByRole(enum ActorRole role)
 {
     u_int i;
-    u_int var_a2;
+    u_int count = 0;
 
-    var_a2 = 0;
     for (i = 0; i < 16; ++i) {
-        if ((vs_battle_actors[i] != 0) && (vs_battle_actors[i]->unk1C == arg0)) {
-            ++var_a2;
+        if ((vs_battle_actors[i] != 0) && (vs_battle_actors[i]->role == role)) {
+            ++count;
         }
     }
-    return var_a2;
+
+    return count;
 }
 
 int func_8007CFCC(int arg0)
@@ -9150,7 +9161,7 @@ int isActorWalkDone(int arg0)
 /**
  * Wakes an actor, or puts it into a dormant state. A dormant actor is in state 0x20
  * (also used for dead actors), so the enemy AI skips it (and drops it from its alert
- * list), is skipped by target selection (unk1C bit 0x8000) and loses its target marker.
+ * list), is skipped by target selection (role bit 0x8000) and loses its target marker.
  * The model is not affected (see vs_battle_setActorFlags).
  * @param awake 0 = make dormant, nonzero = wake (only if currently in state 0x20).
  * @return awake
@@ -9161,13 +9172,13 @@ int setActorAwake(int actorId, int awake)
         if (vs_battle_actors[actorId] != NULL) {
             if (vs_battle_actors[actorId]->unk8 == 0x20) {
                 vs_battle_actors[actorId]->unk8 = 0;
-                vs_battle_actors[actorId]->unk1C &= 0x7FFF;
+                vs_battle_actors[actorId]->role &= 0x7FFF;
             }
         }
     } else {
         if (vs_battle_actors[actorId] != NULL) {
             vs_battle_actors[actorId]->unk8 = 0x20;
-            vs_battle_actors[actorId]->unk1C |= 0x8000;
+            vs_battle_actors[actorId]->role |= 0x8000;
             func_80095B7C(actorId, 0);
             func_80095B7C(actorId, 0x40);
         }
@@ -9204,7 +9215,7 @@ void setActorInactive(int actorId, int inactive)
 
     if (actor != NULL) {
         if (inactive != 0) {
-            listChanged = removeActor(actor);
+            listChanged = removeCombatant(actor);
 
             setActorInactiveFlag(actorId, inactive);
 
@@ -9213,7 +9224,7 @@ void setActorInactive(int actorId, int inactive)
                 func_800DEC88(NULL);
             }
         } else {
-            listChanged = insertActor(actor);
+            listChanged = insertCombatant(actor);
 
             setActorInactiveFlag(actorId, 0);
 
@@ -14888,7 +14899,7 @@ void func_80089114(void)
 
             id = enemy->id;
 
-            switch (enemy->facing) {
+            switch (enemy->disposition) {
             case 0:
             case 3:
                 param = 6;
@@ -15189,7 +15200,7 @@ void func_80089DC0(int arg0)
         stopBattleTimer();
     }
 
-    D_800F19A0 = 1;
+    recordRoomSeen = 1;
     var_a0 = getCollisionMapDimensions(0);
     zoneContext.unk3C = (var_a0 & 0xFFFF) / 16;
 

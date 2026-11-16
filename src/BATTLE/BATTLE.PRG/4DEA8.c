@@ -3775,85 +3775,137 @@ void func_800BAF6C(short arg0)
     setActorsAwake(arg0);
 }
 
-int vs_battle_script_B7_specialOp(u_char* arg0, UNUSED short arg1)
+/**
+ * Runs one of a set of miscellaneous scene commands, chosen by the sub-opcode.
+ * @param script Opcode bytes:
+ *   - [1] = sub-opcode
+ *   - [2] = argument, if the sub-opcode takes one
+ */
+int vs_battle_script_B7_specialOp(u_char* script, UNUSED short arg1)
 {
-    char sp10[32];
+    enum {
+        specialLoadShp = 0,
+        specialShowEnding = 1,
+        specialSkipScene = 2,
+        specialUnlockAction = 3,
+        specialCountEngagedEnemies = 4,
+        specialSetAllActorsAwake = 5,
+        specialFreeEvtBuffer = 6,
+        specialPauseBattleTimer = 8,
+        specialInitCamera = 9,
+        specialSetCameraPitchPreset = 10,
+        specialScaleCameraDuration = 11,
+        specialSetCloudstoneTimer = 12,
+        specialShowAllGeometry = 13,
+        specialDisableCloudstones = 14,
+        specialRunSceneReset = 16,
+        specialSkipRoomSeen = 17,
+    };
 
-    switch (arg0[1]) {
-    case 0:
-        func_8007C8F8(arg0[2]);
+    char message[32];
+
+    switch (script[1]) {
+    case specialLoadShp:
+        queueShpLoad(script[2]);
         break;
-    case 1:
+
+    case specialShowEnding:
         if (scriptMenuState != scriptMenuClosed) {
+
             if (updateScriptMenu() != 0) {
                 return scriptRepeat;
             }
+
             vs_battle_setStateFlag(menuFSubmenu, 0);
+
             scriptMenuState = scriptMenuClosed;
+
             vs_main_showEndingAndReturnToTitle();
+
             break;
         }
+
         vs_battle_setStateFlag(menuFSubmenu, menuFHealBonus);
         func_8007B9A0();
+
         scriptMenuState = scriptMenuOpen;
+
         return scriptRepeat;
-    case 2:
+
+    case specialSkipScene:
         skipRequested = 1;
         break;
-    case 3:
-        if (isActionUnlocked(arg0[2]) != 0) {
+
+    case specialUnlockAction:
+        if (isActionUnlocked(script[2]) != 0) {
             vs_battle_setStateFlag(0xB1, 0);
         } else {
-            setActionUnlocked(arg0[2]);
+            setActionUnlocked(script[2]);
             vs_battle_setStateFlag(0xB1, 1);
         }
         break;
-    case 4:
-        vs_battle_setStateFlag(0xB1, func_8007CF80(4));
+
+    case specialCountEngagedEnemies:
+        vs_battle_setStateFlag(0xB1, countActorsByRole(actorRoleEngagedEnemy));
         break;
-    case 5:
-        func_800BAF6C(arg0[2]);
+
+    case specialSetAllActorsAwake:
+        func_800BAF6C(script[2]);
         break;
-    case 6:
+
+    case specialFreeEvtBuffer:
         vs_main_freeHeapR(D_800F4C24);
         break;
+
     case 7:
-        func_800BBE04(arg0[2]);
+        func_800BBE04(script[2]);
         break;
-    case 8:
-        func_8007BD3C(arg0[2]);
+
+    case specialPauseBattleTimer:
+        pauseBattleTimer(script[2]);
         break;
-    case 9:
-        func_800BE3D0(arg0[2]);
+
+    case specialInitCamera:
+        func_800BE3D0(script[2]);
         break;
-    case 10:
-        func_8007CE74(D_800E9C00[arg0[2]]);
+
+    case specialSetCameraPitchPreset:
+        setCameraPitchPreset(D_800E9C00[script[2]]);
         break;
-    case 11:
-        func_800BE5A4(arg0[2]);
+
+    case specialScaleCameraDuration:
+        func_800BE5A4(script[2]);
         break;
-    case 12:
-        func_8008D5A0(arg0[2]);
+
+    case specialSetCloudstoneTimer:
+        func_8008D5A0(script[2]);
         break;
-    case 13:
+
+    case specialShowAllGeometry:
         func_8008C40C();
         break;
-    case 14:
-        func_8008D594(arg0[2]);
+
+    case specialDisableCloudstones:
+        func_8008D594(script[2]);
         break;
+
     case 15:
-        func_800F9DE8(arg0[2]);
+        func_800F9DE8(script[2]);
         break;
-    case 16:
-        scriptReturnAddress = (long)(arg0 + 6);
+
+    case specialRunSceneReset:
+        scriptReturnAddress = (long)(script + 6);
         return (long)&sceneResetScript;
-    case 17:
-        func_8007C4D4();
+
+    case specialSkipRoomSeen:
+        skipRoomSeen();
         break;
+
     default:
-        sprintf(sp10, "<SPECIAL=%d> IS UNDEFINED!", arg0[1]);
+        sprintf(message, "<SPECIAL=%d> IS UNDEFINED!", script[1]);
         break;
     }
+
     return scriptNext;
 }
 
@@ -4015,13 +4067,13 @@ void expandActorSelector(u_short arg0, ActorList* arg1)
         short i;
         short var_a0 = -1;
         if (arg0 == 0x2003) {
-            var_a0 = 4;
+            var_a0 = actorRoleEngagedEnemy;
         }
 
         for (i = 0; i < 17; ++i) {
             temp_v0 = getActor(i);
             if (temp_v0 != NULL) {
-                if ((var_a0 < 0) || (temp_v0->unk1C == var_a0)) {
+                if ((var_a0 < 0) || (temp_v0->role == var_a0)) {
                     arg1->actors[var_s3++] = i;
                     ++arg1->remaining;
                 }
@@ -5593,7 +5645,7 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
                 break;
 
             case 5:
-                left = flagValue = func_8007CF80(p[1]);
+                left = flagValue = countActorsByRole(p[1]);
                 flagId = getShort(p + 2);
 
                 if (flagId != 0) {

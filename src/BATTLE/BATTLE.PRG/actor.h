@@ -108,6 +108,15 @@ typedef struct {
     UiMiscRand unk960;
 } vs_ActorStats;
 
+enum ActorRole {
+    actorRoleAshley = 1,
+    actorRoleFriendly = 2,
+    actorRoleEngagedEnemy = 4,
+    actorRoleDisengagedEnemy = 8,
+    actorRoleModelOnly = 0x10, // no battle role
+    actorRoleCombatant = actorRoleAshley | actorRoleFriendly | actorRoleEngagedEnemy,
+};
+
 typedef struct Actor {
     struct Actor* next;
     int id;
@@ -125,7 +134,7 @@ typedef struct Actor {
     } commandArgs;
     u_short unk18;
     u_short subType;
-    u_short unk1C;
+    u_short role;
     u_char unk1E;
     u_char unk1F;
     int weaponDrawn;

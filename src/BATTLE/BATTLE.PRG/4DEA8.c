@@ -178,18 +178,18 @@ typedef struct {
 typedef struct {
     char unk0;
     char unk1;
-    char unk2;
-    char unk3;
-    short unk4;
-    short unk6;
-    short unk8;
-    short unkA;
-    short unkC;
-    short unkE;
-    short unk10;
-    short unk12;
-    short unk14;
-} D_800F4B88_t;
+    char elapsed;
+    char duration;
+    short direction;
+    short startDirection;
+    short deltaDirection;
+    short fallAngle;
+    short startFallAngle;
+    short deltaFallAngle;
+    short intensity;
+    short startIntensity;
+    short deltaIntensity;
+} ParticleTween;
 
 typedef struct {
     int unk0;
@@ -300,7 +300,7 @@ static VECTOR* vectorCopy(VECTOR* arg0, VECTOR* arg1);
 static VECTOR* sVectorToFixedPointVector(VECTOR* arg0, SVECTOR* arg1);
 static void toNormalIntegerVector(VECTOR*, VECTOR*);
 
-extern int D_800E9B34[];
+extern int scriptSfxGroups[];
 extern int weaponDrawnModes[];
 extern char animationBankBase[];
 extern char skipResetPaletteOp[];
@@ -317,7 +317,7 @@ extern u_char D_800E9C28;
 extern u_char D_800E9C2C;
 extern u_short D_800F4B20;
 extern GimTween gimTweens[];
-extern D_800F4B88_t D_800F4B88;
+extern ParticleTween particleTween;
 extern char D_800F4B8B;
 extern char D_800F4BA0;
 extern D_800F4BA4_t* D_800F4BA4;
@@ -327,8 +327,8 @@ extern u_short* scriptStrings;
 extern char switchValue;
 extern short D_800F4BB6;
 extern char D_800F4BB8;
-extern u_char D_800F4BB9;
-extern char* D_800F4BC0[];
+extern u_char effectCancelled;
+extern char* vibrationPatterns[];
 extern short D_800F4BE0;
 extern char D_800F4BE4;
 extern void* mpdRoomDoorSection;
@@ -338,7 +338,7 @@ extern short D_800F4C22;
 extern void* D_800F4C24;
 extern char D_800F4C34;
 extern u_char* D_800F4C38[];
-extern short D_800F4C4C;
+extern short particleEffectSoundToRestore;
 extern char weaponAnimating;
 extern short mpdScriptSection;
 extern short D_800F4C54;
@@ -611,7 +611,7 @@ static int tryTextBoxPlacement(
         return 1;
     }
 
-    result->distance = vs_gte_rsqrt(dx * dx + dy * dy);
+    result->distance = SquareRoot0(dx * dx + dy * dy);
 
     return 0;
 }
@@ -2320,7 +2320,7 @@ int vs_battle_script_59_openMenu(u_char* script, UNUSED short arg1)
             return scriptRepeat;
         }
 
-        if (func_8007B9FC() != 0) {
+        if (updateScriptMenu() != 0) {
             return scriptRepeat;
         }
 
@@ -2347,7 +2347,7 @@ int vs_battle_script_59_openMenu(u_char* script, UNUSED short arg1)
             return scriptRepeat;
         }
 
-        if (func_8007B9FC() == 0) {
+        if (updateScriptMenu() == 0) {
             scriptMenuState = scriptMenuClosed;
 
             return scriptYield;
@@ -2532,7 +2532,8 @@ int vs_battle_script_61_overrideFogDepth(u_char* script, UNUSED short arg1)
 
 /**
  * Enables or disables the close-up render mode used for first person view, which
- * subdivides large polygons and skips geometry flagged as hidden in first person.
+ * subdivides large polygons, renders geometry usually culled in 3rd person view,
+ * and skips geometry flagged as hidden in first person.
  * @param script Opcode bytes:
  *   - [1] = 1 = enabled, 0 = disabled
  */
@@ -2889,481 +2890,871 @@ int vs_battle_script_72_drawSheatheAshleyWeapon(u_char* script, UNUSED short arg
     return scriptRepeat;
 }
 
-int vs_battle_script_73(u_char* arg0, UNUSED short arg1)
+/**
+ * Shows or hides the background texture.
+ * @param script Opcode bytes:
+ *   - [1] = 0 == hide, !0 == show
+ */
+int vs_battle_script_73_setBackgroundVisible(u_char* script, UNUSED short arg1)
 {
-    func_8008EAF8(arg0[1]);
+    setBackgroundVisible(script[1]);
+
     return scriptNext;
 }
 
-int vs_battle_script_74(u_char* arg0, UNUSED short arg1)
+/**
+ * Starts loading the room's background image into a texture page slot.
+ * @param script Opcode bytes:
+ *   - [1] = texture page slot
+ */
+int vs_battle_script_74_loadBackground(u_char* script, UNUSED short arg1)
 {
-    func_8008EFCC(arg0[1]);
+    loadBackground(script[1]);
+
     return scriptNext;
 }
 
-int vs_battle_script_75(UNUSED u_char* arg0, UNUSED short arg1)
+/**
+ * Waits until the background image started by opcode 74 has finished loading.
+ */
+int vs_battle_script_75_waitBackgroundLoad(UNUSED u_char* script, UNUSED short arg1)
 {
-    return func_8008F0FC() == 0 ? scriptRepeat : scriptNext;
+    return pollBackgroundLoad() == 0 ? scriptRepeat : scriptNext;
 }
 
-int vs_battle_script_76(UNUSED u_char* arg0, UNUSED short arg1)
+/**
+ * Hides the background image and frees its texture page(s).
+ */
+int vs_battle_script_76_unloadBackground(UNUSED u_char* script, UNUSED short arg1)
 {
-    func_8008F234();
+    unloadBackground();
+
     return (scriptSkipMode == scriptSkipping) ? scriptYield : scriptNext;
 }
 
-int vs_battle_script_77(u_char* arg0, UNUSED short arg1)
+/**
+ * Sets the particle effect, either at once or ramping over a number of frames.
+ * The values are only a starting point, as they then drift within the limits set by the
+ * room.
+ * @param script Opcode bytes:
+ *   - [1] = effect in the high nibble (0 none, 1 rain, 2 snow, 3 heavy snow, 4 dark
+ *     particles rising from the floor), intensity in the low nibble
+ *   - [2] = direction the particles are blown, 256 steps per turn
+ *   - [3] = fall angle, 0x80 falls straight down
+ *   - [4] = 0 sets the values at once, otherwise the number of frames to blend over
+ */
+int vs_battle_script_77_setParticleEffect(u_char* script, UNUSED short arg1)
 {
-    func_80090C2C(arg0[1] >> 4);
-    if (arg0[4] == 0) {
-        D_800F4B88.unk10 = arg0[1] & 0xF;
-        func_80091320(D_800F4B88.unk10);
-        D_800F4B88.unk4 = arg0[2] * 16;
-        D_800F4B88.unkA = arg0[3] * 4 + ONE / 8;
-        func_8009134C(D_800F4B88.unk4, D_800F4B88.unkA);
+    setParticleEffect(script[1] >> 4);
+
+    if (script[4] == 0) {
+
+        particleTween.intensity = script[1] & 0xF;
+
+        setParticleEffectIntensity(particleTween.intensity);
+
+        particleTween.direction = script[2] * 16;
+        particleTween.fallAngle = script[3] * 4 + ONE / 8;
+
+        setParticleEffectDirection(particleTween.direction, particleTween.fallAngle);
     } else {
-        int v = arg0[1] & 0xF;
-        short base;
-        int delta;
+        int targetIntensity = script[1] & 0xF;
+        short currentDirection = particleTween.direction;
+        int directionDelta;
 
-        D_800F4B88.unk12 = D_800F4B88.unk10;
-        D_800F4B88.unk14 = v - D_800F4B88.unk10;
-        D_800F4B88.unkE =
-            arg0[3] * 4 - (base = (D_800F4B88.unkC = D_800F4B88.unkA) - ONE / 8);
-        delta = arg0[2] * 16 - (D_800F4B88.unk6 = D_800F4B88.unk4);
-        if (delta < -ONE / 2) {
-            delta += ONE;
-        } else if (delta > ONE / 2) {
-            delta -= ONE;
+        particleTween.startIntensity = particleTween.intensity;
+        particleTween.deltaIntensity = targetIntensity - particleTween.intensity;
+        particleTween.deltaFallAngle = script[3] * 4 + ONE / 8 - particleTween.fallAngle;
+        particleTween.startFallAngle = particleTween.fallAngle;
+
+        directionDelta = script[2] * 16 - currentDirection;
+        particleTween.startDirection = currentDirection;
+
+        if (directionDelta < -ONE / 2) {
+            directionDelta += ONE;
+        } else if (directionDelta > ONE / 2) {
+            directionDelta -= ONE;
         }
-        D_800F4B88.unk8 = delta;
-        D_800F4B88.unk3 = arg0[4];
-        D_800F4B88.unk2 = 0;
+
+        particleTween.deltaDirection = directionDelta;
+        particleTween.duration = script[4];
+        particleTween.elapsed = 0;
     }
+
     return scriptNext;
 }
 
-int vs_battle_script_78(u_char* arg0, UNUSED short arg1)
+/**
+ * Stops or resumes the particle effect drifting within the room's limits.
+ * @param script Opcode bytes:
+ *   - [1] = 1 stops the drift, 0 resumes it
+ */
+int vs_battle_script_78_freezeParticleEffect(u_char* script, UNUSED short arg1)
 {
-    func_80091314(arg0[1] ^ 1);
+    setParticleEffectDrift(script[1] ^ 1);
+
     return scriptNext;
 }
 
-int vs_battle_script_7A(u_char* arg0, UNUSED short arg1)
+/**
+ * Acquires or relinquishes control of the particle effect sound, such as the rain loop.
+ * Scripts must call this before using 0x80 with bank 2.
+ * @param script Opcode bytes:
+ *   - [1] = !0 acquires control, 0 returns control
+ */
+int vs_battle_script_7A_setParticleEffectSoundScripted(u_char* script, UNUSED short arg1)
 {
-    if (arg0[1] != 0) {
-        if (D_800F4C08 != 0) {
+    if (script[1] != 0) {
+
+        if (particleEffectSoundScripted != 0) {
             return scriptNext;
         }
 
-        D_800F4C08 = func_8008E470();
+        particleEffectSoundScripted = roomHasNoSoundBank();
 
-        if (D_800F4C08) {
-            D_800F4C4C = func_800913BC(-1);
+        if (particleEffectSoundScripted) {
+            particleEffectSoundToRestore = setParticleEffectSound(-1);
         }
 
-    } else if (D_800F4C08 != 0) {
-        func_800913BC(D_800F4C4C);
-        D_800F4C08 = 0;
+    } else if (particleEffectSoundScripted != 0) {
+        setParticleEffectSound(particleEffectSoundToRestore);
+        particleEffectSoundScripted = 0;
     }
 
     return scriptNext;
 }
 
-int vs_battle_script_79(u_char* arg0, UNUSED short arg1)
+/**
+ * Starts a room task, or pauses and resumes it. Room tasks run every frame, animating
+ * textures, moving geometry objects and playing the room's sounds. Some start running
+ * when the room loads.
+ * @param script Opcode bytes:
+ *   - [1] = 0 starts the task (if the same task is already executing it is completed
+ *     first), 1 pauses or resumes
+ *   - [2] = task index, with the room's scripted tasks starting at 0x40
+ */
+int vs_battle_script_79_controlRoomTask(u_char* script, UNUSED short arg1)
 {
-    int temp_s0 = arg0[2];
+    int task = script[2];
 
-    switch (arg0[1]) {
+    switch (script[1]) {
     case 0:
-        if ((scriptSkipMode == scriptSkipping) && (func_80093764(temp_s0) != 0)) {
-            func_80093788(temp_s0);
+        if ((scriptSkipMode == scriptSkipping) && (isRoomTaskRunning(task) != 0)) {
+            finishRoomTask(task);
         }
-        func_8009291C(temp_s0);
+
+        startRoomTask(task);
         break;
+
     case 1:
-        func_800936F8(temp_s0);
+        toggleRoomTaskPaused(task);
         break;
     }
+
     return scriptNext;
 }
 
-int vs_battle_script_7B(u_char* arg0, UNUSED short arg1)
+/**
+ * Offsets the background image loaded by opcode 74, in pixels.
+ * @param script Opcode bytes:
+ *   - [1..2] = horizontal offset (signed)
+ *   - [3..4] = vertical offset (signed)
+ */
+int vs_battle_script_7B_setBackgroundOffset(u_char* script, UNUSED short arg1)
 {
-    func_80091468(getShort(arg0 + 1), getShort(arg0 + 3));
+    setBackgroundOffset(getShort(script + 1), getShort(script + 3));
+
     return scriptNext;
 }
 
-int vs_battle_script_7C(u_char* arg0, UNUSED short arg1)
+/**
+ * Culls room geometry that occludes the view depending on the camera angle.
+ * Usually disabled and renabled at the start and end of cutscenes.
+ * @param script Opcode bytes:
+ *   - [1] = 0 renders all geometry, anything else culls by camera angle
+ */
+int vs_battle_script_7C_cullOccludingGeometry(u_char* script, UNUSED short arg1)
 {
-    func_8007BDD8(arg0[1] != 0);
+    cullOccludingGeometry(script[1] != 0);
+
     return scriptNext;
 }
 
-int vs_battle_script_7D(u_char* arg0, UNUSED short arg1)
+/**
+ * Offsets the ordering table position of a geometry object. Can be undone by negating
+ * the original amount.
+ * @param script Opcode bytes:
+ *   - [1] = geometry object index
+ *   - [2] = amount to add (signed)
+ */
+int vs_battle_script_7D_adjustGeometryDepth(u_char* script, UNUSED short arg1)
 {
-    func_80091A78(arg0[1], (signed char)arg0[2]);
+    adjustGeometryObjectDepth(script[1], (signed char)script[2]);
+
     return scriptNext;
 }
 
-int vs_battle_script_7E(u_char* arg0, UNUSED short arg1)
+/**
+ * Sets how far the background image shifts as the camera turns and tilts.
+ * @param script Opcode bytes:
+ *   - [1] = shift for horizontal turning (signed)
+ *   - [2] = shift for vertical tilting (signed)
+ */
+int vs_battle_script_7E_setBackgroundParallax(u_char* script, UNUSED short arg1)
 {
-    func_8008EAE4((signed char)arg0[1] << 7, (signed char)arg0[2] << 7);
+    setBackgroundParallax(
+        (signed char)script[1] * (ONE / 32), (signed char)script[2] * (ONE / 32));
+
     return scriptNext;
 }
 
-int vs_battle_script_80_playSfx(u_char* arg0, UNUSED short arg1)
+/**
+ * Plays a sound effect. Group 2 is ignored unless opcode 7A has taken control of the
+ * particle effect sound.
+ * @param script Opcode bytes:
+ *   - [1] = sound group: 1 = general sound effects, 2 = the particle effect sound,
+ *     3 = effects from the bank selected by opcode 88
+ *   - [2] = sound ID, or the index within the bank for group 3
+ *   - [3] = pan, 0x80 is centre
+ *   - [4] = volume, up to 0x7F
+ */
+int vs_battle_script_80_playSfx(u_char* script, UNUSED short arg1)
 {
-    if (arg0[1] == 2 && D_800F4C08 == 0) {
+    if (script[1] == 2 && particleEffectSoundScripted == 0) {
         return scriptNext;
     }
-    if (arg0[1] == 2) {
-        D_800F4C4C = arg0[2];
+
+    if (script[1] == 2) {
+        particleEffectSoundToRestore = script[2];
     }
-    vs_main_playSfx(D_800E9B34[arg0[1]], arg0[2], arg0[3], arg0[4]);
+
+    vs_main_playSfx(scriptSfxGroups[script[1]], script[2], script[3], script[4]);
+
     return scriptNext;
 }
 
-int vs_battle_script_81(u_char* arg0, UNUSED short arg1)
+/**
+ * Plays one of an actor's sound effects.
+ * @param script Opcode bytes:
+ *   - [1..2] = actor ID
+ *   - [3] = sound effect type
+ */
+int vs_battle_script_81_playActorSfx(u_char* script, UNUSED short arg1)
 {
-    func_8007C8A4(resolveActorId(getShort(arg0 + 1)), arg0[3]);
+    playActorSfx(resolveActorId(getShort(script + 1)), script[3]);
+
     return scriptNext;
 }
 
-int vs_battle_script_82_fadeSfxVolume(u_char* arg0, UNUSED short arg1)
+/**
+ * Fades a sound effect to a volume. An ID of 0 fades every sound in the group.
+ * @param script Opcode bytes:
+ *   - [1] = sound group, as in opcode 80
+ *   - [2] = sound ID
+ *   - [3] = target volume
+ *   - [4] = fade duration
+ */
+int vs_battle_script_82_fadeSfxVolume(u_char* script, UNUSED short arg1)
 {
-    vs_main_fadeSfxVolume(D_800E9B34[arg0[1]], arg0[2], arg0[3], arg0[4]);
+    vs_main_fadeSfxVolume(scriptSfxGroups[script[1]], script[2], script[3], script[4]);
+
     return scriptNext;
 }
 
+/** Stops all sound effects. */
 int vs_battle_script_83_stopAllSfx(UNUSED u_char* arg0, UNUSED short arg1)
 {
     vs_main_stopAllSfx();
+
     return scriptNext;
 }
 
-int vs_battle_script_84_evictSfx(u_char* arg0, UNUSED short arg1)
+/**
+ * Stops a sound effect. An ID of 0 stops every sound in the group.
+ * @param script Opcode bytes:
+ *   - [1] = sound group, as in opcode 80
+ *   - [2] = sound ID
+ */
+int vs_battle_script_84_stopSfx(u_char* script, UNUSED short arg1)
 {
-    vs_main_evictSfx(D_800E9B34[arg0[1]], arg0[2]);
+    vs_main_stopSfx(scriptSfxGroups[script[1]], script[2]);
+
     return scriptNext;
 }
 
-int vs_battle_script_85_loadSfxSlot(u_char* arg0, UNUSED short arg1)
+/**
+ * Starts loading a sound effect file from disc into a slot. Opcode 86 waits for the
+ * load to finish.
+ * @param script Opcode bytes:
+ *   - [1] = sound effect file ID
+ *   - [2] = slot, 1 to 3
+ */
+int vs_battle_script_85_loadSfxSlot(u_char* script, UNUSED short arg1)
 {
-    vs_main_loadSfxSlot(arg0[1], arg0[2]);
+    vs_main_loadSfxSlot(script[1], script[2]);
+
     return scriptNext;
 }
 
-int vs_battle_script_86_freeSfxSlot(u_char* arg0, UNUSED short arg1)
+/**
+ * Waits until the sound effect file being loaded into a slot by opcode 85 is ready.
+ * @param script Opcode bytes:
+ *   - [1] = slot, 1 to 3
+ */
+int vs_battle_script_86_waitSfxLoad(u_char* script, UNUSED short arg1)
 {
-    return vs_main_freeSfxQueueSlot(arg0[1]) != 0 ? scriptRepeat : scriptNext;
+    return vs_main_finishSfxLoad(script[1]) != 0 ? scriptRepeat : scriptNext;
 }
 
-int vs_battle_script_87_freeSfx(u_char* arg0, UNUSED short arg1)
+/**
+ * Stops the sounds from a slot's sound effect file and unloads it.
+ * @param script Opcode bytes:
+ *   - [1] = slot, 1 to 3
+ */
+int vs_battle_script_87_freeSfx(u_char* script, UNUSED short arg1)
 {
-    vs_main_freeSfx(arg0[1]);
+    vs_main_freeSfx(script[1]);
+
     return (scriptSkipMode == scriptSkipping) ? scriptYield : scriptNext;
 }
 
-int vs_battle_script_88_setCurrentSfx(u_char* arg0, UNUSED short arg1)
+/**
+ * Selects the loaded sound effect slot that sound group 3 plays from.
+ * @param script Opcode bytes:
+ *   - [1] = slot, 1 to 3
+ */
+int vs_battle_script_88_setCurrentSfx(u_char* script, UNUSED short arg1)
 {
-    vs_main_setCurrentSfx(arg0[1]);
+    vs_main_setCurrentSfx(script[1]);
+
     return scriptNext;
 }
 
-int vs_battle_script_89_loadSoundFile(UNUSED u_char* arg0, UNUSED short arg1)
+/**
+ * Starts loading the area's music into music slot 3, along with its instrument bank.
+ * Scripts use it to bring the area music back after a cutscene track.
+ */
+int vs_battle_script_89_loadAreaMusic(UNUSED u_char* script, UNUSED short arg1)
 {
-    short temp_v0 = func_80089104();
-    vs_main_loadMusicSlot(temp_v0, 3);
-    vs_main_loadSoundFile(temp_v0);
+    short musicId = func_80089104();
+    vs_main_loadMusicSlot(musicId, 3);
+    vs_main_loadInstrumentBank(musicId);
+
     return scriptNext;
 }
 
-int vs_battle_script_8F_crossfadeMusic(u_char* arg0, UNUSED short arg1)
+/**
+ * Fades out the current script music and fades in the music in another slot.
+ * @param script Opcode bytes:
+ *   - [1] = music slot to play
+ *   - [2] = volume
+ *   - [3] = fade in duration
+ *   - [4] = fade out duration
+ */
+int vs_battle_script_8F_crossfadeMusic(u_char* script, UNUSED short arg1)
 {
-    vs_main_fadeMusicVolume(scriptMusicSlot, 0, arg0[4]);
-    vs_main_playMusicSlotFadeIn(scriptMusicSlot = arg0[1], arg0[2], arg0[3]);
+    vs_main_fadeMusicVolume(scriptMusicSlot, 0, script[4]);
+    vs_main_playMusicSlotFadeIn(scriptMusicSlot = script[1], script[2], script[3]);
+
     return scriptNext;
 }
 
-int vs_battle_script_90_loadMusicSlot(u_char* arg0, UNUSED short arg1)
+/**
+ * Starts loading a music track from disc into a music slot. Opcode 99 waits for the
+ * load to finish.
+ * @param script Opcode bytes:
+ *   - [1] = music ID
+ *   - [2] = slot, 1 to 4
+ */
+int vs_battle_script_90_loadMusicSlot(u_char* script, UNUSED short arg1)
 {
-    vs_main_loadMusicSlot(arg0[1], arg0[2]);
+    vs_main_loadMusicSlot(script[1], script[2]);
+
     return scriptNext;
 }
 
-int vs_battle_script_91_freeMusic(u_char* arg0, UNUSED short arg1)
+/**
+ * Stops the music in a slot and unloads it.
+ * @param script Opcode bytes:
+ *   - [1] = slot, 1 to 4
+ */
+int vs_battle_script_91_freeMusic(u_char* script, UNUSED short arg1)
 {
-    vs_main_freeMusic(arg0[1]);
+    vs_main_freeMusic(script[1]);
+
     return (scriptSkipMode == scriptSkipping) ? scriptYield : scriptNext;
 }
 
-int vs_battle_script_92_playMusic(u_char* arg0, UNUSED short arg1)
+/**
+ * Plays the music in a slot.
+ * @param script Opcode bytes:
+ *   - [1] = slot, 1 to 4
+ *   - [2] = volume
+ *   - [3] = fade duration
+ */
+int vs_battle_script_92_playMusic(u_char* script, UNUSED short arg1)
 {
-    vs_main_playMusicSlot(scriptMusicSlot = arg0[1], arg0[2], arg0[3]);
+    vs_main_playMusicSlot(scriptMusicSlot = script[1], script[2], script[3]);
+
     return scriptNext;
 }
 
-int vs_battle_script_93_fadeMusicVolume(u_char* arg0, UNUSED short arg1)
+/**
+ * Fades the script music's volume.
+ * @param script Opcode bytes:
+ *   - [1] = target volume
+ *   - [2] = fade duration
+ */
+int vs_battle_script_93_fadeMusicVolume(u_char* script, UNUSED short arg1)
 {
-    vs_main_fadeMusicVolume(scriptMusicSlot, arg0[1], arg0[2]);
+    vs_main_fadeMusicVolume(scriptMusicSlot, script[1], script[2]);
+
     return scriptNext;
 }
 
-int vs_battle_script_94_fadeMusicTempo(u_char* arg0, UNUSED short arg1)
+/**
+ * Ramps the script music's tempo.
+ * @param script Opcode bytes:
+ *   - [1] = target tempo adjustment (signed), 0 leaves the tempo unchanged, negative is
+ *     slower and positive is faster
+ *   - [2] = ramp duration
+ */
+int vs_battle_script_94_rampMusicTempo(u_char* script, UNUSED short arg1)
 {
-    vs_main_fadeMusicTempo(scriptMusicSlot, (signed char)arg0[1], arg0[2]);
+    vs_main_rampMusicTempo(scriptMusicSlot, (signed char)script[1], script[2]);
+
     return scriptNext;
 }
 
-int vs_battle_script_95_fadeMusicPitch(u_char* arg0, UNUSED short arg1)
+/**
+ * Ramps the script music's pitch.
+ * @param script Opcode bytes:
+ *   - [1] = target pitch (signed)
+ *   - [2] = ramp duration
+ */
+int vs_battle_script_95_rampMusicPitch(u_char* script, UNUSED short arg1)
 {
-    vs_main_fadeMusicPitch(scriptMusicSlot, (signed char)arg0[1], arg0[2]);
+    vs_main_rampMusicPitch(scriptMusicSlot, (signed char)script[1], script[2]);
+
     return scriptNext;
 }
 
+/**
+ * Stops the script music.
+ */
 int vs_battle_script_96_stopMusic(UNUSED u_char* arg0, UNUSED short arg1)
 {
     vs_main_stopMusicSlot(scriptMusicSlot);
+
     return scriptNext;
 }
 
-int vs_battle_script_97_waitMusicSilent(u_char* arg0, UNUSED short arg1)
+/**
+ * Waits until the music in a slot has faded to silence.
+ * @param script Opcode bytes:
+ *   - [1] = slot, 1 to 4
+ */
+int vs_battle_script_97_waitMusicSilent(u_char* script, UNUSED short arg1)
 {
-    int temp_s0 = arg0[1];
-    if (vs_main_getMusicSlotVolume2(temp_s0) != 0) {
-        if (vs_main_getMusicSlotVolume(temp_s0) != 0) {
+    int slot = script[1];
+
+    if (vs_main_getMusicSlotVolume2(slot) != 0) {
+        if (vs_main_getMusicSlotVolume(slot) != 0) {
             return scriptRepeat;
         }
-        vs_main_stopMusicSlot(temp_s0);
+
+        vs_main_stopMusicSlot(slot);
     }
+
     return scriptNext;
 }
 
+/**
+ * Saves a copy of the playing music's state.
+ */
 int vs_battle_script_98_pushMusicState(UNUSED u_char* arg0, UNUSED short arg1)
 {
     vs_main_pushMusicState();
+
     return scriptNext;
 }
 
-int vs_battle_script_99_clearMusicLoadSlot(u_char* arg0, UNUSED short arg1)
+/**
+ * Waits until the music being loaded into a slot by opcode 90 is ready.
+ * @param script Opcode bytes:
+ *   - [1] = slot, 1 to 4
+ */
+int vs_battle_script_99_waitMusicLoad(u_char* script, UNUSED short arg1)
 {
-    return vs_main_clearMusicLoadSlot(arg0[1]) == 1 ? scriptRepeat : scriptNext;
+    return vs_main_finishMusicLoad(script[1]) == 1 ? scriptRepeat : scriptNext;
 }
 
-int vs_battle_script_9D_loadSoundFile2(u_char* arg0, UNUSED short arg1)
+/**
+ * Starts loading the instrument bank a music track plays with, unless it is already
+ * loaded. Opcode 9E waits for it to be ready.
+ * @param script Opcode bytes:
+ *   - [1] = music ID
+ */
+int vs_battle_script_9D_loadInstrumentBank(u_char* script, UNUSED short arg1)
 {
-    vs_main_loadSoundFile(arg0[1]);
+    vs_main_loadInstrumentBank(script[1]);
     return scriptNext;
 }
 
-int vs_battle_script_9E_processSoundQueue(UNUSED u_char* arg0, UNUSED short arg1)
+/** Waits until the instrument bank started by opcode 9D or 89 is loaded and ready. */
+int vs_battle_script_9E_waitInstrumentBankLoad(UNUSED u_char* arg0, UNUSED short arg1)
 {
-    return vs_main_processSoundQueue() == 1 ? scriptRepeat : scriptNext;
+    return vs_main_processInstrumentBankLoad() == 1 ? scriptRepeat : scriptNext;
 }
 
-int vs_battle_script_9A_waitMusicBar(u_char* arg0, UNUSED short arg1)
+/**
+ * Waits until the music has played up to a bar.
+ * @param script Opcode bytes:
+ *   - [1..2] = bar number
+ */
+int vs_battle_script_9A_waitMusicBar(u_char* script, UNUSED short arg1)
 {
-    int temp_s1 = vs_main_getMusicPosition() >> 0x10;
-    return temp_s1 < getShort(arg0 + 1) ? scriptRepeat : scriptNext;
+    int bar = vs_main_getMusicPosition() >> 0x10;
+
+    return bar < getShort(script + 1) ? scriptRepeat : scriptNext;
 }
 
-int vs_battle_script_9B_fadeSfxPitch(u_char* arg0, UNUSED short arg1)
+/**
+ * Ramps a sound effect's pitch. An ID of 0 ramps every sound in the group.
+ * @param script Opcode bytes:
+ *   - [1] = sound group, as in opcode 80
+ *   - [2] = sound ID
+ *   - [3] = target pitch (signed)
+ *   - [4] = ramp duration
+ */
+int vs_battle_script_9B_rampSfxPitch(u_char* script, UNUSED short arg1)
 {
-    vs_main_fadeSfxPitch(D_800E9B34[arg0[1]], arg0[2], (signed char)arg0[3], arg0[4]);
+    vs_main_rampSfxPitch(
+        scriptSfxGroups[script[1]], script[2], (signed char)script[3], script[4]);
+
     return scriptNext;
 }
 
-int vs_battle_script_9C_fadeSfxPan(u_char* arg0, UNUSED short arg1)
+/**
+ * Ramps a sound effect's pan. An ID of 0 ramps every sound in the group.
+ * @param script Opcode bytes:
+ *   - [1] = sound group, as in opcode 80
+ *   - [2] = sound ID
+ *   - [3] = target pan, 0x80 is centre
+ *   - [4] = ramp duration
+ */
+int vs_battle_script_9C_rampSfxPan(u_char* script, UNUSED short arg1)
 {
-    vs_main_fadeSfxPan(D_800E9B34[arg0[1]], arg0[2], arg0[3], arg0[4]);
+    vs_main_rampSfxPan(scriptSfxGroups[script[1]], script[2], script[3], script[4]);
+
     return scriptNext;
 }
 
-int vs_battle_script_9F_queueMusic(u_char* arg0, UNUSED short arg1)
+/**
+ * Queues the script music to start once the current music reaches its end.
+ * @param script Opcode bytes:
+ *   - [1] = slot, 1 to 4
+ */
+int vs_battle_script_9F_queueMusic(u_char* script, UNUSED short arg1)
 {
-    vs_main_queueMusicSlot(scriptMusicSlot = arg0[1]);
+    vs_main_queueMusicSlot(scriptMusicSlot = script[1]);
+
     return scriptNext;
 }
 
-int vs_battle_script_A0(u_char* arg0, UNUSED short arg1)
+/**
+ * Loads and starts a visual effect (EFFECT/E###.P: sprites, particles, camera and sound,
+ * as used for spell animations) targeting an actor. Its stages are started by opcode
+ * A1.
+ * @param script Opcode bytes:
+ *   - [1-2] = effect ID
+ *   - [3-4] = target actor
+ */
+int vs_battle_script_A0_startEffect(u_char* script, UNUSED short arg1)
 {
-    func_8007BE20(getShort(arg0 + 1), resolveActorId(getShort(arg0 + 3)));
+    startEffect(getShort(script + 1), resolveActorId(getShort(script + 3)));
+
     return scriptNext;
 }
 
-int vs_battle_script_A1(u_char* arg0, UNUSED short arg1)
+/**
+ * Starts one stage of the visual effect. When skipping, cancels the effect instead.
+ * @param script Opcode bytes:
+ *   - [1] = stage index
+ */
+int vs_battle_script_A1_triggerEffectStage(u_char* script, UNUSED short arg1)
 {
-    func_8007BEC4(arg0[1]);
+    triggerEffectStage(script[1]);
+
     if (scriptSkipMode == scriptSkipping) {
-        func_800CF1A8();
+        cancelEffects();
     }
+
     return scriptNext;
 }
 
-int vs_battle_script_A2(u_char* arg0, UNUSED short arg1)
+/**
+ * Waits until the visual effect system is in the given state. Scripts use it to wait for
+ * the effect to finish, or to be ready for its next stage. Skipping cancels the effect
+ * first.
+ * @param script Opcode bytes:
+ *   - [1] = state to wait for
+ */
+int vs_battle_script_A2_waitEffectState(u_char* script, UNUSED short arg1)
 {
-    if ((scriptSkipMode == scriptSkipping) && ((arg0[1] == 0) || (arg0[1] == 5))) {
-        if (D_800F4BB9 != 0) {
-            if (func_8007BEE4() == arg0[1]) {
-                D_800F4BB9 = 0;
+    if ((scriptSkipMode == scriptSkipping) && ((script[1] == 0) || (script[1] == 5))) {
+
+        if (effectCancelled != 0) {
+            if (getEffectState() == script[1]) {
+                effectCancelled = 0;
                 return scriptNext;
             }
         } else {
-            func_800CF1A8();
-            D_800F4BB9 = 1;
+            cancelEffects();
+            effectCancelled = 1;
         }
+
         return scriptRepeat;
     }
-    return func_8007BEE4() != arg0[1] ? scriptRepeat : scriptNext;
+
+    return getEffectState() != script[1] ? scriptRepeat : scriptNext;
 }
 
-int vs_battle_script_A3(UNUSED u_char* arg0, UNUSED short arg1)
+/**
+ * Yields for a frame while skipping, otherwise does nothing.
+ * @param script Opcode bytes: none
+ */
+int vs_battle_script_A3_yieldIfSkipping(UNUSED u_char* script, UNUSED short arg1)
 {
-    func_8007BF04();
+    effectNop();
+
     return (scriptSkipMode == scriptSkipping) ? scriptYield : scriptNext;
 }
 
-int vs_battle_script_A4(UNUSED u_char* arg0, UNUSED short arg1)
+/**
+ * Waits until the visual effect is loaded and has stages left to trigger.
+ * @param script Opcode bytes: none
+ */
+int vs_battle_script_A4_waitEffectStageReady(UNUSED u_char* script, UNUSED short arg1)
 {
-    return func_8007BF0C() != 1 ? scriptRepeat : scriptNext;
+    return isEffectStageReady() != 1 ? scriptRepeat : scriptNext;
 }
 
-int vs_battle_script_A5(UNUSED u_char* arg0, UNUSED short arg1)
+/**
+ * Cancels the running visual effect and waits until the effect system is idle or
+ * waiting for a stage to be triggered.
+ * @param script Opcode bytes: none
+ */
+int vs_battle_script_A5_cancelEffect(UNUSED u_char* script, UNUSED short arg1)
 {
-    if (D_800F4BB9 == 0) {
-        func_800CF1A8();
-        D_800F4BB9 = 1;
-    } else if ((func_8007BEE4() == 0) || (func_8007BEE4() == 5)) {
-        D_800F4BB9 = 0;
+    if (effectCancelled == 0) {
+        cancelEffects();
+        effectCancelled = 1;
+    } else if ((getEffectState() == 0) || (getEffectState() == 5)) {
+        effectCancelled = 0;
         return scriptNext;
     }
+
     return scriptRepeat;
 }
 
-int vs_battle_script_A6(u_char* arg0, UNUSED short arg1)
+/**
+ * Makes a stage that was already triggered available to trigger again.
+ * @param script Opcode bytes:
+ *   - [1] = stage index
+ */
+int vs_battle_script_A6_rearmEffectStage(u_char* script, UNUSED short arg1)
 {
-    func_800CEF38(arg0[1]);
+    rearmEffectStage(script[1]);
+
     return scriptNext;
 }
 
-int vs_battle_script_A8_setMusicJumpThreshold(u_char* arg0, UNUSED short arg1)
+/**
+ * Sets the cue the playing music should reach. The music does not jump at once, but
+ * takes its own route there at its next branch point.
+ * @param script Opcode bytes:
+ *   - [1] = cue
+ */
+int vs_battle_script_A8_setMusicTargetCue(u_char* script, UNUSED short arg1)
 {
-    vs_main_setMusicJumpThreshold(arg0[1]);
+    vs_main_setMusicTargetCue(script[1]);
+
     return scriptNext;
 }
 
-int vs_battle_script_A9(u_char* arg0, UNUSED short arg1)
+/**
+ * Starts a controller vibration pattern from the script's pattern table, or stops
+ * vibration. Adding 8 to the index copies the pattern before playing.
+ * @param script Opcode bytes:
+ *   - [1] = pattern index, or 0xFF to stop vibration
+ */
+int vs_battle_script_A9_playVibration(u_char* script, UNUSED short arg1)
 {
-    short a0 = arg0[1];
-    if (a0 == 0xFF) {
+    short pattern = script[1];
+
+    if (pattern == 0xFF) {
         vs_main_stopVibration(0, 2);
-    } else {
-        if (a0 & 8) {
-            vs_main_memcpy(D_800F4C48, D_800F4BC0[a0 & 7], 0x80);
-            vs_main_setVibrationBank(D_800F4C48 + 8, 0xFF, 2);
-        } else {
-            if (D_800F4BC0[a0] != 0) {
-                vs_main_setVibrationBank(D_800F4BC0[a0] + 8, 0xFF, 2);
-            }
-        }
+    } else if (pattern & 8) {
+        vs_main_memcpy(vibrationPatternCopy, vibrationPatterns[pattern & 7], 0x80);
+        vs_main_setVibrationBank(vibrationPatternCopy + 8, 0xFF, 2);
+    } else if (vibrationPatterns[pattern] != NULL) {
+        vs_main_setVibrationBank(vibrationPatterns[pattern] + 8, 0xFF, 2);
     }
+
     return scriptNext;
 }
 
-int vs_battle_script_AA(u_char* arg0, UNUSED short arg1)
+/**
+ * Starts or stops a motion trail following one of an actor's bones. Stopping fades out
+ * every active trail, not only the actor's.
+ * @param script Opcode bytes:
+ *   - [1] = 1 to start, 0 to stop
+ *   - [2-3] = actor
+ *   - [4] = bone
+ */
+int vs_battle_script_AA_setActorTrail(u_char* script, UNUSED short arg1)
 {
-    short temp_v0 = resolveActorId(getShort(arg0 + 2));
+    short actor = resolveActorId(getShort(script + 2));
 
-    if (arg0[1] != 0) {
-        func_8006C480(temp_v0, arg0[4]);
+    if (script[1] != 0) {
+        startActorTrail(actor, script[4]);
     } else {
-        func_8006C4A4(temp_v0, arg0[4]);
+        stopActorTrails(actor, script[4]);
     }
+
     return scriptNext;
 }
 
-int vs_battle_script_B1(u_char* arg0, UNUSED short arg1)
+/**
+ * Overrides which door the player entered the room through.
+ * @param script Opcode bytes:
+ *   - [1] = door index
+ */
+int vs_battle_script_B1_setEnteredDoor(u_char* script, UNUSED short arg1)
 {
-    setDoorEntered2(arg0[1]);
+    setEnteredDoor(script[1]);
+
     return scriptNext;
 }
 
-int vs_battle_script_B2(u_char* arg0, UNUSED short arg1)
+/**
+ * Stores the distance and angle between two actors in two consecutive state flags.
+ * @param script Opcode bytes:
+ *   - [1-2] = first actor
+ *   - [3-4] = second actor
+ *   - [5] = distance scale
+ *   - [6-7] = state flag id for the distance, the angle is placed in the following flag
+ */
+int vs_battle_script_B2_setFlagsToActorDistanceAndAngle(u_char* script, UNUSED short arg1)
 {
-    vs_ActorPosition sp10;
-    vs_ActorPosition sp20;
-    short temp_s3;
-    short temp_v0;
-    short temp_v0_2;
-    int temp_lo;
+    vs_ActorPosition first;
+    vs_ActorPosition second;
+    short dx;
+    short dz;
+    int distance;
 
-    temp_s3 = getShort(arg0 + 6);
-    vs_battle_getActorPosition(resolveActorId(getShort(arg0 + 1)), &sp10);
-    vs_battle_getActorPosition(resolveActorId(getShort(arg0 + 3)), &sp20);
-    temp_v0 = sp10.unk0.unk4.vx - sp20.unk0.unk4.vx;
-    temp_v0_2 = sp10.unk0.unk4.vz - sp20.unk0.unk4.vz;
-    temp_lo = vs_gte_rsqrt((temp_v0 * temp_v0) + (temp_v0_2 * temp_v0_2)) / arg0[5];
-    vs_battle_setStateFlag(temp_s3, temp_lo < 0x100 ? temp_lo & 0xFF : -1);
-    vs_battle_setStateFlag(temp_s3 + 1, (ratan2(temp_v0, temp_v0_2) >> 4) & 0xFF);
+    short flag = getShort(script + 6);
+    vs_battle_getActorPosition(resolveActorId(getShort(script + 1)), &first);
+    vs_battle_getActorPosition(resolveActorId(getShort(script + 3)), &second);
+
+    dx = first.unk0.unk4.vx - second.unk0.unk4.vx;
+    dz = first.unk0.unk4.vz - second.unk0.unk4.vz;
+    distance = SquareRoot0((dx * dx) + (dz * dz)) / script[5];
+
+    vs_battle_setStateFlag(flag, distance < ONE / 16 ? distance : -1);
+    vs_battle_setStateFlag(flag + 1, ratan2(dx, dz) >> 4);
+
     return scriptNext;
 }
 
-int vs_battle_script_B3(u_char* arg0, UNUSED short arg1)
+/**
+ * Wakes the selected actors, or puts them into the dormant state.
+ * @param script Opcode bytes:
+ *   - [1-2] = actor selector
+ *   - [3] = 0 = dormant, nonzero = awake
+ */
+int vs_battle_script_B3_setActorAwake(u_char* script, UNUSED short arg1)
 {
-    ActorList sp10;
+    ActorList actors;
 
-    expandActorSelector(getShort(arg0 + 1), &sp10);
+    expandActorSelector(getShort(script + 1), &actors);
+
     while (1) {
-        int temp_a0 = nextActor(&sp10);
-        if (temp_a0 == 1) {
+        int actor = nextActor(&actors);
+
+        if (actor == 1) {
             break;
         }
-        setActorAwake(temp_a0, arg0[3]);
+
+        setActorAwake(actor, script[3]);
     }
+
     return scriptNext;
 }
 
-int vs_battle_script_B4(u_char* arg0, UNUSED short arg1)
+/**
+ * Shows the loot screen with up to two consumable or key items and waits for it to
+ * close. An item id of 0 leaves that item out. No script uses this opcode.
+ * @param script Opcode bytes:
+ *   - [1-2] = first item id
+ *   - [3] = first item count
+ *   - [4-5] = second item id
+ *   - [6] = second item count
+ */
+int vs_battle_script_B4_showMiscLoot(u_char* script, UNUSED short arg1)
 {
     if (scriptMenuState == scriptMenuClosed) {
-        func_8007BA98(getShort(arg0 + 1), arg0[3], getShort(arg0 + 4), arg0[6]);
+        showMiscLoot(getShort(script + 1), script[3], getShort(script + 4), script[6]);
         scriptMenuState = scriptMenuOpen;
+
         return scriptRepeat;
     }
 
-    if (func_8007B9FC() == 0) {
+    if (updateScriptMenu() == 0) {
         scriptMenuState = scriptMenuClosed;
+
         return scriptYield;
     }
+
     return scriptRepeat;
 }
 
-int vs_battle_script_B5(u_char* arg0, UNUSED short arg1)
+/**
+ * Removes one of a misc item from the inventory.
+ * @param script Opcode bytes:
+ *   - [1-2] = item id
+ */
+int vs_battle_script_B5_removeMiscItem(u_char* script, UNUSED short arg1)
 {
-    decreaseMiscCount(getShort(arg0 + 1));
+    removeMiscItem(getShort(script + 1));
+
     return scriptNext;
 }
 
-int vs_battle_script_B6(u_char* arg0, UNUSED short arg1)
+/**
+ * Stores the distance between two actors, in whole tiles, in a state flag.
+ * @param script Opcode bytes:
+ *   - [1-2] = first actor
+ *   - [3-4] = second actor
+ *   - [5-6] = state flag id
+ */
+int vs_battle_script_B6_setFlagToActorDistance(u_char* script, UNUSED short arg1)
 {
-    vs_ActorPosition sp10;
-    vs_ActorPosition sp20;
-    short temp_s0;
-    int temp_s0_2;
-    short temp_s1;
-    int var_v0;
+    vs_ActorPosition first;
+    vs_ActorPosition second;
+    short dx;
+    short dz;
 
-    vs_battle_getActorPosition(resolveActorId(getShort(arg0 + 1)), &sp10);
-    vs_battle_getActorPosition(resolveActorId(getShort(arg0 + 3)), &sp20);
-    temp_s0 = sp10.unk0.unk4.vx - sp20.unk0.unk4.vx;
-    temp_s1 = sp10.unk0.unk4.vz - sp20.unk0.unk4.vz;
-    temp_s0_2 = getShort(arg0 + 5);
-    var_v0 = vs_gte_rsqrt((temp_s0 * temp_s0) + (temp_s1 * temp_s1));
-    if (var_v0 < 0) {
-        var_v0 += 0x7F;
-    }
-    vs_battle_setStateFlag(temp_s0_2, (var_v0 >> 7) & 0xFF);
+    vs_battle_getActorPosition(resolveActorId(getShort(script + 1)), &first);
+    vs_battle_getActorPosition(resolveActorId(getShort(script + 3)), &second);
+
+    dx = first.unk0.unk4.vx - second.unk0.unk4.vx;
+    dz = first.unk0.unk4.vz - second.unk0.unk4.vz;
+
+    vs_battle_setStateFlag(
+        getShort(script + 5), SquareRoot0((dx * dx) + (dz * dz)) / 128);
+
     return scriptNext;
 }
 
@@ -3394,7 +3785,7 @@ int vs_battle_script_B7_specialOp(u_char* arg0, UNUSED short arg1)
         break;
     case 1:
         if (scriptMenuState != scriptMenuClosed) {
-            if (func_8007B9FC() != 0) {
+            if (updateScriptMenu() != 0) {
                 return scriptRepeat;
             }
             vs_battle_setStateFlag(menuFSubmenu, 0);
@@ -3731,16 +4122,19 @@ void func_800BB9B0(void)
 
 void func_800BBAFC(void)
 {
-    if (D_800F4B88.unk3 != 0) {
-        short temp_lo = ((++D_800F4B88.unk2 << 0xC) / D_800F4B88.unk3);
-        D_800F4B88.unk4 =
-            (D_800F4B88.unk6 + ((D_800F4B88.unk8 * temp_lo) >> 0xC)) & 0xFFF;
-        D_800F4B88.unkA = D_800F4B88.unkC + ((D_800F4B88.unkE * temp_lo) >> 0xC);
-        D_800F4B88.unk10 = (D_800F4B88.unk12 + ((D_800F4B88.unk14 * temp_lo) >> 0xC));
-        func_8009134C(D_800F4B88.unk4, D_800F4B88.unkA);
-        func_80091320(D_800F4B88.unk10);
-        if (D_800F4B88.unk2 == D_800F4B88.unk3) {
-            D_800F4B88.unk3 = 0;
+    if (particleTween.duration != 0) {
+        short temp_lo = ((++particleTween.elapsed << 0xC) / particleTween.duration);
+        particleTween.direction = (particleTween.startDirection
+                                      + ((particleTween.deltaDirection * temp_lo) >> 0xC))
+                                & 0xFFF;
+        particleTween.fallAngle = particleTween.startFallAngle
+                                + ((particleTween.deltaFallAngle * temp_lo) >> 0xC);
+        particleTween.intensity = (particleTween.startIntensity
+                                   + ((particleTween.deltaIntensity * temp_lo) >> 0xC));
+        setParticleEffectDirection(particleTween.direction, particleTween.fallAngle);
+        setParticleEffectIntensity(particleTween.intensity);
+        if (particleTween.elapsed == particleTween.duration) {
+            particleTween.duration = 0;
         }
     }
 }
@@ -4878,7 +5272,7 @@ static int vectorMagnitude(VECTOR* arg0)
     sp10.vx = sp10.vx >> 0xC;
     sp10.vy = sp10.vy >> 0xC;
     sp10.vz = sp10.vz >> 0xC;
-    return vs_gte_rsqrt(temp_lo + temp_lo_2 + temp_v0) * ONE;
+    return SquareRoot0(temp_lo + temp_lo_2 + temp_v0) * ONE;
 }
 
 VECTOR* setVectorImm(VECTOR* arg0, u_char* arg1)
@@ -4921,7 +5315,7 @@ void vecToRotMatrix(VECTOR* arg0, MATRIX* arg1)
     sp18.vy = arg0->vy >> 0xC;
     sp18.vz = arg0->vz >> 0xC;
     sp10.vy = ratan2(sp18.vx, sp18.vz);
-    sp10.vx = ratan2(sp18.vy, vs_gte_rsqrt((sp18.vx * sp18.vx) + (sp18.vz * sp18.vz)));
+    sp10.vx = ratan2(sp18.vy, SquareRoot0((sp18.vx * sp18.vx) + (sp18.vz * sp18.vz)));
     sp10.vz = 0;
     RotMatrix_gte(&sp10, arg1);
 }
@@ -5388,7 +5782,8 @@ void parseEvt(u_char* data)
     table = data + *(u_short*)(data + 6);
 
     for (i = 0; i < 8; ++i) {
-        D_800F4BC0[i] = ((u_short*)table)[i] ? (char*)table + ((u_short*)table)[i] : 0;
+        vibrationPatterns[i] =
+            ((u_short*)table)[i] ? (char*)table + ((u_short*)table)[i] : 0;
     }
 
     D_800F4C38[0] = data + 16;
@@ -5399,7 +5794,7 @@ void parseEvt(u_char* data)
     vs_battle_setStateFlag(168, 0);
 
     scriptWaitFrames[1] = scriptWaitFrames[2] = scriptWaitFrames[3] = 0;
-    D_800F4BB9 = 0;
+    effectCancelled = 0;
     weaponAnimating = 0;
     textBoxSelectionPending = 0;
     D_800F4BE4 = 0;

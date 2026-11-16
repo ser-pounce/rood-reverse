@@ -339,9 +339,9 @@ static void VS_TRAIL_CONTROL_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_ar
         setVector(&arg1->unk34, points[3].vx - points[0].vx, points[3].vy - points[0].vy,
             points[3].vz - points[0].vz);
 
-        length = vs_gte_rsqrt((arg1->unk34.vx * arg1->unk34.vx)
-                              + (arg1->unk34.vy * arg1->unk34.vy)
-                              + (arg1->unk34.vz * arg1->unk34.vz));
+        length = SquareRoot0((arg1->unk34.vx * arg1->unk34.vx)
+                             + (arg1->unk34.vy * arg1->unk34.vy)
+                             + (arg1->unk34.vz * arg1->unk34.vz));
 
         vs_battle_lerp2DVector(arg0->unk94[0],
             vs_battle_sampleCurve(arg0->unk12, arg3->curveSampleDistance), arg1->unk124);

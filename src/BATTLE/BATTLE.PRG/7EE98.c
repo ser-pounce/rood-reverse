@@ -113,7 +113,7 @@ void func_800E7960(func_800E78F4_t* arg0)
     }
 
     arg0->unk58->unk5B0_4 = 0;
-    radius = vs_gte_rsqrt(motion->unk4);
+    radius = SquareRoot0(motion->unk4);
 
     if (radius < 1024) {
         radius += 32;

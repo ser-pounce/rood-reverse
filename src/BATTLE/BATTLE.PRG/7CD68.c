@@ -144,7 +144,7 @@ void func_800E5710(func_800E78F4_t* arg0)
             int mask = 1 << action->unk2_4;
 
             entry->unk4 = func_800E5698((func_800E5698_t*)arg0, id);
-            entry->unk0_8 = func_800E5600(arg0, id, vs_gte_rsqrt(entry->unk4));
+            entry->unk0_8 = func_800E5600(arg0, id, SquareRoot0(entry->unk4));
             entry->unk0_5 = entry->unk4 > 0x51000 && !action->flagsE.unk13;
 
             if (mask & 0x4198) {
@@ -428,7 +428,7 @@ int func_800E6178(Actor* actor, short arg1)
     func_800E7370(state);
 
     if (state->unkAC < (state->unkB4 - 64) * (state->unkB4 - 64)) {
-        state->unkB4 = vs_gte_rsqrt(state->unkAC) - 64;
+        state->unkB4 = SquareRoot0(state->unkAC) - 64;
     }
 
     state->unkBC = -256;

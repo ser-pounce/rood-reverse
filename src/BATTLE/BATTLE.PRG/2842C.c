@@ -249,7 +249,7 @@ extern SVECTOR D_800F2280;
 static char const D_80068EB4[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x20, 0x40, 0x5E,
     0x67, 0x6E, 0x74, 0x79, 0x7C, 0x7E, 0x7F };
 
-void func_80090C2C(int arg0)
+void setParticleEffect(int arg0)
 {
     MpdRoomSectionB* room = vs_battle_roomData.sectionB;
 
@@ -296,19 +296,19 @@ void func_80090C2C(int arg0)
             break;
         }
 
-        if (D_800F1DBC != -1) {
-            if ((D_800F1DBC >= 0) && (D_800F1DBC != sound)) {
-                vs_main_evictSfx(0x200, D_800F1DBC);
+        if (particleEffectSound != -1) {
+            if ((particleEffectSound >= 0) && (particleEffectSound != sound)) {
+                vs_main_stopSfx(0x200, particleEffectSound);
             }
             if (sound >= 0) {
                 vs_main_playSfxDefault(0x200, sound);
             }
 
-            D_800F1DBC = sound;
+            particleEffectSound = sound;
         }
-    } else if (D_800F1DBC >= 0) {
-        vs_main_evictSfx(0x200, D_800F1DBC);
-        D_800F1DBC = -2;
+    } else if (particleEffectSound >= 0) {
+        vs_main_stopSfx(0x200, particleEffectSound);
+        particleEffectSound = -2;
     }
 }
 
@@ -321,7 +321,7 @@ void func_80090EEC(void)
         return;
     }
 
-    if ((D_800F1BA4 == 0) && (D_800F1DCB != 0)) {
+    if ((D_800F1BA4 == 0) && (particleEffectDrift != 0)) {
         int changed = 0;
 
         if ((D_800F1CDC & masks[room->unk3A]) == 0) {
@@ -399,28 +399,28 @@ void func_8009121C(void)
     short scale;
 
     D_800F1DC0 = clamp(D_800F1DC4 * 8, 4, D_800F1DC2);
-    if (D_800F1DBC >= 0) {
+    if (particleEffectSound >= 0) {
         if (D_80068EB4[D_800F1DC4] != 0) {
-            vs_main_playSfxDefault(0x200, D_800F1DBC);
-            vs_main_fadeSfxVolume(0x200, D_800F1DBC, D_80068EB4[D_800F1DC4], 8);
+            vs_main_playSfxDefault(0x200, particleEffectSound);
+            vs_main_fadeSfxVolume(0x200, particleEffectSound, D_80068EB4[D_800F1DC4], 8);
         } else {
-            vs_main_evictSfx(0x200, D_800F1DBC);
+            vs_main_stopSfx(0x200, particleEffectSound);
         }
     }
     scale = clamp((D_800F1DC4 * 4) + (D_800F1DC4 * 2), 12, 90);
     D_800F1DA4 = scale + (scale >> 1) + (scale >> 2);
 }
 
-void func_80091314(int arg0) { D_800F1DCB = arg0; }
+void setParticleEffectDrift(int enabled) { particleEffectDrift = enabled; }
 
-void func_80091320(int arg0)
+void setParticleEffectIntensity(int arg0)
 {
     D_800F1DC4 = arg0;
     func_8009121C();
     func_80090B28();
 }
 
-void func_8009134C(int arg0, int arg1)
+void setParticleEffectDirection(int arg0, int arg1)
 {
     D_800F1D98[5] = arg0;
     D_800F1D98[4] = arg1;
@@ -437,28 +437,28 @@ void func_80091378(void)
     D_800F1DD4 = NULL;
 }
 
-int func_800913BC(int arg0)
+int setParticleEffectSound(int arg0)
 {
     int temp_s3;
 
-    temp_s3 = D_800F1DBC;
-    D_800F1DBC = arg0;
+    temp_s3 = particleEffectSound;
+    particleEffectSound = arg0;
 
     if (arg0 >= 0) {
         if (D_80068EB4[D_800F1DC4] != 0) {
             vs_main_playSfxDefault(0x200, (short)arg0);
-            vs_main_fadeSfxVolume(0x200, D_800F1DBC, D_80068EB4[D_800F1DC4], 8);
+            vs_main_fadeSfxVolume(0x200, particleEffectSound, D_80068EB4[D_800F1DC4], 8);
         } else {
-            vs_main_evictSfx(0x200, (short)arg0);
+            vs_main_stopSfx(0x200, (short)arg0);
         }
     }
     return temp_s3;
 }
 
-void func_80091468(int arg0, int arg1)
+void setBackgroundOffset(int arg0, int arg1)
 {
-    D_800F1DB4 = arg0;
-    D_800F1DB6 = arg1;
+    backgroundOffsetX = arg0;
+    backgroundOffsetY = arg1;
 }
 
 void func_8009147C(BackgroundLayout* arg0, int arg1, int arg2, int arg3)
@@ -524,11 +524,12 @@ void func_8009147C(BackgroundLayout* arg0, int arg1, int arg2, int arg3)
 
 void func_800918E8(int arg0)
 {
-    if (D_800F1DBC >= 0) {
+    if (particleEffectSound >= 0) {
         if (arg0 != 0) {
-            vs_main_fadeSfxVolume(0x200, D_800F1DBC, D_80068EB4[D_800F1DC4] >> 2, 8);
+            vs_main_fadeSfxVolume(
+                0x200, particleEffectSound, D_80068EB4[D_800F1DC4] >> 2, 8);
         } else {
-            vs_main_fadeSfxVolume(0x200, D_800F1DBC, D_80068EB4[D_800F1DC4], 8);
+            vs_main_fadeSfxVolume(0x200, particleEffectSound, D_80068EB4[D_800F1DC4], 8);
         }
     }
 }
@@ -579,13 +580,16 @@ int swapGeometryFlags(int arg0, int arg1)
     return 0;
 }
 
-int func_80091A78(int arg0, int arg1)
+int adjustGeometryObjectDepth(int index, int amount)
 {
-    u_short* temp_v0 = func_8009195C(arg0);
-    if (temp_v0 != NULL) {
-        temp_v0[1] = (u_short)(temp_v0[1] + arg1);
+    u_short* object = func_8009195C(index);
+
+    if (object != NULL) {
+        object[1] += amount;
+
         return 1;
     }
+
     return 0;
 }
 
@@ -973,7 +977,7 @@ void func_800927AC(D_800F1DD8_t* arg0)
 
 void func_80092914(void) { }
 
-int func_8009291C(int arg0)
+int startRoomTask(int arg0)
 {
     if (arg0 < D_800F225A) {
         D_800F1DD8[arg0].unk0 = 1;
@@ -1277,7 +1281,7 @@ int func_800935B8(func_80092F74_t* arg0, func_80092F74_t2* arg1)
 
 int func_800935F8(UNUSED func_80092F74_t* arg0, func_80092F74_t2* arg1)
 {
-    func_8009291C(arg1->unk4[0].s32);
+    startRoomTask(arg1->unk4[0].s32);
     return 0;
 }
 
@@ -1303,7 +1307,7 @@ int func_800936F0(UNUSED func_80092F74_t* arg0, UNUSED func_80092F74_t2* arg1)
     return 0;
 }
 
-int func_800936F8(int arg0)
+int toggleRoomTaskPaused(int arg0)
 {
     if (arg0 < D_800F225A) {
         D_800F1DD8[arg0].unk2 = D_800F1DD8[arg0].unk2 < 1U;
@@ -1316,9 +1320,9 @@ int func_800936F8(int arg0)
     return 0;
 }
 
-int func_80093764(int arg0) { return D_800F1DD8[arg0].unk0; }
+int isRoomTaskRunning(int arg0) { return D_800F1DD8[arg0].unk0; }
 
-void func_80093788(int arg0)
+void finishRoomTask(int arg0)
 {
     D_800F1DD8_t2* temp_a2;
     int temp_a1;

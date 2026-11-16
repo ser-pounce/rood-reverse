@@ -18,11 +18,11 @@ VS_HIDDEN(func_8006CA20);
 void func_8006CB04(int, SVECTOR*);
 VS_HIDDEN(func_8006CB04);
 
-void func_8006C480(int, int);
-VS_HIDDEN(func_8006C480);
+void startActorTrail(int, int);
+VS_HIDDEN(startActorTrail);
 
-void func_8006C4A4(int, int);
-VS_HIDDEN(func_8006C4A4);
+void stopActorTrails(int, int);
+VS_HIDDEN(stopActorTrails);
 
 int func_8006C84C(int);
 VS_HIDDEN(func_8006C84C);
@@ -63,11 +63,11 @@ VS_HIDDEN(func_8007B9A0);
 void func_8007B9CC(void);
 VS_HIDDEN(func_8007B9CC);
 
-int func_8007B9FC(void);
-VS_HIDDEN(func_8007B9FC);
+int updateScriptMenu(void);
+VS_HIDDEN(updateScriptMenu);
 
-void func_8007BA98(int, int, int, int);
-VS_HIDDEN(func_8007BA98);
+void showMiscLoot(int, int, int, int);
+VS_HIDDEN(showMiscLoot);
 
 void vs_battle_forgetZoneEnemies(int, int);
 VS_HIDDEN(vs_battle_forgetZoneEnemies);
@@ -97,26 +97,26 @@ VS_HIDDEN(stopBattleTimer);
 void func_8007BD3C(int);
 VS_HIDDEN(func_8007BD3C);
 
-int func_8007BDD8(int);
-VS_HIDDEN(func_8007BDD8);
+int cullOccludingGeometry(int);
+VS_HIDDEN(cullOccludingGeometry);
 
 int func_8007BE10(int);
 VS_HIDDEN(func_8007BE10);
 
-void func_8007BE20(int, int);
-VS_HIDDEN(func_8007BE20);
+void startEffect(int, int);
+VS_HIDDEN(startEffect);
 
-void func_8007BEC4(int);
-VS_HIDDEN(func_8007BEC4);
+void triggerEffectStage(int);
+VS_HIDDEN(triggerEffectStage);
 
-int func_8007BEE4(void);
-VS_HIDDEN(func_8007BEE4);
+int getEffectState(void);
+VS_HIDDEN(getEffectState);
 
-void func_8007BF04(void);
-VS_HIDDEN(func_8007BF04);
+void effectNop(void);
+VS_HIDDEN(effectNop);
 
-int func_8007BF0C(void);
-VS_HIDDEN(func_8007BF0C);
+int isEffectStageReady(void);
+VS_HIDDEN(isEffectStageReady);
 
 void showCurrentRoom(void);
 VS_HIDDEN(showCurrentRoom);
@@ -183,8 +183,8 @@ VS_HIDDEN(warpToMapThroughDoor);
 void warpToZoneThroughDoor(vs_Warp*, int, int);
 VS_HIDDEN(warpToZoneThroughDoor);
 
-void func_8007C8A4(int, int);
-VS_HIDDEN(func_8007C8A4);
+void playActorSfx(int, int);
+VS_HIDDEN(playActorSfx);
 
 int spawnModelActor(u_int slot, int modelId, vs_TilePosition* tile);
 VS_HIDDEN(spawnModelActor);
@@ -283,8 +283,8 @@ VS_HIDDEN(func_80089104);
 int setTileBlocked(int, int, int, int);
 VS_HIDDEN(setTileBlocked);
 
-void setDoorEntered2(int arg0);
-VS_HIDDEN(setDoorEntered2);
+void setEnteredDoor(int door);
+VS_HIDDEN(setEnteredDoor);
 
 void func_8008C40C(void);
 VS_HIDDEN(func_8008C40C);
@@ -319,26 +319,26 @@ VS_HIDDEN(setCloudstoneMoving);
 int func_8008E320(int arg0);
 VS_HIDDEN(func_8008E320);
 
-int func_8008E470(void);
-VS_HIDDEN(func_8008E470);
+int roomHasNoSoundBank(void);
+VS_HIDDEN(roomHasNoSoundBank);
 
-void func_8008EAE4(int, int);
-VS_HIDDEN(func_8008EAE4);
+void setBackgroundParallax(int, int);
+VS_HIDDEN(setBackgroundParallax);
 
-void func_8008EAF8(int);
-VS_HIDDEN(func_8008EAF8);
+void setBackgroundVisible(int);
+VS_HIDDEN(setBackgroundVisible);
 
 void func_8008EB04(int* arg0, int* arg1);
 VS_HIDDEN(func_8008EB04);
 
-int func_8008EFCC(int);
-VS_HIDDEN(func_8008EFCC);
+int loadBackground(int);
+VS_HIDDEN(loadBackground);
 
-int func_8008F0FC(void);
-VS_HIDDEN(func_8008F0FC);
+int pollBackgroundLoad(void);
+VS_HIDDEN(pollBackgroundLoad);
 
-int func_8008F234(void);
-VS_HIDDEN(func_8008F234);
+int unloadBackground(void);
+VS_HIDDEN(unloadBackground);
 
 int getCollisionMapDimensions(UNUSED int arg0);
 VS_HIDDEN(getCollisionMapDimensions);
@@ -379,14 +379,14 @@ VS_HIDDEN(D_800F1CDC);
 extern short D_800F1D98[];
 VS_HIDDEN(D_800F1D98);
 
-extern short D_800F1DB4;
-VS_HIDDEN(D_800F1DB4);
+extern short backgroundOffsetX;
+VS_HIDDEN(backgroundOffsetX);
 
-extern short D_800F1DB6;
-VS_HIDDEN(D_800F1DB6);
+extern short backgroundOffsetY;
+VS_HIDDEN(backgroundOffsetY);
 
-extern short D_800F1DBC;
-VS_HIDDEN(D_800F1DBC);
+extern short particleEffectSound;
+VS_HIDDEN(particleEffectSound);
 
 extern short D_800F1DC0;
 VS_HIDDEN(D_800F1DC0);
@@ -400,8 +400,8 @@ VS_HIDDEN(D_800F1DC4);
 extern char D_800F1DCA;
 VS_HIDDEN(D_800F1DCA);
 
-extern char D_800F1DCB;
-VS_HIDDEN(D_800F1DCB);
+extern char particleEffectDrift;
+VS_HIDDEN(particleEffectDrift);
 
 extern D_800F1DD4_t* D_800F1DD4;
 VS_HIDDEN(D_800F1DD4);

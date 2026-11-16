@@ -463,7 +463,7 @@ static void Sound_SetMutedMusicChannelMask(int arg0)
     Sound_ExecuteSoundVm2Function(0x90);
 }
 
-void Sound_SetMusicJumpThreshold(int arg0)
+void Sound_SetMusicTargetCue(int arg0)
 {
     g_Sound_Vm2Params.unk0.value = arg0;
     Sound_ExecuteSoundVm2Function(0x92);
@@ -2669,7 +2669,7 @@ static void Sound_LoadAkaoSequence(FAkaoSequence* in_Sequence)
     g_pActiveMusicContext->NoiseChannelFlags = 0;
     g_pActiveMusicContext->ReverbChannelFlags = 0;
     g_pActiveMusicContext->FmChannelFlags = 0;
-    g_pActiveMusicContext->JumpThreshold = 0;
+    g_pActiveMusicContext->TargetCue = 0;
     g_pActiveMusicContext->ActiveNoteMask = 0;
     g_pActiveMusicContext->PendingKeyOnMask = 0;
     g_Sound_GlobalFlags.UpdateFlags |= 0x100;
@@ -3844,9 +3844,9 @@ void Sound_Cmd_90_SetMutedMusicChannelMask(FSoundCommandParams* arg0)
     }
 }
 
-void Sound_Cmd_92_SetMusicJumpThreshold(FSoundCommandParams* arg0)
+void Sound_Cmd_92_SetMusicTargetCue(FSoundCommandParams* arg0)
 {
-    g_pActiveMusicContext->JumpThreshold = arg0->Param1;
+    g_pActiveMusicContext->TargetCue = arg0->Param1;
 }
 
 void Sound_Cmd_9B_SuspendMusic(UNUSED FSoundCommandParams* arg0)
@@ -4709,7 +4709,7 @@ static char Sound_PeekNextOpcode(FSoundChannel* channel)
                 break;
             case 0x07:
                 pc++;
-                if (*pc++ <= config->JumpThreshold) {
+                if (*pc++ <= config->TargetCue) {
                     jumpOffset = pc[0];
                     jumpOffset += pc[1] << 8;
                     pc += (short)jumpOffset;
@@ -5303,15 +5303,15 @@ void SoundVM_FE06_JumpRelativeOffset(
     in_pChannel->ProgramCounter += Offset;
 }
 
-void SoundVM_FE07_JumpRelativeWithThreshold(
+void SoundVM_FE07_JumpRelativeIfTargetCue(
     FSoundChannel* in_pChannel, UNUSED u_int in_VoiceFlags)
 {
-    short Threshold;
+    short GateCue;
     short Offset;
 
-    Threshold = *in_pChannel->ProgramCounter++;
+    GateCue = *in_pChannel->ProgramCounter++;
 
-    if (g_pActiveMusicContext->JumpThreshold >= Threshold) {
+    if (g_pActiveMusicContext->TargetCue >= GateCue) {
         // Read signed 16-bit LE offset at current pc, jump relative to pc
         Offset = READ_16LE_PC(in_pChannel->ProgramCounter);
         in_pChannel->ProgramCounter += Offset;

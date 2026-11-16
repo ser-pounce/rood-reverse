@@ -540,7 +540,7 @@ int func_800C4794(SVECTOR* arg0)
 
         offset.vx += (-stickX * rcos(angle) - stickY * rsin(angle) + ONE / 8) >> 10;
         offset.vz += (-stickX * rsin(angle) + stickY * rcos(angle) + ONE / 8) >> 10;
-        scale = vs_gte_rsqrt(offset.vx * offset.vx + offset.vz * offset.vz);
+        scale = SquareRoot0(offset.vx * offset.vx + offset.vz * offset.vz);
 
         if (scale > ONE) {
             stickX = offset.vx - oldX;
@@ -4017,7 +4017,11 @@ void func_800CCA90(int arg0)
                             : vs_scratch.unk8 + 0x18 - arg0 * 8);
 }
 
-int decreaseMiscCount(int miscId)
+/**
+ * Removes one of a misc item from the inventory.
+ * @return 1 if the item was found, 0 if not.
+ */
+int removeMiscItem(int miscId)
 {
     int i;
 
@@ -4953,7 +4957,7 @@ int func_800CEF0C(void)
     return var_v1;
 }
 
-void func_800CEF38(int arg0)
+void rearmEffectStage(int arg0)
 {
     D_800F5228 -= 1;
     D_800F521C |= 1 << arg0;
@@ -5024,7 +5028,7 @@ int func_800CF0E8(ActionEffectRequest* arg0, int arg1, int arg2)
     return D_800F5318;
 }
 
-void func_800CF1A8(void)
+void cancelEffects(void)
 {
     D_800F53B8_t* var_s0 = D_800F53B8;
 
@@ -5228,7 +5232,7 @@ void func_800CF70C(D_800F53B8_t* arg0, func_800D4910_t* arg1)
     vs_main_freeHeapR(arg1);
 }
 
-void func_800CF7A8(int arg0, int arg1, int arg2, int arg3)
+void startTrailEffect(int actor, int bone, int color, int texture)
 {
     ActionEffectRequest request;
 
@@ -5239,11 +5243,12 @@ void func_800CF7A8(int arg0, int arg1, int arg2, int arg3)
     setVector(&request.source.value.position, 0, 0, 0);
     setVector(&request.targets[0].value.position, 0, 0, 0);
     request.otherCount = 0;
-    func_800CF3F8(&request, (arg0 & 0xFF) | ((arg1 & 0xFF) << 8) | ((arg2 & 0xF) << 0x10)
-                                | ((arg3 & 0xF) << 0x14) | 0xFF000000);
+    func_800CF3F8(&request, (actor & 0xFF) | ((bone & 0xFF) << 8)
+                                | ((color & 0xF) << 0x10) | ((texture & 0xF) << 0x14)
+                                | 0xFF000000);
 }
 
-void func_800CF830(int arg0, int arg1)
+void fadeOutTrails(UNUSED int actor, UNUSED int bone)
 {
     D_800F53B8_t* var_s1 = D_800F54B0;
 
@@ -5684,7 +5689,7 @@ void func_800D05F4(func_800D0B30_t* arg0, func_800D0548_arg1* arg1)
 
     setVector(&delta, end.vx - start.vx, end.vy - start.vy, end.vz - start.vz);
     distance =
-        vs_gte_rsqrt(delta.vx * delta.vx + delta.vy * delta.vy + delta.vz * delta.vz);
+        SquareRoot0(delta.vx * delta.vx + delta.vy * delta.vy + delta.vz * delta.vz);
     control0.vz = distance * (((arg0->shape12 >> 8) & 15) - 8) / 8;
     control1.vz = distance + distance * ((arg0->shape12 >> 12) - 8) / 8;
     radius1 = arg0->radius * 32;
@@ -5737,7 +5742,7 @@ void func_800D0984(D_800F53B8_t* arg0, func_800D0548_arg1* arg1, int arg2)
     if (arg2) {
         setVector(&delta, end.vx - start.vx, end.vy - start.vy, end.vz - start.vz);
         distance =
-            vs_gte_rsqrt(delta.vx * delta.vx + delta.vy * delta.vy + delta.vz * delta.vz);
+            SquareRoot0(delta.vx * delta.vx + delta.vy * delta.vy + delta.vz * delta.vz);
         offset.vx = offset.vy = 0;
         offset.vz = distance - 0x600;
         SetRotMatrix(&arg1->attachment);
@@ -6107,7 +6112,7 @@ void func_800D1B80(D_800F54D8_t* camera)
     offset.vx = rcos(yaw) * (camera->unk20 >> 12);
     offset.vz = -rsin(yaw) * (camera->unk20 >> 12);
     pitch = ratan2(
-        (camera->position.vy - camera->lookAt.vy) >> 12, vs_gte_rsqrt(dx * dx + dz * dz));
+        (camera->position.vy - camera->lookAt.vy) >> 12, SquareRoot0(dx * dx + dz * dz));
     offset.vy = -rsin(pitch) * (camera->unk28 >> 12);
     horizontal = -rcos(pitch) * (camera->unk28 >> 12);
     offset.vy += rcos(pitch) * (camera->unk24 >> 12);
@@ -7235,11 +7240,12 @@ void func_800D6418(D_800F53B8_t* arg0)
 void func_800D6448(D_800F53B8_t* arg0, u_char arg1, u_char arg2)
 {
     func_800D78B8();
-    func_800CF7A8(arg0->unk1C[arg1].actor, arg0->unk1C[arg1].bone, arg2 % 10, arg2 / 10);
+    startTrailEffect(
+        arg0->unk1C[arg1].actor, arg0->unk1C[arg1].bone, arg2 % 10, arg2 / 10);
     func_800D78CC();
 }
 
-void func_800D64E4(void) { func_800CF830(0, 0); }
+void func_800D64E4(void) { fadeOutTrails(0, 0); }
 
 void func_800D6508(func_800D6508_t* arg0, char arg1)
 {

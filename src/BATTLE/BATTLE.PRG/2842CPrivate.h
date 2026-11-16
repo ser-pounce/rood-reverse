@@ -5,29 +5,29 @@
 short clamp(short arg0, int arg1, int arg2);
 VS_HIDDEN(clamp);
 
-void func_80090C2C(int arg0);
-VS_HIDDEN(func_80090C2C);
+void setParticleEffect(int arg0);
+VS_HIDDEN(setParticleEffect);
 
 void func_80090EEC(void);
 VS_HIDDEN(func_80090EEC);
 
-void func_80091314(int);
-VS_HIDDEN(func_80091314);
+void setParticleEffectDrift(int);
+VS_HIDDEN(setParticleEffectDrift);
 
-void func_80091320(int);
-VS_HIDDEN(func_80091320);
+void setParticleEffectIntensity(int);
+VS_HIDDEN(setParticleEffectIntensity);
 
-void func_8009134C(int, int);
-VS_HIDDEN(func_8009134C);
+void setParticleEffectDirection(int, int);
+VS_HIDDEN(setParticleEffectDirection);
 
 void func_80091378(void);
 VS_HIDDEN(func_80091378);
 
-int func_800913BC(int);
-VS_HIDDEN(func_800913BC);
+int setParticleEffectSound(int);
+VS_HIDDEN(setParticleEffectSound);
 
-void func_80091468(int, int);
-VS_HIDDEN(func_80091468);
+void setBackgroundOffset(int, int);
+VS_HIDDEN(setBackgroundOffset);
 
 void func_8009147C(BackgroundLayout*, int, int, int);
 VS_HIDDEN(func_8009147C);
@@ -47,8 +47,8 @@ VS_HIDDEN(hideGeometryObject);
 int swapGeometryFlags(int, int);
 VS_HIDDEN(swapGeometryFlags);
 
-int func_80091A78(int, int);
-VS_HIDDEN(func_80091A78);
+int adjustGeometryObjectDepth(int, int);
+VS_HIDDEN(adjustGeometryObjectDepth);
 
 int func_80091AC0(int arg0);
 VS_HIDDEN(func_80091AC0);
@@ -59,20 +59,20 @@ VS_HIDDEN(func_80091B04);
 void func_80092548(void);
 VS_HIDDEN(func_80092548);
 
-int func_8009291C(int);
-VS_HIDDEN(func_8009291C);
+int startRoomTask(int);
+VS_HIDDEN(startRoomTask);
 
 int func_80092A18(void);
 VS_HIDDEN(func_80092A18);
 
-int func_800936F8(int);
-VS_HIDDEN(func_800936F8);
+int toggleRoomTaskPaused(int);
+VS_HIDDEN(toggleRoomTaskPaused);
 
-int func_80093764(int);
-VS_HIDDEN(func_80093764);
+int isRoomTaskRunning(int);
+VS_HIDDEN(isRoomTaskRunning);
 
-void func_80093788(int);
-VS_HIDDEN(func_80093788);
+void finishRoomTask(int);
+VS_HIDDEN(finishRoomTask);
 
 void func_80093824(int arg0);
 VS_HIDDEN(func_80093824);

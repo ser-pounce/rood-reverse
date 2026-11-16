@@ -2612,7 +2612,7 @@ int func_8009E228(D_800F4538_t* arg0, SVECTOR* arg1)
         var_v1 = -var_v1;
     }
 
-    var_s0 = vs_gte_rsqrt(var_s0 + var_v1);
+    var_s0 = SquareRoot0(var_s0 + var_v1);
     func_800A1AF8(arg0->unk0.unkF, 0, &sp10, 0);
     return ratan2(arg1->vy - sp10.vy, var_s0);
 }
@@ -2957,7 +2957,7 @@ void func_8009EA14(int arg0, SVECTOR* arg1)
                         var_v1_2 = -var_v1_2;
                     }
 
-                    var_s0 = vs_gte_rsqrt(var_s0 + var_v1_2);
+                    var_s0 = SquareRoot0(var_s0 + var_v1_2);
                     func_800A1AF8(temp_s1->unk0.unkF, 0, &sp10, 0);
                     var_v1 = ratan2(arg1->vy - sp10.vy, var_s0);
                 }
@@ -3070,7 +3070,7 @@ void func_8009EC9C(int arg0, SVECTOR* arg1, int arg2, int arg3)
             zz = -zz;
         }
 
-        dist = vs_gte_rsqrt(dist + zz);
+        dist = SquareRoot0(dist + zz);
         func_800A1AF8(actor->unk0.unkF, 0, &sp10, 0);
         pitch = ratan2(arg1->vy - sp10.vy, dist);
     }
@@ -3256,7 +3256,7 @@ void func_8009EFEC(int actorId, SVECTOR* target, int mode)
                     verticalAngle = -verticalAngle;
                 }
 
-                value = vs_gte_rsqrt(value + verticalAngle);
+                value = SquareRoot0(value + verticalAngle);
                 func_800A1AF8(actor->unk0.unkF, 0, &origin, 0);
                 verticalAngle = ratan2(target->vy - origin.vy, value);
             }

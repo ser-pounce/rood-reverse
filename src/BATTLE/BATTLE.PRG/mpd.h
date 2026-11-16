@@ -232,6 +232,18 @@ typedef struct {
 } vs_RoomVertices;
 
 typedef struct {
+    u_char vertex;
+    u_char id;
+    u_char flags;
+    u_char unk3;
+} vs_RoomDoor;
+
+typedef struct {
+    int count;
+    vs_RoomDoor doors[0];
+} vs_RoomDoors;
+
+typedef struct {
     char name[32];
     short prev;
     short next;

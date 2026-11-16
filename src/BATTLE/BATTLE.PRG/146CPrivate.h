@@ -18,11 +18,11 @@ VS_HIDDEN(func_8006CA20);
 void func_8006CB04(int, SVECTOR*);
 VS_HIDDEN(func_8006CB04);
 
-void func_8006C480(int, int);
-VS_HIDDEN(func_8006C480);
+void startActorTrail(int, int);
+VS_HIDDEN(startActorTrail);
 
-void func_8006C4A4(int, int);
-VS_HIDDEN(func_8006C4A4);
+void stopActorTrails(int, int);
+VS_HIDDEN(stopActorTrails);
 
 int func_8006C84C(int);
 VS_HIDDEN(func_8006C84C);
@@ -63,11 +63,11 @@ VS_HIDDEN(func_8007B9A0);
 void func_8007B9CC(void);
 VS_HIDDEN(func_8007B9CC);
 
-int func_8007B9FC(void);
-VS_HIDDEN(func_8007B9FC);
+int updateScriptMenu(void);
+VS_HIDDEN(updateScriptMenu);
 
-void func_8007BA98(int, int, int, int);
-VS_HIDDEN(func_8007BA98);
+void showMiscLoot(int, int, int, int);
+VS_HIDDEN(showMiscLoot);
 
 void vs_battle_forgetZoneEnemies(int, int);
 VS_HIDDEN(vs_battle_forgetZoneEnemies);
@@ -103,20 +103,20 @@ VS_HIDDEN(cullOccludingGeometry);
 int func_8007BE10(int);
 VS_HIDDEN(func_8007BE10);
 
-void func_8007BE20(int, int);
-VS_HIDDEN(func_8007BE20);
+void startEffect(int, int);
+VS_HIDDEN(startEffect);
 
-void func_8007BEC4(int);
-VS_HIDDEN(func_8007BEC4);
+void triggerEffectStage(int);
+VS_HIDDEN(triggerEffectStage);
 
-int func_8007BEE4(void);
-VS_HIDDEN(func_8007BEE4);
+int getEffectState(void);
+VS_HIDDEN(getEffectState);
 
-void func_8007BF04(void);
-VS_HIDDEN(func_8007BF04);
+void effectNop(void);
+VS_HIDDEN(effectNop);
 
-int func_8007BF0C(void);
-VS_HIDDEN(func_8007BF0C);
+int isEffectStageReady(void);
+VS_HIDDEN(isEffectStageReady);
 
 void showCurrentRoom(void);
 VS_HIDDEN(showCurrentRoom);
@@ -283,8 +283,8 @@ VS_HIDDEN(func_80089104);
 int setTileBlocked(int, int, int, int);
 VS_HIDDEN(setTileBlocked);
 
-void setDoorEntered2(int arg0);
-VS_HIDDEN(setDoorEntered2);
+void setEnteredDoor(int door);
+VS_HIDDEN(setEnteredDoor);
 
 void func_8008C40C(void);
 VS_HIDDEN(func_8008C40C);

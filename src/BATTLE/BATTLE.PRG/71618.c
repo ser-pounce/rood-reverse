@@ -41,7 +41,7 @@ int func_800D9E18(func_800E78F4_t* arg0, func_800DCAA0_t* arg1)
         limit = 0x1F80;
 
         if (!(arg0->unk15E & 8)) {
-            limit = vs_gte_rsqrt(arg1->unk8) + arg0->unkB3 * 32;
+            limit = SquareRoot0(arg1->unk8) + arg0->unkB3 * 32;
         }
 
         limit = limit * limit;
@@ -68,7 +68,7 @@ int func_800D9E18(func_800E78F4_t* arg0, func_800DCAA0_t* arg1)
             flag = 1;
         }
 
-        distance = vs_gte_rsqrt(distance);
+        distance = SquareRoot0(distance);
 
         if (active) {
             ++D_800F58BC->unk24;
@@ -95,9 +95,9 @@ int func_800D9E18(func_800E78F4_t* arg0, func_800DCAA0_t* arg1)
             point.vz = arg0->unk134.z * 128 + 64;
             point.vy = func_800E42D4(point.vx, point.vz);
 
-            if (vs_gte_rsqrt(func_800E4624(&point, &D_800F4538[id]->unk0.position,
+            if (SquareRoot0(func_800E4624(&point, &D_800F4538[id]->unk0.position,
                     arg0->unk82, D_800F5878[id]->unk82))
-                < vs_gte_rsqrt(arg1->unk8) - arg1->unk10.unk6) {
+                < SquareRoot0(arg1->unk8) - arg1->unk10.unk6) {
                 goto normal;
             }
         }
@@ -188,7 +188,7 @@ int func_800DA1D4(func_800E78F4_t* arg0)
             }
 
             flag = 0;
-            distance = vs_gte_rsqrt(arg0->unk430[1]->unk8);
+            distance = SquareRoot0(arg0->unk430[1]->unk8);
         }
 
         if (func_800DB370(arg0, id, distance, flag)) {
@@ -240,7 +240,7 @@ int func_800DA4BC(func_800E78F4_t* arg0, func_800DCAA0_t* arg1)
 {
     if (func_800DB8AC(arg0, arg1)) {
         int id = arg1->unkC_0;
-        int distance = vs_gte_rsqrt(arg1->unk8);
+        int distance = SquareRoot0(arg1->unk8);
         int range = distance + arg0->unkB3 * 32;
 
         range *= range;

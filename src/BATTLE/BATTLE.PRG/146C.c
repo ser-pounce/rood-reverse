@@ -1562,9 +1562,9 @@ void func_8006C40C(void)
 
 void nop1(void) { }
 
-void func_8006C480(int arg0, int arg1) { func_800CF7A8(arg0, arg1, 0, 0); }
+void startActorTrail(int actor, int bone) { startTrailEffect(actor, bone, 0, 0); }
 
-void func_8006C4A4(int arg0, int arg1) { func_800CF830(arg0, arg1); }
+void stopActorTrails(int actor, int bone) { fadeOutTrails(actor, bone); }
 
 void func_8006C4C4(int effectId, HitEntity* arg1, int targetLimb)
 {
@@ -3116,7 +3116,7 @@ void func_8006FCBC(void)
 
     cameraMode = 10;
     temp_s0 = &D_800F19CC->unk854[0];
-    func_8006C4A4(temp_s0->unk4.unk0.hit.targetActor,
+    stopActorTrails(temp_s0->unk4.unk0.hit.targetActor,
         func_800A152C(temp_s0->unk4.unk0.hit.targetActor, 0xF0, 0));
 }
 
@@ -3525,7 +3525,7 @@ void func_80070F28(int arg0)
     if (D_800F19CC->unk8.unk4.unk0.hit.targetActor == 0) {
         if (D_800F18EC->unk2 != 7) {
             if (D_800F18EC->unk2 == 8) {
-                decreaseMiscCount(D_800F18EC->executeAbility.u16[1]);
+                removeMiscItem(D_800F18EC->executeAbility.u16[1]);
             }
         }
         D_800F18EC->unk2 = 0;
@@ -3829,7 +3829,7 @@ void func_800719FC(UNUSED int arg0)
         D_800F19CC->unk29B0.unk2 = ratan2(dx, dz);
         dy = D_800F19CC->unk8.unk844.vy - origin.vy;
         D_800F19CC->unk29B0.unk4.values[3] =
-            ratan2(dy, vs_gte_rsqrt(dx * dx + dz * dz)) / 16 + 64;
+            ratan2(dy, SquareRoot0(dx * dx + dz * dz)) / 16 + 64;
         D_800F19CC->unk29B0.unk8.vec =
             *(SVECTOR*)&vs_battle_actors[D_800F19CC->unk8.unk4.unk0.hit.targetActor]
                  ->commandArgs.s16[2];
@@ -4585,7 +4585,7 @@ int func_80073AFC(MpdRoomSectionA* arg0)
                 if (itemIdIsInInventory(arg0->keyOrSigil) != 0) {
                     if (arg0->keyOrSigil >= chamomileSigil) {
                         vs_battle_setStateFlag(arg0->keyOrSigil + 0x1B6, 2);
-                        decreaseMiscCount(arg0->keyOrSigil);
+                        removeMiscItem(arg0->keyOrSigil);
                     }
                     arg0->unk0.unk8.lock.state = 0;
                     action = 2;
@@ -4684,7 +4684,7 @@ void func_80073E30(MpdRoomSectionA* arg0, int arg1)
             }
             vs_battle_setStateFlag(arg0->unkE + 0x1B6, 1);
             if (arg0->unkE >= 0x1D2) {
-                decreaseMiscCount(arg0->unkE);
+                removeMiscItem(arg0->unkE);
             }
         }
         arg0->keyOrSigil = 0;
@@ -6701,10 +6701,10 @@ int func_80077F70(void)
     }
     temp_v0 = sp18.vx - sp10.vx;
     temp_v0_2 = sp18.vz - sp10.vz;
-    temp_v0_3 = vs_gte_rsqrt((temp_v0 * temp_v0) + (temp_v0_2 * temp_v0_2));
+    temp_v0_3 = SquareRoot0((temp_v0 * temp_v0) + (temp_v0_2 * temp_v0_2));
     temp_v1 = sp18.vy - sp10.vy;
 
-    return vs_gte_rsqrt((temp_v1 * temp_v1) + (temp_v0_3 * temp_v0_3));
+    return SquareRoot0((temp_v1 * temp_v1) + (temp_v0_3 * temp_v0_3));
 }
 
 void func_800780A8(SVECTOR* arg0)
@@ -8376,7 +8376,7 @@ void func_8007B9CC(void)
     func_8007B764();
 }
 
-int func_8007B9FC(void)
+int updateScriptMenu(void)
 {
     switch (cameraMode) {
     case 3:
@@ -8396,7 +8396,7 @@ int func_8007B9FC(void)
     }
 }
 
-void func_8007BA98(int id0, int count0, int id1, int count1)
+void showMiscLoot(int firstId, int firstCount, int secondId, int secondCount)
 {
     vs_LootListNode* temp_a0;
     vs_LootListNode* temp_v0;
@@ -8404,15 +8404,15 @@ void func_8007BA98(int id0, int count0, int id1, int count1)
     temp_v0 = vs_main_allocHeapR(sizeof *temp_v0);
     if (temp_v0 != NULL) {
         vs_main_bzero(temp_v0, sizeof *temp_v0);
-        temp_v0->loot.misc[0].id = id0;
-        if (id0 & 0xFFFF) {
-            temp_v0->loot.misc[0].count = count0;
+        temp_v0->loot.misc[0].id = firstId;
+        if (firstId & 0xFFFF) {
+            temp_v0->loot.misc[0].count = firstCount;
             temp_v0->loot.misc[0].difficultyFlags = 3;
             temp_v0->actorId |= 1;
         }
-        temp_v0->loot.misc[1].id = id1;
-        if (id1 & 0xFFFF) {
-            temp_v0->loot.misc[1].count = count1;
+        temp_v0->loot.misc[1].id = secondId;
+        if (secondId & 0xFFFF) {
+            temp_v0->loot.misc[1].count = secondCount;
             temp_v0->loot.misc[1].difficultyFlags = 3;
             temp_v0->actorId |= 1;
         }
@@ -8521,7 +8521,7 @@ int cullOccludingGeometry(int cull)
 
 int func_8007BE10(int arg0) { return D_800F18B0 = arg0; }
 
-void func_8007BE20(int arg0, int arg1)
+void startEffect(int effectId, int actorId)
 {
     ActionEffectRequest request;
     int i;
@@ -8531,17 +8531,17 @@ void func_8007BE20(int arg0, int arg1)
 
     request.count = 1;
     request.source.type = 5;
-    request.effectId = arg0;
+    request.effectId = effectId;
     request.otherCount = 0;
     request.source.value.position.vz = 0;
     request.source.value.position.vy = 0;
     request.source.value.position.vx = 0;
     request.targets[0].type = 4;
-    request.targets[0].value.actor.actor = arg1;
+    request.targets[0].value.actor.actor = actorId;
     request.targets[0].value.actor.part = 0;
 
     for (i = 0; i < 16; ++i) {
-        if ((actors[i] != NULL) && (i != arg1)) {
+        if ((actors[i] != NULL) && (i != actorId)) {
             request.others[count] = i;
             ++count;
         }
@@ -8551,13 +8551,13 @@ void func_8007BE20(int arg0, int arg1)
     func_800CF0E8(&request, 0, 0);
 }
 
-void func_8007BEC4(int arg0) { func_800CEF74(arg0); }
+void triggerEffectStage(int arg0) { func_800CEF74(arg0); }
 
-int func_8007BEE4(void) { return func_800CF48C(); }
+int getEffectState(void) { return func_800CF48C(); }
 
-void func_8007BF04(void) { }
+void effectNop(void) { }
 
-int func_8007BF0C(void) { return func_800CEEBC() != 0; }
+int isEffectStageReady(void) { return func_800CEEBC() != 0; }
 
 void showCurrentRoom(void) { showRoom(0); }
 
@@ -13334,7 +13334,7 @@ int func_800863A4(int arg0, int arg1, int targetStats, int arg3, SVECTOR* arg4,
         sp860.unk2 = ratan2(temp_s1, temp_s0);
         temp_s0_2 = arg5->vy - arg4->vy;
         sp860.unk4.values[3] =
-            (ratan2(temp_s0_2, vs_gte_rsqrt((temp_s1 * temp_s1) + (temp_s0 * temp_s0)))
+            (ratan2(temp_s0_2, SquareRoot0((temp_s1 * temp_s1) + (temp_s0 * temp_s0)))
                 / 16)
             + 0x40;
         memcpy(&sp860.unk8, arg4, sizeof *arg4);
@@ -15599,9 +15599,9 @@ int loadMpdRoomSection(int arg0, void* data)
         vs_battle_setRoomsUnk0(vs_battle_roomData.sectionF);
         vs_battle_roomData.sectionF->rooms[0].visited = 1;
         if (vs_main_stateFlags.doorEntered == 0) {
-            setDoorEntered2(vs_battle_doorEntered);
+            setEnteredDoor(vs_battle_doorEntered);
         } else {
-            setDoorEntered2(vs_main_stateFlags.doorEntered - 1);
+            setEnteredDoor(vs_main_stateFlags.doorEntered - 1);
             vs_main_stateFlags.doorEntered = 0;
         }
     }
@@ -16830,51 +16830,58 @@ void vs_battle_parseTim(u_long* arg0, TIM_IMAGE* tim)
     tim->paddr = arg0 + 3;
 }
 
+// TODO: Add a type-safe NON_MATCHING lookup in the two following functions.
+#define FIND_DOORS(data)                                                               \
+    (data) = vs_battle_roomData.sectionF;                                              \
+    (data) = &vs_battle_roomData.sectionF                                              \
+                  ->rooms[vs_battle_roomData.sectionF->roomCount];                     \
+    (data) += (*(int*)(data) * 8) + 4;                                                 \
+    (data) += (*(int*)(data) * 4) + 4;                                                 \
+    (data) += (*(int*)(data) * 4) + 4;                                                 \
+    (data) += (*(int*)(data) * 4) + 4;                                                 \
+    (data) += (*(int*)(data) * 4) + 4
+
 int getDoorId(int door)
 {
-    int* temp_v1;
-
     if (vs_battle_roomData.sectionF != NULL) {
-        temp_v1 = (int*)vs_battle_roomData.sectionF
-                + (vs_battle_roomData.sectionF->roomCount * 3 + 1);
-        temp_v1 = temp_v1 + ((*temp_v1 * 2) + 1);
-        temp_v1 = temp_v1 + ((*temp_v1) + 1);
-        temp_v1 = temp_v1 + ((*temp_v1) + 1);
-        temp_v1 = temp_v1 + ((*temp_v1) + 1);
-        temp_v1 = temp_v1 + ((*temp_v1) + 1);
-        if ((door < *temp_v1++) && (door >= 0)) {
-            temp_v1 += door;
-            return ((char*)temp_v1)[1];
+        int count;
+        void* data;
+
+        FIND_DOORS(data);
+        count = ((vs_RoomDoors*)data)->count;
+        data = ((vs_RoomDoors*)data)->doors;
+
+        if ((door < count) && (door >= 0)) {
+            data += door * sizeof(vs_RoomDoor);
+            return ((vs_RoomDoor*)data)->id;
         }
     }
+
     return -1;
 }
 
-void setDoorEntered2(int arg0)
+void setEnteredDoor(int door)
 {
-    int temp_a3;
-    int i;
-
-    vs_battle_doorEntered = arg0;
+    vs_battle_doorEntered = door;
 
     if (vs_battle_roomData.sectionF != NULL) {
-        int* temp_v1 = (int*)vs_battle_roomData.sectionF;
-        temp_v1 += vs_battle_roomData.sectionF->roomCount * 3 + 1;
-        temp_v1 = temp_v1 + ((*temp_v1 * 2) + 1);
-        temp_v1 = temp_v1 + ((*temp_v1) + 1);
-        temp_v1 = temp_v1 + ((*temp_v1) + 1);
-        temp_v1 = temp_v1 + ((*temp_v1) + 1);
-        temp_v1 = temp_v1 + ((*temp_v1) + 1);
-        temp_a3 = *temp_v1++;
+        int i;
+        int count;
+        void* data;
 
-        for (i = 0; i < temp_a3; ++i) {
-            if (i == arg0) {
-                ((char*)temp_v1)[2] |= 0x10;
+        FIND_DOORS(data);
+        count = ((vs_RoomDoors*)data)->count;
+        data = ((vs_RoomDoors*)data)->doors;
+
+        for (i = 0; i < count; ++i, data += sizeof(vs_RoomDoor)) {
+            if (i == door) {
+                ((vs_RoomDoor*)data)->flags |= 0x10;
             }
-            ++temp_v1;
         }
     }
 }
+
+#undef FIND_DOORS
 
 short func_8008DA24(int arg0, int arg1)
 {

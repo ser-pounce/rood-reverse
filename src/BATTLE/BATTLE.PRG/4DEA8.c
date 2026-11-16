@@ -327,8 +327,8 @@ extern u_short* scriptStrings;
 extern char switchValue;
 extern short D_800F4BB6;
 extern char D_800F4BB8;
-extern u_char D_800F4BB9;
-extern char* D_800F4BC0[];
+extern u_char effectCancelled;
+extern char* vibrationPatterns[];
 extern short D_800F4BE0;
 extern char D_800F4BE4;
 extern void* mpdRoomDoorSection;
@@ -611,7 +611,7 @@ static int tryTextBoxPlacement(
         return 1;
     }
 
-    result->distance = vs_gte_rsqrt(dx * dx + dy * dy);
+    result->distance = SquareRoot0(dx * dx + dy * dy);
 
     return 0;
 }
@@ -2320,7 +2320,7 @@ int vs_battle_script_59_openMenu(u_char* script, UNUSED short arg1)
             return scriptRepeat;
         }
 
-        if (func_8007B9FC() != 0) {
+        if (updateScriptMenu() != 0) {
             return scriptRepeat;
         }
 
@@ -2347,7 +2347,7 @@ int vs_battle_script_59_openMenu(u_char* script, UNUSED short arg1)
             return scriptRepeat;
         }
 
-        if (func_8007B9FC() == 0) {
+        if (updateScriptMenu() == 0) {
             scriptMenuState = scriptMenuClosed;
 
             return scriptYield;
@@ -3451,7 +3451,7 @@ int vs_battle_script_9C_rampSfxPan(u_char* script, UNUSED short arg1)
 }
 
 /**
- * Queues the script music in a slot to start once the current music reaches its end.
+ * Queues the script music to start once the current music reaches its end.
  * @param script Opcode bytes:
  *   - [1] = slot, 1 to 4
  */
@@ -3462,184 +3462,299 @@ int vs_battle_script_9F_queueMusic(u_char* script, UNUSED short arg1)
     return scriptNext;
 }
 
-int vs_battle_script_A0(u_char* arg0, UNUSED short arg1)
+/**
+ * Loads and starts a visual effect (EFFECT/E###.P: sprites, particles, camera and sound,
+ * as used for spell animations) targeting an actor. Its stages are started by opcode
+ * A1.
+ * @param script Opcode bytes:
+ *   - [1-2] = effect ID
+ *   - [3-4] = target actor
+ */
+int vs_battle_script_A0_startEffect(u_char* script, UNUSED short arg1)
 {
-    func_8007BE20(getShort(arg0 + 1), resolveActorId(getShort(arg0 + 3)));
+    startEffect(getShort(script + 1), resolveActorId(getShort(script + 3)));
+
     return scriptNext;
 }
 
-int vs_battle_script_A1(u_char* arg0, UNUSED short arg1)
+/**
+ * Starts one stage of the visual effect. When skipping, cancels the effect instead.
+ * @param script Opcode bytes:
+ *   - [1] = stage index
+ */
+int vs_battle_script_A1_triggerEffectStage(u_char* script, UNUSED short arg1)
 {
-    func_8007BEC4(arg0[1]);
+    triggerEffectStage(script[1]);
+
     if (scriptSkipMode == scriptSkipping) {
-        func_800CF1A8();
+        cancelEffects();
     }
+
     return scriptNext;
 }
 
-int vs_battle_script_A2(u_char* arg0, UNUSED short arg1)
+/**
+ * Waits until the visual effect system is in the given state. Scripts use it to wait for
+ * the effect to finish, or to be ready for its next stage. Skipping cancels the effect
+ * first.
+ * @param script Opcode bytes:
+ *   - [1] = state to wait for
+ */
+int vs_battle_script_A2_waitEffectState(u_char* script, UNUSED short arg1)
 {
-    if ((scriptSkipMode == scriptSkipping) && ((arg0[1] == 0) || (arg0[1] == 5))) {
-        if (D_800F4BB9 != 0) {
-            if (func_8007BEE4() == arg0[1]) {
-                D_800F4BB9 = 0;
+    if ((scriptSkipMode == scriptSkipping) && ((script[1] == 0) || (script[1] == 5))) {
+
+        if (effectCancelled != 0) {
+            if (getEffectState() == script[1]) {
+                effectCancelled = 0;
                 return scriptNext;
             }
         } else {
-            func_800CF1A8();
-            D_800F4BB9 = 1;
+            cancelEffects();
+            effectCancelled = 1;
         }
+
         return scriptRepeat;
     }
-    return func_8007BEE4() != arg0[1] ? scriptRepeat : scriptNext;
+
+    return getEffectState() != script[1] ? scriptRepeat : scriptNext;
 }
 
-int vs_battle_script_A3(UNUSED u_char* arg0, UNUSED short arg1)
+/**
+ * Yields for a frame while skipping, otherwise does nothing.
+ * @param script Opcode bytes: none
+ */
+int vs_battle_script_A3_yieldIfSkipping(UNUSED u_char* script, UNUSED short arg1)
 {
-    func_8007BF04();
+    effectNop();
+
     return (scriptSkipMode == scriptSkipping) ? scriptYield : scriptNext;
 }
 
-int vs_battle_script_A4(UNUSED u_char* arg0, UNUSED short arg1)
+/**
+ * Waits until the visual effect is loaded and has stages left to trigger.
+ * @param script Opcode bytes: none
+ */
+int vs_battle_script_A4_waitEffectStageReady(UNUSED u_char* script, UNUSED short arg1)
 {
-    return func_8007BF0C() != 1 ? scriptRepeat : scriptNext;
+    return isEffectStageReady() != 1 ? scriptRepeat : scriptNext;
 }
 
-int vs_battle_script_A5(UNUSED u_char* arg0, UNUSED short arg1)
+/**
+ * Cancels the running visual effect and waits until the effect system is idle or
+ * waiting for a stage to be triggered.
+ * @param script Opcode bytes: none
+ */
+int vs_battle_script_A5_cancelEffect(UNUSED u_char* script, UNUSED short arg1)
 {
-    if (D_800F4BB9 == 0) {
-        func_800CF1A8();
-        D_800F4BB9 = 1;
-    } else if ((func_8007BEE4() == 0) || (func_8007BEE4() == 5)) {
-        D_800F4BB9 = 0;
+    if (effectCancelled == 0) {
+        cancelEffects();
+        effectCancelled = 1;
+    } else if ((getEffectState() == 0) || (getEffectState() == 5)) {
+        effectCancelled = 0;
         return scriptNext;
     }
+
     return scriptRepeat;
 }
 
-int vs_battle_script_A6(u_char* arg0, UNUSED short arg1)
+/**
+ * Makes a stage that was already triggered available to trigger again.
+ * @param script Opcode bytes:
+ *   - [1] = stage index
+ */
+int vs_battle_script_A6_rearmEffectStage(u_char* script, UNUSED short arg1)
 {
-    func_800CEF38(arg0[1]);
+    rearmEffectStage(script[1]);
+
     return scriptNext;
 }
 
-int vs_battle_script_A8_setMusicJumpThreshold(u_char* arg0, UNUSED short arg1)
+/**
+ * Sets the cue the playing music should reach. The music does not jump at once, but
+ * takes its own route there at its next branch point.
+ * @param script Opcode bytes:
+ *   - [1] = cue
+ */
+int vs_battle_script_A8_setMusicTargetCue(u_char* script, UNUSED short arg1)
 {
-    vs_main_setMusicJumpThreshold(arg0[1]);
+    vs_main_setMusicTargetCue(script[1]);
+
     return scriptNext;
 }
 
-int vs_battle_script_A9(u_char* arg0, UNUSED short arg1)
+/**
+ * Starts a controller vibration pattern from the script's pattern table, or stops
+ * vibration. Adding 8 to the index copies the pattern before playing.
+ * @param script Opcode bytes:
+ *   - [1] = pattern index, or 0xFF to stop vibration
+ */
+int vs_battle_script_A9_playVibration(u_char* script, UNUSED short arg1)
 {
-    short a0 = arg0[1];
-    if (a0 == 0xFF) {
+    short pattern = script[1];
+
+    if (pattern == 0xFF) {
         vs_main_stopVibration(0, 2);
-    } else {
-        if (a0 & 8) {
-            vs_main_memcpy(D_800F4C48, D_800F4BC0[a0 & 7], 0x80);
-            vs_main_setVibrationBank(D_800F4C48 + 8, 0xFF, 2);
-        } else {
-            if (D_800F4BC0[a0] != 0) {
-                vs_main_setVibrationBank(D_800F4BC0[a0] + 8, 0xFF, 2);
-            }
-        }
+    } else if (pattern & 8) {
+        vs_main_memcpy(vibrationPatternCopy, vibrationPatterns[pattern & 7], 0x80);
+        vs_main_setVibrationBank(vibrationPatternCopy + 8, 0xFF, 2);
+    } else if (vibrationPatterns[pattern] != NULL) {
+        vs_main_setVibrationBank(vibrationPatterns[pattern] + 8, 0xFF, 2);
     }
+
     return scriptNext;
 }
 
-int vs_battle_script_AA(u_char* arg0, UNUSED short arg1)
+/**
+ * Starts or stops a motion trail following one of an actor's bones. Stopping fades out
+ * every active trail, not only the actor's.
+ * @param script Opcode bytes:
+ *   - [1] = 1 to start, 0 to stop
+ *   - [2-3] = actor
+ *   - [4] = bone
+ */
+int vs_battle_script_AA_setActorTrail(u_char* script, UNUSED short arg1)
 {
-    short temp_v0 = resolveActorId(getShort(arg0 + 2));
+    short actor = resolveActorId(getShort(script + 2));
 
-    if (arg0[1] != 0) {
-        func_8006C480(temp_v0, arg0[4]);
+    if (script[1] != 0) {
+        startActorTrail(actor, script[4]);
     } else {
-        func_8006C4A4(temp_v0, arg0[4]);
+        stopActorTrails(actor, script[4]);
     }
+
     return scriptNext;
 }
 
-int vs_battle_script_B1(u_char* arg0, UNUSED short arg1)
+/**
+ * Overrides which door the player entered the room through.
+ * @param script Opcode bytes:
+ *   - [1] = door index
+ */
+int vs_battle_script_B1_setEnteredDoor(u_char* script, UNUSED short arg1)
 {
-    setDoorEntered2(arg0[1]);
+    setEnteredDoor(script[1]);
+
     return scriptNext;
 }
 
-int vs_battle_script_B2(u_char* arg0, UNUSED short arg1)
+/**
+ * Stores the distance and angle between two actors in two consecutive state flags.
+ * @param script Opcode bytes:
+ *   - [1-2] = first actor
+ *   - [3-4] = second actor
+ *   - [5] = distance scale
+ *   - [6-7] = state flag id for the distance, the angle is placed in the following flag
+ */
+int vs_battle_script_B2_setFlagsToActorDistanceAndAngle(u_char* script, UNUSED short arg1)
 {
-    vs_ActorPosition sp10;
-    vs_ActorPosition sp20;
-    short temp_s3;
-    short temp_v0;
-    short temp_v0_2;
-    int temp_lo;
+    vs_ActorPosition first;
+    vs_ActorPosition second;
+    short dx;
+    short dz;
+    int distance;
 
-    temp_s3 = getShort(arg0 + 6);
-    vs_battle_getActorPosition(resolveActorId(getShort(arg0 + 1)), &sp10);
-    vs_battle_getActorPosition(resolveActorId(getShort(arg0 + 3)), &sp20);
-    temp_v0 = sp10.unk0.unk4.vx - sp20.unk0.unk4.vx;
-    temp_v0_2 = sp10.unk0.unk4.vz - sp20.unk0.unk4.vz;
-    temp_lo = vs_gte_rsqrt((temp_v0 * temp_v0) + (temp_v0_2 * temp_v0_2)) / arg0[5];
-    vs_battle_setStateFlag(temp_s3, temp_lo < 0x100 ? temp_lo & 0xFF : -1);
-    vs_battle_setStateFlag(temp_s3 + 1, (ratan2(temp_v0, temp_v0_2) >> 4) & 0xFF);
+    short flag = getShort(script + 6);
+    vs_battle_getActorPosition(resolveActorId(getShort(script + 1)), &first);
+    vs_battle_getActorPosition(resolveActorId(getShort(script + 3)), &second);
+
+    dx = first.unk0.unk4.vx - second.unk0.unk4.vx;
+    dz = first.unk0.unk4.vz - second.unk0.unk4.vz;
+    distance = SquareRoot0((dx * dx) + (dz * dz)) / script[5];
+
+    vs_battle_setStateFlag(flag, distance < ONE / 16 ? distance : -1);
+    vs_battle_setStateFlag(flag + 1, ratan2(dx, dz) >> 4);
+
     return scriptNext;
 }
 
-int vs_battle_script_B3(u_char* arg0, UNUSED short arg1)
+/**
+ * Wakes the selected actors, or puts them into the dormant state.
+ * @param script Opcode bytes:
+ *   - [1-2] = actor selector
+ *   - [3] = 0 = dormant, nonzero = awake
+ */
+int vs_battle_script_B3_setActorAwake(u_char* script, UNUSED short arg1)
 {
-    ActorList sp10;
+    ActorList actors;
 
-    expandActorSelector(getShort(arg0 + 1), &sp10);
+    expandActorSelector(getShort(script + 1), &actors);
+
     while (1) {
-        int temp_a0 = nextActor(&sp10);
-        if (temp_a0 == 1) {
+        int actor = nextActor(&actors);
+
+        if (actor == 1) {
             break;
         }
-        setActorAwake(temp_a0, arg0[3]);
+
+        setActorAwake(actor, script[3]);
     }
+
     return scriptNext;
 }
 
-int vs_battle_script_B4(u_char* arg0, UNUSED short arg1)
+/**
+ * Shows the loot screen with up to two consumable or key items and waits for it to
+ * close. An item id of 0 leaves that item out. No script uses this opcode.
+ * @param script Opcode bytes:
+ *   - [1-2] = first item id
+ *   - [3] = first item count
+ *   - [4-5] = second item id
+ *   - [6] = second item count
+ */
+int vs_battle_script_B4_showMiscLoot(u_char* script, UNUSED short arg1)
 {
     if (scriptMenuState == scriptMenuClosed) {
-        func_8007BA98(getShort(arg0 + 1), arg0[3], getShort(arg0 + 4), arg0[6]);
+        showMiscLoot(getShort(script + 1), script[3], getShort(script + 4), script[6]);
         scriptMenuState = scriptMenuOpen;
+
         return scriptRepeat;
     }
 
-    if (func_8007B9FC() == 0) {
+    if (updateScriptMenu() == 0) {
         scriptMenuState = scriptMenuClosed;
+
         return scriptYield;
     }
+
     return scriptRepeat;
 }
 
-int vs_battle_script_B5(u_char* arg0, UNUSED short arg1)
+/**
+ * Removes one of a misc item from the inventory.
+ * @param script Opcode bytes:
+ *   - [1-2] = item id
+ */
+int vs_battle_script_B5_removeMiscItem(u_char* script, UNUSED short arg1)
 {
-    decreaseMiscCount(getShort(arg0 + 1));
+    removeMiscItem(getShort(script + 1));
+
     return scriptNext;
 }
 
-int vs_battle_script_B6(u_char* arg0, UNUSED short arg1)
+/**
+ * Stores the distance between two actors, in whole tiles, in a state flag.
+ * @param script Opcode bytes:
+ *   - [1-2] = first actor
+ *   - [3-4] = second actor
+ *   - [5-6] = state flag id
+ */
+int vs_battle_script_B6_setFlagToActorDistance(u_char* script, UNUSED short arg1)
 {
-    vs_ActorPosition sp10;
-    vs_ActorPosition sp20;
-    short temp_s0;
-    int temp_s0_2;
-    short temp_s1;
-    int var_v0;
+    vs_ActorPosition first;
+    vs_ActorPosition second;
+    short dx;
+    short dz;
 
-    vs_battle_getActorPosition(resolveActorId(getShort(arg0 + 1)), &sp10);
-    vs_battle_getActorPosition(resolveActorId(getShort(arg0 + 3)), &sp20);
-    temp_s0 = sp10.unk0.unk4.vx - sp20.unk0.unk4.vx;
-    temp_s1 = sp10.unk0.unk4.vz - sp20.unk0.unk4.vz;
-    temp_s0_2 = getShort(arg0 + 5);
-    var_v0 = vs_gte_rsqrt((temp_s0 * temp_s0) + (temp_s1 * temp_s1));
-    if (var_v0 < 0) {
-        var_v0 += 0x7F;
-    }
-    vs_battle_setStateFlag(temp_s0_2, (var_v0 >> 7) & 0xFF);
+    vs_battle_getActorPosition(resolveActorId(getShort(script + 1)), &first);
+    vs_battle_getActorPosition(resolveActorId(getShort(script + 3)), &second);
+
+    dx = first.unk0.unk4.vx - second.unk0.unk4.vx;
+    dz = first.unk0.unk4.vz - second.unk0.unk4.vz;
+
+    vs_battle_setStateFlag(
+        getShort(script + 5), SquareRoot0((dx * dx) + (dz * dz)) / 128);
+
     return scriptNext;
 }
 
@@ -3670,7 +3785,7 @@ int vs_battle_script_B7_specialOp(u_char* arg0, UNUSED short arg1)
         break;
     case 1:
         if (scriptMenuState != scriptMenuClosed) {
-            if (func_8007B9FC() != 0) {
+            if (updateScriptMenu() != 0) {
                 return scriptRepeat;
             }
             vs_battle_setStateFlag(menuFSubmenu, 0);
@@ -5157,7 +5272,7 @@ static int vectorMagnitude(VECTOR* arg0)
     sp10.vx = sp10.vx >> 0xC;
     sp10.vy = sp10.vy >> 0xC;
     sp10.vz = sp10.vz >> 0xC;
-    return vs_gte_rsqrt(temp_lo + temp_lo_2 + temp_v0) * ONE;
+    return SquareRoot0(temp_lo + temp_lo_2 + temp_v0) * ONE;
 }
 
 VECTOR* setVectorImm(VECTOR* arg0, u_char* arg1)
@@ -5200,7 +5315,7 @@ void vecToRotMatrix(VECTOR* arg0, MATRIX* arg1)
     sp18.vy = arg0->vy >> 0xC;
     sp18.vz = arg0->vz >> 0xC;
     sp10.vy = ratan2(sp18.vx, sp18.vz);
-    sp10.vx = ratan2(sp18.vy, vs_gte_rsqrt((sp18.vx * sp18.vx) + (sp18.vz * sp18.vz)));
+    sp10.vx = ratan2(sp18.vy, SquareRoot0((sp18.vx * sp18.vx) + (sp18.vz * sp18.vz)));
     sp10.vz = 0;
     RotMatrix_gte(&sp10, arg1);
 }
@@ -5667,7 +5782,8 @@ void parseEvt(u_char* data)
     table = data + *(u_short*)(data + 6);
 
     for (i = 0; i < 8; ++i) {
-        D_800F4BC0[i] = ((u_short*)table)[i] ? (char*)table + ((u_short*)table)[i] : 0;
+        vibrationPatterns[i] =
+            ((u_short*)table)[i] ? (char*)table + ((u_short*)table)[i] : 0;
     }
 
     D_800F4C38[0] = data + 16;
@@ -5678,7 +5794,7 @@ void parseEvt(u_char* data)
     vs_battle_setStateFlag(168, 0);
 
     scriptWaitFrames[1] = scriptWaitFrames[2] = scriptWaitFrames[3] = 0;
-    D_800F4BB9 = 0;
+    effectCancelled = 0;
     weaponAnimating = 0;
     textBoxSelectionPending = 0;
     D_800F4BE4 = 0;

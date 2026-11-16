@@ -281,7 +281,7 @@ void func_800D87E8(func_800E78F4_t* arg0, int id)
             continue;
         }
 
-        distance = (vs_gte_rsqrt(arg0->unk1E4[candidate]) * rsin(angle)) >> 12;
+        distance = (SquareRoot0(arg0->unk1E4[candidate]) * rsin(angle)) >> 12;
         distance = ABS(distance);
 
         if (distance < radius) {

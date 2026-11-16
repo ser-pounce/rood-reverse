@@ -2474,10 +2474,7 @@ int vs_main_getMusicPosition(void) { return Sound_GetMusicPosition(); }
 
 void vs_main_pushMusicState(void) { Sound_PushMusicState(); }
 
-void vs_main_setMusicJumpThreshold(int threshold)
-{
-    Sound_SetMusicJumpThreshold(threshold);
-}
+void vs_main_setMusicTargetCue(int cue) { Sound_SetMusicTargetCue(cue); }
 
 int vs_main_stopMusicSlot(int slot)
 {

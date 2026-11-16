@@ -112,11 +112,11 @@ loop:
 
     switch (op) {
     case 14:
-        func_8006C480(id, script[1]);
+        startActorTrail(id, script[1]);
         break;
 
     case 15:
-        func_8006C4A4(id, script[1]);
+        stopActorTrails(id, script[1]);
         break;
 
     case 29:
@@ -1540,7 +1540,7 @@ void func_800B002C(D_800F4538_t* actor, int arg1)
                 dz = -dz;
             }
 
-            dx = vs_gte_rsqrt(dx + dz);
+            dx = SquareRoot0(dx + dz);
 
             if (actor->unk17FC == -1) {
                 dz = actor->unk17F4.vy - actor->unk0.position.vy;

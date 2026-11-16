@@ -865,7 +865,7 @@ void func_800AA290(int arg0, vs_TilePosition* arg1, int arg2, int arg3)
         if (temp < 0) {
             temp = -temp;
         }
-        dist = vs_gte_rsqrt(dist + temp) * arg3;
+        dist = SquareRoot0(dist + temp) * arg3;
         temp = dist / 128;
         actor->unk0.unk1A = temp;
         if (dist & 0x7F) {
@@ -1007,7 +1007,7 @@ void func_800AA698(int arg0, SVECTOR* arg1, int arg2)
         if (temp < 0) {
             temp = -temp;
         }
-        dist = vs_gte_rsqrt(dist + temp) * actor->unk5C2;
+        dist = SquareRoot0(dist + temp) * actor->unk5C2;
         actor->unk0.unk1A = dist / 128;
         if (dist & 0x7F) {
             actor->unk0.unk1A = dist / 128 + 1;

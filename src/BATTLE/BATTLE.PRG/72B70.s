@@ -554,7 +554,7 @@ glabel func_800DB93C
     lw         $s1, 0xC($a3)
     beqz       $a1, 31f
      lw        $a0, 0x8($a3)
-    jal        vs_gte_rsqrt
+    jal        SquareRoot0
      nop
     slt        $v1, $s2, $v0
     bnez       $v1, 31f
@@ -787,7 +787,7 @@ glabel func_800DBD80
     slt        $v0, $t0, $t5
     bnez       $v0, 40f
      addu      $t9, $a1, $zero
-    jal        vs_gte_rsqrt
+    jal        SquareRoot0
      addu      $a0, $t0, $zero
     addu       $a1, $t9, $zero
     lw         $t9, 0x10($t9)

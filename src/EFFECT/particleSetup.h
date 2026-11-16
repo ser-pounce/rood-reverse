@@ -274,9 +274,9 @@ void VS_PARTICLE_CONTROL_FUNCTION(func_800FA098_arg0* effect, func_800FA098_arg1
 
         setVector(&scratch->unk34, points[3].vx - points[0].vx,
             points[3].vy - points[0].vy, points[3].vz - points[0].vz);
-        distance = vs_gte_rsqrt(scratch->unk34.vx * scratch->unk34.vx
-                                + scratch->unk34.vy * scratch->unk34.vy
-                                + scratch->unk34.vz * scratch->unk34.vz);
+        distance = SquareRoot0(scratch->unk34.vx * scratch->unk34.vx
+                               + scratch->unk34.vy * scratch->unk34.vy
+                               + scratch->unk34.vz * scratch->unk34.vz);
         vs_battle_lerp2DVector(effect->unk94[0],
             vs_battle_sampleCurve(effect->unk12, state->unkC), scratch->unk124);
         vs_battle_lerp2DVector(effect->unk94[1],

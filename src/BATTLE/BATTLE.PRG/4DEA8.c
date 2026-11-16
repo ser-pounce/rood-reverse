@@ -611,7 +611,7 @@ static int tryTextBoxPlacement(
         return 1;
     }
 
-    result->distance = vs_gte_rsqrt(dx * dx + dy * dy);
+    result->distance = SquareRoot0(dx * dx + dy * dy);
 
     return 0;
 }
@@ -3660,7 +3660,7 @@ int vs_battle_script_B2_setFlagsToActorDistanceAndAngle(u_char* script, UNUSED s
 
     dx = first.unk0.unk4.vx - second.unk0.unk4.vx;
     dz = first.unk0.unk4.vz - second.unk0.unk4.vz;
-    distance = vs_gte_rsqrt((dx * dx) + (dz * dz)) / script[5];
+    distance = SquareRoot0((dx * dx) + (dz * dz)) / script[5];
 
     vs_battle_setStateFlag(flag, distance < 0x100 ? distance & 0xFF : -1);
     vs_battle_setStateFlag(flag + 1, (ratan2(dx, dz) >> 4) & 0xFF);
@@ -3718,7 +3718,7 @@ int vs_battle_script_B6(u_char* arg0, UNUSED short arg1)
     temp_s0 = sp10.unk0.unk4.vx - sp20.unk0.unk4.vx;
     temp_s1 = sp10.unk0.unk4.vz - sp20.unk0.unk4.vz;
     temp_s0_2 = getShort(arg0 + 5);
-    var_v0 = vs_gte_rsqrt((temp_s0 * temp_s0) + (temp_s1 * temp_s1));
+    var_v0 = SquareRoot0((temp_s0 * temp_s0) + (temp_s1 * temp_s1));
     if (var_v0 < 0) {
         var_v0 += 0x7F;
     }
@@ -5240,7 +5240,7 @@ static int vectorMagnitude(VECTOR* arg0)
     sp10.vx = sp10.vx >> 0xC;
     sp10.vy = sp10.vy >> 0xC;
     sp10.vz = sp10.vz >> 0xC;
-    return vs_gte_rsqrt(temp_lo + temp_lo_2 + temp_v0) * ONE;
+    return SquareRoot0(temp_lo + temp_lo_2 + temp_v0) * ONE;
 }
 
 VECTOR* setVectorImm(VECTOR* arg0, u_char* arg1)
@@ -5283,7 +5283,7 @@ void vecToRotMatrix(VECTOR* arg0, MATRIX* arg1)
     sp18.vy = arg0->vy >> 0xC;
     sp18.vz = arg0->vz >> 0xC;
     sp10.vy = ratan2(sp18.vx, sp18.vz);
-    sp10.vx = ratan2(sp18.vy, vs_gte_rsqrt((sp18.vx * sp18.vx) + (sp18.vz * sp18.vz)));
+    sp10.vx = ratan2(sp18.vy, SquareRoot0((sp18.vx * sp18.vx) + (sp18.vz * sp18.vz)));
     sp10.vz = 0;
     RotMatrix_gte(&sp10, arg1);
 }

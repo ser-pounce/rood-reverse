@@ -682,9 +682,9 @@ void func_800E0A68(func_800E78F4_t* state, int action)
 
         top = func_800E0850(state, angle) + state->unkBE;
         ground = top > ground ? ground : top;
-        distance = vs_gte_rsqrt(func_800E4660(x - px, 0, z - pz));
+        distance = SquareRoot0(func_800E4660(x - px, 0, z - pz));
         value = height + ground;
-        denom = vs_gte_rsqrt(((value * ONE) / value) * ONE) + ONE;
+        denom = SquareRoot0(((value * ONE) / value) * ONE) + ONE;
 
         if (denom != 0) {
             value = (distance * ONE) / denom;
@@ -1384,7 +1384,7 @@ int func_800E24EC(func_800E78F4_t* s, int option)
                     int radius;
 
                     s->unk48 = oldPosition;
-                    distance = vs_gte_rsqrt(distance);
+                    distance = SquareRoot0(distance);
                     radius = s->unkDC - 96;
                     func_800E1388(s, s->unk34, angle, distance - ABS(radius));
 

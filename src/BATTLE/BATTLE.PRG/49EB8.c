@@ -198,7 +198,7 @@ void func_800B28A8(D_800F4538_t* actor, MATRIX* camera, int mode)
                     dz *= dz;
                     dz = ABS(dz);
 
-                    dx = vs_gte_rsqrt(dx + dz);
+                    dx = SquareRoot0(dx + dz);
                     {
                         int dy = s2->camera.position.vy / ONE;
                         dy -= scratch->offset.vy;

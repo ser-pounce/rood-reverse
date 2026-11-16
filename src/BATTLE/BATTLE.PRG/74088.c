@@ -72,7 +72,7 @@ void func_800DCAA0(
         sp28.vz = actor->unk0.position.vz;
         sp28.vy = actor->unk0.position.vy - arg2->unkC_7;
         *(int*)&sp20.vx = *(int*)&sp28.vx;
-        sp20.vz = sp28.vz + vs_gte_rsqrt(arg2->unk8);
+        sp20.vz = sp28.vz + SquareRoot0(arg2->unk8);
         temp_v0 = func_800863A4(
             arg2->unk4_5, arg0->unk88, temp_s0, arg2->unkC_4, &sp20, &sp28, D_800F5900);
     }

@@ -540,7 +540,7 @@ int func_800C4794(SVECTOR* arg0)
 
         offset.vx += (-stickX * rcos(angle) - stickY * rsin(angle) + ONE / 8) >> 10;
         offset.vz += (-stickX * rsin(angle) + stickY * rcos(angle) + ONE / 8) >> 10;
-        scale = vs_gte_rsqrt(offset.vx * offset.vx + offset.vz * offset.vz);
+        scale = SquareRoot0(offset.vx * offset.vx + offset.vz * offset.vz);
 
         if (scale > ONE) {
             stickX = offset.vx - oldX;
@@ -5685,7 +5685,7 @@ void func_800D05F4(func_800D0B30_t* arg0, func_800D0548_arg1* arg1)
 
     setVector(&delta, end.vx - start.vx, end.vy - start.vy, end.vz - start.vz);
     distance =
-        vs_gte_rsqrt(delta.vx * delta.vx + delta.vy * delta.vy + delta.vz * delta.vz);
+        SquareRoot0(delta.vx * delta.vx + delta.vy * delta.vy + delta.vz * delta.vz);
     control0.vz = distance * (((arg0->shape12 >> 8) & 15) - 8) / 8;
     control1.vz = distance + distance * ((arg0->shape12 >> 12) - 8) / 8;
     radius1 = arg0->radius * 32;
@@ -5738,7 +5738,7 @@ void func_800D0984(D_800F53B8_t* arg0, func_800D0548_arg1* arg1, int arg2)
     if (arg2) {
         setVector(&delta, end.vx - start.vx, end.vy - start.vy, end.vz - start.vz);
         distance =
-            vs_gte_rsqrt(delta.vx * delta.vx + delta.vy * delta.vy + delta.vz * delta.vz);
+            SquareRoot0(delta.vx * delta.vx + delta.vy * delta.vy + delta.vz * delta.vz);
         offset.vx = offset.vy = 0;
         offset.vz = distance - 0x600;
         SetRotMatrix(&arg1->attachment);
@@ -6108,7 +6108,7 @@ void func_800D1B80(D_800F54D8_t* camera)
     offset.vx = rcos(yaw) * (camera->unk20 >> 12);
     offset.vz = -rsin(yaw) * (camera->unk20 >> 12);
     pitch = ratan2(
-        (camera->position.vy - camera->lookAt.vy) >> 12, vs_gte_rsqrt(dx * dx + dz * dz));
+        (camera->position.vy - camera->lookAt.vy) >> 12, SquareRoot0(dx * dx + dz * dz));
     offset.vy = -rsin(pitch) * (camera->unk28 >> 12);
     horizontal = -rcos(pitch) * (camera->unk28 >> 12);
     offset.vy += rcos(pitch) * (camera->unk24 >> 12);

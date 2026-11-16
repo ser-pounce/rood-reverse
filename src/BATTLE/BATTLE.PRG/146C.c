@@ -3829,7 +3829,7 @@ void func_800719FC(UNUSED int arg0)
         D_800F19CC->unk29B0.unk2 = ratan2(dx, dz);
         dy = D_800F19CC->unk8.unk844.vy - origin.vy;
         D_800F19CC->unk29B0.unk4.values[3] =
-            ratan2(dy, vs_gte_rsqrt(dx * dx + dz * dz)) / 16 + 64;
+            ratan2(dy, SquareRoot0(dx * dx + dz * dz)) / 16 + 64;
         D_800F19CC->unk29B0.unk8.vec =
             *(SVECTOR*)&vs_battle_actors[D_800F19CC->unk8.unk4.unk0.hit.targetActor]
                  ->commandArgs.s16[2];
@@ -6701,10 +6701,10 @@ int func_80077F70(void)
     }
     temp_v0 = sp18.vx - sp10.vx;
     temp_v0_2 = sp18.vz - sp10.vz;
-    temp_v0_3 = vs_gte_rsqrt((temp_v0 * temp_v0) + (temp_v0_2 * temp_v0_2));
+    temp_v0_3 = SquareRoot0((temp_v0 * temp_v0) + (temp_v0_2 * temp_v0_2));
     temp_v1 = sp18.vy - sp10.vy;
 
-    return vs_gte_rsqrt((temp_v1 * temp_v1) + (temp_v0_3 * temp_v0_3));
+    return SquareRoot0((temp_v1 * temp_v1) + (temp_v0_3 * temp_v0_3));
 }
 
 void func_800780A8(SVECTOR* arg0)
@@ -13334,7 +13334,7 @@ int func_800863A4(int arg0, int arg1, int targetStats, int arg3, SVECTOR* arg4,
         sp860.unk2 = ratan2(temp_s1, temp_s0);
         temp_s0_2 = arg5->vy - arg4->vy;
         sp860.unk4.values[3] =
-            (ratan2(temp_s0_2, vs_gte_rsqrt((temp_s1 * temp_s1) + (temp_s0 * temp_s0)))
+            (ratan2(temp_s0_2, SquareRoot0((temp_s1 * temp_s1) + (temp_s0 * temp_s0)))
                 / 16)
             + 0x40;
         memcpy(&sp860.unk8, arg4, sizeof *arg4);

@@ -3668,18 +3668,28 @@ int vs_battle_script_B2_setFlagsToActorDistanceAndAngle(u_char* script, UNUSED s
     return scriptNext;
 }
 
-int vs_battle_script_B3(u_char* arg0, UNUSED short arg1)
+/**
+ * Wakes the selected actors, or puts them into the dormant state.
+ * @param script Opcode bytes:
+ *   - [1-2] = actor selector
+ *   - [3] = 0 = dormant, nonzero = awake
+ */
+int vs_battle_script_B3_setActorAwake(u_char* script, UNUSED short arg1)
 {
-    ActorList sp10;
+    ActorList actors;
 
-    expandActorSelector(getShort(arg0 + 1), &sp10);
+    expandActorSelector(getShort(script + 1), &actors);
+
     while (1) {
-        int temp_a0 = nextActor(&sp10);
-        if (temp_a0 == 1) {
+        int actor = nextActor(&actors);
+
+        if (actor == 1) {
             break;
         }
-        setActorAwake(temp_a0, arg0[3]);
+
+        setActorAwake(actor, script[3]);
     }
+
     return scriptNext;
 }
 

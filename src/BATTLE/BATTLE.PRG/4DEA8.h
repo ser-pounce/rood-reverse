@@ -121,7 +121,7 @@ int vs_battle_script_A8_setMusicTargetCue(u_char*, short);
 int vs_battle_script_AA_setActorTrail(u_char*, short);
 int vs_battle_script_B1_setEnteredDoor(u_char*, short);
 int vs_battle_script_B2_setFlagsToActorDistanceAndAngle(u_char*, short);
-int vs_battle_script_B3(u_char*, short);
+int vs_battle_script_B3_setActorAwake(u_char*, short);
 int vs_battle_script_B5(u_char*, short);
 int vs_battle_script_B6(u_char*, short);
 int vs_battle_script_B7_specialOp(u_char*, short);

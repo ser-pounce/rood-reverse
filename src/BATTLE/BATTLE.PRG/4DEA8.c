@@ -273,7 +273,7 @@ void expandActorSelector(u_short, ActorList*);
 u_short nextActor(ActorList* arg0);
 int getActorScreenPosition(int arg0, SVECTOR* arg1);
 void func_800BBE10(u_short);
-void func_800BBE04(int arg0);
+void setCameraFollowsAshley(int follows);
 void func_800BBE94(void);
 void func_800BCA8C(D_800F4BA4_t2*, D_800F4BA4_t2*);
 void func_800BCFB4(D_800F4BA4_t2*);
@@ -319,7 +319,7 @@ extern u_short D_800F4B20;
 extern GimTween gimTweens[];
 extern ParticleTween particleTween;
 extern char D_800F4B8B;
-extern char D_800F4BA0;
+extern char cameraFollowsAshley;
 extern D_800F4BA4_t* D_800F4BA4;
 extern char D_800F4BA8;
 extern void* mpdClearedSection;
@@ -3795,6 +3795,7 @@ int vs_battle_script_B7_specialOp(u_char* script, UNUSED short arg1)
         specialCountEngagedEnemies = 4,
         specialSetAllActorsEnabledAndAwake = 5,
         specialDiscardNextEvt = 6,
+        specialSetCameraFollowsAshley = 7,
         specialPauseBattleTimer = 8,
         specialInitCamera = 9,
         specialSetCameraPitchPreset = 10,
@@ -3861,8 +3862,8 @@ int vs_battle_script_B7_specialOp(u_char* script, UNUSED short arg1)
         vs_main_freeHeapR(nextEvtBuffer);
         break;
 
-    case 7:
-        func_800BBE04(script[2]);
+    case specialSetCameraFollowsAshley:
+        setCameraFollowsAshley(script[2]);
         break;
 
     case specialPauseBattleTimer:
@@ -4210,7 +4211,7 @@ void func_800BBBE8(void)
     VECTOR sp30;
 
     D_800F4BA4 = vs_main_allocHeapR(sizeof *D_800F4BA4);
-    D_800F4BA0 = 0;
+    cameraFollowsAshley = 0;
 
     getCameraPosition(&sp20);
     getCameraLookAt(&sp30);
@@ -4273,7 +4274,11 @@ void func_800BBBE8(void)
 
 void func_800BBDDC(void) { vs_main_freeHeapR(D_800F4BA4); }
 
-void func_800BBE04(int arg0) { D_800F4BA0 = arg0; }
+/**
+ * Makes the scripted camera follow Ashley with the gameplay camera's view, until the
+ * next request to return to it.
+ */
+void setCameraFollowsAshley(int follows) { cameraFollowsAshley = follows; }
 
 void func_800BBE10(u_short arg0)
 {
@@ -4312,7 +4317,7 @@ static void applyCameraState(void)
     VECTOR cameraPos;
     SVECTOR* vec;
 
-    if (D_800F4BA0 != 0) {
+    if (cameraFollowsAshley != 0) {
         initialiseCameraFromSpherical(&cameraPos, &cameraLookAt, -1, -1);
         vectorCopy(&D_800F4BA4->lookAt.current, &cameraLookAt);
         vectorCopy(&D_800F4BA4->eye.current, &cameraPos);
@@ -4369,8 +4374,8 @@ void func_800BC1CC(short arg0, int arg1)
     int temp_s0;
     short temp_v0;
 
-    if (D_800F4BA0 != 0) {
-        D_800F4BA0 = 0;
+    if (cameraFollowsAshley != 0) {
+        cameraFollowsAshley = 0;
         return;
     }
     initialiseCameraFromSpherical(&sp10, &sp20, arg0, (short)arg1);

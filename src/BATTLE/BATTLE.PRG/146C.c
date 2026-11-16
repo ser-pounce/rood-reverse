@@ -3525,7 +3525,7 @@ void func_80070F28(int arg0)
     if (D_800F19CC->unk8.unk4.unk0.hit.targetActor == 0) {
         if (D_800F18EC->unk2 != 7) {
             if (D_800F18EC->unk2 == 8) {
-                decreaseMiscCount(D_800F18EC->executeAbility.u16[1]);
+                removeMiscItem(D_800F18EC->executeAbility.u16[1]);
             }
         }
         D_800F18EC->unk2 = 0;
@@ -4585,7 +4585,7 @@ int func_80073AFC(MpdRoomSectionA* arg0)
                 if (itemIdIsInInventory(arg0->keyOrSigil) != 0) {
                     if (arg0->keyOrSigil >= chamomileSigil) {
                         vs_battle_setStateFlag(arg0->keyOrSigil + 0x1B6, 2);
-                        decreaseMiscCount(arg0->keyOrSigil);
+                        removeMiscItem(arg0->keyOrSigil);
                     }
                     arg0->unk0.unk8.lock.state = 0;
                     action = 2;
@@ -4684,7 +4684,7 @@ void func_80073E30(MpdRoomSectionA* arg0, int arg1)
             }
             vs_battle_setStateFlag(arg0->unkE + 0x1B6, 1);
             if (arg0->unkE >= 0x1D2) {
-                decreaseMiscCount(arg0->unkE);
+                removeMiscItem(arg0->unkE);
             }
         }
         arg0->keyOrSigil = 0;

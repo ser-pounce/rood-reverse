@@ -3720,9 +3720,15 @@ int vs_battle_script_B4_showMiscLoot(u_char* script, UNUSED short arg1)
     return scriptRepeat;
 }
 
-int vs_battle_script_B5(u_char* arg0, UNUSED short arg1)
+/**
+ * Removes one of a misc item from the inventory.
+ * @param script Opcode bytes:
+ *   - [1-2] = item id
+ */
+int vs_battle_script_B5_removeMiscItem(u_char* script, UNUSED short arg1)
 {
-    decreaseMiscCount(getShort(arg0 + 1));
+    removeMiscItem(getShort(script + 1));
+
     return scriptNext;
 }
 

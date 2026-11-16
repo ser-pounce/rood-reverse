@@ -4017,7 +4017,11 @@ void func_800CCA90(int arg0)
                             : vs_scratch.unk8 + 0x18 - arg0 * 8);
 }
 
-int decreaseMiscCount(int miscId)
+/**
+ * Removes one of a misc item from the inventory.
+ * @return 1 if the item was found, 0 if not.
+ */
+int removeMiscItem(int miscId)
 {
     int i;
 

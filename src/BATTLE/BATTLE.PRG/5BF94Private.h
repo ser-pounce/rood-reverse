@@ -74,8 +74,8 @@ VS_HIDDEN(func_800CB7DC);
 TextOffset func_800CCE10(int arg0, int arg1, int arg2, int arg3);
 VS_HIDDEN(func_800CCE10);
 
-int decreaseMiscCount(int);
-VS_HIDDEN(decreaseMiscCount);
+int removeMiscItem(int);
+VS_HIDDEN(removeMiscItem);
 
 int func_800CEEBC(void);
 VS_HIDDEN(func_800CEEBC);

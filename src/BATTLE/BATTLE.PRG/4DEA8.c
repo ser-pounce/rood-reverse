@@ -3638,23 +3638,33 @@ int vs_battle_script_B1_setEnteredDoor(u_char* script, UNUSED short arg1)
     return scriptNext;
 }
 
-int vs_battle_script_B2(u_char* arg0, UNUSED short arg1)
+/**
+ * Stores the distance and angle between two actors in two consecutive state flags.
+ * @param script Opcode bytes:
+ *   - [1-2] = first actor
+ *   - [3-4] = second actor
+ *   - [5] = distance scale
+ *   - [6-7] = state flag id for the distance, the angle is placed in the following flag
+ */
+int vs_battle_script_B2_setFlagsToActorDistanceAndAngle(u_char* script, UNUSED short arg1)
 {
-    vs_ActorPosition sp10;
-    vs_ActorPosition sp20;
-    short temp_s3;
-    short temp_v0;
-    short temp_v0_2;
-    int temp_lo;
+    vs_ActorPosition first;
+    vs_ActorPosition second;
+    short dx;
+    short dz;
+    int distance;
 
-    temp_s3 = getShort(arg0 + 6);
-    vs_battle_getActorPosition(resolveActorId(getShort(arg0 + 1)), &sp10);
-    vs_battle_getActorPosition(resolveActorId(getShort(arg0 + 3)), &sp20);
-    temp_v0 = sp10.unk0.unk4.vx - sp20.unk0.unk4.vx;
-    temp_v0_2 = sp10.unk0.unk4.vz - sp20.unk0.unk4.vz;
-    temp_lo = vs_gte_rsqrt((temp_v0 * temp_v0) + (temp_v0_2 * temp_v0_2)) / arg0[5];
-    vs_battle_setStateFlag(temp_s3, temp_lo < 0x100 ? temp_lo & 0xFF : -1);
-    vs_battle_setStateFlag(temp_s3 + 1, (ratan2(temp_v0, temp_v0_2) >> 4) & 0xFF);
+    short flag = getShort(script + 6);
+    vs_battle_getActorPosition(resolveActorId(getShort(script + 1)), &first);
+    vs_battle_getActorPosition(resolveActorId(getShort(script + 3)), &second);
+
+    dx = first.unk0.unk4.vx - second.unk0.unk4.vx;
+    dz = first.unk0.unk4.vz - second.unk0.unk4.vz;
+    distance = vs_gte_rsqrt((dx * dx) + (dz * dz)) / script[5];
+
+    vs_battle_setStateFlag(flag, distance < 0x100 ? distance & 0xFF : -1);
+    vs_battle_setStateFlag(flag + 1, (ratan2(dx, dz) >> 4) & 0xFF);
+
     return scriptNext;
 }
 

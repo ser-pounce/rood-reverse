@@ -410,6 +410,7 @@ D_800F18F4 = 0x800F18F4;
 lootListHead = 0x800F1900;
 vs_battle_cameraTransition = 0x800F1904;
 vs_battle_actors = 0x800F1928;
+recordRoomSeen = 0x800F19A0; // size:0x4
 firstPersonRendering = 0x800F19C8;
 vs_battle_cameraCurrentSpherical = 0x800F19D0;
 vs_battle_characterState = 0x800F19FC;

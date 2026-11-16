@@ -559,7 +559,7 @@ static int getNextValidActor(int currentActor, int targetActor)
         temp_a0 = vs_battle_getActorFlags(currentActor);
 
         if ((vs_battle_actors[currentActor] != NULL)
-            && (vs_battle_actors[currentActor]->unk1C < 5)
+            && (vs_battle_actors[currentActor]->role < 5)
             && (temp_a0 & 0x01000001) == 1) {
             break;
         }

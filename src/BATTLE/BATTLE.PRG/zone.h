@@ -35,7 +35,7 @@ typedef struct {
     u_char itemCount;
     u_char item2Count;
     u_char item3Count;
-    u_char facing;
+    u_char disposition;
     u_char unk24;
     u_char variant;
     u_char unk26;

@@ -347,7 +347,7 @@ int func_800E6178(Actor* actor, short arg1)
     u_int radius;
     SVECTOR result;
 
-    if (actor->unk1C & 0x15) {
+    if (actor->role & 0x15) {
         D_800F590C |= 1 << id;
     }
 
@@ -365,7 +365,7 @@ int func_800E6178(Actor* actor, short arg1)
         }
     }
 
-    if (!(actor->unk1C & 5)) {
+    if (!(actor->role & 5)) {
         return 0;
     }
 

@@ -63,11 +63,11 @@ VS_HIDDEN(func_8007B9A0);
 void func_8007B9CC(void);
 VS_HIDDEN(func_8007B9CC);
 
-int func_8007B9FC(void);
-VS_HIDDEN(func_8007B9FC);
+int updateScriptMenu(void);
+VS_HIDDEN(updateScriptMenu);
 
-void func_8007BA98(int, int, int, int);
-VS_HIDDEN(func_8007BA98);
+void showMiscLoot(int, int, int, int);
+VS_HIDDEN(showMiscLoot);
 
 void vs_battle_forgetZoneEnemies(int, int);
 VS_HIDDEN(vs_battle_forgetZoneEnemies);

@@ -8376,7 +8376,7 @@ void func_8007B9CC(void)
     func_8007B764();
 }
 
-int func_8007B9FC(void)
+int updateScriptMenu(void)
 {
     switch (cameraMode) {
     case 3:
@@ -8396,7 +8396,7 @@ int func_8007B9FC(void)
     }
 }
 
-void func_8007BA98(int id0, int count0, int id1, int count1)
+void showMiscLoot(int firstId, int firstCount, int secondId, int secondCount)
 {
     vs_LootListNode* temp_a0;
     vs_LootListNode* temp_v0;
@@ -8404,15 +8404,15 @@ void func_8007BA98(int id0, int count0, int id1, int count1)
     temp_v0 = vs_main_allocHeapR(sizeof *temp_v0);
     if (temp_v0 != NULL) {
         vs_main_bzero(temp_v0, sizeof *temp_v0);
-        temp_v0->loot.misc[0].id = id0;
-        if (id0 & 0xFFFF) {
-            temp_v0->loot.misc[0].count = count0;
+        temp_v0->loot.misc[0].id = firstId;
+        if (firstId & 0xFFFF) {
+            temp_v0->loot.misc[0].count = firstCount;
             temp_v0->loot.misc[0].difficultyFlags = 3;
             temp_v0->actorId |= 1;
         }
-        temp_v0->loot.misc[1].id = id1;
-        if (id1 & 0xFFFF) {
-            temp_v0->loot.misc[1].count = count1;
+        temp_v0->loot.misc[1].id = secondId;
+        if (secondId & 0xFFFF) {
+            temp_v0->loot.misc[1].count = secondCount;
             temp_v0->loot.misc[1].difficultyFlags = 3;
             temp_v0->actorId |= 1;
         }

@@ -2320,7 +2320,7 @@ int vs_battle_script_59_openMenu(u_char* script, UNUSED short arg1)
             return scriptRepeat;
         }
 
-        if (func_8007B9FC() != 0) {
+        if (updateScriptMenu() != 0) {
             return scriptRepeat;
         }
 
@@ -2347,7 +2347,7 @@ int vs_battle_script_59_openMenu(u_char* script, UNUSED short arg1)
             return scriptRepeat;
         }
 
-        if (func_8007B9FC() == 0) {
+        if (updateScriptMenu() == 0) {
             scriptMenuState = scriptMenuClosed;
 
             return scriptYield;
@@ -3693,18 +3693,30 @@ int vs_battle_script_B3_setActorAwake(u_char* script, UNUSED short arg1)
     return scriptNext;
 }
 
-int vs_battle_script_B4(u_char* arg0, UNUSED short arg1)
+/**
+ * Shows the loot screen with up to two consumable or key items and waits for it to
+ * close. An item id of 0 leaves that item out. No script uses this opcode.
+ * @param script Opcode bytes:
+ *   - [1-2] = first item id
+ *   - [3] = first item count
+ *   - [4-5] = second item id
+ *   - [6] = second item count
+ */
+int vs_battle_script_B4_showMiscLoot(u_char* script, UNUSED short arg1)
 {
     if (scriptMenuState == scriptMenuClosed) {
-        func_8007BA98(getShort(arg0 + 1), arg0[3], getShort(arg0 + 4), arg0[6]);
+        showMiscLoot(getShort(script + 1), script[3], getShort(script + 4), script[6]);
         scriptMenuState = scriptMenuOpen;
+
         return scriptRepeat;
     }
 
-    if (func_8007B9FC() == 0) {
+    if (updateScriptMenu() == 0) {
         scriptMenuState = scriptMenuClosed;
+
         return scriptYield;
     }
+
     return scriptRepeat;
 }
 
@@ -3763,7 +3775,7 @@ int vs_battle_script_B7_specialOp(u_char* arg0, UNUSED short arg1)
         break;
     case 1:
         if (scriptMenuState != scriptMenuClosed) {
-            if (func_8007B9FC() != 0) {
+            if (updateScriptMenu() != 0) {
                 return scriptRepeat;
             }
             vs_battle_setStateFlag(menuFSubmenu, 0);

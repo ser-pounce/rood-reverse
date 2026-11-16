@@ -335,13 +335,13 @@ extern void* mpdRoomDoorSection;
 extern char scriptMenuState;
 extern char loopCounters[];
 extern short D_800F4C22;
-extern void* D_800F4C24;
+extern void* nextEvtBuffer;
 extern char D_800F4C34;
 extern u_char* D_800F4C38[];
 extern short particleEffectSoundToRestore;
 extern char weaponAnimating;
 extern short mpdScriptSection;
-extern short D_800F4C54;
+extern short nextEvtQueued;
 extern char textBoxSelectionPending;
 extern int scriptReturnAddress;
 extern char scriptMusicSlot;
@@ -3758,13 +3758,17 @@ int vs_battle_script_B6_setFlagToActorDistance(u_char* script, UNUSED short arg1
     return scriptNext;
 }
 
-void func_800BAF6C(short arg0)
+/**
+ * Enables and wakes every actor except Ashley, or disables them and makes them dormant.
+ * @param awake Nonzero = enable and wake, 0 = disable and make dormant.
+ */
+void setAllActorsEnabledAndAwake(short awake)
 {
     short actorId;
 
     for (actorId = 1; actorId < 17; ++actorId) {
         if (getActor(actorId) != NULL) {
-            if (arg0 != 0) {
+            if (awake != 0) {
                 vs_battle_setActorFlags(actorId, vs_battle_getActorFlags(actorId) | 1);
             } else {
                 vs_battle_setActorFlags(actorId, vs_battle_getActorFlags(actorId) & ~1);
@@ -3772,7 +3776,7 @@ void func_800BAF6C(short arg0)
         }
     }
 
-    setActorsAwake(arg0);
+    setActorsAwake(awake);
 }
 
 /**
@@ -3789,8 +3793,8 @@ int vs_battle_script_B7_specialOp(u_char* script, UNUSED short arg1)
         specialSkipScene = 2,
         specialUnlockAction = 3,
         specialCountEngagedEnemies = 4,
-        specialSetAllActorsAwake = 5,
-        specialFreeEvtBuffer = 6,
+        specialSetAllActorsEnabledAndAwake = 5,
+        specialDiscardNextEvt = 6,
         specialPauseBattleTimer = 8,
         specialInitCamera = 9,
         specialSetCameraPitchPreset = 10,
@@ -3849,12 +3853,12 @@ int vs_battle_script_B7_specialOp(u_char* script, UNUSED short arg1)
         vs_battle_setStateFlag(0xB1, countActorsByRole(actorRoleEngagedEnemy));
         break;
 
-    case specialSetAllActorsAwake:
-        func_800BAF6C(script[2]);
+    case specialSetAllActorsEnabledAndAwake:
+        setAllActorsEnabledAndAwake(script[2]);
         break;
 
-    case specialFreeEvtBuffer:
-        vs_main_freeHeapR(D_800F4C24);
+    case specialDiscardNextEvt:
+        vs_main_freeHeapR(nextEvtBuffer);
         break;
 
     case 7:
@@ -4021,12 +4025,17 @@ int vs_battle_script_F5(u_char* arg0, UNUSED short arg1)
 
 int vs_battle_script_F6(UNUSED u_char* arg0, UNUSED short arg1) { return scriptEnd; }
 
-int vs_battle_script_F7(u_char* arg0, UNUSED short arg1)
+/**
+ * Starts loading an EVT file to continue into once the running script ends.
+ * @param script Opcode bytes:
+ *   - [1-2] = EVT file number
+ */
+int vs_battle_script_F7_queueNextEvt(u_char* arg0, UNUSED short arg1)
 {
     evtFile = getShort(arg0 + 1);
-    D_800F4C24 = vs_main_allocHeapR(0x1800);
-    func_800C00E8(evtFile, D_800F4C24);
-    D_800F4C54 = 1;
+    nextEvtBuffer = vs_main_allocHeapR(0x1800);
+    func_800C00E8(evtFile, nextEvtBuffer);
+    nextEvtQueued = 1;
     return scriptNext;
 }
 
@@ -5420,7 +5429,7 @@ int loadMpdClearedScriptDoorSections(void* clearedSection, u_short clearedSectio
     mpdScriptSection = scriptSectionLen != 0;
 
     if (mpdScriptSection != 0) {
-        memcpy(D_800F4C30, scriptSection, scriptSectionLen);
+        memcpy(evtBuffer, scriptSection, scriptSectionLen);
     }
     return 0;
 }
@@ -5902,11 +5911,11 @@ int func_800BF850(void)
 
     if (D_800F4C34 == 2) {
         fogDepthOverridden = 0;
-        D_800F4C54 = 0;
+        nextEvtQueued = 0;
 
         switch (D_800F4BE0) {
         case 1:
-            parseEvt(D_800F4C30);
+            parseEvt(evtBuffer);
             D_800F4C34 = 4;
             break;
 
@@ -5916,7 +5925,7 @@ int func_800BF850(void)
             break;
 
         case 0:
-            func_800C00E8(evtFile, D_800F4C30);
+            func_800C00E8(evtFile, evtBuffer);
             D_800F4C34 = 3;
             break;
         }
@@ -5928,13 +5937,13 @@ int func_800BF850(void)
         if (evtCdSlot->state == CdQueueStateLoaded) {
             vs_main_freeCdQueueSlot(evtCdSlot);
 
-            if (D_800F4C54 != 0) {
-                vs_main_memcpy(D_800F4C30, D_800F4C24, 0x1800);
-                vs_main_freeHeapR(D_800F4C24);
-                D_800F4C54 = 0;
+            if (nextEvtQueued != 0) {
+                vs_main_memcpy(evtBuffer, nextEvtBuffer, 0x1800);
+                vs_main_freeHeapR(nextEvtBuffer);
+                nextEvtQueued = 0;
             }
 
-            parseEvt(D_800F4C30);
+            parseEvt(evtBuffer);
             D_800F4C34 = 4;
         }
 
@@ -5945,7 +5954,8 @@ int func_800BF850(void)
 
     if (D_800F4C22 == 0) {
         if (func_800BFBB8(D_800F4C38, 0) != 0) {
-            if (D_800F4BB6 == 0 && D_800F4C54 == 0 && scriptWarpState == scriptWarpIdle) {
+            if (D_800F4BB6 == 0 && nextEvtQueued == 0
+                && scriptWarpState == scriptWarpIdle) {
                 func_800BC1CC(-1, -1);
             }
 
@@ -5970,7 +5980,7 @@ int func_800BF850(void)
     }
 
     if (D_800F4C22 != 0 && (u_char)func_800BD610() == 255) {
-        if (D_800F4C54 != 0) {
+        if (nextEvtQueued != 0) {
             D_800F4C34 = 3;
             D_800F4BE0 = 0;
         } else {

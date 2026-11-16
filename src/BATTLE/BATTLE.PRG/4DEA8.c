@@ -3626,9 +3626,15 @@ int vs_battle_script_AA_setActorTrail(u_char* script, UNUSED short arg1)
     return scriptNext;
 }
 
-int vs_battle_script_B1(u_char* arg0, UNUSED short arg1)
+/**
+ * Overrides which door the player entered the room through.
+ * @param script Opcode bytes:
+ *   - [1] = door index
+ */
+int vs_battle_script_B1_setEnteredDoor(u_char* script, UNUSED short arg1)
 {
-    setDoorEntered2(arg0[1]);
+    setEnteredDoor(script[1]);
+
     return scriptNext;
 }
 

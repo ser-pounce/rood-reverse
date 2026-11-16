@@ -283,8 +283,8 @@ VS_HIDDEN(func_80089104);
 int setTileBlocked(int, int, int, int);
 VS_HIDDEN(setTileBlocked);
 
-void setDoorEntered2(int arg0);
-VS_HIDDEN(setDoorEntered2);
+void setEnteredDoor(int door);
+VS_HIDDEN(setEnteredDoor);
 
 void func_8008C40C(void);
 VS_HIDDEN(func_8008C40C);

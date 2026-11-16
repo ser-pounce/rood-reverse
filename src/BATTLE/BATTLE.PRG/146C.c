@@ -15599,9 +15599,9 @@ int loadMpdRoomSection(int arg0, void* data)
         vs_battle_setRoomsUnk0(vs_battle_roomData.sectionF);
         vs_battle_roomData.sectionF->rooms[0].visited = 1;
         if (vs_main_stateFlags.doorEntered == 0) {
-            setDoorEntered2(vs_battle_doorEntered);
+            setEnteredDoor(vs_battle_doorEntered);
         } else {
-            setDoorEntered2(vs_main_stateFlags.doorEntered - 1);
+            setEnteredDoor(vs_main_stateFlags.doorEntered - 1);
             vs_main_stateFlags.doorEntered = 0;
         }
     }
@@ -16830,51 +16830,58 @@ void vs_battle_parseTim(u_long* arg0, TIM_IMAGE* tim)
     tim->paddr = arg0 + 3;
 }
 
+// TODO: Add a type-safe NON_MATCHING lookup in the two following functions.
+#define FIND_DOORS(data)                                                               \
+    (data) = vs_battle_roomData.sectionF;                                              \
+    (data) = &vs_battle_roomData.sectionF                                              \
+                  ->rooms[vs_battle_roomData.sectionF->roomCount];                     \
+    (data) += (*(int*)(data) * 8) + 4;                                                 \
+    (data) += (*(int*)(data) * 4) + 4;                                                 \
+    (data) += (*(int*)(data) * 4) + 4;                                                 \
+    (data) += (*(int*)(data) * 4) + 4;                                                 \
+    (data) += (*(int*)(data) * 4) + 4
+
 int getDoorId(int door)
 {
-    int* temp_v1;
-
     if (vs_battle_roomData.sectionF != NULL) {
-        temp_v1 = (int*)vs_battle_roomData.sectionF
-                + (vs_battle_roomData.sectionF->roomCount * 3 + 1);
-        temp_v1 = temp_v1 + ((*temp_v1 * 2) + 1);
-        temp_v1 = temp_v1 + ((*temp_v1) + 1);
-        temp_v1 = temp_v1 + ((*temp_v1) + 1);
-        temp_v1 = temp_v1 + ((*temp_v1) + 1);
-        temp_v1 = temp_v1 + ((*temp_v1) + 1);
-        if ((door < *temp_v1++) && (door >= 0)) {
-            temp_v1 += door;
-            return ((char*)temp_v1)[1];
+        int count;
+        void* data;
+
+        FIND_DOORS(data);
+        count = ((vs_RoomDoors*)data)->count;
+        data = ((vs_RoomDoors*)data)->doors;
+
+        if ((door < count) && (door >= 0)) {
+            data += door * sizeof(vs_RoomDoor);
+            return ((vs_RoomDoor*)data)->id;
         }
     }
+
     return -1;
 }
 
-void setDoorEntered2(int arg0)
+void setEnteredDoor(int door)
 {
-    int temp_a3;
-    int i;
-
-    vs_battle_doorEntered = arg0;
+    vs_battle_doorEntered = door;
 
     if (vs_battle_roomData.sectionF != NULL) {
-        int* temp_v1 = (int*)vs_battle_roomData.sectionF;
-        temp_v1 += vs_battle_roomData.sectionF->roomCount * 3 + 1;
-        temp_v1 = temp_v1 + ((*temp_v1 * 2) + 1);
-        temp_v1 = temp_v1 + ((*temp_v1) + 1);
-        temp_v1 = temp_v1 + ((*temp_v1) + 1);
-        temp_v1 = temp_v1 + ((*temp_v1) + 1);
-        temp_v1 = temp_v1 + ((*temp_v1) + 1);
-        temp_a3 = *temp_v1++;
+        int i;
+        int count;
+        void* data;
 
-        for (i = 0; i < temp_a3; ++i) {
-            if (i == arg0) {
-                ((char*)temp_v1)[2] |= 0x10;
+        FIND_DOORS(data);
+        count = ((vs_RoomDoors*)data)->count;
+        data = ((vs_RoomDoors*)data)->doors;
+
+        for (i = 0; i < count; ++i, data += sizeof(vs_RoomDoor)) {
+            if (i == door) {
+                ((vs_RoomDoor*)data)->flags |= 0x10;
             }
-            ++temp_v1;
         }
     }
 }
+
+#undef FIND_DOORS
 
 short func_8008DA24(int arg0, int arg1)
 {

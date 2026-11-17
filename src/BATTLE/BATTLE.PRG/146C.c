@@ -257,7 +257,7 @@ int func_8008BF48(MpdRoomSectionA*);
 void func_8008C0C0(void);
 void func_8008C070(int arg0, MpdRoomSectionA* arg1);
 int func_8008C1C8(MpdRoomSectionA* arg0);
-int func_8008C2C0(int arg0, int arg1, int arg2, int arg3);
+int cullGeometryForView(int tileX, int tileZ, int surface, int zoom);
 void func_8008C538(void);
 void func_8008C6B4(int, int);
 int func_8008C8A8(void);
@@ -4902,7 +4902,7 @@ void func_80074580(void)
         cameraMode = 1;
         renderAllGeometry = 1;
         firstPersonRendering = 1;
-        func_8008C40C();
+        clearCulledGeometry();
     }
 }
 
@@ -5084,11 +5084,11 @@ void func_80074B14(int arg0, vs_TilePosition* arg1)
         var_a2 = arg1->surface;
     }
     if (func_8008B764(var_a0, var_a1, var_a2)->unk0_18 & 1) {
-        func_8008C2C0(arg1->x, arg1->z, arg1->surface,
+        cullGeometryForView(arg1->x, arg1->z, arg1->surface,
             vs_battle_cameraCurrentSpherical.initialDistance == 0x900);
         return;
     }
-    func_8008C40C();
+    clearCulledGeometry();
 }
 
 int func_80074BAC(int actorIndex, ActorLocation* position)
@@ -8516,7 +8516,7 @@ int setUiHidden(int hidden)
 
 int cullOccludingGeometry(int cull)
 {
-    func_8008C40C();
+    clearCulledGeometry();
     return renderAllGeometry = ~cull & 1;
 }
 
@@ -16296,10 +16296,19 @@ int func_8008C1C8(MpdRoomSectionA* arg0)
     return 1;
 }
 
-int func_8008C2C0(int arg0, int arg1, int arg2, int arg3)
+/**
+ * Hides the geometry listed for a particular tile and camera view. Clears the previous
+ * culling first.
+ * @param tileX Tile x.
+ * @param tileZ Tile z.
+ * @param surface Tile surface.
+ * @param zoom 1 if the camera is zoomed out (distance 0x900).
+ * @return 1 if a matching record was found.
+ */
+int cullGeometryForView(int tileX, int tileZ, int surface, int zoom)
 {
     MpdRoomSection11* var_a1;
-    MpdRoomSection11* new_var;
+    MpdRoomSection11* record;
     int i;
     int j;
     int len;
@@ -16307,25 +16316,25 @@ int func_8008C2C0(int arg0, int arg1, int arg2, int arg3)
     char* s1;
 
     if (vs_battle_roomData.section11 != 0) {
-        func_8008C40C();
+        clearCulledGeometry();
         v = ((vs_scratch.camera.angles.vy + 0x900) & 0xFFF) >> 9;
         var_a1 = vs_battle_roomData.section11;
         len = vs_battle_roomData.header.section11Len;
         for (i = 0; i < len;) {
-            new_var = var_a1;
-            if (new_var->unk0_0 == arg0) {
-                if ((((new_var->unk0_5)) == arg1) && (((new_var->unk0_10)) == arg2)
-                    && (((new_var->unk0_14)) == arg3)
-                    && (((new_var->unk0_11)) == (((v))))) {
+            record = var_a1;
+            if (record->x == tileX) {
+                if ((((record->z)) == tileZ) && (((record->surface)) == surface)
+                    && (((record->zoom)) == zoom)
+                    && (((record->viewSector)) == (((v))))) {
 
-                    s1 = new_var->unk4;
-                    for (j = 0; j < new_var->unk2; ++j, ++s1) {
-                        func_80091AC0(*s1);
+                    s1 = record->geometryIds;
+                    for (j = 0; j < record->count; ++j, ++s1) {
+                        cullGeometryObject(*s1);
                     }
                     return 1;
                 }
             }
-            j = new_var->unk2 + ((4 - (new_var->unk2 & 3)) & 3) + 4;
+            j = record->count + ((4 - (record->count & 3)) & 3) + 4;
             i += j;
             var_a1 = (MpdRoomSection11*)((char*)var_a1 + j);
         }
@@ -16333,7 +16342,8 @@ int func_8008C2C0(int arg0, int arg1, int arg2, int arg3)
     return 0;
 }
 
-void func_8008C40C(void)
+/** Shows all geometry hidden by the culling, leaving objects hidden by scripts. */
+void clearCulledGeometry(void)
 {
     int temp_a1;
     int i;

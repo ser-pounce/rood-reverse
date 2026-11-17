@@ -3473,8 +3473,8 @@ void func_800CB708(void)
         if (temp_s0->unk2 != 0) {
             func_800F986C();
         }
-        if (temp_s0->unk8 != 0) {
-            func_800F9FB8();
+        if (temp_s0->edgeGlow != 0) {
+            drawScreenEdgeGlow();
         }
     }
 }

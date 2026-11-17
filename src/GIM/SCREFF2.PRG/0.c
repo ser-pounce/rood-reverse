@@ -218,7 +218,11 @@ void func_800F9BD8(void)
     *ot = saved;
 }
 
-void func_800F9DE8(int arg0) { D_800EB9B4->unk8 = arg0; }
+/**
+ * Turns the bright haze around the edges of the screen on or off.
+ * @param enabled Nonzero = on.
+ */
+void setScreenEdgeGlow(int enabled) { D_800EB9B4->edgeGlow = enabled; }
 
 static int func_800F9DF8(int arg0, int arg1)
 {
@@ -251,7 +255,8 @@ static int* func_800F9EBC(int arg0, int arg1, int* arg2, void** arg3)
     return arg2;
 }
 
-void func_800F9FB8(void)
+/** Draws the edge glow: additive white fading to black towards the screen centre. */
+void drawScreenEdgeGlow(void)
 {
     int* var_s2;
     int i;

@@ -123,13 +123,21 @@ void drawScreenBlur(void)
     vs_scratch.unk0 = var_t2 + 5;
 }
 
-void func_800F9BC0(short arg0, short arg1)
+/**
+ * Sets the lens distortion applied to the screen. A zoom of 0x1000 with no distortion
+ * turns it off.
+ * @param zoom Scale at the centre of the screen, 0x1000 = normal.
+ * @param distortion Negative squeezes the edges towards the centre (barrel, down to a
+ *   fisheye ball), positive stretches them outward (pincushion).
+ */
+void setScreenLensDistortion(short zoom, short distortion)
 {
-    screenEffects->unk4 = arg0;
-    screenEffects->unk6 = arg1;
+    screenEffects->lensZoom = zoom;
+    screenEffects->lensDistortion = distortion;
 }
 
-void func_800F9BD8(void)
+/** Warps the vertices of everything drawn so far by the lens distortion. */
+void applyScreenLensDistortion(void)
 {
     u_long* ot = vs_scratch.unk4;
     u_long saved = *ot;
@@ -144,8 +152,8 @@ void func_800F9BD8(void)
     *ot = -1;
     packet = ot + 0x7FE;
 
-    temp = (u_short)screenEffects->unk4 * 16;
-    value = screenEffects->unk6 + 0x1000;
+    temp = (u_short)screenEffects->lensZoom * 16;
+    value = screenEffects->lensDistortion + 0x1000;
 
     for (i = 0; i < 0x1BC; ++i) {
         table[i] = temp >> 3;

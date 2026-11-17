@@ -3467,8 +3467,8 @@ void func_800CB708(void)
             loadScreff2(0);
             return;
         }
-        if (*(int*)&temp_s0->unk4 != 0x1000) {
-            func_800F9BD8();
+        if (*(int*)&temp_s0->lensZoom != 0x1000) {
+            applyScreenLensDistortion();
         }
         if (temp_s0->blurDepth != 0) {
             drawScreenBlur();

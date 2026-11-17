@@ -277,7 +277,7 @@ MpdRoomSectionA* func_8008E3B8(int* arg0);
 MpdRoomSection9* func_8008E400(int*);
 void func_8008E480(int arg0);
 void func_800E4C64(int);
-void func_8008E4DC(int);
+void setCloudstonePalette(int);
 void loadMpdLootSection(void* arg0);
 void func_8008E6DC(int);
 void func_8008E8F8(void);
@@ -365,9 +365,9 @@ extern short D_800F1D6A;
 extern u_short D_800F1D6C;
 extern int D_800F1D78[5];
 extern char D_800F1DC7;
-extern short D_800F1D68;
-extern u_char D_800F1D6E;
-extern char D_800F1D6F;
+extern short cloudstoneFreezeTimer;
+extern u_char cloudstonesPaused;
+extern char cloudstonesAltPalette;
 extern u_char D_800F1D70[];
 extern vs_CdQueueSlot* backgroundImageCdSlot;
 extern vs_CdQueueSlot* backgroundLayoutCdSlot;
@@ -1538,7 +1538,7 @@ void func_8006C39C(void)
     vs_main_setClutState(0);
     func_8006C2A0();
     func_8008B4BC(1);
-    func_8008D594(1);
+    setCloudstonesPaused(1);
     func_8008B4C8(0);
     func_8008E480(1);
     func_80095B70(1);
@@ -1552,7 +1552,7 @@ void func_8006C40C(void)
     transformSceneColors(8, 4, 0, 0, 0);
     func_8006C250();
     func_8008B4BC(0);
-    func_8008D594(0);
+    setCloudstonesPaused(0);
     func_8008B4C8(1);
     func_8008E480(0);
     func_80095B70(0);
@@ -1860,7 +1860,7 @@ void func_8006CDD8(SVECTOR* arg0)
     }
 }
 
-void func_8006CE50(void) { func_8008D5A0(0xB4); }
+void func_8006CE50(void) { setCloudstoneFreezeTimer(0xB4); }
 
 void func_8006CE70(SVECTOR* arg0)
 {
@@ -3024,7 +3024,7 @@ void func_8006F89C(void)
             cameraMode = 0xD;
             func_8009E070(0, NULL, 6);
             func_8006F848();
-            func_8008D594(1);
+            setCloudstonesPaused(1);
         } else if ((D_800F19CC->unk8.actionIndex != 0)
                    && !(vs_main_actions[D_800F19CC->unk8.actionIndex].unlocked)
                    && (D_800F19CC->unk8.unk4.kind == 0) && (D_800F19CC->unk2C07 == 0)
@@ -3032,7 +3032,7 @@ void func_8006F89C(void)
             cameraMode = 0xD;
             func_8009E070(0, NULL, 6);
             func_8006F848();
-            func_8008D594(1);
+            setCloudstonesPaused(1);
         } else {
             func_8006F5FC();
         }
@@ -3045,7 +3045,7 @@ void func_8006F89C(void)
             cameraMode = 0xD;
             func_8009E070(0, NULL, 6);
             func_8006F848();
-            func_8008D594(1);
+            setCloudstonesPaused(1);
         } else {
             func_8006F5FC();
         }
@@ -4260,7 +4260,7 @@ void func_80072EC4(int arg0, int arg1)
         func_8008B4C8(0);
     }
     func_8008B4BC(1);
-    func_8008D594(1);
+    setCloudstonesPaused(1);
     if (D_800F19CC->unk2984 != 0) {
         func_80095B70(1);
     }
@@ -4310,7 +4310,7 @@ void initBattleCameraTransition(void)
     }
 
     func_8008B4C8(0);
-    func_8008D594(1);
+    setCloudstonesPaused(1);
     func_80095B70(1);
     func_800A0870(1);
 }
@@ -4331,7 +4331,7 @@ void endBattleCameraTransition(void)
     }
     func_800CB654(0);
     func_8008B4C8(1);
-    func_8008D594(0);
+    setCloudstonesPaused(0);
     func_80095B70(0);
     func_800A0870(0);
     func_8006F5CC();
@@ -4482,7 +4482,7 @@ void func_80073718(void)
 
     func_80095B70(1);
     D_800F1858 = 0;
-    func_8008D594(1);
+    setCloudstonesPaused(1);
 }
 
 void func_80073870(void)
@@ -4506,7 +4506,7 @@ void func_800738E4(void)
     SfxOverride sp10;
     int i;
 
-    func_8008D594(0);
+    setCloudstonesPaused(0);
     func_80095B70(0);
     renderAllGeometry = 0;
 
@@ -8254,7 +8254,7 @@ void func_8007B508(void)
                 func_8009E070(0, NULL, 6);
                 func_8006F848();
             }
-            func_8008D594(1);
+            setCloudstonesPaused(1);
             return;
         }
     }
@@ -8267,7 +8267,7 @@ void func_8007B508(void)
             func_8009E070(0, NULL, 6);
             func_8006F848();
         }
-        func_8008D594(1);
+        setCloudstonesPaused(1);
         return;
     }
     func_8007B4C4();
@@ -16366,7 +16366,7 @@ int func_8008C49C(int arg0, int arg1)
 {
     if (vs_battle_roomData.cloudstoneSection != NULL) {
         vs_battle_roomData.cloudstoneSection[arg0].rider = arg1;
-        if ((arg1 >= 0) && (D_800F1D68 == 0)) {
+        if ((arg1 >= 0) && (cloudstoneFreezeTimer == 0)) {
             D_800F1D70[arg0] = 0;
         }
         return 1;
@@ -16384,16 +16384,16 @@ void func_8008C538(void)
     int* temp_v0;
     u_int temp_a0;
 
-    D_800F1D6E = 0;
-    D_800F1D68 = 0;
-    D_800F1D6F = 0;
+    cloudstonesPaused = 0;
+    cloudstoneFreezeTimer = 0;
+    cloudstonesAltPalette = 0;
 
     for (i = 0; i < 4; ++i) {
         D_800F1D70[i] = 7;
     }
 
     if (vs_battle_roomData.cloudstoneSection != NULL) {
-        temp_s3 = vs_battle_roomData.header.cloudstoneSectionLen / 184;
+        temp_s3 = vs_battle_roomData.header.cloudstoneSectionLen / sizeof(MpdCloudstone);
         var_s2 = vs_battle_roomData.cloudstoneSection;
         for (i = 0; i < temp_s3; ++i, ++var_s2) {
             temp_v0 = func_8009195C(var_s2->geometryId);
@@ -16467,18 +16467,18 @@ int func_8008C8A8(void)
     int* scene;
     u_int temp;
 
-    if (D_800F1BA4 || vs_battle_roomData.cloudstoneSection == NULL || D_800F1D6E) {
+    if (D_800F1BA4 || vs_battle_roomData.cloudstoneSection == NULL || cloudstonesPaused) {
         return;
     }
-    if (D_800F1D68 > 0) {
-        D_800F1D68 -= vs_gametime_tickspeed >> 1;
+    if (cloudstoneFreezeTimer > 0) {
+        cloudstoneFreezeTimer -= vs_gametime_tickspeed >> 1;
 
-        if (D_800F1D68 < 30 && vs_main_frameBuf) {
-            func_8008E4DC(D_800F1D6F == 0);
+        if (cloudstoneFreezeTimer < 30 && vs_main_frameBuf) {
+            setCloudstonePalette(cloudstonesAltPalette == 0);
         }
-        if (D_800F1D68 <= 0) {
-            func_8008E4DC(0);
-            D_800F1D68 = 0;
+        if (cloudstoneFreezeTimer <= 0) {
+            setCloudstonePalette(0);
+            cloudstoneFreezeTimer = 0;
         }
 
         return;
@@ -16662,7 +16662,8 @@ int func_8008D2C0(SVECTOR arg0[])
     do {
         if (vs_battle_roomData.cloudstoneSection != NULL) {
             var_t0 = vs_battle_roomData.cloudstoneSection;
-            temp_t3 = vs_battle_roomData.header.cloudstoneSectionLen / 184;
+            temp_t3 =
+                vs_battle_roomData.header.cloudstoneSectionLen / sizeof(MpdCloudstone);
             var_t1 = 0;
 
             for (i = 0; i < temp_t3; ++i, ++var_t0) {
@@ -16742,18 +16743,25 @@ MpdRoomSection13* func_8008D508(int arg0, int arg1, int arg2)
     return NULL;
 }
 
-void func_8008D594(int arg0) { D_800F1D6E = arg0; }
+/** Stops the moving platforms from updating at all, or lets them resume. */
+void setCloudstonesPaused(int paused) { cloudstonesPaused = paused; }
 
-void func_8008D5A0(int arg0)
+/**
+ * Sets how long the moving platforms (cloudstones) stay frozen, shown in an alternate
+ * palette. For the last 30 ticks the palette flashes, then they thaw. Zero thaws them
+ * at once.
+ * @param ticks Time left frozen.
+ */
+void setCloudstoneFreezeTimer(int ticks)
 {
 
-    if ((vs_battle_roomData.header.cloudstoneSectionLen / 184) != 0) {
-        if (arg0 != 0) {
-            func_8008E4DC(1);
+    if ((vs_battle_roomData.header.cloudstoneSectionLen / sizeof(MpdCloudstone)) != 0) {
+        if (ticks != 0) {
+            setCloudstonePalette(1);
         } else {
-            func_8008E4DC(0);
+            setCloudstonePalette(0);
         }
-        D_800F1D68 = arg0;
+        cloudstoneFreezeTimer = ticks;
     }
 }
 
@@ -17232,7 +17240,7 @@ short func_8008E4AC(void) { return vs_battle_roomData.sectionB->unk56; }
 
 static int getRoomTrapLevel(void) { return vs_battle_roomData.sectionB->trapLevel; }
 
-void func_8008E4DC(int arg0)
+void setCloudstonePalette(int alternate)
 {
     static u_short const D_80068BFC[0x10] = { 0x10, 1, 0x865, 0xC66, 0x869, 0xCA9, 0x88D,
         0x10AD, 0xCB1, 0x14D1, 0xCD5, 0x14F5, 0xCF9, 0x113A, 0x199B, 0x21FC };
@@ -17241,15 +17249,15 @@ void func_8008E4DC(int arg0)
     int temp_s2;
     int i;
 
-    if (D_800F1D6F != arg0) {
-        if (arg0 != 0) {
+    if (cloudstonesAltPalette != alternate) {
+        if (alternate != 0) {
             vs_main_loadClut(D_80068BFC, 2, 0x30, 0x10);
         } else {
             vs_main_loadClut(D_800F1BA8 + 0x230, 2, 0x30, 0x10);
         }
 
         var_s0 = vs_battle_roomData.cloudstoneSection;
-        temp_s2 = vs_battle_roomData.header.cloudstoneSectionLen / 184;
+        temp_s2 = vs_battle_roomData.header.cloudstoneSectionLen / sizeof(MpdCloudstone);
 
         for (i = 0; i < temp_s2; ++i) {
             if (var_s0->unk0_12) {
@@ -17262,7 +17270,7 @@ void func_8008E4DC(int arg0)
                 toggleRoomTaskPaused(vs_battle_roomData.sectionB->unk2C);
             }
         }
-        D_800F1D6F = !D_800F1D6F;
+        cloudstonesAltPalette = !cloudstonesAltPalette;
     }
 }
 

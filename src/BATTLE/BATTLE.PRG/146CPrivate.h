@@ -295,11 +295,11 @@ VS_HIDDEN(func_8008C49C);
 int func_8008D2C0(SVECTOR arg0[]);
 VS_HIDDEN(func_8008D2C0);
 
-void func_8008D594(int);
-VS_HIDDEN(func_8008D594);
+void setCloudstonesPaused(int);
+VS_HIDDEN(setCloudstonesPaused);
 
-void func_8008D5A0(int);
-VS_HIDDEN(func_8008D5A0);
+void setCloudstoneFreezeTimer(int);
+VS_HIDDEN(setCloudstoneFreezeTimer);
 
 short func_8008DA24(int arg0, int arg1);
 VS_HIDDEN(func_8008DA24);

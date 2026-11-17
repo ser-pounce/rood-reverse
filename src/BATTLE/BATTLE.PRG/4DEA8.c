@@ -3800,9 +3800,9 @@ int vs_battle_script_B7_specialOp(u_char* script, UNUSED short arg1)
         specialSweepCameraToPlayerView = 9,
         specialSetCameraPitchPreset = 10,
         specialScaleCameraMoveDurationByDistance = 11,
-        specialSetCloudstoneTimer = 12,
+        specialSetCloudstoneFreezeTimer = 12,
         specialShowAllGeometry = 13,
-        specialDisableCloudstones = 14,
+        specialSetCloudstonesPaused = 14,
         specialRunSceneReset = 16,
         specialSkipRoomSeen = 17,
     };
@@ -3882,16 +3882,16 @@ int vs_battle_script_B7_specialOp(u_char* script, UNUSED short arg1)
         scaleCameraMoveDurationByDistance(script[2]);
         break;
 
-    case specialSetCloudstoneTimer:
-        func_8008D5A0(script[2]);
+    case specialSetCloudstoneFreezeTimer:
+        setCloudstoneFreezeTimer(script[2]);
         break;
 
     case specialShowAllGeometry:
         func_8008C40C();
         break;
 
-    case specialDisableCloudstones:
-        func_8008D594(script[2]);
+    case specialSetCloudstonesPaused:
+        setCloudstonesPaused(script[2]);
         break;
 
     case 15:

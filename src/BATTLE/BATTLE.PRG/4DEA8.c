@@ -4967,6 +4967,8 @@ int vs_battle_script_B9_BA_BF_E4_E5_E6_E7_ED(u_char* script, UNUSED short arg1)
         func_8007DE2C(script[1]);
         return scriptNext;
 
+    // [1] = zoom (<< 6), [2] = distortion (signed), [3] = tween type, [4] = tween
+    // duration, 0 = immediate. See setScreenLensDistortion.
     case 237:
         if (D_800F4BA4->unk25C.unk1E > 0) {
             return scriptRepeat;
@@ -4976,7 +4978,7 @@ int vs_battle_script_B9_BA_BF_E4_E5_E6_E7_ED(u_char* script, UNUSED short arg1)
         if (D_800F4BA4->unk25C.unk1E == 0) {
             D_800F4BA4->unk25C.unk2 = effectValue = script[1] << 6;
             D_800F4BA4->unk25C.unk4 = (signed char)script[2];
-            func_800F9BC0(effectValue, D_800F4BA4->unk25C.unk4);
+            setScreenLensDistortion(effectValue, D_800F4BA4->unk25C.unk4);
         } else {
             D_800F4BA4->unk25C.unk1C = 0;
             D_800F4BA4->unk25C.unk12 =
@@ -5040,7 +5042,7 @@ void func_800BDAB4(void)
         func_8007DDF8(&sp10);
     }
     if (func_800BDBB4(&D_800F4BA4->unk25C) != 0) {
-        func_800F9BC0(D_800F4BA4->unk25C.unk2, D_800F4BA4->unk25C.unk4);
+        setScreenLensDistortion(D_800F4BA4->unk25C.unk2, D_800F4BA4->unk25C.unk4);
     }
 }
 

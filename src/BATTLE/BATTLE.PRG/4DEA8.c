@@ -3803,6 +3803,7 @@ int vs_battle_script_B7_specialOp(u_char* script, UNUSED short arg1)
         specialSetCloudstoneFreezeTimer = 12,
         specialClearCulledGeometry = 13,
         specialSetCloudstonesPaused = 14,
+        specialSetScreenEdgeGlow = 15,
         specialRunSceneReset = 16,
         specialSkipRoomSeen = 17,
     };
@@ -3894,8 +3895,8 @@ int vs_battle_script_B7_specialOp(u_char* script, UNUSED short arg1)
         setCloudstonesPaused(script[2]);
         break;
 
-    case 15:
-        func_800F9DE8(script[2]);
+    case specialSetScreenEdgeGlow:
+        setScreenEdgeGlow(script[2]);
         break;
 
     case specialRunSceneReset:

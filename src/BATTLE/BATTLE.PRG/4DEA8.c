@@ -3915,11 +3915,15 @@ int vs_battle_script_B7_specialOp(u_char* script, UNUSED short arg1)
     return scriptNext;
 }
 
-int vs_battle_script_B8(UNUSED u_char* arg0, UNUSED short arg1)
+/**
+ * Waits until the screen effects overlay, started by opcode BC, has finished loading.
+ */
+int vs_battle_script_B8_waitScreenEffectsLoaded(UNUSED u_char* arg0, UNUSED short arg1)
 {
-    if ((D_800EB9B4 != NULL) && (D_800EB9B4->unk0 != 0)) {
+    if ((screenEffects != NULL) && (screenEffects->loading != 0)) {
         return scriptRepeat;
     }
+
     return scriptNext;
 }
 

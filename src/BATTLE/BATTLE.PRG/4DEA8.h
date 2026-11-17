@@ -125,7 +125,7 @@ int vs_battle_script_B3_setActorAwake(u_char*, short);
 int vs_battle_script_B5_removeMiscItem(u_char*, short);
 int vs_battle_script_B6_setFlagToActorDistance(u_char*, short);
 int vs_battle_script_B7_specialOp(u_char*, short);
-int vs_battle_script_B8(u_char*, short);
+int vs_battle_script_B8_waitScreenEffectsLoaded(u_char*, short);
 int vs_battle_script_B9_BA_BF_E4_E5_E6_E7_ED(u_char*, short);
 int vs_battle_script_BC(u_char*, short);
 int vs_battle_script_BD(u_char*, short);

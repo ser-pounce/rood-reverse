@@ -385,6 +385,7 @@ vs_battle_limbNames = 0x800EA620;
 vs_battle_statusStrings = 0x800EA868;
 vs_battle_characterWidths = 0x800EB810;
 loadedSubMenu = 0x800EB9AD;
+screenEffects = 0x800EB9B4;
 gims = 0x800EB9BC;
 vs_battle_menuItems = 0x800EB9C0;
 menuBgUnpackedBuf = 0x800EB9D4;

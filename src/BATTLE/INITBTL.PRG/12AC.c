@@ -89,7 +89,7 @@ static int (*skipOpcodeTableInit[])(u_char*, short) = { vs_battle_script_invalid
     vs_battle_script_B2_setFlagsToActorDistanceAndAngle,
     vs_battle_script_B3_setActorAwake, vs_battle_script_invalidOpcode,
     vs_battle_script_B5_removeMiscItem, vs_battle_script_B6_setFlagToActorDistance,
-    vs_battle_script_B7_specialOp, vs_battle_script_B8,
+    vs_battle_script_B7_specialOp, vs_battle_script_B8_waitScreenEffectsLoaded,
     vs_battle_script_B9_BA_BF_E4_E5_E6_E7_ED, vs_battle_script_B9_BA_BF_E4_E5_E6_E7_ED,
     vs_battle_script_nop, vs_battle_script_BC, vs_battle_script_BD, vs_battle_script_BE,
     vs_battle_script_B9_BA_BF_E4_E5_E6_E7_ED, vs_battle_script_Cx_Dx_camera,

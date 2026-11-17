@@ -3927,9 +3927,16 @@ int vs_battle_script_B8_waitScreenEffectsLoaded(UNUSED u_char* arg0, UNUSED shor
     return scriptNext;
 }
 
-int vs_battle_script_BB(u_char* arg0, UNUSED short arg1)
+/**
+ * Blurs the screen from a given depth in the drawing order, or turns the blur off.
+ * Needs the screen effects overlay loaded by opcode BC.
+ * @param script Opcode bytes:
+ *   - [1-2] = depth in the ordering table, 0 = off
+ */
+int vs_battle_script_BB_setScreenBlur(u_char* script, UNUSED short arg1)
 {
-    func_800F9800(getShort(arg0 + 1));
+    setScreenBlurDepth(getShort(script + 1));
+
     return scriptNext;
 }
 

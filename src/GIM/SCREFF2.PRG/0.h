@@ -4,16 +4,16 @@
 
 typedef struct {
     u_char loading;
-    u_char unk1;
-    u_short unk2;
+    u_char blurActive;
+    u_short blurDepth;
     short unk4;
     short unk6;
     int edgeGlow;
     vs_CdQueueSlot* slot;
 } ScreenEffects;
 
-void func_800F9800(int);
-void func_800F986C(void);
+void setScreenBlurDepth(int);
+void drawScreenBlur(void);
 void func_800F9BC0(short, short);
 void func_800F9BD8(void);
 void setScreenEdgeGlow(int);

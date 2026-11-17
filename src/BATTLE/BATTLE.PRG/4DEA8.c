@@ -3801,7 +3801,7 @@ int vs_battle_script_B7_specialOp(u_char* script, UNUSED short arg1)
         specialSetCameraPitchPreset = 10,
         specialScaleCameraMoveDurationByDistance = 11,
         specialSetCloudstoneFreezeTimer = 12,
-        specialShowAllGeometry = 13,
+        specialClearCulledGeometry = 13,
         specialSetCloudstonesPaused = 14,
         specialRunSceneReset = 16,
         specialSkipRoomSeen = 17,
@@ -3886,8 +3886,8 @@ int vs_battle_script_B7_specialOp(u_char* script, UNUSED short arg1)
         setCloudstoneFreezeTimer(script[2]);
         break;
 
-    case specialShowAllGeometry:
-        func_8008C40C();
+    case specialClearCulledGeometry:
+        clearCulledGeometry();
         break;
 
     case specialSetCloudstonesPaused:

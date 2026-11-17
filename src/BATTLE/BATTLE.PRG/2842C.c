@@ -593,9 +593,14 @@ int adjustGeometryObjectDepth(int index, int amount)
     return 0;
 }
 
-int func_80091AC0(int arg0)
+/**
+ * Hides a geometry object from the current view. Cleared by clearCulledGeometry.
+ * @param id Geometry object index.
+ * @return 1 if the object exists.
+ */
+int cullGeometryObject(int id)
 {
-    int* temp_v0 = func_8009195C(arg0);
+    int* temp_v0 = func_8009195C(id);
     if (temp_v0 != NULL) {
         *temp_v0 |= 0x1000;
         return 1;

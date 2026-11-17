@@ -11,21 +11,27 @@
 #include <libgte.h>
 #include <inline_c.h>
 
-void func_800F9800(int arg0)
+/**
+ * Sets the depth the screen blur applies from, 0 turns it off. Reserves the VRAM
+ * pages the blur draws into while it is on.
+ * @param depth Depth in the ordering table.
+ */
+void setScreenBlurDepth(int arg0)
 {
-    screenEffects->unk2 = arg0;
-    if (screenEffects->unk1 == 0) {
+    screenEffects->blurDepth = arg0;
+    if (screenEffects->blurActive == 0) {
         if (arg0 != 0) {
-            screenEffects->unk1 = 1U;
+            screenEffects->blurActive = 1U;
             func_8007DFF0(0x1B, 5, 6);
         }
     } else if (arg0 == 0) {
-        screenEffects->unk1 = 0U;
+        screenEffects->blurActive = 0U;
         func_8007E0A8(0x1B, 5, 6);
     }
 }
 
-void func_800F986C(void)
+/** Draws the blur: the screen is redrawn over itself, shifted by 2 pixels. */
+void drawScreenBlur(void)
 {
     int temp_v0;
     int var_s0;
@@ -92,7 +98,7 @@ void func_800F986C(void)
         }
     }
 
-    var_s0 = screenEffects->unk2 - 3;
+    var_s0 = screenEffects->blurDepth - 3;
     var_t2 = vs_scratch.unk0;
     var_t2[0] = ((temp_s4[var_s0] & 0xFFFFFF) | 0x07000000);
     var_t2[1] = 0xE30402C0;

@@ -3470,8 +3470,8 @@ void func_800CB708(void)
         if (*(int*)&temp_s0->unk4 != 0x1000) {
             func_800F9BD8();
         }
-        if (temp_s0->unk2 != 0) {
-            func_800F986C();
+        if (temp_s0->blurDepth != 0) {
+            drawScreenBlur();
         }
         if (temp_s0->edgeGlow != 0) {
             drawScreenEdgeGlow();
@@ -3492,7 +3492,7 @@ void func_800CB7DC(void)
 {
     if (screenEffects != NULL) {
         func_8007E1C0(6);
-        if (screenEffects->unk1 == 1) {
+        if (screenEffects->blurActive == 1) {
             func_8007E0A8(0x1B, 5, 6);
         }
         func_800CA97C();

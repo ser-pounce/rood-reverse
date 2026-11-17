@@ -286,8 +286,8 @@ void func_800BDF6C(func_800BDF6C_unk180_t* arg0);
 void func_800BE180(void);
 void func_800BE36C(int, int);
 void func_800BE3A0(void);
-void func_800BE3D0(char arg0);
-void func_800BE5A4(short arg0);
+void sweepCameraToPlayerView(char side);
+void scaleCameraMoveDurationByDistance(short target);
 VECTOR* vectorAdd(VECTOR* arg0, VECTOR* arg1, VECTOR* arg2);
 VECTOR* vectorSubtract(VECTOR* arg0, VECTOR* arg1, VECTOR* arg2);
 VECTOR* setVectorImm(VECTOR*, u_char*);
@@ -3797,9 +3797,9 @@ int vs_battle_script_B7_specialOp(u_char* script, UNUSED short arg1)
         specialDiscardNextEvt = 6,
         specialSetCameraFollowsAshley = 7,
         specialPauseBattleTimer = 8,
-        specialInitCamera = 9,
+        specialSweepCameraToPlayerView = 9,
         specialSetCameraPitchPreset = 10,
-        specialScaleCameraDuration = 11,
+        specialScaleCameraMoveDurationByDistance = 11,
         specialSetCloudstoneTimer = 12,
         specialShowAllGeometry = 13,
         specialDisableCloudstones = 14,
@@ -3870,16 +3870,16 @@ int vs_battle_script_B7_specialOp(u_char* script, UNUSED short arg1)
         pauseBattleTimer(script[2]);
         break;
 
-    case specialInitCamera:
-        func_800BE3D0(script[2]);
+    case specialSweepCameraToPlayerView:
+        sweepCameraToPlayerView(script[2]);
         break;
 
     case specialSetCameraPitchPreset:
         setCameraPitchPreset(D_800E9C00[script[2]]);
         break;
 
-    case specialScaleCameraDuration:
-        func_800BE5A4(script[2]);
+    case specialScaleCameraMoveDurationByDistance:
+        scaleCameraMoveDurationByDistance(script[2]);
         break;
 
     case specialSetCloudstoneTimer:
@@ -5233,7 +5233,12 @@ void func_800BE3A0(void)
     c2->lookAt.follow = 0;
 }
 
-void func_800BE3D0(char arg0)
+/**
+ * Sweeps the camera into the view the player had before the scene (the facing and zoom
+ * saved in state flags 0xAF and 0xB0), coming in from above and from one side.
+ * @param side 0 or 1, which side the camera comes in from.
+ */
+void sweepCameraToPlayerView(char side)
 {
     VECTOR sp10;
     VECTOR sp20;
@@ -5246,7 +5251,7 @@ void func_800BE3D0(char arg0)
     temp_s3 = getStateFlag(0xAF);
     temp_s0 = getStateFlag(0xB0);
     new_var = temp_s3 - 1;
-    initialiseCameraFromSpherical(&sp30, &sp10, (new_var + (arg0 * 2)) & 7, temp_s0 + 1);
+    initialiseCameraFromSpherical(&sp30, &sp10, (new_var + (side * 2)) & 7, temp_s0 + 1);
 
     sp30.vy += D_800E9C24[temp_s0] << 0xC;
     sp10.vy += D_800E9C24[temp_s0] << 0xC;
@@ -5267,15 +5272,24 @@ void func_800BE3D0(char arg0)
     vs_battle_script_Cx_Dx_camera(&D_800E9C2C, 0);
 }
 
-void func_800BE53C(D_800F4BA4_t2* arg0)
+/**
+ * Multiplies a camera move's duration by the distance left to travel, in units per 1000.
+ */
+static void scaleMoveDurationByDistance(D_800F4BA4_t2* camera)
 {
-    VECTOR sp10;
+    VECTOR remaining;
 
-    vectorSubtract(&sp10, &arg0->current, &arg0->position);
-    arg0->duration = ((vectorMagnitude(&sp10) >> 0xC) * arg0->duration) / 1000;
+    vectorSubtract(&remaining, &camera->current, &camera->position);
+    camera->duration = ((vectorMagnitude(&remaining) >> 0xC) * camera->duration) / 1000;
 }
 
-void func_800BE5A4(short arg0)
+/**
+ * Scales the duration of a camera move by the distance it has left to travel, see
+ * scaleMoveDurationByDistance.
+ * @param target 0 = look-at, 2 = both (taking the average duration), anything else =
+ * eye.
+ */
+void scaleCameraMoveDurationByDistance(short target)
 {
     D_800F4BA4_t2* temp_s0;
     D_800F4BA4_t2* var_a0;
@@ -5284,19 +5298,19 @@ void func_800BE5A4(short arg0)
     temp_s0 = &D_800F4BA4->lookAt;
     temp_s1 = &D_800F4BA4->eye;
 
-    if (arg0 == 2) {
-        func_800BE53C(temp_s0);
-        func_800BE53C(temp_s1);
+    if (target == 2) {
+        scaleMoveDurationByDistance(temp_s0);
+        scaleMoveDurationByDistance(temp_s1);
         temp_s0->duration = temp_s1->duration =
             (temp_s0->duration + temp_s1->duration) >> 1;
 
         return;
     }
     var_a0 = temp_s0;
-    if (arg0 != 0) {
+    if (target != 0) {
         var_a0 = temp_s1;
     }
-    func_800BE53C(var_a0);
+    scaleMoveDurationByDistance(var_a0);
 }
 
 VECTOR* vectorAdd(VECTOR* arg0, VECTOR* arg1, VECTOR* arg2)

@@ -13,14 +13,14 @@
 
 void func_800F9800(int arg0)
 {
-    D_800EB9B4->unk2 = arg0;
-    if (D_800EB9B4->unk1 == 0) {
+    screenEffects->unk2 = arg0;
+    if (screenEffects->unk1 == 0) {
         if (arg0 != 0) {
-            D_800EB9B4->unk1 = 1U;
+            screenEffects->unk1 = 1U;
             func_8007DFF0(0x1B, 5, 6);
         }
     } else if (arg0 == 0) {
-        D_800EB9B4->unk1 = 0U;
+        screenEffects->unk1 = 0U;
         func_8007E0A8(0x1B, 5, 6);
     }
 }
@@ -92,7 +92,7 @@ void func_800F986C(void)
         }
     }
 
-    var_s0 = D_800EB9B4->unk2 - 3;
+    var_s0 = screenEffects->unk2 - 3;
     var_t2 = vs_scratch.unk0;
     var_t2[0] = ((temp_s4[var_s0] & 0xFFFFFF) | 0x07000000);
     var_t2[1] = 0xE30402C0;
@@ -119,8 +119,8 @@ void func_800F986C(void)
 
 void func_800F9BC0(short arg0, short arg1)
 {
-    D_800EB9B4->unk4 = arg0;
-    D_800EB9B4->unk6 = arg1;
+    screenEffects->unk4 = arg0;
+    screenEffects->unk6 = arg1;
 }
 
 void func_800F9BD8(void)
@@ -138,8 +138,8 @@ void func_800F9BD8(void)
     *ot = -1;
     packet = ot + 0x7FE;
 
-    temp = (u_short)D_800EB9B4->unk4 * 16;
-    value = D_800EB9B4->unk6 + 0x1000;
+    temp = (u_short)screenEffects->unk4 * 16;
+    value = screenEffects->unk6 + 0x1000;
 
     for (i = 0; i < 0x1BC; ++i) {
         table[i] = temp >> 3;
@@ -222,7 +222,7 @@ void func_800F9BD8(void)
  * Turns the bright haze around the edges of the screen on or off.
  * @param enabled Nonzero = on.
  */
-void setScreenEdgeGlow(int enabled) { D_800EB9B4->edgeGlow = enabled; }
+void setScreenEdgeGlow(int enabled) { screenEffects->edgeGlow = enabled; }
 
 static int func_800F9DF8(int arg0, int arg1)
 {

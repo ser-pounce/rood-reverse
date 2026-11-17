@@ -3042,7 +3042,7 @@ void func_800CA2DC(void)
 
 void func_800CA97C(void)
 {
-    D_800EB9B4 = NULL;
+    screenEffects = NULL;
     memset(&D_800F4ED8, 0, sizeof D_800F4ED8);
     D_800F4ED8[2] = 0x1000;
 }
@@ -3054,7 +3054,7 @@ void vs_battle_initUi(void* fontData)
     D_800EB9AE = 0;
     D_800EB9B0 = 0;
     D_800F4ED4 = 0;
-    D_800EB9B4 = NULL;
+    screenEffects = NULL;
     D_800EB9B8 = NULL;
     gims = NULL;
     vs_battle_menuItems = 0;
@@ -3439,11 +3439,11 @@ D_800F18EC_t* func_800CB66C(void) { return &D_800F4E98; }
 void loadScreff2(int arg0)
 {
     vs_CdFile file;
-    D_800EB9B4_t* p = D_800EB9B4;
+    ScreenEffects* p = screenEffects;
     void* const* new_var;
 
     if (arg0 != 0) {
-        p->unk0 = 1;
+        p->loading = 1;
         file.lba = VS_SCREFF2_PRG_LBA;
         file.size = VS_SCREFF2_PRG_SIZE;
         p->slot = vs_main_allocateCdQueueSlot(&file);
@@ -3454,16 +3454,16 @@ void loadScreff2(int arg0)
 
     if (p->slot->state == 4) {
         vs_main_freeCdQueueSlot(p->slot);
-        p->unk0 = 0;
+        p->loading = 0;
         vs_main_wait();
     }
 }
 
 void func_800CB708(void)
 {
-    D_800EB9B4_t* temp_s0 = D_800EB9B4;
+    ScreenEffects* temp_s0 = screenEffects;
     if (temp_s0 != NULL) {
-        if (temp_s0->unk0 != 0) {
+        if (temp_s0->loading != 0) {
             loadScreff2(0);
             return;
         }
@@ -3481,8 +3481,8 @@ void func_800CB708(void)
 
 void func_800CB79C(void)
 {
-    if (D_800EB9B4 == NULL) {
-        D_800EB9B4 = (D_800EB9B4_t*)D_800F4ED8;
+    if (screenEffects == NULL) {
+        screenEffects = (ScreenEffects*)D_800F4ED8;
         func_8007E180(6);
         loadScreff2(1);
     }
@@ -3490,9 +3490,9 @@ void func_800CB79C(void)
 
 void func_800CB7DC(void)
 {
-    if (D_800EB9B4 != NULL) {
+    if (screenEffects != NULL) {
         func_8007E1C0(6);
-        if (D_800EB9B4->unk1 == 1) {
+        if (screenEffects->unk1 == 1) {
             func_8007E0A8(0x1B, 5, 6);
         }
         func_800CA97C();

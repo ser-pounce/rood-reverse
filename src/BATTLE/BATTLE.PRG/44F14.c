@@ -239,7 +239,7 @@ loop:
         } else {
             if (target5->unk0.unk9_0 || target5->unk0.unk9_4 || !target5->unk0.unk9_7
                 || target5->unk0.unkA_0 || target5->unk0.unkA_3 || target5->unk0.unkA_5) {
-                func_800A1280(id, 0xFF, &target5->unk6FC, 0);
+                getActorScreenPoint(id, 0xFF, &target5->unk6FC, 0);
             }
 
             sfx[0] =
@@ -267,7 +267,7 @@ loop:
 
             if (target7->unk0.unk9_0 || target7->unk0.unk9_4 || !target7->unk0.unk9_7
                 || target7->unk0.unkA_0 || target7->unk0.unkA_3 || target7->unk0.unkA_5) {
-                func_800A1280(id, 0xFF, &target7->unk6FC, 0);
+                getActorScreenPoint(id, 0xFF, &target7->unk6FC, 0);
             }
 
             value = vs_main_computeSfxPan(*(int*)&target7->unk6FC, target7->unk6FC.vz);
@@ -299,7 +299,7 @@ loop:
         } else {
             if (target8->unk0.unk9_0 || target8->unk0.unk9_4 || !target8->unk0.unk9_7
                 || target8->unk0.unkA_0 || target8->unk0.unkA_3 || target8->unk0.unkA_5) {
-                func_800A1280(id, 0xFF, &target8->unk6FC, 0);
+                getActorScreenPoint(id, 0xFF, &target8->unk6FC, 0);
             }
 
             sfx[0] =
@@ -633,7 +633,7 @@ void func_800AE4FC(D_800F4538_t* arg0, int arg1)
         sp[1] = 0;
     } else {
         if ((*((int*)&actor->unk0.nQuads + 1) & 0x3F9F00) != 0x8000) {
-            func_800A1280(arg0->unk0.unkF, 0xFF, &actor->unk6FC, 0);
+            getActorScreenPoint(arg0->unk0.unkF, 0xFF, &actor->unk6FC, 0);
         }
 
         temp = vs_main_computeSfxPan(*(int*)&actor->unk6FC, actor->unk6FC.vz);
@@ -679,7 +679,7 @@ void func_800AE6C0(D_800F4538_t* arg0, int arg1, int arg2)
 
         if (temp_s0->unk0.unk9_0 || temp_s0->unk0.unk9_4 || !temp_s0->unk0.unk9_7
             || temp_s0->unk0.unkA_0 || temp_s0->unk0.unkA_3 || temp_s0->unk0.unkA_5) {
-            func_800A1280(arg0->unk0.unkF, 0xFF, &temp_s0->unk6FC, 0);
+            getActorScreenPoint(arg0->unk0.unkF, 0xFF, &temp_s0->unk6FC, 0);
         }
 
         temp_v0 = vs_main_computeSfxPan(*(int*)&temp_s0->unk6FC, temp_s0->unk6FC.vz);

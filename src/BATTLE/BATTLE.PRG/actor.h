@@ -161,27 +161,34 @@ typedef struct Actor {
     int unk38;
     vs_ActorStats* stats;
     int unk40;
-    D_800F4538_t* unk44;
-    ActorSubModel* unk48[2];
+    EntityBase* unk44;
+    void* unk48[2];
 } Actor;
 
 typedef struct {
-    struct {
-        Actor unk0;
-        vs_ActorStats unk50;
-    } unk0;
-    D_800F4538_unk0 unk9B4;
-    MATRIX unk6C[8];
-    int unk16C;
-    int unk170;
-    int unk174;
-} Actor_dat2;
+    Actor unk0;
+    vs_ActorStats unk50;
+} ActorAndStats;
 
 typedef struct {
-    Actor_dat2 unk0;
-    char unkB2C[0x1788];
+    ActorAndStats unk0;
+    D_800F45E0_t unk9B4;
+} ObjectActor_dat;
+
+typedef struct {
+    ActorAndStats unk0;
+    D_800F4538_t unk9B4;
+    char unk2290[0x24];
     ActorSubModel unk22B4[2];
 } Actor_dat;
+
+typedef struct {
+    ActorAndStats unk0;
+    D_800F4538_t unk9B4;
+    char unk2290[0x24];
+    D_800F4538_t unk22B4;
+    char unk3B90[0x24];
+} ActorExtraShp_dat;
 
 void vs_battle_nop0(vs_ActorStats*);
 void func_80086FA8(int, vs_ActorStats*);

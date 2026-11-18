@@ -2219,7 +2219,7 @@ void func_800AD62C(int arg0, int* arg1, int* arg2, UNUSED int arg3)
     } else {
         if (temp_s0->unk0.unk9_0 || temp_s0->unk0.unk9_4 || !temp_s0->unk0.unk9_7
             || temp_s0->unk0.unkA_0 || temp_s0->unk0.unkA_3 || temp_s0->unk0.unkA_5) {
-            func_800A1280(arg0, 0xFF, &temp_s0->unk6FC, 0);
+            getActorScreenPoint(arg0, 0xFF, &temp_s0->unk6FC, 0);
         }
 
         temp_v0 = vs_main_computeSfxPan(*(int*)&temp_s0->unk6FC, temp_s0->unk6FC.vz);

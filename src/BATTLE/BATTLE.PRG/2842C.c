@@ -1551,7 +1551,7 @@ int func_80093B68(int arg0, int arg1, u_int arg2, int arg3)
     D_800F1BAC_t* p;
 
     if (arg1 != -1) {
-        limb = func_800A152C(arg0, arg1, 2);
+        limb = findBoneIndex(arg0, arg1, 2);
 
         if (limb < 0) {
             return -2;
@@ -1595,7 +1595,7 @@ int func_80093B68(int arg0, int arg1, u_int arg2, int arg3)
     }
 
     if (arg3 & 128) {
-        if (func_800A1280(arg0, 251, &position, 0) != 0) {
+        if (getActorScreenPoint(arg0, 251, &position, 0) != 0) {
             return 0;
         }
 
@@ -1723,7 +1723,7 @@ int func_8009406C(int arg0, int arg1, int arg2, int arg3)
 
     p = func_800962E4();
     if (arg3 & 0x80) {
-        if (func_800A1280(arg0, 0xFB, &sp10, 0) != 0) {
+        if (getActorScreenPoint(arg0, 0xFB, &sp10, 0) != 0) {
             return 0;
         }
         if ((u_short)sp10.vx >= 0x141) {
@@ -2416,10 +2416,10 @@ void func_80095C18(int actor, int kind)
                 kind = 5;
             }
         }
-        if (func_800A1280(actor, 251, &position, 0)) {
+        if (getActorScreenPoint(actor, 251, &position, 0)) {
             return;
         }
-        if (func_800A1280(0, 251, &other, 0)) {
+        if (getActorScreenPoint(0, 251, &other, 0)) {
             return;
         }
 
@@ -2840,7 +2840,7 @@ void func_80096FF0(int arg0)
         return;
     }
 
-    if (func_800A1280(0, 0xFB, &D_800F2280, 0) != 0) {
+    if (getActorScreenPoint(0, 0xFB, &D_800F2280, 0) != 0) {
         return;
     }
 

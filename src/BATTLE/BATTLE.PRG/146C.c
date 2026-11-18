@@ -141,13 +141,6 @@ typedef struct {
 } ZudHeader;
 
 typedef struct {
-    Actor_dat2 unk0;
-    char unkB2C[0x1788];
-    ActorSubModel unk22B4;
-    char unk289C[0x1318];
-} func_800775C0_t;
-
-typedef struct {
     int count;
     vs_Warp* values[0];
 } D_800F1D08_t;
@@ -1583,7 +1576,7 @@ void func_8006C4C4(int effectId, HitEntity* arg1, int targetLimb)
         sp10.targets[0].value.actor.actor = arg1->unk0.hit.targetActor;
         sp10.targets[0].value.actor.unk1 = targetLimb;
         sp10.targets[0].value.actor.part =
-            func_800A152C(arg1->unk0.hit.targetActor, arg1->unk0.hit.targetLimb, 2);
+            findBoneIndex(arg1->unk0.hit.targetActor, arg1->unk0.hit.targetLimb, 2);
     } else {
         sp10.targets[0].type = 5;
         sp10.targets[0].value.position = arg1->unk0.position;
@@ -3117,7 +3110,7 @@ void func_8006FCBC(void)
     cameraMode = 10;
     temp_s0 = &D_800F19CC->unk854[0];
     stopActorTrails(temp_s0->unk4.unk0.hit.targetActor,
-        func_800A152C(temp_s0->unk4.unk0.hit.targetActor, 0xF0, 0));
+        findBoneIndex(temp_s0->unk4.unk0.hit.targetActor, 0xF0, 0));
 }
 
 void func_8006FD0C(void) { cameraMode = 9; }
@@ -3682,7 +3675,7 @@ void func_8007138C(void)
     request.source.value.actor.actor = action->unk4.unk0.hit.targetActor;
     request.source.value.actor.unk1 = 0;
     request.source.value.actor.part =
-        func_800A152C(action->unk4.unk0.hit.targetActor, 255, 2);
+        findBoneIndex(action->unk4.unk0.hit.targetActor, 255, 2);
 
     count = 0;
 
@@ -3707,18 +3700,18 @@ void func_8007138C(void)
                 action->targets[i].unk0.hit.targetActor;
             request.targets[count].value.actor.unk1 = 0;
             request.targets[count].value.actor.part =
-                func_800A152C(action->targets[i].unk0.hit.targetActor,
+                findBoneIndex(action->targets[i].unk0.hit.targetActor,
                     action->targets[i].unk0.hit.targetLimb, 2);
             // BUG: tests the limb of the entry at the output index
             if (action->targets[count].unk0.hit.targetLimb == -1) {
                 request.targets[count].value.actor.part =
-                    func_800A152C(action->targets[i].unk0.hit.targetActor,
+                    findBoneIndex(action->targets[i].unk0.hit.targetActor,
                         vs_battle_actors[action->targets[i].unk0.hit.targetActor]
                             ->stats->unk36,
                         2);
             } else {
                 request.targets[count].value.actor.part =
-                    func_800A152C(action->targets[i].unk0.hit.targetActor,
+                    findBoneIndex(action->targets[i].unk0.hit.targetActor,
                         action->targets[i].unk0.hit.targetLimb, 2);
             }
 
@@ -3855,7 +3848,7 @@ void func_800719FC(UNUSED int arg0)
                 int limb;
 
                 for (limb = 0; limb < 6; ++limb) {
-                    int part = func_800A152C(i, limb, 2);
+                    int part = findBoneIndex(i, limb, 2);
 
                     if (part >= 0) {
                         func_800A1B9C(i, limb, &D_800F19CC->unk29C0[count].unk0, 0);
@@ -3946,7 +3939,7 @@ void func_80071F68(int arg0)
             && !(vs_battle_actors[i]->role & 0x8000)) {
             if (D_800E81C4[vs_main_actions[action].unk2_4]) {
                 for (j = 0; j < 6; ++j) {
-                    int part = func_800A152C(i, j, 2);
+                    int part = findBoneIndex(i, j, 2);
 
                     if (part >= 0) {
                         func_800A1B9C(i, j, &D_800F19CC->unk29C0[count].unk0, 0);
@@ -4100,7 +4093,7 @@ void func_80072734(int arg0)
                     int limb;
 
                     for (limb = 0; limb < 6; ++limb) {
-                        int part = func_800A152C(i, limb, 2);
+                        int part = findBoneIndex(i, limb, 2);
 
                         if (part >= 0) {
                             func_800A1B9C(i, limb, &D_800F19CC->unk29C0[count].unk0, 0);
@@ -4178,7 +4171,7 @@ void func_80072BA8(int action)
         func_800C0700(&D_800F19CC->unk29B0);
 
         for (limb = 0, count = 0; limb < 6; ++limb) {
-            part = func_800A152C(1, limb, 2);
+            part = findBoneIndex(1, limb, 2);
             if (part >= 0) {
                 func_800A1B9C(1, limb, &D_800F19CC->unk29C0[count].unk0, 0);
                 D_800F19CC->unk29C0[count].unk8 = func_800A1648(1, part, 0);
@@ -5456,7 +5449,7 @@ int func_80075554(void)
         vs_battle_getActorPosition(i, &position);
 
         if (actor->unkB_0) {
-            func_800AE4FC(actor->unk44, actor->unkB_0);
+            func_800AE4FC((D_800F4538_t*)actor->unk44, actor->unkB_0);
         }
 
         switch (actor->unkB_2) {
@@ -5881,7 +5874,7 @@ Actor* func_800765B0(
     vs_ObjectData objData;
     int i;
     int var_v1_2;
-    Actor_dat2* temp_v0;
+    ObjectActor_dat* temp_v0;
 
     if (index == 0xFF) {
         for (i = 2; i < 16; ++i) {
@@ -5900,7 +5893,7 @@ Actor* func_800765B0(
         temp_v0 = vs_main_allocHeap(sizeof *temp_v0);
         vs_main_bzero(temp_v0, sizeof temp_v0->unk0);
         temp_v0->unk0.unk0.stats = &temp_v0->unk0.unk50;
-        temp_v0->unk0.unk0.unk44 = (D_800F4538_t*)&temp_v0->unk9B4;
+        temp_v0->unk0.unk0.unk44 = (EntityBase*)&temp_v0->unk9B4.unk0;
         temp_v0->unk0.unk0.unk18 = 0xFE;
         temp_v0->unk0.unk0.role = actorRoleModelOnly;
         temp_v0->unk0.unk0.unk40 = 0;
@@ -6043,7 +6036,7 @@ void func_80076784(int arg0, vs_ActorStats* stats, vs_CharInitData* init, int ar
         stats->limbs[i].hp = stats->limbs[i].maxHp = init->limbs[i].hp;
         stats->limbs[i].agilityDefenseBonus = init->limbs[i].agilityDefenseBonus;
 
-        j = func_800A152C(arg0, i, 2);
+        j = findBoneIndex(arg0, i, 2);
 
         if (j >= 0) {
             stats->limbs[i].unk5 = j;
@@ -6317,13 +6310,13 @@ Actor_dat* func_80077240(int arg0, int arg1, int bladeWepId, int bladeMaterial,
     }
     if (arg0 < 0xA) {
         temp_v0 = vs_main_allocHeap(sizeof *temp_v0);
-        vs_main_bzero(temp_v0, sizeof temp_v0->unk0.unk0);
+        vs_main_bzero(temp_v0, sizeof temp_v0->unk0);
         i = 0xA;
-        temp_v0->unk0.unk0.unk0.stats = &temp_v0->unk0.unk0.unk50;
-        temp_v0->unk0.unk0.unk0.unk40 = 1;
-        temp_v0->unk0.unk0.unk0.unk44 = (D_800F4538_t*)&temp_v0->unk0.unk9B4;
-        temp_v0->unk0.unk0.unk0.unk48[0] = &temp_v0->unk22B4[0];
-        temp_v0->unk0.unk0.unk0.unk48[1] = &temp_v0->unk22B4[1];
+        temp_v0->unk0.unk0.stats = &temp_v0->unk0.unk50;
+        temp_v0->unk0.unk0.unk40 = 1;
+        temp_v0->unk0.unk0.unk44 = &temp_v0->unk9B4.unk0;
+        temp_v0->unk0.unk0.unk48[0] = &temp_v0->unk22B4[0];
+        temp_v0->unk0.unk0.unk48[1] = &temp_v0->unk22B4[1];
 
         if (bladeWepId != 0) {
             for (i = 1; i < 11; ++i) {
@@ -6333,17 +6326,16 @@ Actor_dat* func_80077240(int arg0, int arg1, int bladeWepId, int bladeMaterial,
             }
         }
 
-        temp_v0->unk0.unk0.unk0.equippedWeaponCategory = i;
+        temp_v0->unk0.unk0.equippedWeaponCategory = i;
 
-        func_80077078(&temp_v0->unk0.unk0.unk0, arg0, arg1, arg6, arg7);
+        func_80077078(&temp_v0->unk0.unk0, arg0, arg1, arg6, arg7);
         if (arg1 != 0x7F) {
-            func_800770FC(&temp_v0->unk0.unk0.unk0, arg0);
+            func_800770FC(&temp_v0->unk0.unk0, arg0);
+            setActorWeaponModel(&temp_v0->unk0.unk0, arg0, bladeWepId, 0, bladeMaterial);
             setActorWeaponModel(
-                &temp_v0->unk0.unk0.unk0, arg0, bladeWepId, 0, bladeMaterial);
-            setActorWeaponModel(
-                &temp_v0->unk0.unk0.unk0, arg0, shieldWepId, 1, shieldMaterial);
+                &temp_v0->unk0.unk0, arg0, shieldWepId, 1, shieldMaterial);
             func_800771E0((char*)&temp_v0->unk0, arg0,
-                temp_v0->unk0.unk0.unk0.equippedWeaponCategory, arg7);
+                temp_v0->unk0.unk0.equippedWeaponCategory, arg7);
         }
         return temp_v0;
     }
@@ -6412,22 +6404,22 @@ Actor* func_800775C0(int id, MpdEnemy* spawn, vs_CharInitData* init, int flags)
         shieldId = (u_char)init->shield.base.wepId;
 
         if (vs_main_actorExtraShp[init->unk2]) {
-            func_800775C0_t* data = vs_main_allocHeap(sizeof *data);
+            ActorExtraShp_dat* data = vs_main_allocHeap(sizeof *data);
 
-            data->unk0.unk0.unk0.stats = &data->unk0.unk0.unk50;
-            data->unk0.unk0.unk0.unk40 = 2;
-            data->unk0.unk0.unk0.unk44 = (D_800F4538_t*)&data->unk0.unk9B4;
-            data->unk0.unk0.unk0.unk48[0] = &data->unk22B4;
-            actor = &data->unk0.unk0.unk0;
+            data->unk0.unk0.stats = &data->unk0.unk50;
+            data->unk0.unk0.unk40 = 2;
+            data->unk0.unk0.unk44 = &data->unk9B4.unk0;
+            data->unk0.unk0.unk48[0] = &data->unk22B4;
+            actor = &data->unk0.unk0;
         } else {
             Actor_dat* data = vs_main_allocHeap(sizeof *data);
 
-            data->unk0.unk0.unk0.stats = &data->unk0.unk0.unk50;
-            data->unk0.unk0.unk0.unk40 = 1;
-            data->unk0.unk0.unk0.unk44 = (D_800F4538_t*)&data->unk0.unk9B4;
-            data->unk0.unk0.unk0.unk48[0] = &data->unk22B4[0];
-            data->unk0.unk0.unk0.unk48[1] = &data->unk22B4[1];
-            actor = &data->unk0.unk0.unk0;
+            data->unk0.unk0.stats = &data->unk0.unk50;
+            data->unk0.unk0.unk40 = 1;
+            data->unk0.unk0.unk44 = &data->unk9B4.unk0;
+            data->unk0.unk0.unk48[0] = &data->unk22B4[0];
+            data->unk0.unk0.unk48[1] = &data->unk22B4[1];
+            actor = &data->unk0.unk0;
         }
 
         category = 10;
@@ -6673,7 +6665,7 @@ void func_80077F14(int arg0, int arg1, SVECTOR* arg2)
     if (arg1 == -1) {
         var_v0 = 0;
     } else {
-        var_v0 = func_800A152C(arg0, arg1, 2);
+        var_v0 = findBoneIndex(arg0, arg1, 2);
     }
     func_800A1AF8(arg0, var_v0, arg2, 0);
 }
@@ -8884,7 +8876,7 @@ int vs_battle_getCurrentRoomId(void)
 void playActorSfx(int arg0, int arg1)
 {
     if ((vs_battle_actors[arg0] != 0) && (arg0 < 16)) {
-        func_800AE4FC(vs_battle_actors[arg0]->unk44, arg1);
+        func_800AE4FC((D_800F4538_t*)vs_battle_actors[arg0]->unk44, arg1);
     }
 }
 
@@ -8917,14 +8909,14 @@ int spawnModelActor(u_int slot, int modelId, vs_TilePosition* tile)
         if (vs_battle_actors[slot] == NULL) {
             temp_s1 = &vs_battle_actors[slot];
             temp_v0 = vs_main_allocHeap(sizeof *temp_v0);
-            *temp_s1 = &temp_v0->unk0.unk0.unk0;
-            temp_v0->unk0.unk0.unk0.stats = &temp_v0->unk0.unk0.unk50;
-            temp_v0->unk0.unk0.unk0.unk40 = 1;
-            temp_v0->unk0.unk0.unk0.unk44 = (D_800F4538_t*)&temp_v0->unk0.unk9B4;
-            temp_v0->unk0.unk0.unk0.unk48[0] = &temp_v0->unk22B4[0];
-            temp_v0->unk0.unk0.unk0.unk48[1] = &temp_v0->unk22B4[1];
+            *temp_s1 = &temp_v0->unk0.unk0;
+            temp_v0->unk0.unk0.stats = &temp_v0->unk0.unk50;
+            temp_v0->unk0.unk0.unk40 = 1;
+            temp_v0->unk0.unk0.unk44 = &temp_v0->unk9B4.unk0;
+            temp_v0->unk0.unk0.unk48[0] = &temp_v0->unk22B4[0];
+            temp_v0->unk0.unk0.unk48[1] = &temp_v0->unk22B4[1];
             func_80076D50(slot, modelId, 0, 0, 6);
-            s0 = func_80077078(&temp_v0->unk0.unk0.unk0, slot, modelId, tile, 0);
+            s0 = func_80077078(&temp_v0->unk0.unk0, slot, modelId, tile, 0);
             func_800E6178(*temp_s1, -1);
             return s0 + 1;
         }

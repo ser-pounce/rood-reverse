@@ -4152,7 +4152,15 @@ int vs_battle_script_F5_forkAndJump(u_char* script, UNUSED short arg1)
     return (long)&script[getShort(script + 2)];
 }
 
-int vs_battle_script_F6(UNUSED u_char* arg0, UNUSED short arg1) { return scriptEnd; }
+/**
+ * Ends the current script. In practice only used by forked scripts.
+ * @param script Opcode bytes:
+ *   - [1] = slot identifier, unused
+ */
+int vs_battle_script_F6_endScript(UNUSED u_char* script, UNUSED short arg1)
+{
+    return scriptEnd;
+}
 
 /**
  * Starts loading an EVT file to continue into once the running script ends.

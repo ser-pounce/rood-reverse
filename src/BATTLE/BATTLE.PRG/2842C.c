@@ -1723,7 +1723,7 @@ int func_8009406C(int arg0, int arg1, int arg2, int arg3)
 
     p = func_800962E4();
     if (arg3 & 0x80) {
-        if (getActorScreenPoint(arg0, 0xFB, &sp10, 0) != 0) {
+        if (getActorScreenPoint(arg0, actorPointAboveHead, &sp10, 0) != 0) {
             return 0;
         }
         if ((u_short)sp10.vx >= 0x141) {
@@ -2840,7 +2840,7 @@ void func_80096FF0(int arg0)
         return;
     }
 
-    if (getActorScreenPoint(0, 0xFB, &D_800F2280, 0) != 0) {
+    if (getActorScreenPoint(0, actorPointAboveHead, &D_800F2280, 0) != 0) {
         return;
     }
 

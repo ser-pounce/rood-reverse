@@ -253,8 +253,8 @@ int VS_GRID_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
                     break;
                 }
 
-                prim = vs_scratch.unk0;
-                vs_scratch.unk0 = prim + 1;
+                prim = vs_scratch.nextPrim;
+                vs_scratch.nextPrim = prim + 1;
                 prim->poly.tag = _get_mode(0, 0, 0);
                 prim->drawMode = _get_mode(0, 1, 0);
                 *(int*)&prim->poly.x0 = screen[row][column];
@@ -268,9 +268,10 @@ int VS_GRID_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
                 prim->poly.v2 = prim->poly.v3 = v[row + 1];
                 prim->poly.tpage = state->tpage;
                 prim->poly.clut = state->clut;
-                prim->tag = (((u_long*)vs_scratch.unk4)[depth] & 0xFFFFFF) | 0x0B000000;
-                ((u_long*)vs_scratch.unk4)[depth] =
-                    (((u_long*)vs_scratch.unk4)[depth] & 0xFF000000)
+                prim->tag =
+                    (((u_long*)vs_scratch.depthOt)[depth] & 0xFFFFFF) | 0x0B000000;
+                ((u_long*)vs_scratch.depthOt)[depth] =
+                    (((u_long*)vs_scratch.depthOt)[depth] & 0xFF000000)
                     | ((u_long)prim & 0xFFFFFF);
             }
         }

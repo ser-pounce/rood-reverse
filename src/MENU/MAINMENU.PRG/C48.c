@@ -697,7 +697,7 @@ static void renderStatPage(int xOffset)
     u_long* prim;
     int a0;
 
-    u_long* before = vs_scratch.unk4 - 0xC;
+    u_long* before = vs_scratch.depthOt - 0xC;
     statPage = vs_mainMenu_itemStatPage;
 
     switch (statPage) {
@@ -844,7 +844,7 @@ static void renderStatPage(int xOffset)
         vs_battle_insertTpage(
             vs_getTpage(0, 0, clut4Bit, semiTransparencyHalf, ditheringOff), before);
 
-        prim = vs_scratch.unk0;
+        prim = vs_scratch.nextPrim;
 
         for (j = 0; j < 11; ++j) {
             temp_a0 = var_s6 + j;
@@ -859,7 +859,7 @@ static void renderStatPage(int xOffset)
             prim += 5;
         }
 
-        vs_scratch.unk0 = prim;
+        vs_scratch.nextPrim = prim;
 
         vs_battle_insertTpage(
             vs_getTpage(0, 0, clut4Bit, semiTransparencyHalf, ditheringOn), before);
@@ -1034,7 +1034,7 @@ void vs_mainMenu_renderEquipStats(int animate)
 
     position = vs_getXY(248, 126);
     stats = vs_battle_actors[D_80102488[3]]->stats;
-    temp_s4 = vs_scratch.unk4 - 0x18;
+    temp_s4 = vs_scratch.depthOt - 0x18;
 
     if (animate != 0) {
         if (statsAnimation != animate) {
@@ -1128,7 +1128,7 @@ void vs_mainMenu_renderDpPpBars(int flags)
     static char state = 1;
     static char target = 0;
 
-    void* before = vs_scratch.unk4 - 0xC;
+    void* before = vs_scratch.depthOt - 0xC;
 
     if (flags != 0) {
 

@@ -181,15 +181,16 @@ void VS_PARTICLE_RENDER_FUNCTION(func_800FA098_arg0* effect, func_800FA098_arg1*
                     break;
                 }
 
-                prim = vs_scratch.unk0;
-                vs_scratch.unk0 = prim + 1;
+                prim = vs_scratch.nextPrim;
+                vs_scratch.nextPrim = prim + 1;
                 setlen(prim, 14);
                 prim->poly.code = primPolyGT4SemiTrans;
                 prim->poly.tag = _get_mode(0, 0, 0);
                 prim->drawMode = _get_mode(0, 1, 0);
-                prim->tag = (((u_long*)vs_scratch.unk4)[value] & 0xFFFFFF) | 0x0E000000;
-                ((u_long*)vs_scratch.unk4)[value] =
-                    (((u_long*)vs_scratch.unk4)[value] & 0xFF000000)
+                prim->tag =
+                    (((u_long*)vs_scratch.depthOt)[value] & 0xFFFFFF) | 0x0E000000;
+                ((u_long*)vs_scratch.depthOt)[value] =
+                    (((u_long*)vs_scratch.depthOt)[value] & 0xFF000000)
                     | ((u_long)prim & 0xFFFFFF);
                 *(int*)&prim->poly.r0 = *(int*)&color;
                 *(int*)&prim->poly.r1 = *(int*)&color;
@@ -261,15 +262,16 @@ void VS_PARTICLE_RENDER_FUNCTION(func_800FA098_arg0* effect, func_800FA098_arg1*
             break;
         }
 
-        prim = vs_scratch.unk0;
-        vs_scratch.unk0 = prim + 1;
+        prim = vs_scratch.nextPrim;
+        vs_scratch.nextPrim = prim + 1;
         setlen(prim, 14);
         prim->poly.code = primPolyGT4SemiTrans;
         prim->poly.tag = _get_mode(0, 0, 0);
         prim->drawMode = _get_mode(0, 1, 0);
-        prim->tag = (((u_long*)vs_scratch.unk4)[value] & 0xFFFFFF) | 0x0E000000;
-        ((u_long*)vs_scratch.unk4)[value] =
-            (((u_long*)vs_scratch.unk4)[value] & 0xFF000000) | ((u_long)prim & 0xFFFFFF);
+        prim->tag = (((u_long*)vs_scratch.depthOt)[value] & 0xFFFFFF) | 0x0E000000;
+        ((u_long*)vs_scratch.depthOt)[value] =
+            (((u_long*)vs_scratch.depthOt)[value] & 0xFF000000)
+            | ((u_long)prim & 0xFFFFFF);
         *(int*)&prim->poly.r0 = *(int*)&color;
         *(int*)&prim->poly.r1 = *(int*)&color;
         *(int*)&prim->poly.r2 = *(int*)&color;

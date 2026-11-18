@@ -117,7 +117,7 @@ static void renderPhantomPain(CreditsElement* element)
     u_short amplitude;
     u_short i;
     u_short j;
-    POLY_FT4* poly = ((vs_Scratch*)0x1F800000)->unk0;
+    POLY_FT4* poly = ((vs_Scratch*)0x1F800000)->nextPrim;
 
     memset(&rot, 0, sizeof rot);
 
@@ -207,11 +207,11 @@ static void renderPhantomPain(CreditsElement* element)
             poly->clut = getClut(896, 83);
             poly->tpage = getTPage(clut4Bit, semiTransparencyFull, 896, 0);
             poly->r0 = poly->g0 = poly->b0 = brightness;
-            AddPrim(((vs_Scratch*)0x1F800000)->unk4 + 12, poly++);
+            AddPrim(((vs_Scratch*)0x1F800000)->depthOt + 12, poly++);
         }
     }
 
-    ((vs_Scratch*)0x1F800000)->unk0 = poly;
+    ((vs_Scratch*)0x1F800000)->nextPrim = poly;
 }
 
 static void* insertTpage(int tPage, int otOffset);
@@ -640,7 +640,7 @@ static void renderText(CreditsElement* element)
     short len;
     short x;
     short y;
-    SPRT* sprt = ((vs_Scratch*)0x1F800000)->unk0;
+    SPRT* sprt = ((vs_Scratch*)0x1F800000)->nextPrim;
     u_char charTableOffset = 0;
     short underline = 0;
 
@@ -696,7 +696,7 @@ static void renderText(CreditsElement* element)
             setClut(sprt, 960, 480);
             x += glyphWidth - 1;
             sprt->r0 = sprt->g0 = sprt->b0 = masterBrightness;
-            addPrim(((vs_Scratch*)0x1F800000)->unk4 + 12, sprt);
+            addPrim(((vs_Scratch*)0x1F800000)->depthOt + 12, sprt);
             ++sprt;
         }
     }
@@ -714,7 +714,7 @@ static void renderText(CreditsElement* element)
         setWH(sprt, 16, 3);
         setClut(sprt, 960, 480);
         sprt->r0 = sprt->g0 = sprt->b0 = masterBrightness;
-        AddPrim(scratch->unk4 + 12, sprt++);
+        AddPrim(scratch->depthOt + 12, sprt++);
 
         poly = (POLY_FT4*)sprt;
         SetPolyFT4(poly);
@@ -731,7 +731,7 @@ static void renderText(CreditsElement* element)
         poly->clut = getClut(960, 480);
         poly->x1 = poly->x3 = x;
         poly->r0 = poly->g0 = poly->b0 = masterBrightness;
-        AddPrim(scratch->unk4 + 12, poly++);
+        AddPrim(scratch->depthOt + 12, poly++);
 
         sprt = (SPRT*)poly;
         SetSprt(sprt);
@@ -740,11 +740,11 @@ static void renderText(CreditsElement* element)
         setWH(sprt, 16, 3);
         setClut(sprt, 960, 480);
         sprt->r0 = sprt->g0 = sprt->b0 = masterBrightness;
-        AddPrim(scratch->unk4 + 12, sprt++);
+        AddPrim(scratch->depthOt + 12, sprt++);
     }
 
-    ((vs_Scratch*)0x1F800000)->unk0 = sprt;
-    ((vs_Scratch*)0x1F800000)->unk0 =
+    ((vs_Scratch*)0x1F800000)->nextPrim = sprt;
+    ((vs_Scratch*)0x1F800000)->nextPrim =
         insertTpage(getTPage(clut4Bit, semiTransparencyHalf, 960, 256), 3);
 }
 
@@ -1622,10 +1622,10 @@ static void beginFrame(void)
 
     vs_main_processPadState();
     temp_a0 = vs_main_ot[vs_main_frameBuf];
-    vs_scratch.unk8 = temp_a0 + 8;
-    vs_scratch.unk4 = temp_a0 + 0x48;
+    vs_scratch.frontOt = temp_a0 + 8;
+    vs_scratch.depthOt = temp_a0 + 0x48;
     ClearOTagR((u_long*)temp_a0, 0x822);
-    vs_scratch.unk0 = vs_main_prims[vs_main_frameBuf];
+    vs_scratch.nextPrim = vs_main_prims[vs_main_frameBuf];
 }
 
 /**

@@ -21,7 +21,7 @@ void vs_battle_memcpy(void* dst, const void* src, int numBytes)
 
 u_long* vs_battle_setSpriteDefault(int wh, int xy)
 {
-    return vs_battle_setSpriteDefaultTexPage(128, xy, wh, vs_scratch.unk8);
+    return vs_battle_setSpriteDefaultTexPage(128, xy, wh, vs_scratch.frontOt);
 }
 
 u_long* vs_battle_setSpriteDefaultTexPage(
@@ -36,7 +36,7 @@ u_long* vs_battle_setSprite(int brightnessTransparency, int xy, int wh, u_long* 
 {
     int brightness = brightnessTransparency & 0xFF;
     int code = brightnessTransparency & 0x100 ? primSprtSemtTrans : primSprt;
-    u_long* prim = vs_scratch.unk0;
+    u_long* prim = vs_scratch.nextPrim;
 
     prim[0] = vs_getTag(VS_SPRT, *nextPrim);
     prim[1] = 0;
@@ -45,7 +45,7 @@ u_long* vs_battle_setSprite(int brightnessTransparency, int xy, int wh, u_long* 
     prim[4] = 0;
     prim[5] = wh;
     *nextPrim = ((u_long)prim << 8) >> 8;
-    vs_scratch.unk0 = prim + 6;
+    vs_scratch.nextPrim = prim + 6;
     return prim;
 }
 

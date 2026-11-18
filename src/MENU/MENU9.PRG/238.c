@@ -88,7 +88,7 @@ static void renderScrollableMenuItem(vs_MenuItem* menuItem)
     }
 
     xy = *(int*)&menuItem->x;
-    before = vs_scratch.unk8 + 8;
+    before = vs_scratch.frontOt + 8;
     w = menuItem->w;
     animState = menuItem->gradientState;
     isScrollable = menuItem->isScrollable - 1;
@@ -136,7 +136,7 @@ static void renderScrollableMenuItem(vs_MenuItem* menuItem)
         return;
     }
 
-    prim = vs_scratch.unk0;
+    prim = vs_scratch.nextPrim;
 
     for (i = 0, s5 = 0; i < 12; s5 += 8, ++i) {
         if (isScrollable == 0) {
@@ -160,7 +160,7 @@ static void renderScrollableMenuItem(vs_MenuItem* menuItem)
         xy += vs_getXY(0, 1);
     }
 
-    vs_scratch.unk0 = prim;
+    vs_scratch.nextPrim = prim;
 
     if (isScrollable == 0) {
         vs_battle_addTile(before, vs_getRGB0(primTile, 0, 0, 0),

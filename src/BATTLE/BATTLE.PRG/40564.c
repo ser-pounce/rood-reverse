@@ -1515,7 +1515,7 @@ void func_800AB4F0(D_800F4538_t* actor)
         }
 
         scroll = &actor->unk181C[i];
-        scroll->timer += vs_gametime_tickspeed / 2;
+        scroll->timer += vs_gametime_vblanksPerFrame / 2;
 
         if (scroll->timer <= scroll->interval) {
             continue;
@@ -1606,7 +1606,7 @@ void func_800AB788(D_800F4538_t* actor, D_800F45E0_t* object, int arg2)
 
     value = state->unk1;
 
-    if (vs_gametime_tickspeed == 4) {
+    if (vs_gametime_vblanksPerFrame == 4) {
         if (!(state->unk2 & 2)) {
             value += 2;
 

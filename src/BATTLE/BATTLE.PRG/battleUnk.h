@@ -4,7 +4,13 @@
 #include <libgte.h>
 
 void func_8007ACB0(void);
-int func_8007C36C(int arg0);
+/** Frame rates, as the number of vblanks (display refreshes) each frame lasts. */
+typedef enum {
+    frameRateFull = 2, // 30 frames per second, the normal rate
+    frameRateHalf = 4, // 15 frames per second
+} FrameRate;
+
+int setFrameRate(FrameRate rate);
 void setFramebufferEffect(int);
 void func_8007DDAC(int arg0);
 void func_8007DDB8(VECTOR* arg0);

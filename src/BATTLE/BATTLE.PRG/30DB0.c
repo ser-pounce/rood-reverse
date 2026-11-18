@@ -3980,7 +3980,7 @@ int setActorAnimationFromFrame(int arg0, int arg1, int arg2, int arg3)
         return 0;
     }
 
-    arg3 -= vs_gametime_tickspeed / 2;
+    arg3 -= vs_gametime_vblanksPerFrame / 2;
     temp_s0 = D_800F4538[arg0];
 
     if (arg3 > 0) {

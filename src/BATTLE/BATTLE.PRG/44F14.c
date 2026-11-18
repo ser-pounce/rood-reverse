@@ -872,7 +872,7 @@ inline void func_800AEEC4(D_800F4538_t* actor)
         return;
     }
 
-    step = vs_gametime_tickspeed / 2;
+    step = vs_gametime_vblanksPerFrame / 2;
 
     if (actor->unk17E4.duration < step) {
         step = actor->unk17E4.duration;
@@ -943,7 +943,7 @@ void func_800AEF94(MATRIX* camera)
                 processActorMove(i, actor);
             }
 
-            if (vs_gametime_tickspeed == 4) {
+            if (vs_gametime_vblanksPerFrame == 4) {
                 actor->unk5B2 *= 2;
             }
 
@@ -1043,7 +1043,7 @@ void func_800AEF94(MATRIX* camera)
         }
 
         if ((i == D_800F4B19 && D_800F4B18 == 0) || object->unk0.unk1A == 247) {
-            func_800B0908(object, vs_gametime_tickspeed / 2);
+            func_800B0908(object, vs_gametime_vblanksPerFrame / 2);
         }
 
         position = *(int*)&object->unk0.position.vx;

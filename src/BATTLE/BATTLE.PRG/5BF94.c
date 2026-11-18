@@ -1320,7 +1320,8 @@ void printVariableWidthFont(vs_TextBox* arg0)
                             charsRemaining = 0;
                         } else {
                             done =
-                                (arg0->unk0.arrowAnimFrame + vs_gametime_tickspeed) % 24;
+                                (arg0->unk0.arrowAnimFrame + vs_gametime_vblanksPerFrame)
+                                % 24;
                             printX = vs_battle_printVariableWidthFontChar(
                                 0xBC - (done >> 3), printX, printY, sp20);
                             arg0->unk0.arrowAnimFrame = done;
@@ -1499,7 +1500,7 @@ void printVariableWidthFont(vs_TextBox* arg0)
         }
 
         if (charsRemaining <= 0) {
-            arg0->speed += vs_gametime_tickspeed >> 1;
+            arg0->speed += vs_gametime_vblanksPerFrame >> 1;
         }
 
         if ((arg0->prevChunksPrinted != chunksPrinted) && (sfx != 0)) {
@@ -2886,7 +2887,7 @@ void func_800CA2DC(void)
         prim[1] = 0xE1000017;
         prim[2] += rsin(D_800EBD64 & 0x7FF) >> 5;
         prim[4] = 0x373D0040;
-        D_800EBD64 += vs_gametime_tickspeed * 64;
+        D_800EBD64 += vs_gametime_vblanksPerFrame * 64;
     }
 
     if (D_800EB9AF != 0) {
@@ -2997,7 +2998,7 @@ void func_800CA2DC(void)
 
     ++j;
 
-    if ((j != D_800EB9D0[3]) && (vs_gametime_tickspeed == 4)) {
+    if ((j != D_800EB9D0[3]) && (vs_gametime_vblanksPerFrame == 4)) {
         j = (j + 1) & 0xE;
     }
 
@@ -3378,7 +3379,7 @@ int func_800CB45C(void)
             if (D_800F4E68 < 4) {
                 D_800F4E68 = 0;
             } else {
-                D_800F4E68 -= vs_gametime_tickspeed;
+                D_800F4E68 -= vs_gametime_vblanksPerFrame;
             }
 
             if (D_800F4E68 != 0) {
@@ -3520,7 +3521,7 @@ void func_800CB83C(void)
         }
 
         duration = box->animationDuration;
-        scale = vs_gametime_tickspeed >> 1;
+        scale = vs_gametime_vblanksPerFrame >> 1;
 
         if (state < 0) {
             state -= scale;

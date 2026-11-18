@@ -1738,7 +1738,7 @@ static void initGameData(void)
     vs_main_bzero(&vs_main_spawnPoint, sizeof vs_main_spawnPoint);
     vs_main_memcpy(&vs_main_inventory, D_80074C24, sizeof vs_main_inventory);
 
-    vs_gametime_tickspeed = 2;
+    vs_gametime_vblanksPerFrame = 2;
     vs_main_spawnPoint.x = 4;
     vs_main_spawnPoint.z = 2;
     vs_main_spawnPoint.targetTile.arrivalSurface = 0;

@@ -1182,7 +1182,7 @@ void func_800A4D8C(void)
 
     for (i = 0; i < 16; ++i) {
         if ((D_800F45E0[i] != NULL) && (D_800F45E0[i]->unk0.nBones != 0)) {
-            func_800B0908(D_800F45E0[i], vs_gametime_tickspeed / 2);
+            func_800B0908(D_800F45E0[i], vs_gametime_vblanksPerFrame / 2);
         }
     }
     for (i = 0; i < 17; ++i) {
@@ -1609,7 +1609,7 @@ int func_800A6AA0(D_800F4538_t* actor, int speed)
             actor->unk5B3 = 0;
         }
 
-        actor->unk5B3 += vs_gametime_tickspeed / 2;
+        actor->unk5B3 += vs_gametime_vblanksPerFrame / 2;
 
         if (actor->unk5B3 >= 250) {
             actor->unk5B3 = 250;

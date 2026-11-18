@@ -124,7 +124,7 @@ static int (*skipOpcodeTableInit[])(u_char*, short) = { vs_battle_script_invalid
     vs_battle_script_invalidOpcode, vs_battle_script_invalidOpcode,
     vs_battle_script_invalidOpcode, vs_battle_script_invalidOpcode,
     vs_battle_script_invalidOpcode, vs_battle_script_invalidOpcode,
-    vs_battle_script_FE_FF, vs_battle_script_FE_FF };
+    vs_battle_script_FE_FF_endScene, vs_battle_script_FE_FF_endScene };
 
 void initScriptFunctionTable(void)
 {

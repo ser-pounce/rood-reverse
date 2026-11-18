@@ -145,7 +145,7 @@ int vs_battle_script_F4_joinScript(u_char*, short);
 int vs_battle_script_F5_forkAndJump(u_char*, short);
 int vs_battle_script_F6_endScript(u_char*, short);
 int vs_battle_script_F7_queueNextEvt(u_char*, short);
-int vs_battle_script_FE_FF(u_char*, short);
+int vs_battle_script_FE_FF_endScene(u_char*, short);
 
 extern short scriptWarpState;
 extern char particleEffectSoundScripted;

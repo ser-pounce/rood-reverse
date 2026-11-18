@@ -4171,28 +4171,36 @@ int vs_battle_script_F7_queueNextEvt(u_char* arg0, UNUSED short arg1)
 {
     evtFile = getShort(arg0 + 1);
     nextEvtBuffer = vs_main_allocHeapR(0x1800);
+
     func_800C00E8(evtFile, nextEvtBuffer);
+
     nextEvtQueued = 1;
+
     return scriptNext;
 }
 
-int vs_battle_script_FE_FF(UNUSED u_char* arg0, UNUSED short arg1)
+/**
+ * Waits until every text box has closed, then ends the scene.
+ * Restores the full frame rate. No discernable difference in usage
+ * between 0xFE and 0xFF.
+ */
+int vs_battle_script_FE_FF_endScene(UNUSED u_char* script, UNUSED short arg1)
 {
     int i;
-    int var_s1;
-
-    var_s1 = 0;
+    int boxesClosing = 0;
 
     for (i = 0; i < 8; ++i) {
         if (vs_battle_dismissTextBox(i) != 0) {
-            ++var_s1;
+            ++boxesClosing;
         }
     }
 
-    if (var_s1 == 0) {
+    if (boxesClosing == 0) {
         setFrameRate(frameRateFull);
-        return 2;
+
+        return scriptFinish;
     }
+
     return scriptRepeat;
 }
 

@@ -33,6 +33,7 @@ enum ActorSelector {
 enum ScriptResult {
     scriptNext = 0, // advance to the next opcode and keep running
     scriptRepeat = 1, // not finished: stop and run this opcode again next frame
+    scriptFinish = 2, // the main script has finished, which ends the scene
     scriptEnd = 3, // terminate this script
     scriptYield = 4, // advance past this opcode, resume next frame
 };

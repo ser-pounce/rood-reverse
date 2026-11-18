@@ -270,7 +270,7 @@ enum flagOperation {
 static int tryTextBoxPlacement(
     SVECTOR* origin, u_char* script, TextPlacement* result, u_char direction);
 void expandActorSelector(u_short, ActorList*);
-u_short nextActor(ActorList* arg0);
+u_short nextActor(ActorList*);
 int getActorScreenPosition(int arg0, SVECTOR* arg1);
 void attachCameraToActor(u_short actor);
 void setCameraFollowsAshley(int follows);
@@ -4204,50 +4204,66 @@ int vs_battle_script_FE_FF_endScene(UNUSED u_char* script, UNUSED short arg1)
     return scriptRepeat;
 }
 
-int vs_battle_script_F2_playMenuSelectSfx(UNUSED u_char* arg0, UNUSED short arg1)
+/**
+ * Plays the menu select sound effect. Unused.
+ */
+int vs_battle_script_F2_playMenuSelectSfx(UNUSED u_char* script, UNUSED short arg1)
 {
     vs_main_playSfxDefault(0x7E, VS_SFX_MENUSELECT);
     return scriptNext;
 }
 
-void expandActorSelector(u_short arg0, ActorList* arg1)
+/**
+ * 0x2001 selects every actor and 0x2003 selects only the engaged enemies. Any other
+ * selector < 0x2000 is a single actor, see resolveActorId.
+ * @param selector Actor selector.
+ * @param list List to fill in, to be read with nextActor.
+ */
+void expandActorSelector(u_short selector, ActorList* list)
 {
-    Actor* temp_v0;
-    short var_s3 = 0;
-    arg1->remaining = 0;
-    arg1->next = 0;
+    short count = 0;
 
-    if (arg0 & actorSelectorAll) {
+    list->remaining = 0;
+    list->next = 0;
+
+    if (selector & actorSelectorAll) {
         short i;
-        short var_a0 = -1;
-        if (arg0 == 0x2003) {
-            var_a0 = actorRoleEngagedEnemy;
+        short role = -1;
+
+        if (selector == 0x2003) {
+            role = actorRoleEngagedEnemy;
         }
 
         for (i = 0; i < 17; ++i) {
-            temp_v0 = getActor(i);
-            if (temp_v0 != NULL) {
-                if ((var_a0 < 0) || (temp_v0->role == var_a0)) {
-                    arg1->actors[var_s3++] = i;
-                    ++arg1->remaining;
-                }
+
+            Actor* actor = getActor(i);
+
+            if ((actor != NULL) && ((role < 0) || (actor->role == role))) {
+                list->actors[count++] = i;
+                ++list->remaining;
             }
         }
 
         return;
     }
-    ++arg1->remaining;
-    arg1->actors[0] = resolveActorId(arg0);
+
+    ++list->remaining;
+    list->actors[0] = resolveActorId(selector);
 }
 
-u_short nextActor(ActorList* arg0)
+/**
+ * Takes the next actor from a list filled in by expandActorSelector.
+ * @return The actor id, or 1 once the list is empty.
+ */
+u_short nextActor(ActorList* list)
 {
-    if (arg0->remaining == 0) {
+    if (list->remaining == 0) {
         return 1;
     }
 
-    --arg0->remaining;
-    return arg0->actors[(u_int)(arg0->next++)];
+    --list->remaining;
+
+    return list->actors[(u_int)(list->next++)];
 }
 
 int getActorScreenPosition(int arg0, SVECTOR* arg1)

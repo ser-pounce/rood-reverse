@@ -4095,9 +4095,15 @@ int vs_battle_script_F0_waitFrames(u_char* script, short slot)
     return scriptRepeat;
 }
 
-int vs_battle_script_F1(u_char* arg0, UNUSED short arg1)
+/**
+ * Sets the frame rate, see setFrameRate.
+ * @param script Opcode bytes:
+ *   - [1] = 2 for full rate, 4 for half, else ignored
+ */
+int vs_battle_script_F1_setFrameRate(u_char* script, UNUSED short arg1)
 {
-    func_8007C36C(arg0[1]);
+    setFrameRate(script[1]);
+
     return scriptNext;
 }
 
@@ -4153,7 +4159,7 @@ int vs_battle_script_FE_FF(UNUSED u_char* arg0, UNUSED short arg1)
     }
 
     if (var_s1 == 0) {
-        func_8007C36C(2);
+        setFrameRate(frameRateFull);
         return 2;
     }
     return scriptRepeat;
@@ -4265,7 +4271,7 @@ void func_800BB9B0(void)
 
     for (i = 0; i < 3; ++i, ++tween, ++gim) {
         if (tween->duration != 0) {
-            tween->elapsed += vs_gametime_tickspeed >> 1;
+            tween->elapsed += vs_gametime_vblanksPerFrame >> 1;
             temp_a0 = func_800BFEBC(tween->curve, tween->elapsed, tween->duration);
             if (gims != NULL) {
                 gim->x = (tween->startX + ((tween->deltaX * temp_a0) >> 0xC));
@@ -4701,7 +4707,7 @@ void func_800BCA8C(D_800F4BA4_t2* c, D_800F4BA4_t2* other)
         return;
     }
     if (c->mode != 11) {
-        c->time += vs_gametime_tickspeed >> 1;
+        c->time += vs_gametime_vblanksPerFrame >> 1;
         if (c->time > c->duration) {
             c->time = c->duration;
         }
@@ -4956,7 +4962,7 @@ int vs_battle_script_E2_E3_camera(u_char* arg0, UNUSED short arg1)
 void func_800BD57C(func_800BD57C_t* arg0)
 {
     if (arg0->unkA > 0) {
-        arg0->unk8 += vs_gametime_tickspeed >> 1;
+        arg0->unk8 += vs_gametime_vblanksPerFrame >> 1;
 
         arg0->unk2 = (arg0->unk4
                       + ((arg0->unk6 * func_800BFEBC(arg0->unk1, arg0->unk8, arg0->unkA))
@@ -5161,7 +5167,7 @@ int func_800BDBB4(func_800BDBB4_t* arg0)
         return 0;
     }
 
-    arg0->unk1C = arg0->unk1C + (vs_gametime_tickspeed >> 1);
+    arg0->unk1C = arg0->unk1C + (vs_gametime_vblanksPerFrame >> 1);
 
     v0 = func_800BFEBC(arg0->unk1, arg0->unk1C, arg0->unk1E);
     a0 = (func_800BDBB4_t2*)0x1F800088;
@@ -5245,7 +5251,7 @@ void func_800BDF6C(func_800BDF6C_unk180_t* arg0)
 {
     if (arg0->unk9 != 0) {
         short* new_var;
-        arg0->unk8 += vs_gametime_tickspeed >> 1;
+        arg0->unk8 += vs_gametime_vblanksPerFrame >> 1;
         if (arg0->unk9 < arg0->unk8) {
             arg0->unk8 = arg0->unk9;
         }
@@ -5267,7 +5273,7 @@ int func_800BE01C(func_800BDF6C_t* arg0)
         return 0;
     }
 
-    arg0->unk8 += vs_gametime_tickspeed >> 1;
+    arg0->unk8 += vs_gametime_vblanksPerFrame >> 1;
 
     if (arg0->unk9 < arg0->unk8) {
         arg0->unk8 = arg0->unk9;

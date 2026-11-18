@@ -406,7 +406,7 @@ void func_80069C6C(int arg0)
 
     if ((D_800F19CC->battleAbilityTargetWindow == 0) && (func_80078828(0) != 0)) {
         D_800F19CC->battleAbilityTargetWindow =
-            D_800F19CC->battleAbilityTimer + vs_gametime_tickspeed * 2;
+            D_800F19CC->battleAbilityTimer + vs_gametime_vblanksPerFrame * 2;
     }
 }
 
@@ -3106,7 +3106,7 @@ void func_8006FBCC(int arg0)
     func_8008B4BC(0);
     func_80095B70(0);
     D_800F18FC = arg0;
-    vs_gametime_tickspeed = 2;
+    vs_gametime_vblanksPerFrame = 2;
     cameraMode = 0xB;
 }
 
@@ -3130,7 +3130,7 @@ void func_8006FD1C(void)
     int i;
     int found;
 
-    vs_gametime_tickspeed = 2;
+    vs_gametime_vblanksPerFrame = 2;
     action = &D_800F19CC->unk854[D_800F19CC->unk0 & 3];
     if ((action->actionIndex >= 0x8D) && (action->actionIndex < 0xB8)) {
         func_8009CC20(action->unk4.unk0.hit.targetActor, 5);
@@ -3255,7 +3255,7 @@ void func_80070278(void)
                     temp_s0->unk4.unk0.hit.targetActor, &D_800F19CC->unk8.unk844, 1);
             }
             D_800F19CC->battleAbilityTargetWindow = 0;
-            vs_gametime_tickspeed = 4;
+            vs_gametime_vblanksPerFrame = 4;
         }
     } else {
         if (temp_s0->actionIndex < 0x28) {
@@ -4357,7 +4357,7 @@ void func_800733F8(int arg0)
     request.position.vy = 0;
     request.position.vx = 0;
     func_800CF0E8(&request, 0, 0);
-    vs_gametime_tickspeed = 4;
+    vs_gametime_vblanksPerFrame = 4;
     func_800CB654(1);
     func_8008B4C8(0);
 }
@@ -4365,7 +4365,7 @@ void func_800733F8(int arg0)
 void func_80073484(void)
 {
     func_8006F5CC();
-    vs_gametime_tickspeed = 2;
+    vs_gametime_vblanksPerFrame = 2;
     func_800CB654(0);
     func_8008B4C8(1);
 }
@@ -4775,7 +4775,7 @@ void func_800741D4(void)
 {
     cameraMode = 2;
     if (D_800F196C == 8) {
-        vs_gametime_tickspeed = 4;
+        vs_gametime_vblanksPerFrame = 4;
         func_80073D30(D_800F1910.unk0, &D_800F1910.unk4, D_800F1910.unk4.unkC);
         return;
     }
@@ -4799,7 +4799,7 @@ void func_800742A4(void)
     int v;
 
     cameraMode = 4;
-    vs_gametime_tickspeed = 2;
+    vs_gametime_vblanksPerFrame = 2;
     v = 7;
     sp10.vx = (D_800F1910.unk0->unk0.unk0 << v) + 0x40;
     sp10.vz = (D_800F1910.unk0->unk0.unk2 << v) + 0x40;
@@ -4810,7 +4810,7 @@ void func_800742A4(void)
 void func_80074314(void)
 {
     cameraMode = 4;
-    vs_gametime_tickspeed = 2;
+    vs_gametime_vblanksPerFrame = 2;
     func_800CB50C();
     func_8008DEAC(&D_800F1910.unk0->unk0, 1);
     func_800E68EC(D_800F1910.unk0->unk0.unk0, D_800F1910.unk0->unk0.unk2);
@@ -5799,7 +5799,7 @@ int func_8007629C(u_long* otag)
     SetGeomOffset(160, 112);
     DrawSync(0);
 
-    ret = vs_main_gametimeUpdate(vs_gametime_tickspeed);
+    ret = vs_main_gametimeUpdate(vs_gametime_vblanksPerFrame);
 
     if (vs_main_debugPause != 0) {
         while (1) {
@@ -7026,16 +7026,17 @@ void func_80078AB4(void)
 
     if (D_800F19CC->battleAbilityTargetWindow != 0) {
         if (abilityTimer
-            == (D_800F19CC->battleAbilityTargetWindow - (vs_gametime_tickspeed * 2))) {
+            == (D_800F19CC->battleAbilityTargetWindow
+                - (vs_gametime_vblanksPerFrame * 2))) {
             if (func_80078828(0) != 0) {
                 do {
-                    func_80096FF0((margin * 2) / vs_gametime_tickspeed);
+                    func_80096FF0((margin * 2) / vs_gametime_vblanksPerFrame);
                 } while (0);
             }
         }
     }
 
-    D_800F19CC->battleAbilityTimer += vs_gametime_tickspeed;
+    D_800F19CC->battleAbilityTimer += vs_gametime_vblanksPerFrame;
 
     new_var = &vs_main_buttonsPressed.all;
 
@@ -7944,7 +7945,7 @@ void vs_battle_exec(void)
                     func_800CA2DC();
                     func_800CB83C();
 
-                    for (i = 0; i < vs_gametime_tickspeed / 2; ++i) {
+                    for (i = 0; i < vs_gametime_vblanksPerFrame / 2; ++i) {
                         vs_main_setVibrateParams();
                         vs_main_updateBgColors();
                         vs_main_updateColorSlots();
@@ -8692,12 +8693,17 @@ void triggerActorDeath(int actorId, int animate)
     startActorDeath(actorId, NULL, animate);
 }
 
-int func_8007C36C(int arg0)
+/**
+ * Sets the frame rate, the frame loop waits the matching number of vblanks.
+ * @return The number of vblanks each frame lasts.
+ */
+int setFrameRate(FrameRate rate)
 {
-    if ((arg0 == 2) || (arg0 == 4)) {
-        vs_gametime_tickspeed = arg0;
+    if ((rate == frameRateFull) || (rate == frameRateHalf)) {
+        vs_gametime_vblanksPerFrame = rate;
     }
-    return vs_gametime_tickspeed;
+
+    return vs_gametime_vblanksPerFrame;
 }
 
 int getScreenTransitionPhase(void)
@@ -14417,7 +14423,7 @@ int updateBattleTimer(void)
 
     if (vs_main_battleTimer.mode == battleTimerCountUp) {
         if (vs_main_battleTimer.time.t.h <= 0) {
-            vs_main_battleTimer.time.t.f += vs_gametime_tickspeed;
+            vs_main_battleTimer.time.t.f += vs_gametime_vblanksPerFrame;
             if (vs_main_battleTimer.time.t.f > 59) {
                 vs_main_battleTimer.time.t.f = 0;
                 if (++vs_main_battleTimer.time.t.s > 59) {
@@ -14446,7 +14452,7 @@ int updateBattleTimer(void)
             }
         }
 
-        vs_main_battleTimer.time.t.f -= vs_gametime_tickspeed;
+        vs_main_battleTimer.time.t.f -= vs_gametime_vblanksPerFrame;
     }
 
     if (vs_main_battleTimer.time.t.f != 0) {
@@ -14637,7 +14643,7 @@ int func_80088554(void)
         }
     }
 
-    D_800E8490 = (D_800E8490 + vs_gametime_tickspeed) % 720;
+    D_800E8490 = (D_800E8490 + vs_gametime_vblanksPerFrame) % 720;
 
     if (D_800E8490 % 240 == 0) {
         D_800E8494 = (D_800E8494 + 1) % 6;
@@ -14669,7 +14675,7 @@ void func_80088B8C(void)
                 }
             }
         }
-        D_800E8498 = (D_800E8498 + vs_gametime_tickspeed) % 30;
+        D_800E8498 = (D_800E8498 + vs_gametime_vblanksPerFrame) % 30;
     }
 }
 
@@ -15719,7 +15725,7 @@ void func_8008AC78(void)
     if (D_800F1BA4 == 0) {
         int i;
 
-        for (i = 0; i < (vs_gametime_tickspeed >> 1); ++i) {
+        for (i = 0; i < (vs_gametime_vblanksPerFrame >> 1); ++i) {
             func_80091B04();
         }
     }
@@ -15815,7 +15821,7 @@ void func_8008AC78(void)
     if (vs_battle_characterState->weaponDrawn == 1) {
         int pulse = rsin(D_800F1BA0 << 8) / 64;
         int shade;
-        D_800F1BA0 += vs_gametime_tickspeed / 2;
+        D_800F1BA0 += vs_gametime_vblanksPerFrame / 2;
         shade = 128 - pulse;
         setRGB0(border, shade, 0, 0);
         setRGB1(border, shade + 32, 0, 0);
@@ -15850,7 +15856,7 @@ void func_8008B1FC(void* arg0)
 void func_8008B28C(void)
 {
     if (D_800F1BA4 == 0) {
-        D_800F1CDC += vs_gametime_tickspeed;
+        D_800F1CDC += vs_gametime_vblanksPerFrame;
     }
 }
 
@@ -16506,7 +16512,7 @@ int func_8008C8A8(void)
         return;
     }
     if (cloudstoneFreezeTimer > 0) {
-        cloudstoneFreezeTimer -= vs_gametime_tickspeed >> 1;
+        cloudstoneFreezeTimer -= vs_gametime_vblanksPerFrame >> 1;
 
         if (cloudstoneFreezeTimer < 30 && vs_main_frameBuf) {
             setCloudstonePalette(cloudstonesAltPalette == 0);
@@ -16525,11 +16531,11 @@ int func_8008C8A8(void)
     for (i = 0; i < count; ++i, ++object) {
         if (!object->stopped) {
             if (!object->needsRider || (*(u_int*)((char*)object + 4) & 0xFE) != 0xFE) {
-                for (tick = 0; tick < (vs_gametime_tickspeed >> 1); ++tick) {
+                for (tick = 0; tick < (vs_gametime_vblanksPerFrame >> 1); ++tick) {
                     temp = D_800F1D70[i];
 
                     if (temp < 7) {
-                        D_800F1D70[i] = temp + (vs_gametime_tickspeed >> 1);
+                        D_800F1D70[i] = temp + (vs_gametime_vblanksPerFrame >> 1);
 
                         if (D_800F1D70[i] >= 8) {
                             D_800F1D70[i] = 7;
@@ -17118,13 +17124,13 @@ void func_8008DF14(void)
         for (i = 0; i < count; ++i, ++var_s3) {
             if ((vs_main_stateFlags.unk20 == 0) && (vs_main_stateFlags.unk40 == 0)
                 && (var_s3->unkA != 0)) {
-                for (j = 0; j < (vs_gametime_tickspeed * 2); ++j) {
+                for (j = 0; j < (vs_gametime_vblanksPerFrame * 2); ++j) {
                     if ((signed char)var_s3->unkB >= 0) {
                         ++var_s3->unkB;
                     }
                 }
             } else {
-                for (j = 0; j < vs_gametime_tickspeed; ++j) {
+                for (j = 0; j < vs_gametime_vblanksPerFrame; ++j) {
                     if (var_s3->unkB != 0) {
                         --var_s3->unkB;
                     }
@@ -17134,7 +17140,7 @@ void func_8008DF14(void)
             if ((var_s3->unkB != 0) && (var_s3->unk6 < 0x10)) {
                 if (var_s2 != 0) {
                     vs_main_memcpy(&D_800E856C, (void*)0x1F800014, sizeof D_800E856C);
-                    D_800F1D6C += vs_gametime_tickspeed;
+                    D_800F1D6C += vs_gametime_vblanksPerFrame;
                     if (D_800F1D6C >= 8) {
                         D_800F1D6C -= 8;
                         var_s2 = (D_800F1CDC >> 3) % 5;
@@ -17720,7 +17726,7 @@ void func_8008F440(void)
     for (i = 0; i < D_800F1DC0; ++i, ++particle) {
         if (particle->unkC == 0) {
             if (D_800F1BA4 == 0) {
-                for (j = 0; j < (vs_gametime_tickspeed >> 1); ++j) {
+                for (j = 0; j < (vs_gametime_vblanksPerFrame >> 1); ++j) {
                     particle->position.vy += D_800F1D98[1] << particle->unkE;
                     if (particle->unkE == 0) {
                         particle->position.vx += D_800F1D98[0];
@@ -17795,7 +17801,7 @@ void func_8008F440(void)
                 AddPrim((u_long*)((vs_Scratch*)0x1F800000)->unk4 + depth, splash++);
                 ((vs_Scratch*)0x1F800000)->unk0 = splash;
                 if (D_800F1BA4 == 0) {
-                    particle->unkD += vs_gametime_tickspeed >> 1;
+                    particle->unkD += vs_gametime_vblanksPerFrame >> 1;
                 }
                 if (particle->unkD >= 8) {
                     func_80090A1C(particle);
@@ -17849,7 +17855,7 @@ void func_8008FAC8(void)
             continue;
         }
         if (D_800F1BA4 == 0) {
-            particle->position.vy -= particle->unkF * vs_gametime_tickspeed;
+            particle->position.vy -= particle->unkF * vs_gametime_vblanksPerFrame;
             if (particle->position.vy < -1024) {
                 func_8008FA14(particle);
             }
@@ -17900,7 +17906,7 @@ void func_8008FDC4(void)
     for (i = 0; i < D_800F1DC0; ++i, ++particle) {
         if (particle->unkC == 0) {
             if (D_800F1BA4 == 0) {
-                for (j = 0; j < (vs_gametime_tickspeed >> 1); ++j) {
+                for (j = 0; j < (vs_gametime_vblanksPerFrame >> 1); ++j) {
                     if (particle->unkE != 0) {
                         particle->position.vy += D_800F1D98[1] << particle->unkE;
                     } else {
@@ -18001,7 +18007,7 @@ void func_8008FDC4(void)
                 ((vs_Scratch*)0x1F800000)->unk0 = prim;
                 insertTPage(depth, getTPage(0, 3, 0, 0));
                 if (D_800F1BA4 == 0) {
-                    particle->unkD += vs_gametime_tickspeed >> 1;
+                    particle->unkD += vs_gametime_vblanksPerFrame >> 1;
                 }
                 if (particle->unkD >= 8) {
                     func_80090A1C(particle);
@@ -18047,7 +18053,7 @@ void func_80090434(void)
     prim = cursor;
     for (flags = 0; flags < D_800F1DC0; ++flags, ++particle) {
         if (D_800F1BA4 == 0) {
-            for (j = 0; j < (vs_gametime_tickspeed >> 1); ++j) {
+            for (j = 0; j < (vs_gametime_vblanksPerFrame >> 1); ++j) {
                 particle->unkF += (rand() & 15) - 7;
                 particle->unkF &= 127;
                 if (particle->unkD != 0) {

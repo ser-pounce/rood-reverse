@@ -1764,7 +1764,7 @@ void func_800941FC(void)
     }
 
     if (D_800F1BA4 == 0) {
-        D_800F2278 += vs_gametime_tickspeed / 2;
+        D_800F2278 += vs_gametime_vblanksPerFrame / 2;
     }
 
     if (D_800F2278 > 20) {
@@ -1850,7 +1850,7 @@ void func_800941FC(void)
                     func_80094B0C(screen[0], screen[1], label);
                 }
 
-                label->unkB += vs_gametime_tickspeed / 2;
+                label->unkB += vs_gametime_vblanksPerFrame / 2;
 
                 if (label->unkB >= 10) {
                     label->unk0.pad = -1;
@@ -1872,7 +1872,7 @@ void func_800941FC(void)
                 break;
             }
 
-            label->unkB += vs_gametime_tickspeed / 2;
+            label->unkB += vs_gametime_vblanksPerFrame / 2;
 
             if (label->unkB >= 10) {
                 func_80094AF8(label);
@@ -1890,7 +1890,7 @@ void func_800941FC(void)
                     }
                 }
 
-                label->unkB += vs_gametime_tickspeed / 2;
+                label->unkB += vs_gametime_vblanksPerFrame / 2;
 
                 if (label->unkB >= 10) {
                     label->unk0.pad = -1;
@@ -1903,7 +1903,7 @@ void func_800941FC(void)
                 break;
             }
 
-            label->unkB += vs_gametime_tickspeed / 2;
+            label->unkB += vs_gametime_vblanksPerFrame / 2;
 
             if (label->unkB >= 10) {
                 func_80094AF8(label);
@@ -1911,7 +1911,7 @@ void func_800941FC(void)
             break;
         case 3:
             func_8009506C(screen[0], screen[1], label);
-            label->unkB += vs_gametime_tickspeed / 2;
+            label->unkB += vs_gametime_vblanksPerFrame / 2;
 
             if (label->unkB >= 31) {
                 label->unk8.u8[0] = 0;
@@ -1920,7 +1920,7 @@ void func_800941FC(void)
             break;
         case 4:
             func_800958A4(44, 48, label);
-            label->unkB += vs_gametime_tickspeed / 2;
+            label->unkB += vs_gametime_vblanksPerFrame / 2;
 
             if (label->unkB >= 46) {
                 label->unk8.u8[0] = 0;
@@ -1929,7 +1929,7 @@ void func_800941FC(void)
             break;
         case 5:
             func_80095A4C(44, 64, label);
-            label->unkB += vs_gametime_tickspeed / 2;
+            label->unkB += vs_gametime_vblanksPerFrame / 2;
 
             if (label->unkB >= 91) {
                 label->unk8.u8[0] = 0;
@@ -1947,7 +1947,7 @@ void func_800941FC(void)
                 break;
             }
 
-            label->unkB += vs_gametime_tickspeed / 2;
+            label->unkB += vs_gametime_vblanksPerFrame / 2;
 
             if (label->unkB >= 61) {
                 label->unk8.u8[0] = 0;

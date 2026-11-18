@@ -1025,7 +1025,7 @@ void vs_main_showEndingAndReturnToTitle(void)
     vs_overlay_jumpToTitle(&sp2);
 }
 
-int vs_gametime_tickspeed;
+int vs_gametime_vblanksPerFrame;
 static u_short clutBuffer[14][256];
 static UNUSED int _15[8];
 static int nextVoicePool0;
@@ -1061,7 +1061,7 @@ int vs_main_gametimeUpdate(int mode)
         return vsync;
     }
 
-    vs_main_gametime.t.f += vs_gametime_tickspeed;
+    vs_main_gametime.t.f += vs_gametime_vblanksPerFrame;
 
     if (vs_main_gametime.t.f < 60) {
         return vsync;
@@ -1743,7 +1743,7 @@ int vs_main_processPadState(void)
 
     for (i = 0; i < 32; ++i, btnState >>= 1) {
         if (btnState & 1) {
-            buttonHeldFrameCount[i] += vs_gametime_tickspeed;
+            buttonHeldFrameCount[i] += vs_gametime_vblanksPerFrame;
         } else {
             buttonHeldFrameCount[i] = 0;
         }

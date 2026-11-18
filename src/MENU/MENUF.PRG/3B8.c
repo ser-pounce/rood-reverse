@@ -1069,7 +1069,7 @@ int renderTimeAttackStart(void)
         }
 
     } else if (screenState == 2) {
-        func_8007C36C(4);
+        setFrameRate(frameRateHalf);
         func_8007DDAC(0);
         func_8007DDB8(&D_801096F0[0]);
         func_8007DDD4(&colors[1]);
@@ -1145,7 +1145,7 @@ int renderTimeAttackStart(void)
         }
 
     } else if (screenState == 4) {
-        func_8007C36C(2);
+        setFrameRate(frameRateFull);
         func_8007DDB8(&D_801096F0[2]);
         setFramebufferEffect(0);
         func_8007E0A8(0x1D, 2, 5);

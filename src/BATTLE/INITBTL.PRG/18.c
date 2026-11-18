@@ -569,7 +569,7 @@ void func_800FA35C(UNUSED int startState)
     lootListHead = NULL;
     D_800F1874 = 0;
     D_800F196C = 0;
-    vs_gametime_tickspeed = 2;
+    vs_gametime_vblanksPerFrame = 2;
     vs_main_projectionDistance = 0x200;
     vs_main_nearClip = 0x40;
     vs_main_battleTimer.mode = battleTimerOff;

@@ -4070,19 +4070,28 @@ int vs_battle_script_E1_setFramebufferEffect(u_char* script, UNUSED short arg1)
     return scriptNext;
 }
 
-int vs_battle_script_F0(u_char* arg0, short arg1)
+/**
+ * Waits for a number of frames.
+ * @param script Opcode bytes:
+ *   - [1] = frames to wait, must not be 0
+ * @param slot Script slot running the opcode.
+ */
+int vs_battle_script_F0_waitFrames(u_char* script, short slot)
 {
-    if (scriptWaitFrames[arg1] == 0) {
-        scriptWaitFrames[arg1] = arg0[1];
+    if (scriptWaitFrames[slot] == 0) {
+        scriptWaitFrames[slot] = script[1];
+
         return scriptRepeat;
     }
 
-    --scriptWaitFrames[arg1];
+    --scriptWaitFrames[slot];
 
-    if ((scriptWaitFrames[arg1] << 0x10) <= 0) {
-        scriptWaitFrames[arg1] = 0;
+    if ((scriptWaitFrames[slot] << 0x10) <= 0) {
+        scriptWaitFrames[slot] = 0;
+
         return scriptNext;
     }
+
     return scriptRepeat;
 }
 

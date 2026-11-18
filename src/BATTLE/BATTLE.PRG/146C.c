@@ -7429,10 +7429,10 @@ void vs_battle_exec(void)
 
                     ot = vs_main_ot[vs_main_frameBuf];
                     D_800F1870 = ot;
-                    vs_scratch.unk8 = ot + 2;
-                    vs_scratch.unk4 = ot + 18;
+                    vs_scratch.frontOt = ot + 2;
+                    vs_scratch.depthOt = ot + 18;
                     ClearOTagR(ot, 2082);
-                    vs_scratch.unk0 = vs_main_prims[vs_main_frameBuf];
+                    vs_scratch.nextPrim = vs_main_prims[vs_main_frameBuf];
                     AddPrim(ot, &D_800F1970[vs_main_frameBuf]);
 
                     if (((vs_main_startState == 3) || (vs_main_startState == 4))
@@ -15400,11 +15400,11 @@ void func_8008A3A0(void)
     int i;
 
     for (i = 0; i < 2; ++i) {
-        vs_scratch.unk4 = vs_main_ot[vs_main_frameBuf] + 0x10;
-        ClearOTagR(vs_scratch.unk4, 0x800);
+        vs_scratch.depthOt = vs_main_ot[vs_main_frameBuf] + 0x10;
+        ClearOTagR(vs_scratch.depthOt, 0x800);
         func_8007DF40();
-        drawScreenTransition(vs_scratch.unk4);
-        func_8007629C(vs_scratch.unk4 + 0x1FFC);
+        drawScreenTransition(vs_scratch.depthOt);
+        func_8007629C(vs_scratch.depthOt + 0x1FFC);
     }
 
     DrawSync(0);
@@ -15763,11 +15763,11 @@ void func_8008AC78(void)
 
     func_8008B590(&mapMatrix, 0x800 - ((vs_Scratch*)0x1F800000)->camera.angles.vy);
     SetRotMatrix(&mapMatrix);
-    drawArea = ((vs_Scratch*)0x1F800000)->unk0;
+    drawArea = ((vs_Scratch*)0x1F800000)->nextPrim;
     SetDrawArea(drawArea, &vs_main_drawEnv[(vs_main_frameBuf + 1) & 1].clip);
-    AddPrim((u_long*)((vs_Scratch*)0x1F800000)->unk4 + 5, drawArea);
+    AddPrim((u_long*)((vs_Scratch*)0x1F800000)->depthOt + 5, drawArea);
     ++drawArea;
-    ((vs_Scratch*)0x1F800000)->unk0 = drawArea;
+    ((vs_Scratch*)0x1F800000)->nextPrim = drawArea;
 
     if (vs_main_drawEnv[(vs_main_frameBuf + 1) & 1].clip.x < 320) {
         mapArea.x = 216;
@@ -15785,11 +15785,11 @@ void func_8008AC78(void)
     func_80098F8C(vs_battle_roomData.sectionF);
     vs_battle_setGeomOffset(&originalOffset);
     SetRotMatrix(&((vs_Scratch*)0x1F800000)->viewMatrix);
-    drawArea = ((vs_Scratch*)0x1F800000)->unk0;
+    drawArea = ((vs_Scratch*)0x1F800000)->nextPrim;
     SetDrawArea(drawArea, &mapArea);
-    AddPrim((u_long*)((vs_Scratch*)0x1F800000)->unk4 + 5, drawArea);
+    AddPrim((u_long*)((vs_Scratch*)0x1F800000)->depthOt + 5, drawArea);
     ++drawArea;
-    ((vs_Scratch*)0x1F800000)->unk0 = drawArea;
+    ((vs_Scratch*)0x1F800000)->nextPrim = drawArea;
 
     if (!(vs_main_settings.simpleMap & 2)) {
         return;
@@ -15799,15 +15799,15 @@ void func_8008AC78(void)
     setLineG4(border);
     setXY4(border, 215, 155, 313, 155, 313, 220, 215, 220);
     setSemiTrans(border, 1);
-    AddPrim((u_long*)((vs_Scratch*)0x1F800000)->unk4 + 5, border++);
+    AddPrim((u_long*)((vs_Scratch*)0x1F800000)->depthOt + 5, border++);
     // Retain the frame pointer for the color update below.
     nextLine = (LINE_G2*)border--;
     setLineG2(nextLine);
     setSemiTrans(nextLine, 1);
     setXY2(nextLine, 215, 220, 215, 155);
     edge = nextLine++;
-    AddPrim((u_long*)((vs_Scratch*)0x1F800000)->unk4 + 5, edge);
-    ((vs_Scratch*)0x1F800000)->unk0 = nextLine;
+    AddPrim((u_long*)((vs_Scratch*)0x1F800000)->depthOt + 5, edge);
+    ((vs_Scratch*)0x1F800000)->nextPrim = nextLine;
     insertTPage(5, getTPage(0, 3, 0, 0));
 
     if (vs_battle_characterState->weaponDrawn == 1) {
@@ -16655,7 +16655,7 @@ void func_8008CEB0(void)
             shade = 223;
         }
         shade = 255 - shade;
-        polygon = ((vs_Scratch*)0x1F800000)->unk0;
+        polygon = ((vs_Scratch*)0x1F800000)->nextPrim;
         vertices[0].vx = (short)(object->x / ONE - 32) - shade / 8;
         vertices[0].vy = height;
         vertices[0].vz = (short)(object->z / ONE - 32) - shade / 8;
@@ -16677,8 +16677,8 @@ void func_8008CEB0(void)
         setPolyF4(polygon);
         setSemiTrans(polygon, 1);
         setRGB0(polygon, shade / 2 + 16, shade / 2 + 16, shade / 2 + 16);
-        AddPrim((u_long*)((vs_Scratch*)0x1F800000)->unk4 + depth, polygon++);
-        ((vs_Scratch*)0x1F800000)->unk0 = polygon;
+        AddPrim((u_long*)((vs_Scratch*)0x1F800000)->depthOt + depth, polygon++);
+        ((vs_Scratch*)0x1F800000)->nextPrim = polygon;
         insertTPage(depth, getTPage(0, 2, 0, 0));
     }
 }
@@ -17531,7 +17531,7 @@ void func_8008EC48(VECTOR* arg0)
             func_8009147C(backgroundLayout, x, y, backgroundTexturePage);
         }
     } else if (D_800F1DC6 != 0) {
-        prim = ((vs_Scratch*)0x1F800000)->unk0;
+        prim = ((vs_Scratch*)0x1F800000)->nextPrim;
         setPolyFT4(prim);
         setXY4(prim, 0, 0, 320, 0, 0, 240, 320, 240);
         setUV4(prim, 248, 248, 249, 248, 248, 249, 249, 249);
@@ -17548,8 +17548,8 @@ void func_8008EC48(VECTOR* arg0)
         }
         setTPage(prim, 0, 0, 64, 256);
         setClut(prim, 784, 226);
-        AddPrim(((vs_Scratch*)0x1F800000)->unk4 + 0x1FFC, prim++);
-        ((vs_Scratch*)0x1F800000)->unk0 = prim;
+        AddPrim(((vs_Scratch*)0x1F800000)->depthOt + 0x1FFC, prim++);
+        ((vs_Scratch*)0x1F800000)->nextPrim = prim;
     } else {
         angles = arg0;
         if (angles == NULL) {
@@ -17727,7 +17727,7 @@ void func_8008F440(void)
                 }
             }
             particle->unkE = 2;
-            line = ((vs_Scratch*)0x1F800000)->unk0;
+            line = ((vs_Scratch*)0x1F800000)->nextPrim;
             depth =
                 RotTransPers(&particle->position, (long*)&line->x0, &projection, &flags);
             if ((line->x0 >= -639) && (line->x0 < 960) && (depth < 2048)) {
@@ -17741,8 +17741,8 @@ void func_8008F440(void)
                     setSemiTrans(line, 1);
                     setRGB0(line, 96, 96, 128);
                     setRGB1(line, 32, 32, 100);
-                    AddPrim((u_long*)((vs_Scratch*)0x1F800000)->unk4 + depth, line++);
-                    ((vs_Scratch*)0x1F800000)->unk0 = line;
+                    AddPrim((u_long*)((vs_Scratch*)0x1F800000)->depthOt + depth, line++);
+                    ((vs_Scratch*)0x1F800000)->nextPrim = line;
                     insertTPage(depth, getTPage(0, 3, 0, 0));
                     particle->unkE = 0;
                 }
@@ -17776,7 +17776,7 @@ void func_8008F440(void)
                 particle->position.vz + 24);
             setVector(&vertices[3], particle->position.vx + 24, particle->position.vy,
                 particle->position.vz + 24);
-            splash = ((vs_Scratch*)0x1F800000)->unk0;
+            splash = ((vs_Scratch*)0x1F800000)->nextPrim;
             depth = RotTransPers4(&vertices[0], &vertices[1], &vertices[2], &vertices[3],
                 (long*)&splash->x0, (long*)&splash->x1, (long*)&splash->x2,
                 (long*)&splash->x3, &projection, &flags);
@@ -17790,8 +17790,8 @@ void func_8008F440(void)
                 setRGB0(splash, 128, 128, 128);
                 setTPage(splash, 0, 3, 64, 256);
                 setClut(splash, 1008, 226);
-                AddPrim((u_long*)((vs_Scratch*)0x1F800000)->unk4 + depth, splash++);
-                ((vs_Scratch*)0x1F800000)->unk0 = splash;
+                AddPrim((u_long*)((vs_Scratch*)0x1F800000)->depthOt + depth, splash++);
+                ((vs_Scratch*)0x1F800000)->nextPrim = splash;
                 if (D_800F1BA4 == 0) {
                     particle->unkD += vs_gametime_vblanksPerFrame >> 1;
                 }
@@ -17852,7 +17852,7 @@ void func_8008FAC8(void)
                 func_8008FA14(particle);
             }
         }
-        prim = ((vs_Scratch*)0x1F800000)->unk0;
+        prim = ((vs_Scratch*)0x1F800000)->nextPrim;
         depth = RotTransPers(&particle->position, (long*)&prim->x1, &dx, &dy);
         if ((prim->y1 <= 0) || (prim->y1 >= 240) || (prim->x1 <= 0) || (prim->x1 >= 320)
             || (depth <= 64) || (depth >= 2048)) {
@@ -17873,8 +17873,8 @@ void func_8008FAC8(void)
         setRGB0(prim, 32, 8, 32);
         setRGB3(prim, 32, 8, 32);
         setRGB2(prim, 0, 0, 0);
-        AddPrim((u_long*)((vs_Scratch*)0x1F800000)->unk4 + depth, prim++);
-        ((vs_Scratch*)0x1F800000)->unk0 = prim;
+        AddPrim((u_long*)((vs_Scratch*)0x1F800000)->depthOt + depth, prim++);
+        ((vs_Scratch*)0x1F800000)->nextPrim = prim;
         insertTPage(depth, getTPage(0, 1, 0, 0));
     }
 }
@@ -17928,7 +17928,7 @@ void func_8008FDC4(void)
                 }
             }
             particle->unkE = 2;
-            prim = ((vs_Scratch*)0x1F800000)->unk0;
+            prim = ((vs_Scratch*)0x1F800000)->nextPrim;
             depth =
                 RotTransPers(&particle->position, (long*)&prim->x0, &projection, &flags);
             if ((prim->x0 >= -639) && (prim->x0 < 960) && (depth < 2048)) {
@@ -17944,7 +17944,8 @@ void func_8008FDC4(void)
                             setWH(prim, 1, 1);
                         }
                         setRGB0(prim, 255, 255, 255);
-                        AddPrim((u_long*)((vs_Scratch*)0x1F800000)->unk4 + depth, prim++);
+                        AddPrim(
+                            (u_long*)((vs_Scratch*)0x1F800000)->depthOt + depth, prim++);
                         particle->unkE = 0;
                     }
                     projection = x + (rsin(i << 5) >> 6);
@@ -17960,11 +17961,12 @@ void func_8008FDC4(void)
                             setWH(prim, 1, 1);
                         }
                         setRGB0(prim, 255, 255, 255);
-                        AddPrim((u_long*)((vs_Scratch*)0x1F800000)->unk4 + depth, prim++);
+                        AddPrim(
+                            (u_long*)((vs_Scratch*)0x1F800000)->depthOt + depth, prim++);
                         particle->unkE = 0;
                     }
                     if (particle->unkE == 0) {
-                        ((vs_Scratch*)0x1F800000)->unk0 = prim;
+                        ((vs_Scratch*)0x1F800000)->nextPrim = prim;
                         insertTPage(depth, getTPage(0, 3, 64, 256));
                     }
                 }
@@ -17985,7 +17987,7 @@ void func_8008FDC4(void)
                 }
             }
         } else {
-            prim = ((vs_Scratch*)0x1F800000)->unk0;
+            prim = ((vs_Scratch*)0x1F800000)->nextPrim;
             depth =
                 RotTransPers(&particle->position, (long*)&prim->x0, &projection, &flags);
             if ((prim->y0 > 0) && (prim->y0 < 240) && (prim->x0 > 0) && (prim->x0 < 320)
@@ -17995,8 +17997,8 @@ void func_8008FDC4(void)
                 setWH(prim, 2, 2);
                 setRGB0(prim, 128 - (particle->unkD << 4), 128 - (particle->unkD << 4),
                     128 - (particle->unkD << 4));
-                AddPrim((u_long*)((vs_Scratch*)0x1F800000)->unk4 + depth, prim++);
-                ((vs_Scratch*)0x1F800000)->unk0 = prim;
+                AddPrim((u_long*)((vs_Scratch*)0x1F800000)->depthOt + depth, prim++);
+                ((vs_Scratch*)0x1F800000)->nextPrim = prim;
                 insertTPage(depth, getTPage(0, 3, 0, 0));
                 if (D_800F1BA4 == 0) {
                     particle->unkD += vs_gametime_vblanksPerFrame >> 1;
@@ -18031,7 +18033,7 @@ void func_80090434(void)
     SetTransMatrix(&((vs_Scratch*)0x1F800000)->viewMatrix);
     RotTrans((SVECTOR*)D_800F1CE0, &origin, &flags);
     RotTrans((SVECTOR*)D_800F1D98, &velocity, &flags);
-    cursor = ((vs_Scratch*)0x1F800000)->unk0;
+    cursor = ((vs_Scratch*)0x1F800000)->nextPrim;
     setVector(&origin, (velocity.vx - origin.vx) >> 3, (velocity.vy - origin.vy) >> 3,
         (velocity.vz - origin.vz) >> 3);
     if (D_800F1BA4 == 0) {
@@ -18101,7 +18103,7 @@ void func_80090434(void)
                 setWH(prim, 1, 1);
             }
             setRGB0(prim, color, color, color);
-            AddPrim((u_long*)((vs_Scratch*)0x1F800000)->unk4 + 4, prim++);
+            AddPrim((u_long*)((vs_Scratch*)0x1F800000)->depthOt + 4, prim++);
             cursor += sizeof(TILE);
         }
         if (((u_short)particle->unk8 < 320) && ((u_short)particle->unkA < 240)) {
@@ -18115,7 +18117,7 @@ void func_80090434(void)
                 setWH(prim, 1, 1);
             }
             setRGB0(prim, color, color, color);
-            AddPrim((u_long*)((vs_Scratch*)0x1F800000)->unk4 + 4, prim++);
+            AddPrim((u_long*)((vs_Scratch*)0x1F800000)->depthOt + 4, prim++);
             cursor += sizeof(TILE);
             setTile(prim);
             setXY0(prim, x - ((x - particle->unk8) * 2), y - ((y - particle->unkA) * 2));
@@ -18127,7 +18129,7 @@ void func_80090434(void)
                 setWH(prim, 1, 1);
             }
             setRGB0(prim, color, color, color);
-            AddPrim((u_long*)((vs_Scratch*)0x1F800000)->unk4 + 4, prim++);
+            AddPrim((u_long*)((vs_Scratch*)0x1F800000)->depthOt + 4, prim++);
             cursor += sizeof(TILE);
         }
         if (D_800F1BA4 == 0) {
@@ -18135,7 +18137,7 @@ void func_80090434(void)
             particle->unkA = y;
         }
     }
-    ((vs_Scratch*)0x1F800000)->unk0 = cursor;
+    ((vs_Scratch*)0x1F800000)->nextPrim = cursor;
     insertTPage(4, getTPage(0, 1, 64, 256));
 }
 

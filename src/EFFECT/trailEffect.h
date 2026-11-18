@@ -632,15 +632,15 @@ static void VS_TRAIL_RENDER_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg
             dx = (depths[j] + depths[j + 1]) / 2;
 
             if ((dx < ONE / 2) && (dx > vs_main_nearClip)) {
-                prim = vs_scratch.unk0;
-                vs_scratch.unk0 = prim + 1;
+                prim = vs_scratch.nextPrim;
+                vs_scratch.nextPrim = prim + 1;
                 setlen(prim, 14);
                 setcode(&prim->poly, primPolyGT4SemiTrans);
                 prim->poly.tag = _get_mode(0, 0, 0);
                 prim->drawMode = _get_mode(0, 1, 0);
-                prim->tag = (((u_long*)vs_scratch.unk4)[dx] & 0xFFFFFF) | 0x0E000000;
-                ((u_long*)vs_scratch.unk4)[dx] =
-                    (((u_long*)vs_scratch.unk4)[dx] & 0xFF000000)
+                prim->tag = (((u_long*)vs_scratch.depthOt)[dx] & 0xFFFFFF) | 0x0E000000;
+                ((u_long*)vs_scratch.depthOt)[dx] =
+                    (((u_long*)vs_scratch.depthOt)[dx] & 0xFF000000)
                     | ((u_long)prim & 0xFFFFFF);
                 memcpy(&prim->poly.r0, &quad.poly.r0, 4);
                 memcpy(&prim->poly.r1, &quad.poly.r1, 4);
@@ -684,15 +684,15 @@ static void VS_TRAIL_RENDER_FUNCTION(func_800FA098_arg0* arg0, func_800FA098_arg
             continue;
         }
 
-        prim = vs_scratch.unk0;
-        vs_scratch.unk0 = prim + 1;
+        prim = vs_scratch.nextPrim;
+        vs_scratch.nextPrim = prim + 1;
         setlen(prim, 14);
         setcode(&prim->poly, primPolyGT4SemiTrans);
         prim->poly.tag = _get_mode(0, 0, 0);
         prim->drawMode = _get_mode(0, 1, 0);
-        prim->tag = (((u_long*)vs_scratch.unk4)[dx] & 0xFFFFFF) | 0x0E000000;
-        ((u_long*)vs_scratch.unk4)[dx] =
-            (((u_long*)vs_scratch.unk4)[dx] & 0xFF000000) | ((u_long)prim & 0xFFFFFF);
+        prim->tag = (((u_long*)vs_scratch.depthOt)[dx] & 0xFFFFFF) | 0x0E000000;
+        ((u_long*)vs_scratch.depthOt)[dx] =
+            (((u_long*)vs_scratch.depthOt)[dx] & 0xFF000000) | ((u_long)prim & 0xFFFFFF);
         memcpy(&prim->poly.r0, &quad.poly.r0, 4);
         memcpy(&prim->poly.r1, &quad.poly.r1, 4);
         memcpy(&prim->poly.r2, &quad.poly.r0, 4);

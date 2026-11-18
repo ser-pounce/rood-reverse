@@ -989,12 +989,12 @@ void func_800AEF94(MATRIX* camera)
                 }
 
                 view = (void*)0x1F800000;
-                view->unk4 += actor->unk6F4.otDepth * 4;
+                view->depthOt += actor->unk6F4.otDepth * 4;
                 applyVector(&actor->unk0.position, actor->unk6F4.x, actor->unk6F4.y,
                     actor->unk6F4.z, +=);
                 func_800B002C(actor, actor->unk17FD);
                 func_800B28A8(actor, camera, actor->unk17FD);
-                view->unk4 -= actor->unk6F4.otDepth * 4;
+                view->depthOt -= actor->unk6F4.otDepth * 4;
                 applyVector(&actor->unk0.position, actor->unk6F4.x, actor->unk6F4.y,
                     actor->unk6F4.z, -=);
             }
@@ -1031,7 +1031,7 @@ void func_800AEF94(MATRIX* camera)
 
     scratch = (void*)0x1F80035C;
     view = (void*)0x1F800000;
-    view->unk4 += 16;
+    view->depthOt += 16;
 
     for (i = 0; i < 16; ++i) {
         D_800F45E0_t* object = D_800F45E0[i];
@@ -1064,7 +1064,7 @@ void func_800AEF94(MATRIX* camera)
     }
 
     D_800F4B18 = 0;
-    view->unk4 -= 16;
+    view->depthOt -= 16;
     ++D_800E9308;
 }
 

@@ -271,8 +271,8 @@ void func_800C0990(SVECTOR* start, SVECTOR* end, u_int color, int intensity)
         intensity = 63;
     }
 
-    primitive = vs_scratch.unk0;
-    orderingTable = vs_scratch.unk4;
+    primitive = vs_scratch.nextPrim;
+    orderingTable = vs_scratch.depthOt;
     orderingTable += depth;
     link = *orderingTable & 0xFFFFFF;
     primitive[1] = _get_mode(0, 1, 0);
@@ -281,7 +281,7 @@ void func_800C0990(SVECTOR* start, SVECTOR* end, u_int color, int intensity)
     primitive[2] = (((color << 8) >> 8) * intensity) | ((color >> 24) << 24);
     primitive[4] = *(u_long*)end;
     *orderingTable = ((u_long)primitive << 8) >> 8;
-    vs_scratch.unk0 = primitive + 5;
+    vs_scratch.nextPrim = primitive + 5;
 }
 
 // Registers needed for a match; plain locals when NON_MATCHING is defined

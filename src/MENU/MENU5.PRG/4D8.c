@@ -116,13 +116,13 @@ static void setNextAction(int display)
 static void renderDefaultIcon(int id, int xy, int brightness, u_long* nextPrim)
 {
     if (nextPrim == 0) {
-        nextPrim = vs_scratch.unk8;
+        nextPrim = vs_scratch.frontOt;
     }
 
     vs_battle_setSpriteDefaultTexPage(128, xy, vs_getWH(16, 16), nextPrim)[4] =
         ((id + 4) << 4) | (getClut(976, 223) << 16) | 0x8000;
 
-    ((u_long*)vs_scratch.unk0)[-4] = (int)(brightness | 0x64000000);
+    ((u_long*)vs_scratch.nextPrim)[-4] = (int)(brightness | 0x64000000);
 }
 
 static int currentMapRow = -1;

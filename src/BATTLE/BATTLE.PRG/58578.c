@@ -476,7 +476,7 @@ void func_800C16FC(int x0, int x1, int count)
             int end = segmentEnd >> 4;
 
             if (end < dx) {
-                vs_battle_addTile(vs_scratch.unk8,
+                vs_battle_addTile(vs_scratch.frontOt,
                     vs_getRGB0Raw(primLineF2SemiTrans, color),
                     ((x1 - start * signX) & 0xFFFF) | y1Bits,
                     ((x1 - (end - 1) * signX) & 0xFFFF) | y1Bits);
@@ -484,12 +484,12 @@ void func_800C16FC(int x0, int x1, int count)
                 int lineColor = vs_getRGB0Raw(primLineF2SemiTrans, color);
                 int tail;
 
-                vs_battle_addTile(vs_scratch.unk8, lineColor,
+                vs_battle_addTile(vs_scratch.frontOt, lineColor,
                     ((x1 - start * signX) & 0xFFFF) | y1Bits,
                     ((midX + signX) & 0xFFFF) | y1Bits);
                 tail = length * (15 - i);
                 if (y1 != y0 - (tail >> 4) * signY) {
-                    vs_battle_addTile(vs_scratch.unk8, lineColor,
+                    vs_battle_addTile(vs_scratch.frontOt, lineColor,
                         (midX & 0xFFFF) | y1Bits,
                         vs_getXY_2(x0 + (tail >> 5), y0 - ((tail + 16) >> 4) * signY));
                 }
@@ -498,13 +498,14 @@ void func_800C16FC(int x0, int x1, int count)
             int far2 = length * (16 - i);
             int near2 = length * (15 - i);
 
-            vs_battle_addTile(vs_scratch.unk8, vs_getRGB0Raw(primLineF2SemiTrans, color),
+            vs_battle_addTile(vs_scratch.frontOt,
+                vs_getRGB0Raw(primLineF2SemiTrans, color),
                 vs_getXY_2(x0 + (far2 >> 5), y0 - (far2 >> 4) * signY),
                 vs_getXY_2(x0 + (near2 >> 5), y0 - ((near2 + 16) >> 4) * signY));
         }
     }
-    vs_battle_insertTpage(
-        _get_mode(0, 0, getTPage(clut4Bit, semiTransparencyFull, 0, 0)), vs_scratch.unk8);
+    vs_battle_insertTpage(_get_mode(0, 0, getTPage(clut4Bit, semiTransparencyFull, 0, 0)),
+        vs_scratch.frontOt);
 }
 
 void func_800C1A40(int x0, int x1, int count)
@@ -560,7 +561,7 @@ void func_800C1A40(int x0, int x1, int count)
             int end = segmentEnd >> 4;
 
             if (end < dx) {
-                vs_battle_addTile(vs_scratch.unk8,
+                vs_battle_addTile(vs_scratch.frontOt,
                     vs_getRGB0Raw(primLineF2SemiTrans, color),
                     ((x1 + start * signX) & 0xFFFF) | y1Bits,
                     ((x1 + (end - 1) * signX) & 0xFFFF) | y1Bits);
@@ -568,12 +569,12 @@ void func_800C1A40(int x0, int x1, int count)
                 int lineColor = vs_getRGB0Raw(primLineF2SemiTrans, color);
                 int tail;
 
-                vs_battle_addTile(vs_scratch.unk8, lineColor,
+                vs_battle_addTile(vs_scratch.frontOt, lineColor,
                     ((x1 + start * signX) & 0xFFFF) | y1Bits,
                     ((midX - signX) & 0xFFFF) | y1Bits);
                 tail = length * (15 - i);
                 if (y1 != y0 - (tail >> 4) * signY) {
-                    vs_battle_addTile(vs_scratch.unk8, lineColor,
+                    vs_battle_addTile(vs_scratch.frontOt, lineColor,
                         (midX & 0xFFFF) | y1Bits,
                         vs_getXY_2(x0 - (tail >> 5), y0 - ((tail + 16) >> 4) * signY));
                 }
@@ -582,13 +583,14 @@ void func_800C1A40(int x0, int x1, int count)
             int far2 = length * (16 - i);
             int near2 = length * (15 - i);
 
-            vs_battle_addTile(vs_scratch.unk8, vs_getRGB0Raw(primLineF2SemiTrans, color),
+            vs_battle_addTile(vs_scratch.frontOt,
+                vs_getRGB0Raw(primLineF2SemiTrans, color),
                 vs_getXY_2(x0 - (far2 >> 5), y0 - (far2 >> 4) * signY),
                 vs_getXY_2(x0 - (near2 >> 5), y0 - ((near2 + 16) >> 4) * signY));
         }
     }
-    vs_battle_insertTpage(
-        _get_mode(0, 0, getTPage(clut4Bit, semiTransparencyFull, 0, 0)), vs_scratch.unk8);
+    vs_battle_insertTpage(_get_mode(0, 0, getTPage(clut4Bit, semiTransparencyFull, 0, 0)),
+        vs_scratch.frontOt);
 }
 
 int func_800C1D84(void)
@@ -605,7 +607,7 @@ int func_800C1D84(void)
 void func_800C1DC4(D_800EB9B8_unk990* arg0)
 {
     int gradient = arg0->unk2;
-    u_long* nextPrim = vs_scratch.unk8 - (arg0->unk1 * 4 - 8);
+    u_long* nextPrim = vs_scratch.frontOt - (arg0->unk1 * 4 - 8);
     int color0;
     int color1;
     int isLeft;
@@ -644,7 +646,7 @@ void func_800C1DC4(D_800EB9B8_unk990* arg0)
     }
     vs_battle_renderTextRawColor(arg0->limbName, textXy, color, nextPrim);
 
-    prim = vs_scratch.unk0;
+    prim = vs_scratch.nextPrim;
     if (gradient != 0) {
         arg0->unk2 = gradient - 1;
     }
@@ -666,7 +668,7 @@ void func_800C1DC4(D_800EB9B8_unk990* arg0)
     prim->box.tpage = _get_mode(0, 0, 0);
     *nextPrim = ((u_long)prim << 8) >> 8;
     ++prim;
-    vs_scratch.unk0 = prim;
+    vs_scratch.nextPrim = prim;
 
     if (arg0->unk1 != 0) {
         int sxy;
@@ -935,7 +937,7 @@ void func_800C28AC(SVECTOR* position, int arg1)
     int xy;
     int i;
     u_long* prim;
-    u_long* ot = vs_scratch.unk4 - 4;
+    u_long* ot = vs_scratch.depthOt - 4;
 
     gte_ldv0(position);
     gte_rtps2();
@@ -944,7 +946,7 @@ void func_800C28AC(SVECTOR* position, int arg1)
     D_800EA6AC = (D_800EA6AC + 1) & 0xF;
 
     if (arg1 == 0) {
-        prim = vs_scratch.unk0;
+        prim = vs_scratch.nextPrim;
         prim[0] = vs_getTag(VS_POLY_FT4, *ot);
         prim[1] = vs_getRGB0(primPolyFT4, 0x80, 0x80, 0x80);
         prim[2] = xy + vs_getXY(-13, -9);
@@ -969,7 +971,7 @@ void func_800C28AC(SVECTOR* position, int arg1)
         prim[9] = vs_getUV(231, 71);
         *ot = (u_long)prim;
         prim += 10;
-        vs_scratch.unk0 = prim;
+        vs_scratch.nextPrim = prim;
     }
 
     for (i = 0; i < 3; ++i) {

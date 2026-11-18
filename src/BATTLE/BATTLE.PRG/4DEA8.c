@@ -4298,10 +4298,11 @@ int getActorScreenPositionAndUpAngle(int actorId, SVECTOR* position)
 void drawScanlines(void)
 {
     LINE_F2* prim;
+    DR_TPAGE* tpage;
     short y;
 
     vs_Scratch* scratch = (vs_Scratch*)0x1F800000;
-    prim = scratch->unk0;
+    prim = scratch->nextPrim;
 
     ++scanlinePhase;
 
@@ -4321,15 +4322,16 @@ void drawScanlines(void)
             prim->x1 = vs_main_screenWidth;
 
             scratch = (vs_Scratch*)0x1F800000;
-            AddPrim(scratch->unk8, prim++);
+            AddPrim(scratch->frontOt, prim++);
         }
     }
 
-    SetDrawTPage((DR_TPAGE*)prim, 1, 1, GetTPage(0, 2, 0, 0));
+    tpage = (DR_TPAGE*)prim;
+    SetDrawTPage(tpage, 1, 1, GetTPage(0, 2, 0, 0));
 
     scratch = (vs_Scratch*)0x1F800000;
-    AddPrim(scratch->unk8, prim);
-    scratch->unk0 = (LINE_F2*)&prim->x0;
+    AddPrim(scratch->frontOt, tpage++);
+    scratch->nextPrim = tpage;
 }
 
 void func_800BB9B0(void)

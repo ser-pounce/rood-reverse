@@ -43,11 +43,11 @@ extern u_char D_800E8F2C;
 
 static inline DR_MOVE* vs_battlePacketBegin(void)
 {
-    return ((vs_Scratch*)0x1F800000)->unk0;
+    return ((vs_Scratch*)0x1F800000)->nextPrim;
 }
 static inline void vs_battlePacketEnd(DR_MOVE* p)
 {
-    ((vs_Scratch*)0x1F800000)->unk0 = p + 1;
+    ((vs_Scratch*)0x1F800000)->nextPrim = p + 1;
 }
 
 // Inlined copy of 3A1A0 func_800A4A24

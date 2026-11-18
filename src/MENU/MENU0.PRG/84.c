@@ -417,7 +417,7 @@ int warlockMagicMenu(u_int initShortcutInvoked)
 
         setMPCost(selectedRow + i);
 
-        temp_s6 = vs_scratch.unk4 - 4;
+        temp_s6 = vs_scratch.depthOt - 4;
 
         for (level = 0; level < 4; ++level) {
 
@@ -500,7 +500,7 @@ int warlockMagicMenu(u_int initShortcutInvoked)
         prim[9] = vs_getUV(79, 64);
 
         *temp_s6 = ((u_int)prim << 8) >> 8;
-        vs_scratch.unk0 = prim + 10;
+        vs_scratch.nextPrim = prim + 10;
 
         break;
     }

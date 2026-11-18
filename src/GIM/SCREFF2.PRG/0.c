@@ -41,7 +41,7 @@ void drawScreenBlur(void)
     u_long* temp_s4;
     u_long* var_t2;
 
-    temp_s4 = vs_scratch.unk4;
+    temp_s4 = vs_scratch.depthOt;
 
     for (y = 192; y >= 0; y -= 32) {
         for (var_s2 = 0x100; var_s2 >= 0; var_s2 -= 64) {
@@ -99,7 +99,7 @@ void drawScreenBlur(void)
     }
 
     var_s0 = screenEffects->blurDepth - 3;
-    var_t2 = vs_scratch.unk0;
+    var_t2 = vs_scratch.nextPrim;
     var_t2[0] = ((temp_s4[var_s0] & 0xFFFFFF) | 0x07000000);
     var_t2[1] = 0xE30402C0;
     var_t2[2] = 0xE4077FFF;
@@ -120,7 +120,7 @@ void drawScreenBlur(void)
     var_t2[4] = 0xE6000000;
 
     *temp_s4 = ((u_long)var_t2 << 8) >> 8;
-    vs_scratch.unk0 = var_t2 + 5;
+    vs_scratch.nextPrim = var_t2 + 5;
 }
 
 /**
@@ -139,7 +139,7 @@ void setScreenLensDistortion(short zoom, short distortion)
 /** Warps the vertices of everything drawn so far by the lens distortion. */
 void applyScreenLensDistortion(void)
 {
-    u_long* ot = vs_scratch.unk4;
+    u_long* ot = vs_scratch.depthOt;
     u_long saved = *ot;
     u_short* table = (u_short*)0x1F800088;
     int count = 0;
@@ -276,8 +276,8 @@ void drawScreenEdgeGlow(void)
     int i;
     void** temp_s4;
 
-    temp_s4 = vs_scratch.unk8;
-    var_s2 = func_800F9EBC(0xE00140, 6, vs_scratch.unk0, temp_s4);
+    temp_s4 = vs_scratch.frontOt;
+    var_s2 = func_800F9EBC(0xE00140, 6, vs_scratch.nextPrim, temp_s4);
     var_s2 = func_800F9EBC(0xE00000, 0x16, var_s2, temp_s4);
     var_s2 = func_800F9EBC(0, 0x26, var_s2, temp_s4);
     var_s2 = func_800F9EBC(0x140, 0x36, var_s2, temp_s4);
@@ -296,5 +296,5 @@ void drawScreenEdgeGlow(void)
         *temp_s4 = (void*)(((u_long)var_s2 << 8) >> 8);
         var_s2 += 10;
     }
-    vs_scratch.unk0 = var_s2;
+    vs_scratch.nextPrim = var_s2;
 }

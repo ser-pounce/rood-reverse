@@ -30,7 +30,7 @@ static void drawOk(int row, int brightness)
 {
     vs_battle_renderTextRawColor("OK", vs_getXY(175, row * 16 + 32),
         ((rsin(brightness * 8) >> 5) + 64) * vs_getRGB888(1, 1, 1),
-        vs_scratch.unk4 - 0xC);
+        vs_scratch.depthOt - 0xC);
 }
 
 /**

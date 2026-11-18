@@ -140,7 +140,7 @@ int vs_battle_script_E9_returnToGameplayCamera(u_char*, short);
 int vs_battle_script_EA_EB_EC_EE_EF_camera(u_char*, short);
 int vs_battle_script_F1_setFrameRate(u_char*, short);
 int vs_battle_script_F2_playMenuSelectSfx(u_char*, short);
-int vs_battle_script_F3(u_char*, short);
+int vs_battle_script_F3_setScanlines(u_char*, short);
 int vs_battle_script_F4(u_char*, short);
 int vs_battle_script_F5(u_char*, short);
 int vs_battle_script_F6(u_char*, short);

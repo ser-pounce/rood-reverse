@@ -3950,11 +3950,22 @@ int vs_battle_script_BC_loadScreenEffects(UNUSED u_char* arg0, UNUSED short arg1
     return scriptNext;
 }
 
-int vs_battle_script_BD(UNUSED u_char* arg0, UNUSED short arg1) { return scriptNext; }
-
-int vs_battle_script_BE(UNUSED u_char* arg0, UNUSED short arg1)
+/**
+ * Does nothing. Only the room scripts of MAP101 and MAP213 use it, with the byte 0x0C,
+ * right after setEnteredDoor.
+ */
+int vs_battle_script_BD_nop(UNUSED u_char* arg0, UNUSED short arg1)
 {
-    func_800CB7DC();
+    return scriptNext;
+}
+
+/**
+ * Releases the screen effects overlay.
+ */
+int vs_battle_script_BE_unloadScreenEffects(UNUSED u_char* arg0, UNUSED short arg1)
+{
+    unloadScreenEffects();
+
     return (scriptSkipMode == scriptSkipping) ? scriptYield : scriptNext;
 }
 

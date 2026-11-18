@@ -136,9 +136,9 @@ typedef struct {
     int unk1CC;
     vs_ActorPosition unk1D0;
     int unk1E0[2];
-    u_short unk1E8;
+    u_short attachedActor;
     u_short unk1EA;
-    VECTOR unk1EC;
+    VECTOR attachedPosition;
     func_800BDBB4_t unk1FC;
     func_800BDBB4_t unk21C;
     func_800BDBB4_t unk23C;
@@ -272,9 +272,9 @@ static int tryTextBoxPlacement(
 void expandActorSelector(u_short, ActorList*);
 u_short nextActor(ActorList* arg0);
 int getActorScreenPosition(int arg0, SVECTOR* arg1);
-void func_800BBE10(u_short);
+void attachCameraToActor(u_short actor);
 void setCameraFollowsAshley(int follows);
-void func_800BBE94(void);
+void updateCameraAttachment(void);
 void func_800BCA8C(D_800F4BA4_t2*, D_800F4BA4_t2*);
 void func_800BCFB4(D_800F4BA4_t2*);
 void func_800BC1CC(short, int);
@@ -3992,9 +3992,15 @@ int vs_battle_script_DF_setCameraMomentum(u_char* script, UNUSED short arg1)
     return scriptNext;
 }
 
-int vs_battle_script_E8(u_char* arg0, UNUSED short arg1)
+/**
+ * Attaches the camera to an actor.
+ * @param script Opcode bytes:
+ *   - [1-2] = actor id, 0x2000 = detach
+ */
+int vs_battle_script_E8_attachCameraToActor(u_char* script, UNUSED short arg1)
 {
-    func_800BBE10(resolveActorId(getShort(arg0 + 1)));
+    attachCameraToActor(resolveActorId(getShort(script + 1)));
+
     return scriptNext;
 }
 
@@ -4306,7 +4312,7 @@ void func_800BBBE8(void)
     D_800F4BA4->farClip.unk0 = 1;
     D_800F4BA4->unk1A4.unk0.s16 = 0;
     D_800F4BA4->unk1A4.unkB = D_800F4BA4->unk1B0.unkB = 0;
-    D_800F4BA4->unk1E8 = 0x2000;
+    D_800F4BA4->attachedActor = 0x2000;
 }
 
 void func_800BBDDC(void) { vs_main_freeHeapR(D_800F4BA4); }
@@ -4317,35 +4323,41 @@ void func_800BBDDC(void) { vs_main_freeHeapR(D_800F4BA4); }
  */
 void setCameraFollowsAshley(int follows) { cameraFollowsAshley = follows; }
 
-void func_800BBE10(u_short arg0)
+/**
+ * Attaches the camera to an actor: camera positions become offsets from the actor and
+ * the camera moves with it. Detaching keeps the view where it is.
+ * @param actor Actor to attach to, 0x2000 = detach (world coordinates).
+ */
+void attachCameraToActor(u_short actor)
 {
     int _[4];
-    if (arg0 == 0x2000) {
-        if (D_800F4BA4->unk1E8 != arg0) {
-            vectorAdd(
-                &D_800F4BA4->eye.current, &D_800F4BA4->eye.current, &D_800F4BA4->unk1EC);
+    if (actor == 0x2000) {
+        if (D_800F4BA4->attachedActor != actor) {
+            vectorAdd(&D_800F4BA4->eye.current, &D_800F4BA4->eye.current,
+                &D_800F4BA4->attachedPosition);
             vectorAdd(&D_800F4BA4->lookAt.current, &D_800F4BA4->lookAt.current,
-                &D_800F4BA4->unk1EC);
+                &D_800F4BA4->attachedPosition);
         }
     }
-    D_800F4BA4->unk1E8 = arg0;
-    func_800BBE94();
+    D_800F4BA4->attachedActor = actor;
+    updateCameraAttachment();
 }
 
-void func_800BBE94(void)
+/** Updates the attached actor's position. Runs every frame of a script. */
+void updateCameraAttachment(void)
 {
     vs_ActorPosition sp10;
 
-    if (D_800F4BA4->unk1E8 == 0x2000) {
-        D_800F4BA4->unk1EC.vz = 0;
-        D_800F4BA4->unk1EC.vy = 0;
-        D_800F4BA4->unk1EC.vx = 0;
+    if (D_800F4BA4->attachedActor == 0x2000) {
+        D_800F4BA4->attachedPosition.vz = 0;
+        D_800F4BA4->attachedPosition.vy = 0;
+        D_800F4BA4->attachedPosition.vx = 0;
         return;
     }
-    vs_battle_getActorPosition(D_800F4BA4->unk1E8, &sp10);
-    D_800F4BA4->unk1EC.vx = sp10.unk0.unk4.vx * ONE;
-    D_800F4BA4->unk1EC.vy = sp10.unk0.unk4.vy * ONE;
-    D_800F4BA4->unk1EC.vz = sp10.unk0.unk4.vz * ONE;
+    vs_battle_getActorPosition(D_800F4BA4->attachedActor, &sp10);
+    D_800F4BA4->attachedPosition.vx = sp10.unk0.unk4.vx * ONE;
+    D_800F4BA4->attachedPosition.vy = sp10.unk0.unk4.vy * ONE;
+    D_800F4BA4->attachedPosition.vz = sp10.unk0.unk4.vz * ONE;
 }
 
 static void applyCameraState(void)
@@ -4361,9 +4373,9 @@ static void applyCameraState(void)
     } else {
         vectorCopy(&cameraLookAt, &D_800F4BA4->lookAt.current);
         vectorCopy(&cameraPos, &D_800F4BA4->eye.current);
-        if (D_800F4BA4->unk1E8 != 0x2000) {
-            vectorAdd(&cameraLookAt, &cameraLookAt, &D_800F4BA4->unk1EC);
-            vectorAdd(&cameraPos, &cameraPos, &D_800F4BA4->unk1EC);
+        if (D_800F4BA4->attachedActor != 0x2000) {
+            vectorAdd(&cameraLookAt, &cameraLookAt, &D_800F4BA4->attachedPosition);
+            vectorAdd(&cameraPos, &cameraPos, &D_800F4BA4->attachedPosition);
         }
     }
     if (*(short*)&D_800F4BA4->unk1A4.unk0 != 0) {
@@ -4540,8 +4552,8 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
         sVectorToFixedPointVector((VECTOR*)0x1F800098, (SVECTOR*)0x1F8000D8);
         setVectorImm((VECTOR*)0x1F8000A8, script + 4);
         vectorAdd(&c->position, (VECTOR*)0x1F800098, (VECTOR*)0x1F8000A8);
-        if (D_800F4BA4->unk1E8 != 0x2000) {
-            vectorSubtract(&c->position, &c->position, &D_800F4BA4->unk1EC);
+        if (D_800F4BA4->attachedActor != 0x2000) {
+            vectorSubtract(&c->position, &c->position, &D_800F4BA4->attachedPosition);
         }
         return scriptNext;
     case 8:
@@ -4573,8 +4585,8 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
         vectorAdd(&c->position,
             sVectorToFixedPointVector((VECTOR*)0x1F8000A8, (SVECTOR*)0x1F8000E0),
             (VECTOR*)0x1F800098);
-        if (D_800F4BA4->unk1E8 != 0x2000) {
-            vectorSubtract(&c->position, &c->position, &D_800F4BA4->unk1EC);
+        if (D_800F4BA4->attachedActor != 0x2000) {
+            vectorSubtract(&c->position, &c->position, &D_800F4BA4->attachedPosition);
         }
         return scriptNext;
     }
@@ -6008,7 +6020,7 @@ int func_800BF850(void)
         return 2;
     }
 
-    func_800BBE94();
+    updateCameraAttachment();
 
     if (D_800F4C22 == 0) {
         if (func_800BFBB8(D_800F4C38, 0) != 0) {

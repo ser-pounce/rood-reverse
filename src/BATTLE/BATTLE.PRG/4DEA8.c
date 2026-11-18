@@ -280,7 +280,7 @@ void func_800BCFB4(D_800F4BA4_t2*);
 void returnToGameplayCamera(short facing, int zoom);
 int func_800BD2B8(MATRIX*);
 void func_800BD57C(func_800BD57C_t* arg0);
-int func_800BD610(void);
+u_char getCameraIdleFlags(void);
 int func_800BDBB4(func_800BDBB4_t* arg0);
 void func_800BDF6C(func_800BDF6C_unk180_t* arg0);
 void func_800BE180(void);
@@ -4048,9 +4048,14 @@ int vs_battle_script_E9_returnToGameplayCamera(u_char* script, UNUSED short arg1
     return scriptNext;
 }
 
-int vs_battle_script_E0(u_char* arg0, UNUSED short arg1)
+/**
+ * Waits until the camera channels in a mask have finished moving, see getCameraIdleFlags.
+ * @param script Opcode bytes:
+ *   - [1] = mask of the channels to wait for
+ */
+int vs_battle_script_E0_waitCameraIdle(u_char* script, UNUSED short arg1)
 {
-    return arg0[1] != (arg0[1] & func_800BD610()) ? scriptRepeat : scriptNext;
+    return script[1] != (script[1] & getCameraIdleFlags()) ? scriptRepeat : scriptNext;
 }
 
 int vs_battle_script_E1(u_char* arg0, UNUSED short arg1)
@@ -4949,9 +4954,15 @@ void func_800BD57C(func_800BD57C_t* arg0)
     }
 }
 
-int func_800BD610(void)
+/**
+ * Gets which camera channels are idle.
+ * @return Bit mask of the idle channels: 0x01 look-at, 0x02 eye, 0x04 roll (opcode E2),
+ * 0x08 projection distance (EA), 0x10 near clip (EB), 0x20 far clip (EC), 0x40 lens
+ * distortion (ED), 0x80 shake (EF).
+ */
+u_char getCameraIdleFlags(void)
 {
-    char temp_a2 = D_800F4BA4->lookAt.mode == 0xF;
+    u_char temp_a2 = D_800F4BA4->lookAt.mode == 0xF;
 
     if (D_800F4BA4->eye.mode == 0xF) {
         temp_a2 = temp_a2 | 2;
@@ -6092,7 +6103,7 @@ int func_800BF850(void)
         func_800BB874();
     }
 
-    if (D_800F4C22 != 0 && (u_char)func_800BD610() == 255) {
+    if (D_800F4C22 != 0 && getCameraIdleFlags() == 255) {
         if (nextEvtQueued != 0) {
             D_800F4C34 = 3;
             D_800F4BE0 = 0;

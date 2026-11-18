@@ -48,7 +48,7 @@ int VS_GRID_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
     u_char u[9];
     u_char v[9];
     D_800F53B8_t* battle = D_800F53BC;
-    func_800FA098_arg1* scratch = (func_800FA098_arg1*)0x1F8001D0;
+    func_800FA098_arg1* scratch = VS_SCRATCH_AT(func_800FA098_arg1*, 0x1D0);
     int alive = 1;
     int depthMode;
     int xPhase;

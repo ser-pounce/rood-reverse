@@ -463,10 +463,10 @@ void setBackgroundOffset(int arg0, int arg1)
 
 void func_8009147C(BackgroundLayout* arg0, int arg1, int arg2, int arg3)
 {
-    void* buffer = ((vs_Scratch*)0x1F800000)->nextPrim;
+    void* buffer = VS_SCRATCH->nextPrim;
     BackgroundTile* tiles = arg0->tiles;
-    int cosStep = rcos(((vs_Scratch*)0x1F800000)->camera.angles.vz) * 32;
-    int sinStep = rsin(((vs_Scratch*)0x1F800000)->camera.angles.vz) * 32;
+    int cosStep = rcos(VS_SCRATCH->camera.angles.vz) * 32;
+    int sinStep = rsin(VS_SCRATCH->camera.angles.vz) * 32;
     int row;
     int col;
     TILE* background;
@@ -477,10 +477,10 @@ void func_8009147C(BackgroundLayout* arg0, int arg1, int arg2, int arg3)
 
         for (col = 0; col < 1024; col += 32) {
             int x = ((col + arg1) & 1023) - 512;
-            int screenX = rcos(((vs_Scratch*)0x1F800000)->camera.angles.vz) * x
-                        - rsin(((vs_Scratch*)0x1F800000)->camera.angles.vz) * y;
-            int screenY = rsin(((vs_Scratch*)0x1F800000)->camera.angles.vz) * x
-                        + rcos(((vs_Scratch*)0x1F800000)->camera.angles.vz) * y;
+            int screenX = rcos(VS_SCRATCH->camera.angles.vz) * x
+                        - rsin(VS_SCRATCH->camera.angles.vz) * y;
+            int screenY = rsin(VS_SCRATCH->camera.angles.vz) * x
+                        + rcos(VS_SCRATCH->camera.angles.vz) * y;
             BackgroundTile* tile;
 
             if ((screenX < -64 * ONE) || (screenX > 384 * ONE) || (screenY < -64 * ONE)
@@ -509,7 +509,7 @@ void func_8009147C(BackgroundLayout* arg0, int arg1, int arg2, int arg3)
             prim->tpage = arg3 | (tile->colors[1].cd << 7);
             prim->clut = getClut(768, 238);
             buffer += sizeof(POLY_GT4);
-            AddPrim(((vs_Scratch*)0x1F800000)->depthOt + 0x1FFC, prim++);
+            AddPrim(VS_SCRATCH->depthOt + 0x1FFC, prim++);
         }
     }
 
@@ -518,8 +518,8 @@ void func_8009147C(BackgroundLayout* arg0, int arg1, int arg2, int arg3)
     setRGB0(background, 0, 0, 0);
     setXY0(background, 0, 0);
     setWH(background, 320, 240);
-    AddPrim(((vs_Scratch*)0x1F800000)->depthOt + 0x1FFC, background);
-    ((vs_Scratch*)0x1F800000)->nextPrim = background + 1;
+    AddPrim(VS_SCRATCH->depthOt + 0x1FFC, background);
+    VS_SCRATCH->nextPrim = background + 1;
 }
 
 void func_800918E8(int arg0)
@@ -2106,7 +2106,7 @@ void func_80094B0C(int x, int y, D_800F1BAC_t* p)
     }
 
     x += i - 6;
-    prim = ((vs_Scratch*)0x1F800000)->nextPrim;
+    prim = VS_SCRATCH->nextPrim;
 
     for (i = p->displayTextLen - 1; i >= 0; --i, x -= 6) {
         int digitY = y + offset;
@@ -2126,16 +2126,16 @@ void func_80094B0C(int x, int y, D_800F1BAC_t* p)
             (p->displayText[i] - '0') * 8 + 72, 12);
         setTPage(prim, 0, 0, 768, 0);
         setClut(prim, 832, 223);
-        AddPrim(((vs_Scratch*)0x1F800000)->depthOt - 20, prim++);
+        AddPrim(VS_SCRATCH->depthOt - 20, prim++);
     }
 
-    ((vs_Scratch*)0x1F800000)->nextPrim = prim;
+    VS_SCRATCH->nextPrim = prim;
 }
 
 int func_80094E18(int x, int y, D_800F1BAC_t* p)
 {
     RECT const* rect = &D_80068FAC[D_800E861C[p->unkE - 3]];
-    POLY_FT4* prim = ((vs_Scratch*)0x1F800000)->nextPrim;
+    POLY_FT4* prim = VS_SCRATCH->nextPrim;
     int sign = p->unkC;
     int width = (p->displayTextLen * 6 + rect->w + 12) / 2;
 
@@ -2148,7 +2148,7 @@ int func_80094E18(int x, int y, D_800F1BAC_t* p)
     setTPage(prim, 0, 0, 448, 256);
     setClut(prim, 976, 220);
     sign = (sign & 0x8000) ? 0 : 8;
-    AddPrim(((vs_Scratch*)0x1F800000)->depthOt - 20, prim++);
+    AddPrim(VS_SCRATCH->depthOt - 20, prim++);
     x += rect->w + 4;
     setPolyFT4(prim);
     setXY4(prim, x, y - 5, x + 8, y - 5, x, y + 5, x + 8, y + 5);
@@ -2156,8 +2156,8 @@ int func_80094E18(int x, int y, D_800F1BAC_t* p)
     setTPage(prim, 0, 0, 768, 0);
     setClut(prim, 864, 223);
     setShadeTex(prim, 1);
-    AddPrim(((vs_Scratch*)0x1F800000)->depthOt - 20, prim++);
-    ((vs_Scratch*)0x1F800000)->nextPrim = prim;
+    AddPrim(VS_SCRATCH->depthOt - 20, prim++);
+    VS_SCRATCH->nextPrim = prim;
     return width;
 }
 
@@ -2180,7 +2180,7 @@ void func_8009506C(int arg0, int arg1, D_800F1BAC_t* arg2)
     arg0 -= 16;
     y0 = arg1 - D_800E8634[step];
     y1 = arg1 + D_800E8634[step];
-    prim = ((vs_Scratch*)0x1F800000)->nextPrim;
+    prim = VS_SCRATCH->nextPrim;
 
     for (i = 0; i < 4; ++i) {
         if ((arg0 < 320) && ((arg0 + D_800E8640[i].w) >= 0)) {
@@ -2195,13 +2195,13 @@ void func_8009506C(int arg0, int arg1, D_800F1BAC_t* arg2)
             setSemiTrans(prim, 1);
             setTPage(prim, 0, 0, 768, 0);
             setClut(prim, 864, 223);
-            AddPrim(((vs_Scratch*)0x1F800000)->depthOt - 20, prim++);
+            AddPrim(VS_SCRATCH->depthOt - 20, prim++);
         }
 
         arg0 += D_800E8640[i].w;
     }
 
-    ((vs_Scratch*)0x1F800000)->nextPrim = prim;
+    VS_SCRATCH->nextPrim = prim;
 }
 
 void func_80095258(int x, int y, D_800F1BAC_t* p)
@@ -2263,7 +2263,7 @@ void func_80095258(int x, int y, D_800F1BAC_t* p)
         width = D_800690B4[p->unkC].color;
     }
 
-    prim = ((vs_Scratch*)0x1F800000)->nextPrim;
+    prim = VS_SCRATCH->nextPrim;
 
     for (i = 0; i < D_800690B4[p->unkC].count; ++i) {
         if (x < 320 && x + rects[i]->w >= 0) {
@@ -2297,19 +2297,19 @@ void func_80095258(int x, int y, D_800F1BAC_t* p)
                 setClut(prim, 976, 220);
             }
 
-            AddPrim(((vs_Scratch*)0x1F800000)->depthOt - 20, prim++);
+            AddPrim(VS_SCRATCH->depthOt - 20, prim++);
         }
 
         x += rects[i]->w;
     }
 
-    ((vs_Scratch*)0x1F800000)->nextPrim = prim;
+    VS_SCRATCH->nextPrim = prim;
 }
 
 void func_800957D0(int arg0, int arg1, int arg2)
 {
-    void** p = (void**)0x1F800000;
-    POLY_FT4* prim = (POLY_FT4*)p[0];
+    vs_Scratch* p = VS_SCRATCH;
+    POLY_FT4* prim = (POLY_FT4*)p->nextPrim;
 
     setlen(prim, 9);
     setcode(prim, 0x2C);
@@ -2322,8 +2322,8 @@ void func_800957D0(int arg0, int arg1, int arg2)
     prim->tpage = 0x17;
     prim->clut = 0x373E;
     setShadeTex(prim, 1);
-    AddPrim((u_long*)p[1] - 5, prim++);
-    p[0] = prim;
+    AddPrim((u_long*)p->depthOt - 5, prim++);
+    p->nextPrim = prim;
 }
 
 void func_800958A4(int x, int y, D_800F1BAC_t* p)
@@ -2345,11 +2345,11 @@ void func_800958A4(int x, int y, D_800F1BAC_t* p)
     }
 
     if (p->unkC != 2) {
-        vs_battle_renderTextRawColor(timing[p->unkC], vs_getXY_2(x, y), colors[p->unkC],
-            ((vs_Scratch*)0x1F800000)->depthOt - 16);
+        vs_battle_renderTextRawColor(
+            timing[p->unkC], vs_getXY_2(x, y), colors[p->unkC], VS_SCRATCH->depthOt - 16);
     } else {
         vs_battle_renderTextRawColor(success[p->displayTextLen], vs_getXY_2(x, y),
-            vs_getRGB888(64, 128, 64), ((vs_Scratch*)0x1F800000)->depthOt - 16);
+            vs_getRGB888(64, 128, 64), VS_SCRATCH->depthOt - 16);
     }
 }
 
@@ -2369,8 +2369,8 @@ void func_80095A4C(int x, int y, D_800F1BAC_t* p)
         sprintf(text, "$%d CHAINS", p->unkC);
     }
 
-    vs_battle_renderTextRawColor(text, vs_getXY_2(x, y), vs_getRGB888(160, 64, 16),
-        ((vs_Scratch*)0x1F800000)->depthOt - 16);
+    vs_battle_renderTextRawColor(
+        text, vs_getXY_2(x, y), vs_getRGB888(160, 64, 16), VS_SCRATCH->depthOt - 16);
 }
 
 void func_80095B70(int arg0) { D_800F2270 = arg0; }
@@ -2438,7 +2438,7 @@ void func_80095C18(int actor, int kind)
             z = 2047;
         }
 
-        ot = (u_long*)((vs_Scratch*)0x1F800000)->depthOt + z;
+        ot = (u_long*)VS_SCRATCH->depthOt + z;
         side = (D_800F2274 >> actor) & 1;
 
         switch (kind) {
@@ -2500,7 +2500,7 @@ void func_80095C18(int actor, int kind)
             return;
         }
 
-        prim = ((vs_Scratch*)0x1F800000)->nextPrim;
+        prim = VS_SCRATCH->nextPrim;
         corners = D_80068F04[side];
         uv = D_80068F64[side];
         prim[0] = vs_getTag(VS_POLY_FT4, *ot);
@@ -2514,7 +2514,7 @@ void func_80095C18(int actor, int kind)
         prim[8] = func_80096254(xy, corners[3]);
         prim[9] = uv[3];
         *ot = ((u_long)prim << 8) >> 8;
-        ((vs_Scratch*)0x1F800000)->nextPrim = prim + 10;
+        VS_SCRATCH->nextPrim = prim + 10;
     } else {
         long depth;
 
@@ -2540,11 +2540,11 @@ void func_80095C18(int actor, int kind)
                 return;
             }
 
-            SetRotMatrix(&((vs_Scratch*)0x1F800000)->viewMatrix);
-            SetTransMatrix(&((vs_Scratch*)0x1F800000)->viewMatrix);
+            SetRotMatrix(&VS_SCRATCH->viewMatrix);
+            SetTransMatrix(&VS_SCRATCH->viewMatrix);
             other.vy -= 64;
             RotTransPers(&other, (long*)&position, &depth, &side);
-            ot = ((vs_Scratch*)0x1F800000)->depthOt;
+            ot = VS_SCRATCH->depthOt;
             position.vx -= 8;
             position.vy -= 8;
             xy = *(int*)&position;
@@ -2665,7 +2665,7 @@ void func_8009651C(SVECTOR* position, int direction)
         return;
     }
 
-    prim = ((vs_Scratch*)0x1F800000)->nextPrim;
+    prim = VS_SCRATCH->nextPrim;
     setPolyFT4(prim);
     setShadeTex(prim, 1);
     setXY0(prim, dx[index] + x, dy[index] + y);
@@ -2684,8 +2684,8 @@ void func_8009651C(SVECTOR* position, int direction)
     setUV4(prim, 48, 48, 63, 48, 48, 63, 63, 63);
     setTPage(prim, 0, 0, 768, 0);
     setClut(prim, 976, 223);
-    AddPrim(((vs_Scratch*)0x1F800000)->depthOt - 16, prim++);
-    ((vs_Scratch*)0x1F800000)->nextPrim = prim;
+    AddPrim(VS_SCRATCH->depthOt - 16, prim++);
+    VS_SCRATCH->nextPrim = prim;
 }
 
 int func_80096768(int arg0, int arg1, int arg2)
@@ -2765,7 +2765,7 @@ void func_8009695C(int x, int y, D_800F1BAC_t* p)
     int negative;
     int positive;
     int i;
-    POLY_FT4* prim = ((vs_Scratch*)0x1F800000)->nextPrim;
+    POLY_FT4* prim = VS_SCRATCH->nextPrim;
 
     y -= p->unk12;
     negative = p->unkC & 0x8000;
@@ -2782,7 +2782,7 @@ void func_8009695C(int x, int y, D_800F1BAC_t* p)
         D_80069144[p->unkE].y + D_80069144[p->unkE].h);
     setTPage(prim, 0, 0, 768, 0);
     setClut(prim, 848, 223);
-    AddPrim(((vs_Scratch*)0x1F800000)->depthOt + 8, prim++);
+    AddPrim(VS_SCRATCH->depthOt + 8, prim++);
 
     x += D_80069144[p->unkE].w + 2;
     setPolyFT4(prim);
@@ -2796,7 +2796,7 @@ void func_8009695C(int x, int y, D_800F1BAC_t* p)
         D_8006917C[p->unkA].y + D_8006917C[p->unkA].h);
     setTPage(prim, 0, 0, 768, 0);
     setClut(prim, 848, 223);
-    AddPrim(((vs_Scratch*)0x1F800000)->depthOt + 8, prim++);
+    AddPrim(VS_SCRATCH->depthOt + 8, prim++);
 
     x += D_8006917C[p->unkA].w + 2;
     setPolyFT4(prim);
@@ -2806,7 +2806,7 @@ void func_8009695C(int x, int y, D_800F1BAC_t* p)
         216, positive * 8 + 128, 216);
     setTPage(prim, 0, 0, 768, 0);
     setClut(prim, 848, 223);
-    AddPrim(((vs_Scratch*)0x1F800000)->depthOt + 8, prim++);
+    AddPrim(VS_SCRATCH->depthOt + 8, prim++);
 
     x += 2;
     x += p->displayTextLen * 5;
@@ -2826,10 +2826,10 @@ void func_8009695C(int x, int y, D_800F1BAC_t* p)
             0, (p->displayText[i] - '0') * 6, 10, (p->displayText[i] - '0') * 6 + 6, 10);
         setTPage(prim, 0, 0, 768, 0);
         setClut(prim, 832, 223);
-        AddPrim(((vs_Scratch*)0x1F800000)->depthOt + 8, prim++);
+        AddPrim(VS_SCRATCH->depthOt + 8, prim++);
     }
 
-    ((vs_Scratch*)0x1F800000)->nextPrim = prim;
+    VS_SCRATCH->nextPrim = prim;
 }
 
 void func_80096FF0(int arg0)
@@ -2860,8 +2860,8 @@ void func_80096FF0(int arg0)
 
 void func_800970BC(void)
 {
-    void** p = (void**)0x1F800000;
-    POLY_FT4* prim = (POLY_FT4*)p[0];
+    vs_Scratch* p = VS_SCRATCH;
+    POLY_FT4* prim = (POLY_FT4*)p->nextPrim;
 
     setPolyFT4(prim);
     setXY4(prim, D_800F2280.vx - 11, D_800F2280.vy - 32, D_800F2280.vx + 11,
@@ -2871,8 +2871,8 @@ void func_800970BC(void)
     setRGB0(prim, 0xF0, 0x40, 0x20);
     setTPage(prim, 0, 0, 448, 256);
     setClut(prim, 960, 221);
-    AddPrim((u_long*)p[1] - 5, prim++);
-    p[0] = prim;
+    AddPrim((u_long*)p->depthOt - 5, prim++);
+    p->nextPrim = prim;
 }
 
 void func_800971D4(void)

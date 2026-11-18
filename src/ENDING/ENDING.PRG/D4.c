@@ -117,7 +117,7 @@ static void renderPhantomPain(CreditsElement* element)
     u_short amplitude;
     u_short i;
     u_short j;
-    POLY_FT4* poly = ((vs_Scratch*)0x1F800000)->nextPrim;
+    POLY_FT4* poly = VS_SCRATCH->nextPrim;
 
     memset(&rot, 0, sizeof rot);
 
@@ -207,11 +207,11 @@ static void renderPhantomPain(CreditsElement* element)
             poly->clut = getClut(896, 83);
             poly->tpage = getTPage(clut4Bit, semiTransparencyFull, 896, 0);
             poly->r0 = poly->g0 = poly->b0 = brightness;
-            AddPrim(((vs_Scratch*)0x1F800000)->depthOt + 12, poly++);
+            AddPrim(VS_SCRATCH->depthOt + 12, poly++);
         }
     }
 
-    ((vs_Scratch*)0x1F800000)->nextPrim = poly;
+    VS_SCRATCH->nextPrim = poly;
 }
 
 static void* insertTpage(int tPage, int otOffset);
@@ -230,10 +230,9 @@ static void renderFin(CreditsElement* element)
     int step0;
     int step1;
     u_char brightness;
-    void** p;
-    int index;
+    vs_Scratch* p;
 
-    SPRT* sprt = *(SPRT**)0x1F800000;
+    SPRT* sprt = VS_SCRATCH->nextPrim;
 
     switch (element->state) {
     case creditsElementStateStarting:
@@ -280,13 +279,11 @@ static void renderFin(CreditsElement* element)
     sprt->r0 = sprt->g0 = sprt->b0 = brightness;
     setClut(sprt, 896, 82);
 
-    p = (void**)0x1F800000;
-    setaddr(sprt, ((u_long*)p[1])[1]);
-    setaddr(p[1] + 4, sprt++);
-
-    index = 0;
-    p[index] = sprt;
-    p[index] = insertTpage(getTPage(clut4Bit, semiTransparencyFull, 896, 0), 1);
+    p = VS_SCRATCH;
+    setaddr(sprt, ((u_long*)p->depthOt)[1]);
+    setaddr(p->depthOt + 4, sprt++);
+    p->nextPrim = sprt;
+    p->nextPrim = insertTpage(getTPage(clut4Bit, semiTransparencyFull, 896, 0), 1);
 }
 
 static CreditsElement creditsElements[32];
@@ -314,9 +311,8 @@ static void renderVagrantStory(CreditsElement* element)
     };
 
     int brightness;
-    void** p;
-    int index;
-    SPRT* sprt = *(SPRT**)0x1F800000;
+    vs_Scratch* p;
+    SPRT* sprt = VS_SCRATCH->nextPrim;
 
     switch (element->state) {
     case creditsElementStateStarting:
@@ -362,12 +358,10 @@ static void renderVagrantStory(CreditsElement* element)
     setClut(sprt, 896, 80);
     sprt->r0 = sprt->g0 = sprt->b0 = brightness;
 
-    p = (void**)0x1F800000;
-    setaddr(sprt, getaddr(p[1] + 12));
-    setaddr(p[1] + 12, sprt++);
-
-    index = 0;
-    p[index] = sprt;
+    p = VS_SCRATCH;
+    setaddr(sprt, getaddr(p->depthOt + 12));
+    setaddr(p->depthOt + 12, sprt++);
+    p->nextPrim = sprt;
 
     sprt = insertTpage(getTPage(clut4Bit, semiTransparencyFull, 896, 0), 3);
 
@@ -379,11 +373,11 @@ static void renderVagrantStory(CreditsElement* element)
     setClut(sprt, 896, 81);
     sprt->r0 = sprt->g0 = sprt->b0 = brightness;
 
-    setaddr(sprt, getaddr(p[1] + 12));
-    setaddr(p[1] + 12, sprt++);
+    setaddr(sprt, getaddr(p->depthOt + 12));
+    setaddr(p->depthOt + 12, sprt++);
 
-    p[index] = sprt;
-    p[index] = insertTpage(getTPage(clut4Bit, semiTransparencySubtract, 896, 0), 3);
+    p->nextPrim = sprt;
+    p->nextPrim = insertTpage(getTPage(clut4Bit, semiTransparencySubtract, 896, 0), 3);
     return;
 }
 
@@ -508,7 +502,7 @@ static void renderllustration(CreditsElement* element)
     static UNUSED u_short _;
 
     SPRT* sprt;
-    void** p;
+    vs_Scratch* p;
 
     switch (element->state) {
     case creditsElementStateStarting:
@@ -563,8 +557,8 @@ static void renderllustration(CreditsElement* element)
         break;
     }
 
-    p = (void**)0x1F800000;
-    sprt = p[0];
+    p = VS_SCRATCH;
+    sprt = p->nextPrim;
 
     SetSprt(sprt);
     setXY0(sprt, 0, 0);
@@ -574,9 +568,9 @@ static void renderllustration(CreditsElement* element)
     setClut(sprt, 0, clutY);
     sprt->r0 = sprt->g0 = sprt->b0 = brightness;
 
-    AddPrim(p[1] + 0x10, sprt++);
+    AddPrim(p->depthOt + 0x10, sprt++);
 
-    p[0] = sprt;
+    p->nextPrim = sprt;
     sprt = insertTpage(getTPage(1, 2, tpageX, 256), 4);
 
     SetSprt(sprt);
@@ -587,10 +581,10 @@ static void renderllustration(CreditsElement* element)
     setClut(sprt, 0, clutY);
     sprt->r0 = sprt->g0 = sprt->b0 = brightness;
 
-    AddPrim(p[1] + 0x10, sprt++);
+    AddPrim(p->depthOt + 0x10, sprt++);
 
-    p[0] = sprt;
-    p[0] = insertTpage(getTPage(1, 2, tpageX + 64, 256), 4);
+    p->nextPrim = sprt;
+    p->nextPrim = insertTpage(getTPage(1, 2, tpageX + 64, 256), 4);
 }
 
 extern u_char glyphWidths[];
@@ -640,7 +634,7 @@ static void renderText(CreditsElement* element)
     short len;
     short x;
     short y;
-    SPRT* sprt = ((vs_Scratch*)0x1F800000)->nextPrim;
+    SPRT* sprt = VS_SCRATCH->nextPrim;
     u_char charTableOffset = 0;
     short underline = 0;
 
@@ -696,13 +690,13 @@ static void renderText(CreditsElement* element)
             setClut(sprt, 960, 480);
             x += glyphWidth - 1;
             sprt->r0 = sprt->g0 = sprt->b0 = masterBrightness;
-            addPrim(((vs_Scratch*)0x1F800000)->depthOt + 12, sprt);
+            addPrim(VS_SCRATCH->depthOt + 12, sprt);
             ++sprt;
         }
     }
 
     if (underline != 0) {
-        vs_Scratch const* scratch = (vs_Scratch*)0x1F800000;
+        vs_Scratch const* scratch = VS_SCRATCH;
         POLY_FT4* poly;
 
         x = 160 - ((element->width + 32) >> 1);
@@ -743,8 +737,8 @@ static void renderText(CreditsElement* element)
         AddPrim(scratch->depthOt + 12, sprt++);
     }
 
-    ((vs_Scratch*)0x1F800000)->nextPrim = sprt;
-    ((vs_Scratch*)0x1F800000)->nextPrim =
+    VS_SCRATCH->nextPrim = sprt;
+    VS_SCRATCH->nextPrim =
         insertTpage(getTPage(clut4Bit, semiTransparencyHalf, 960, 256), 3);
 }
 
@@ -753,9 +747,8 @@ static void renderText(CreditsElement* element)
  */
 static void renderCopyright(CreditsElement* element)
 {
-    int index;
-    void** p = (void**)0x1F800000;
-    SPRT* sprt = p[0];
+    vs_Scratch* p = VS_SCRATCH;
+    SPRT* sprt = p->nextPrim;
 
     if (element->state == creditsElementStateStarting) {
         element->x = 100 << 8;
@@ -777,12 +770,10 @@ static void renderCopyright(CreditsElement* element)
     setClut(sprt, 960, 64);
     sprt->r0 = sprt->g0 = sprt->b0 = masterBrightness;
 
-    setaddr(sprt, ((u_long*)p[1])[3]);
-    setaddr(p[1] + 12, sprt++);
-
-    index = 0;
-    p[index] = sprt;
-    p[index] = insertTpage(getTPage(clut4Bit, semiTransparencyFull, 960, 0), 3);
+    setaddr(sprt, ((u_long*)p->depthOt)[3]);
+    setaddr(p->depthOt + 12, sprt++);
+    p->nextPrim = sprt;
+    p->nextPrim = insertTpage(getTPage(clut4Bit, semiTransparencyFull, 960, 0), 3);
 }
 
 /**
@@ -793,8 +784,8 @@ static void renderBackground(UNUSED CreditsElement* element)
 {
     TILE* tile;
     POLY_G4* poly;
-    void** data = (void**)0x1F800000;
-    SPRT* sprt = data[0];
+    vs_Scratch* data = VS_SCRATCH;
+    SPRT* sprt = data->nextPrim;
 
     // Draw background proper
     SetSprt(sprt);
@@ -803,8 +794,8 @@ static void renderBackground(UNUSED CreditsElement* element)
     setWH(sprt, 256, 204);
     setClut(sprt, 780, 255);
     sprt->r0 = sprt->g0 = sprt->b0 = masterBrightness;
-    AddPrim(data[1] + 0x1FFC, sprt++);
-    data[0] = sprt;
+    AddPrim(data->depthOt + 0x1FFC, sprt++);
+    data->nextPrim = sprt;
 
     sprt = (SPRT*)insertTpage(getTPage(clut4Bit, semiTransparencyFull, 768, 0), 0x7FF);
     SetSprt(sprt);
@@ -813,8 +804,8 @@ static void renderBackground(UNUSED CreditsElement* element)
     setWH(sprt, 64, 204);
     setClut(sprt, 780, 255);
     sprt->r0 = sprt->g0 = sprt->b0 = masterBrightness;
-    AddPrim(data[1] + 0x1FFC, sprt++);
-    data[0] = sprt;
+    AddPrim(data->depthOt + 0x1FFC, sprt++);
+    data->nextPrim = sprt;
 
     // Fade top & bottom
     poly = (POLY_G4*)insertTpage(getTPage(clut4Bit, semiTransparencyFull, 832, 0), 0x7FF);
@@ -826,7 +817,7 @@ static void renderBackground(UNUSED CreditsElement* element)
     poly->r0 = poly->r1 = poly->g0 = poly->g1 = poly->b0 = poly->b1 = 255;
     poly->r2 = poly->r3 = poly->g2 = poly->g3 = poly->b2 = poly->b3 = 0;
     setSemiTrans(poly, 1);
-    AddPrim(data[1] + 8, poly++);
+    AddPrim(data->depthOt + 8, poly++);
 
     SetPolyG4(poly);
     poly->x0 = poly->x2 = 0;
@@ -836,7 +827,7 @@ static void renderBackground(UNUSED CreditsElement* element)
     poly->r0 = poly->r1 = poly->g0 = poly->g1 = poly->b0 = poly->b1 = 0;
     poly->r2 = poly->r3 = poly->g2 = poly->g3 = poly->b2 = poly->b3 = 255;
     setSemiTrans(poly, 1);
-    AddPrim(data[1] + 8, poly++);
+    AddPrim(data->depthOt + 8, poly++);
 
     // Add letterboxing
     tile = (TILE*)poly;
@@ -844,23 +835,23 @@ static void renderBackground(UNUSED CreditsElement* element)
     tile->r0 = tile->g0 = tile->b0 = 0;
     setWH(tile, 320, 10);
     setXY0(tile, 0, 0);
-    AddPrim(data[1] + 8, tile++);
+    AddPrim(data->depthOt + 8, tile++);
 
     // TODO: Top bar added twice, this can probably go
     SetTile(tile);
     tile->r0 = tile->g0 = tile->b0 = 0;
     setWH(tile, 320, 10);
     setXY0(tile, 0, 0);
-    AddPrim(data[1] + 8, tile++);
+    AddPrim(data->depthOt + 8, tile++);
 
     SetTile(tile);
     tile->r0 = tile->g0 = tile->b0 = 0;
     setWH(tile, 320, 10);
     setXY0(tile, 0, 214);
-    AddPrim(data[1] + 8, tile++);
-    data[0] = tile;
+    AddPrim(data->depthOt + 8, tile++);
+    data->nextPrim = tile;
 
-    data[0] = insertTpage(getTPage(clut8Bit, semiTransparencySubtract, 0, 0), 2);
+    data->nextPrim = insertTpage(getTPage(clut8Bit, semiTransparencySubtract, 0, 0), 2);
 }
 
 /**
@@ -912,8 +903,8 @@ static void screenFadeOut(CreditsElement* element)
  */
 static void renderFadeOut(CreditsElement* element)
 {
-    void** p = (void**)0x1F800000;
-    TILE* tile = p[0];
+    vs_Scratch* p = VS_SCRATCH;
+    TILE* tile = p->nextPrim;
 
     if (element->state == creditsElementStateStarting) {
         element->currentStep = 0;
@@ -931,10 +922,10 @@ static void renderFadeOut(CreditsElement* element)
     setWH(tile, 320, 240);
     setXY0(tile, 0, 0);
 
-    AddPrim(p[1], tile++);
+    AddPrim(p->depthOt, tile++);
 
-    p[0] = tile;
-    p[0] = insertTpage(getTPage(clut4Bit, semiTransparencySubtract, 0, 0), 0);
+    p->nextPrim = tile;
+    p->nextPrim = insertTpage(getTPage(clut4Bit, semiTransparencySubtract, 0, 0), 0);
 }
 
 static void streamEndingXa(void);
@@ -1073,7 +1064,7 @@ static void renderCredits(void)
             skipInvoked = 1;
         }
 
-        drawScreen(*(u_long**)0x1F800004 + 0x7FF);
+        drawScreen((u_long*)VS_SCRATCH->depthOt + 0x7FF);
 
         ++currentCreditsFrame;
     }
@@ -1084,14 +1075,14 @@ static void renderCredits(void)
  */
 static void* insertTpage(int tPage, int otOffset)
 {
-    void** scratch;
+    vs_Scratch* scratch;
     DR_TPAGE* drTpage;
 
-    scratch = (void**)0x1F800000;
-    drTpage = scratch[0];
+    scratch = VS_SCRATCH;
+    drTpage = scratch->nextPrim;
 
     SetDrawTPage(drTpage, 0, 1, tPage & 0xFFFF);
-    AddPrim(scratch[1] + (otOffset * 4), drTpage++);
+    AddPrim(scratch->depthOt + (otOffset * 4), drTpage++);
 
     return drTpage;
 }
@@ -1444,14 +1435,14 @@ static int decompressTim(void)
 static UNUSED void renderDebugString(short x, short y, int clut, char const* string)
 {
     int c;
-    SPRT_8* sprt = *(void**)0x1F800000;
+    SPRT_8* sprt = VS_SCRATCH->nextPrim;
 
     for (c = *string; c != 0; c = *++string, x += 7) {
         int cTemp = c - ' ';
         u_char c_2 = cTemp;
 
         if (((cTemp & 0xFF) < 96u) && (c_2 != 0)) {
-            u_long** ot;
+            vs_Scratch* ot;
 
             if (c_2 == ('\\' - ' ')) {
                 c_2 = 15;
@@ -1467,16 +1458,16 @@ static UNUSED void renderDebugString(short x, short y, int clut, char const* str
             setUV0(sprt, (c_2 & 0xF) * 8, (c_2 & 0xF0) / 2);
             setClut(sprt, 960, clut + 32);
 
-            ot = (u_long**)0x1F800000;
-            setaddr(sprt, *ot[1] & 0xFFFFFF);
-            setaddr(ot[1], sprt);
+            ot = VS_SCRATCH;
+            setaddr(sprt, *((u_long*)ot->depthOt) & 0xFFFFFF);
+            setaddr(((u_long*)ot->depthOt), sprt);
 
             ++sprt;
         }
     }
 
-    *(void**)0x1F800000 = sprt;
-    *(void**)0x1F800000 = insertTpage(getTPage(0, 0, 960, 0), 0);
+    VS_SCRATCH->nextPrim = sprt;
+    VS_SCRATCH->nextPrim = insertTpage(getTPage(0, 0, 960, 0), 0);
 }
 
 #pragma endregion
@@ -1781,14 +1772,14 @@ static void congratulationsScreen(void)
     do {
         beginFrame();
         done = initCongratulationsScreen();
-        drawScreen(*(u_long**)0x1F800004 + 0x7FF);
+        drawScreen((u_long*)VS_SCRATCH->depthOt + 0x7FF);
     } while (done == 0);
 
     do {
         beginFrame();
         done = renderCongratulationsScreen();
         VSync(0);
-        drawScreen(*(u_long**)0x1F800004 + 0x7FF);
+        drawScreen((u_long*)VS_SCRATCH->depthOt + 0x7FF);
     } while (done == 0);
 }
 
@@ -2024,7 +2015,7 @@ static void fadeIn(int timer)
         return;
     }
 
-    poly = *(void**)0x1F800000;
+    poly = VS_SCRATCH->nextPrim;
 
     for (i = 0; i < 5; ++i) {
         setPolyFT4(poly);
@@ -2033,10 +2024,10 @@ static void fadeIn(int timer)
         setRGB0(poly, brightness, brightness, brightness);
         setClut(poly, 0, 0);
         poly->tpage = (i + 16) | getTPage(3, 0, 0, 0);
-        AddPrim(*((void**)0x1F800004) + 0x1FF8, poly++);
+        AddPrim(VS_SCRATCH->depthOt + 0x1FF8, poly++);
     }
 
-    *(void**)0x1F800000 = poly;
+    VS_SCRATCH->nextPrim = poly;
 }
 
 enum disIndices {

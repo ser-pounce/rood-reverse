@@ -52,9 +52,9 @@ extern u_char D_800EA6AC;
 
 void func_800C0D78(void)
 {
-    func_800C1564_t* shape = (func_800C1564_t*)0x1F800378;
+    func_800C1564_t* shape = VS_SCRATCH_AT(func_800C1564_t*, 0x378);
     int color = 0x10401;
-    short* sine = (short*)0x1F8003B0;
+    short* sine = VS_SCRATCH_AT(short*, 0x3B0);
     int i;
 
     if (D_800EB9B8 == NULL) {
@@ -771,7 +771,7 @@ void func_800C20B4(void)
 
 int func_800C2254(int angle, int index)
 {
-    short (*basis)[3] = (void*)0x1F800398;
+    short (*basis)[3] = VS_SCRATCH_AT(void*, 0x398);
     int point = 0;
     int phase = angle;
     MenuShapeVertex* vertex = &D_800EB9B8->unk48[index];
@@ -795,7 +795,7 @@ int func_800C2254(int angle, int index)
 
 int func_800C2368(int step, int radius, int index)
 {
-    short* basis = (short*)0x1F800398;
+    short* basis = VS_SCRATCH_AT(short*, 0x398);
     int base;
     int i;
     MenuShapeVertex* vertex = &D_800EB9B8->unk48[index];
@@ -837,7 +837,7 @@ int func_800C2368(int step, int radius, int index)
 
 void func_800C253C(int type)
 {
-    short* basis = (short*)0x1F800398;
+    short* basis = VS_SCRATCH_AT(short*, 0x398);
     int index = 0;
     int shape = D_800EB9B8->unk24.pad;
     MenuShapeVertex* vertices = D_800EB9B8->unk48;
@@ -919,7 +919,7 @@ void* func_800C282C(void)
     int temp_a0;
     int temp_s2;
     int yaw;
-    short* p = (short*)0x1F800350;
+    short* p = VS_SCRATCH_AT(short*, 0x350);
     syncCameraAnglesFromPosition(&camera);
     yaw = camera.values.yaw;
     temp_s2 = rcos(yaw);
@@ -929,7 +929,7 @@ void* func_800C282C(void)
     p[8] = -temp_a0;
     p[10] = temp_s2;
     D_800EB9B8->unk22 = yaw;
-    return (void*)0x1F800350;
+    return VS_SCRATCH_AT(void*, 0x350);
 }
 
 void func_800C28AC(SVECTOR* position, int arg1)

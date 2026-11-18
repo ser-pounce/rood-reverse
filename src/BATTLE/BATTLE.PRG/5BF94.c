@@ -283,7 +283,7 @@ typedef struct {
 void renderDigit(int, int, int, u_long*);
 void func_800C51B4(int);
 void func_800C7EBC(u_short*, u_int, int, u_int);
-void func_800CA97C(void);
+void resetScreenEffects(void);
 int func_800CABE0(int);
 void func_800CCA90(int);
 void func_800CBBCC(Gim* arg0, int arg1, u_long* arg2);
@@ -3040,7 +3040,7 @@ void func_800CA2DC(void)
         0x37F40C00;
 }
 
-void func_800CA97C(void)
+void resetScreenEffects(void)
 {
     screenEffects = NULL;
     memset(&screenEffectsData, 0, sizeof screenEffectsData);
@@ -3066,7 +3066,7 @@ void vs_battle_initUi(void* fontData)
     *(int*)D_800EB9D0 = 0xFFFFFF;
     menuBgUnpackedBuf = NULL;
     D_800EB9D8 = 0;
-    func_800CA97C();
+    resetScreenEffects();
     vs_battle_rMemzero(&vs_battle_menuState, 8);
     vs_battle_menuState.currentMenu = 0x3F;
     vs_battle_rMemzero(&D_800F4E98, sizeof D_800F4E98);
@@ -3488,14 +3488,14 @@ void loadScreenEffects(void)
     }
 }
 
-void func_800CB7DC(void)
+void unloadScreenEffects(void)
 {
     if (screenEffects != NULL) {
         freeOverlayBuffer(6);
         if (screenEffects->blurActive == 1) {
             func_8007E0A8(0x1B, 5, 6);
         }
-        func_800CA97C();
+        resetScreenEffects();
     }
 }
 

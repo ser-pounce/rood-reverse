@@ -261,11 +261,11 @@ VS_HIDDEN(func_8007DEA8);
 void func_8007DECC(VECTOR* arg0);
 VS_HIDDEN(func_8007DECC);
 
-int func_8007E180(int arg0);
-VS_HIDDEN(func_8007E180);
+int claimOverlayBuffer(int owner);
+VS_HIDDEN(claimOverlayBuffer);
 
-int func_8007E1C0(int arg0);
-VS_HIDDEN(func_8007E1C0);
+int freeOverlayBuffer(int owner);
+VS_HIDDEN(freeOverlayBuffer);
 
 int itemIdIsInInventory(int);
 VS_HIDDEN(itemIdIsInInventory);

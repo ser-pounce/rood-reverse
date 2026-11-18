@@ -199,7 +199,7 @@ static int loadfile(int lba, int size, void* buf)
 int loadEffPurge(void)
 {
     if (D_800F5684 == 0) {
-        func_8007E180(2);
+        claimOverlayBuffer(2);
         D_800F5684 = 1;
     }
 
@@ -316,7 +316,7 @@ int func_800D7EF4(void)
     switch (state) {
     case 1:
         if (D_800F5684 == 0) {
-            func_8007E180(2);
+            claimOverlayBuffer(2);
             D_800F5684 = state;
         }
         // Fallthrough

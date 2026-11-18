@@ -325,7 +325,7 @@ extern D_800F18C8_t D_800F18C8;
 extern int D_800F18E0;
 extern void* D_800F18E4;
 extern u_int cameraMode;
-extern char D_800F18F8;
+extern char overlayBufferOwner;
 extern int D_800F18FC;
 extern int D_800F1908;
 extern D_800F1910_t D_800F1910;
@@ -9495,7 +9495,7 @@ void func_8007DF48(void)
         D_800F19A8[i] = 0xFF;
     }
 
-    D_800F18F8 = 0;
+    overlayBufferOwner = 0;
 }
 
 void func_8007DF98(void)
@@ -9565,23 +9565,42 @@ int func_8007E0A8(u_int arg0, u_int arg1, int arg2)
     return 0;
 }
 
-int func_8007E180(int arg0)
+/**
+ * Records which overlay is using the shared overlay buffer at 0x800F9800 (overlay slots
+ * 1, 3 and 4). The effect overlays use owner 2, the item menu and the screen effects
+ * use owner 6. A conflict is only reported through a debug hook that does nothing here
+ * and callers ignore the result.
+ * @param owner Id of the overlay using the buffer.
+ * @return 1 if the buffer was free.
+ */
+int claimOverlayBuffer(int owner)
 {
-    if (D_800F18F8 == 0) {
-        D_800F18F8 = arg0;
+    if (overlayBufferOwner == 0) {
+        overlayBufferOwner = owner;
+
         return 1;
     }
+
     vs_main_nop9(0x66, 0);
+
     return 0;
 }
 
-int func_8007E1C0(int arg0)
+/**
+ * Releases ownership of the shared overlay buffer.
+ * @param owner Id the buffer was claimed with.
+ * @return 1 if the buffer was freed.
+ */
+int freeOverlayBuffer(int owner)
 {
-    if (D_800F18F8 == arg0) {
-        D_800F18F8 = 0;
+    if (overlayBufferOwner == owner) {
+        overlayBufferOwner = 0;
+
         return 1;
     }
+
     vs_main_nop9(0x67, 0);
+
     return 0;
 }
 

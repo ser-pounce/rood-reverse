@@ -422,7 +422,7 @@ extern char D_800F4E68;
 extern char D_800F4E69;
 extern TextBoxSelector textBoxSelector;
 extern int D_800F4ED4;
-extern short D_800F4ED8[8];
+extern ScreenEffects screenEffectsData;
 extern u_long* D_800F51B8;
 extern char D_800F51C8;
 extern vs_CdQueueSlot* D_800F5218;
@@ -3043,8 +3043,8 @@ void func_800CA2DC(void)
 void func_800CA97C(void)
 {
     screenEffects = NULL;
-    memset(&D_800F4ED8, 0, sizeof D_800F4ED8);
-    D_800F4ED8[2] = 0x1000;
+    memset(&screenEffectsData, 0, sizeof screenEffectsData);
+    screenEffectsData.lensZoom = 0x1000;
 }
 
 void vs_battle_initUi(void* fontData)
@@ -3160,7 +3160,7 @@ int openMenu(int menuId, int mode)
         if (vs_battle_menuItems == 0) {
             loadedSubMenu = -1;
 
-            func_8007E180(6);
+            claimOverlayBuffer(6);
 
             miscIndex = vs_main_allocHeapR(0xB24);
             var_a1 = vs_main_settings.menuFlags;
@@ -3280,7 +3280,7 @@ int validateShortcutSelection(int shortcut)
 void freeMenuItems(void)
 {
     if (vs_battle_menuItems != 0) {
-        func_8007E1C0(6);
+        freeOverlayBuffer(6);
         vs_main_freeHeapR(vs_battle_menuItems);
         vs_battle_menuItems = 0;
     }
@@ -3479,11 +3479,11 @@ void func_800CB708(void)
     }
 }
 
-void func_800CB79C(void)
+void loadScreenEffects(void)
 {
     if (screenEffects == NULL) {
-        screenEffects = (ScreenEffects*)D_800F4ED8;
-        func_8007E180(6);
+        screenEffects = &screenEffectsData;
+        claimOverlayBuffer(6);
         loadScreff2(1);
     }
 }
@@ -3491,7 +3491,7 @@ void func_800CB79C(void)
 void func_800CB7DC(void)
 {
     if (screenEffects != NULL) {
-        func_8007E1C0(6);
+        freeOverlayBuffer(6);
         if (screenEffects->blurActive == 1) {
             func_8007E0A8(0x1B, 5, 6);
         }
@@ -4765,7 +4765,7 @@ int func_800CE9B0(void)
                 func_800CF478(2);
             }
             if (D_800F5684 != 0) {
-                func_8007E1C0(2);
+                freeOverlayBuffer(2);
                 D_800F5684 = 0;
             }
         }
@@ -4851,7 +4851,7 @@ int func_800CE9B0(void)
             D_800F5318 = 0;
 
             if (D_800F5684 != 0) {
-                func_8007E1C0(2);
+                freeOverlayBuffer(2);
                 D_800F5684 = 0;
             }
 

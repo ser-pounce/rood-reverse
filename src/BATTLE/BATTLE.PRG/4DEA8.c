@@ -3940,9 +3940,13 @@ int vs_battle_script_BB_setScreenBlur(u_char* script, UNUSED short arg1)
     return scriptNext;
 }
 
-int vs_battle_script_BC(UNUSED u_char* arg0, UNUSED short arg1)
+/**
+ * Starts loading the screen effects overlay (SCREFF2.PRG).
+ */
+int vs_battle_script_BC_loadScreenEffects(UNUSED u_char* arg0, UNUSED short arg1)
 {
-    func_800CB79C();
+    loadScreenEffects();
+
     return scriptNext;
 }
 

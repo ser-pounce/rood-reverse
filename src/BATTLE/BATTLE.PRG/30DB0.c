@@ -4357,11 +4357,12 @@ void getBoneMatrix(int actorId, int bone, MATRIX* matrix, u_long* length)
 /**
  * Gets the position on the screen of a point on an actor.
  * @param actorId Actor id.
- * @param id Bone id, see findBoneIndex, or 0xFB for the point above the actor's head.
+ * @param id Bone id, see findBoneIndex, or actorPointAboveHead.
  * @param screenXyz Receives the screen x, y and depth.
- * @param point Which point along the bone, see getBoneScreenPosition. Not used for 0xFB.
+ * @param point Which point along the bone, see getBoneScreenPosition. Not used for
+ * actorPointAboveHead.
  * @return 0, or a negative value if there is no such actor or bone, or if the actor is
- * hidden and the point is 0xFB.
+ * hidden and the point is actorPointAboveHead.
  */
 int getActorScreenPoint(int actorId, int id, SVECTOR* screenXyz, int point)
 {
@@ -4371,7 +4372,7 @@ int getActorScreenPoint(int actorId, int id, SVECTOR* screenXyz, int point)
     int bone;
     int result;
 
-    if (id == 0xFB) {
+    if (id == actorPointAboveHead) {
         short* new_var;
         unsigned int new_var2;
         D_800F4538_t* actor = D_800F4538[actorId];

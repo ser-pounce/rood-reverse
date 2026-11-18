@@ -175,7 +175,7 @@ int func_800A1720(int arg0, int arg1, MATRIX* arg2, int* arg3)
 {
     int var_v0 = arg1;
 
-    if (arg1 == 0xFD) {
+    if (arg1 == actorPointPosition) {
         var_v0 = 0;
     }
 
@@ -185,7 +185,7 @@ int func_800A1720(int arg0, int arg1, MATRIX* arg2, int* arg3)
         return var_v0;
     }
 
-    if (arg1 == 0xFD) {
+    if (arg1 == actorPointPosition) {
         arg2->t[1] = D_800F4538[arg0]->unk0.position.vy;
     }
 
@@ -228,7 +228,7 @@ int func_800A190C(int arg0, int arg1, SVECTOR* arg2, int arg3)
     D_800F45E0_t* object;
     int var_v0;
 
-    if (arg1 == 0xFB) {
+    if (arg1 == actorPointAboveHead) {
         var_a2 = D_800F4538[arg0];
 
         if (var_a2 == NULL) {
@@ -247,14 +247,14 @@ int func_800A190C(int arg0, int arg1, SVECTOR* arg2, int arg3)
         return 0;
     }
 
-    if (arg1 == 0xFD) {
+    if (arg1 == actorPointPosition) {
         *arg2 = D_800F4538[arg0]->unk0.position;
         return 0;
     }
 
     if ((arg1 & 0xF0) == 0x40) {
         var_v0 = arg1;
-    } else if (arg1 == 0xFA) {
+    } else if (arg1 == actorPointRaised) {
         var_a2 = D_800F4538[arg0];
         *arg2 = var_a2->unk0.position;
         var_v0 = var_a2->unk65A * var_a2->unk183C / ONE;

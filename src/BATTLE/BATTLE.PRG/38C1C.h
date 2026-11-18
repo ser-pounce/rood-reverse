@@ -2,6 +2,12 @@
 #include "entity.h"
 #include <libgte.h>
 
+enum ActorPoint {
+    actorPointRaised = 0xFA, // position raised by unk65A, scaled by the actor's scale
+    actorPointAboveHead = 0xFB, // position raised by the actor's height
+    actorPointPosition = 0xFD, // the actor's position
+};
+
 int getBoneScreenPosition(int actorId, int bone, int* screenXyz, int mode);
 int findBoneIndex(int actorId, int id, int lookup);
 int func_800A1648(int, int, int);

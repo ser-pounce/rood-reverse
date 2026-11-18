@@ -562,7 +562,7 @@ void func_800DAED0(void)
             }
 
             state->unk1E4[0] = func_800E4624(&state->unk4C,
-                &vs_battle_actors[0]->unk44->unk0.position, state->unk82, offset);
+                &vs_battle_actors[0]->unk44->position, state->unk82, offset);
             func_800DAD9C(state);
         } else {
             ((VECTOR*)state)->vx = 0;

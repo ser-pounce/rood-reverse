@@ -352,8 +352,9 @@ int func_800E6178(Actor* actor, short arg1)
     }
 
     if (!actor->unk40) {
+        D_800F45E0_t* object = (D_800F45E0_t*)actor->unk44;
 
-        if (actor->unk44->unk16C.actorId == 2 || actor->unk44->unk16C.actorId == 4) {
+        if (object->unk16C.actorId == 2 || object->unk16C.actorId == 4) {
             int i;
 
             for (i = 0; i < 4; ++i) {
@@ -374,7 +375,7 @@ int func_800E6178(Actor* actor, short arg1)
     func_800E4288(state, sizeof *state);
     state->unk88 = id;
     state->unk54 = actor;
-    model = actor->unk44;
+    model = (D_800F4538_t*)actor->unk44;
     state->unk58 = model;
     state->unk5C = actor->stats;
     func_800A190C(state->unk88, 250, &result, 0);
@@ -403,7 +404,7 @@ int func_800E6178(Actor* actor, short arg1)
     state->unk89 = 0;
     state->unk8A = 0;
     state->unk103 = 1;
-    state->unk2A = func_800A152C(id, 2, 3) >= 0;
+    state->unk2A = findBoneIndex(id, 2, 3) >= 0;
     stats = actor->stats;
     state->unk224 = stats->unk30;
     state->unk225 = stats->unk32;

@@ -164,7 +164,7 @@ void func_800D87E8(func_800E78F4_t* arg0, int id)
     int height;
     func_800DA1D4_t relation;
     func_800DA1D4_t final;
-    D_800F4538_t* object;
+    EntityBase* object;
     func_800E78F4_t* other;
     Actor* actor;
     int owner;
@@ -188,24 +188,24 @@ void func_800D87E8(func_800E78F4_t* arg0, int id)
     }
 
     arg0->unk1E4[id] = func_800E4624(
-        &arg0->unk4C, &vs_battle_actors[id]->unk44->unk0.position, arg0->unk82, height);
+        &arg0->unk4C, &vs_battle_actors[id]->unk44->position, arg0->unk82, height);
 
     if (D_800F45E0[id]
         || ((object = vs_battle_actors[id]->unk44),
-            ((object->unk0.currentTile.x == arg0->unk34.x)
-                && (object->unk0.currentTile.z == arg0->unk34.z)))
-        || ((object->unk0.unkA_3 << 19)
-            && ((object->unk0.lastTouchedTile.x == arg0->unk34.x)
-                && (object->unk0.lastTouchedTile.z == arg0->unk34.z)))) {
+            ((object->currentTile.x == arg0->unk34.x)
+                && (object->currentTile.z == arg0->unk34.z)))
+        || ((object->unkA_3 << 19)
+            && ((object->lastTouchedTile.x == arg0->unk34.x)
+                && (object->lastTouchedTile.z == arg0->unk34.z)))) {
         arg0->unk1A4[id].unk0_2 = 1;
         arg0->unk1A4[id].unk0_30 = 1;
     } else {
         if (++arg0->unk12B & 1) {
             arg0->unk1A4[id].unk0_30 =
-                !checkExtent(&object->unk0.position, &arg0->unk4C, arg0, id);
+                !checkExtent(&object->position, &arg0->unk4C, arg0, id);
         } else {
             arg0->unk1A4[id].unk0_2 =
-                !checkHeight(&object->unk0.position, &arg0->unk4C, arg0, id);
+                !checkHeight(&object->position, &arg0->unk4C, arg0, id);
         }
 
         if (arg0->unk1A4[id].unk0_2) {
@@ -214,7 +214,7 @@ void func_800D87E8(func_800E78F4_t* arg0, int id)
     }
 
     arg0->unk1A4[id].unk0_3 =
-        func_800E437C(&arg0->unk4C, &vs_battle_actors[id]->unk44->unk0.position,
+        func_800E437C(&arg0->unk4C, &vs_battle_actors[id]->unk44->position,
             arg0->unk58->unk0.facing + arg0->unk58->unk0.unk14, arg0->unk1E4[id])
         >= arg0->unkA8;
 
@@ -238,8 +238,8 @@ void func_800D87E8(func_800E78F4_t* arg0, int id)
             relation.unk0_0 || ((arg0->unk1E4[id] < arg0->unkA4) && relation.unk0_30);
     }
 
-    if ((*(u_short(**)[32])0x1F8003C0)[vs_battle_actors[id]->unk44->unk0.currentTile.z]
-                                      [vs_battle_actors[id]->unk44->unk0.currentTile.x]
+    if ((*(u_short(**)[32])0x1F8003C0)[vs_battle_actors[id]->unk44->currentTile.z]
+                                      [vs_battle_actors[id]->unk44->currentTile.x]
         & 0x2000) {
         relation.unk0_31 = 1;
     } else {
@@ -255,8 +255,8 @@ void func_800D87E8(func_800E78F4_t* arg0, int id)
 
     owner = arg0->unk88;
     targetDistance = arg0->unk1E4[id];
-    heading = ratan2(vs_battle_actors[id]->unk44->unk0.position.vx - x,
-        vs_battle_actors[id]->unk44->unk0.position.vz - z);
+    heading = ratan2(vs_battle_actors[id]->unk44->position.vx - x,
+        vs_battle_actors[id]->unk44->position.vz - z);
     other = ((func_800E78F4_t**)0x1F80037C)[id];
 
     if (other != NULL) {

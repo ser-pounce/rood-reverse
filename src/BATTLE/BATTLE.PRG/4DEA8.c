@@ -271,7 +271,7 @@ static int tryTextBoxPlacement(
     SVECTOR* origin, u_char* script, TextPlacement* result, u_char direction);
 void expandActorSelector(u_short, ActorList*);
 u_short nextActor(ActorList*);
-int getActorScreenPosition(int arg0, SVECTOR* arg1);
+int getActorScreenPositionAndUpAngle(int actorId, SVECTOR* position);
 void attachCameraToActor(u_short actor);
 void setCameraFollowsAshley(int follows);
 void updateCameraAttachment(void);
@@ -639,7 +639,7 @@ int vs_battle_script_13_initTextBoxNearActor(u_char* script, UNUSED short arg1)
     int speakerActor;
     short i;
 
-    getActorScreenPosition(resolveActorId(getShort(script + 2)), &origin);
+    getActorScreenPositionAndUpAngle(resolveActorId(getShort(script + 2)), &origin);
 
     origin.vz = ((origin.vz - ONE / 4) & 0xC00) >> 10;
 
@@ -4266,21 +4266,30 @@ u_short nextActor(ActorList* list)
     return list->actors[(u_int)(list->next++)];
 }
 
-int getActorScreenPosition(int arg0, SVECTOR* arg1)
+/**
+ * Gets an actor's position on the screen, and the angle on the screen of the actor's
+ * up direction. Uses the middle of bone 1.
+ * @param actorId Actor id.
+ * @param position Receives x and y in `vx` and `vy`, and the angle in `vz`.
+ * @return The angle.
+ */
+int getActorScreenPositionAndUpAngle(int actorId, SVECTOR* position)
 {
-    MATRIX sp10;
-    long sp30[5];
+    MATRIX boneMatrix;
+    long scratch[5];
 
-    arg1->vx = 0;
-    arg1->vy = -0x3E8;
-    arg1->vz = 0;
-    func_800A1178(arg0, 1, &sp10, &sp30[2]);
-    SetRotMatrix(&sp10);
-    SetTransMatrix(&sp10);
-    RotTransPers(arg1, sp30, &sp30[3], &sp30[4]);
-    func_800A1280(arg0, 1, arg1, sp30[2]);
-    arg1->vz = ratan2(((short*)&sp30)[1] - arg1->vy, (short)sp30[0] - arg1->vx);
-    return arg1->vz;
+    setVector(position, 0, -1000, 0);
+
+    getBoneMatrixById(actorId, 1, &boneMatrix, &scratch[2]);
+    SetRotMatrix(&boneMatrix);
+    SetTransMatrix(&boneMatrix);
+    RotTransPers(position, scratch, &scratch[3], &scratch[4]);
+    getActorScreenPoint(actorId, 1, position, scratch[2]);
+
+    position->vz =
+        ratan2((scratch[0] >> 16) - position->vy, (short)scratch[0] - position->vx);
+
+    return position->vz;
 }
 
 /**

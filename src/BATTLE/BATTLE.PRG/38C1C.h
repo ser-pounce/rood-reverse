@@ -2,8 +2,8 @@
 #include "entity.h"
 #include <libgte.h>
 
-int func_800A141C(int actorId, int bone, int* screenXyz, int mode);
-int func_800A152C(int actorId, int, int);
+int getBoneScreenPosition(int actorId, int bone, int* screenXyz, int mode);
+int findBoneIndex(int actorId, int id, int lookup);
 int func_800A1648(int, int, int);
 int func_800A1720(int, int, MATRIX*, int*);
 int func_800A1AF8(int, int, SVECTOR*, int);

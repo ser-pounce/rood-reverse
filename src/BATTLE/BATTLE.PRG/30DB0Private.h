@@ -158,11 +158,11 @@ VS_HIDDEN(func_800A0ABC);
 void func_800A0AFC(int, int, int);
 VS_HIDDEN(func_800A0AFC);
 
-int func_800A1178(int arg0, int arg1, MATRIX* arg2, u_long* arg3);
-VS_HIDDEN(func_800A1178);
+int getBoneMatrixById(int actorId, int id, MATRIX* matrix, u_long* length);
+VS_HIDDEN(getBoneMatrixById);
 
-int func_800A1280(int, int, SVECTOR*, int);
-VS_HIDDEN(func_800A1280);
+int getActorScreenPoint(int actorId, int id, SVECTOR* screenXyz, int point);
+VS_HIDDEN(getActorScreenPoint);
 
 void func_8009E614(int arg0);
 VS_HIDDEN(func_8009E614);

@@ -4058,9 +4058,15 @@ int vs_battle_script_E0_waitCameraIdle(u_char* script, UNUSED short arg1)
     return script[1] != (script[1] & getCameraIdleFlags()) ? scriptRepeat : scriptNext;
 }
 
-int vs_battle_script_E1(u_char* arg0, UNUSED short arg1)
+/**
+ * Turns the frame buffer effect on or off.
+ * @param script Opcode bytes:
+ *   - [1] = 1 for on, 0 for off
+ */
+int vs_battle_script_E1_setFramebufferEffect(u_char* script, UNUSED short arg1)
 {
-    func_8007DD50(arg0[1]);
+    setFramebufferEffect(script[1]);
+
     return scriptNext;
 }
 
@@ -4312,7 +4318,7 @@ void func_800BBBE8(void)
     D_800F4BA4->unk168.unk2 = 0;
     D_800F4BA4->unk168.unk0 = 1;
 
-    func_8007DD50(0);
+    setFramebufferEffect(0);
 
     D_800F4BA4->unk174.unkA = 0;
     D_800F4BA4->unk174.unk2 = 0;
@@ -5093,9 +5099,9 @@ int vs_battle_script_B9_BA_BF_E4_E5_E6_E7_ED(u_char* script, UNUSED short arg1)
             func_8007DDD4(&color);
             func_8007DE44(0);
             func_8007DE5C(0);
-            func_8007DD50(0);
+            setFramebufferEffect(0);
         } else {
-            func_8007DD50(1);
+            setFramebufferEffect(1);
             func_8007DE2C(0);
             values.vx = 0;
             values.vy = 2;

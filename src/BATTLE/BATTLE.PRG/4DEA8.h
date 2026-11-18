@@ -133,7 +133,7 @@ int vs_battle_script_BE_unloadScreenEffects(u_char*, short);
 int vs_battle_script_Cx_Dx_camera(u_char*, short);
 int vs_battle_script_DE_clearCameraMomentum(u_char*, short);
 int vs_battle_script_DF_setCameraMomentum(u_char*, short);
-int vs_battle_script_E1(u_char*, short);
+int vs_battle_script_E1_setFramebufferEffect(u_char*, short);
 int vs_battle_script_E2_E3_camera(u_char*, short);
 int vs_battle_script_E8_attachCameraToActor(u_char*, short);
 int vs_battle_script_E9_returnToGameplayCamera(u_char*, short);

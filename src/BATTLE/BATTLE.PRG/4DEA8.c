@@ -3788,23 +3788,49 @@ void setAllActorsEnabledAndAwake(short awake)
 int vs_battle_script_B7_specialOp(u_char* script, UNUSED short arg1)
 {
     enum {
+        // Starts loading an SHP model. [2] = model id. Unused.
         specialLoadShp = 0,
+        // Shows the ending, and returns to the title.
         specialShowEnding = 1,
+        // Skips the scene as if the player had pushed start.
         specialSkipScene = 2,
+        // Unlocks an action and sets flag 0xB1 to 1 if it was locked, else 0. [2] =
+        // action.
         specialUnlockAction = 3,
+        // Sets flag 0xB1 to the number of engaged enemies.
         specialCountEngagedEnemies = 4,
+        // Enables and wakes every actor except Ashley, or disables them and makes them
+        // dormant. [2] = 1 to enable, 0 to disable.
         specialSetAllActorsEnabledAndAwake = 5,
+        // Frees the next EVT file queued by opcode F7 without running it.
         specialDiscardNextEvt = 6,
+        // Makes the scripted camera follow Ashley with the gameplay camera's view. [2] =
+        // 1 to follow, 0 to stop.
         specialSetCameraFollowsAshley = 7,
+        // Pauses or resumes the battle timer. [2] = 1 to pause, 0 to resume.
         specialPauseBattleTimer = 8,
+        // Sweeps the camera into the player view saved before the scene.
+        // [2] = sweep from left or right.
         specialSweepCameraToSavedPlayerView = 9,
+        // Sets the pitch of the gameplay camera. [2] = 1 shallow, 2 steep, else the
+        // default.
         specialSetCameraPitchPreset = 10,
+        // Scales the duration of a running camera move by the distance it has left.
+        // [2] = the move to scale: 0 look-at, 1 eye, 2 both. Unused.
         specialScaleCameraMoveDurationByDistance = 11,
+        // Freezes the cloudstones, then thaws them. [2] = ticks, 0 thaws
+        // immediately (scripts only seem to use 0).
         specialSetCloudstoneFreezeTimer = 12,
+        // Shows the geometry hidden by the view culling. Unused.
         specialClearCulledGeometry = 13,
+        // Stops the cloudstones indefintely. [2] = 1 to stop, 0 to resume.
         specialSetCloudstonesPaused = 14,
+        // Toggles the bright haze around the edges of the screen.
+        // [2] = 1 for on, 0 for off.
         specialSetScreenEdgeGlow = 15,
+        // Runs the scene reset script, then continues with the next opcode.
         specialRunSceneReset = 16,
+        // Stops the room being marked as seen on the map.
         specialSkipRoomSeen = 17,
     };
 

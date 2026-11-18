@@ -19,6 +19,7 @@
 #include "src/SLUS_010.40/sound.h"
 #include "build/src/include/lbas.h"
 #include "gpu.h"
+#include "scratch.h"
 #include "tilePosition.h"
 #include <libgte.h>
 #include <libetc.h>
@@ -3798,10 +3799,12 @@ int func_800A0104(int index, int material)
 
     obj->unk16C.unk2 = material;
     material *= 4;
-    ((D_1F80035C_t*)0x1F80035C)->rotation.vx = D_800E9030[material] * (ONE / 4);
-    ((D_1F80035C_t*)0x1F80035C)->rotation.vy = D_800E9030[material + 1] * (ONE / 4);
-    ((D_1F80035C_t*)0x1F80035C)->rotation.vz = D_800E9030[material + 2] * (ONE / 4);
-    RotMatrixYXZ_gte(&((D_1F80035C_t*)0x1F80035C)->rotation, &obj->bones[4]);
+    VS_SCRATCH_AT(D_1F80035C_t*, 0x35C)->rotation.vx = D_800E9030[material] * (ONE / 4);
+    VS_SCRATCH_AT(D_1F80035C_t*, 0x35C)->rotation.vy =
+        D_800E9030[material + 1] * (ONE / 4);
+    VS_SCRATCH_AT(D_1F80035C_t*, 0x35C)->rotation.vz =
+        D_800E9030[material + 2] * (ONE / 4);
+    RotMatrixYXZ_gte(&VS_SCRATCH_AT(D_1F80035C_t*, 0x35C)->rotation, &obj->bones[4]);
     obj->unk0.unk18 = 0;
     *(int*)&obj->unk0.unk24 = 0;
     *(int*)&obj->unk0.unk28 = 0;
@@ -4390,8 +4393,8 @@ int getActorScreenPoint(int actorId, int id, SVECTOR* screenXyz, int point)
             screenXyz->vy = actor->unk0.position.vy - actor->unk646;
         }
 
-        SetRotMatrix((MATRIX*)0x1F800014);
-        SetTransMatrix((MATRIX*)0x1F800014);
+        SetRotMatrix(&VS_SCRATCH->viewMatrix);
+        SetTransMatrix(&VS_SCRATCH->viewMatrix);
         screenXyz->vz = RotTransPers(screenXyz, &screenXy, &p, &flag);
         screenXyz->vx = screenXy;
         new_var = &((short*)(&screenXy))[1];

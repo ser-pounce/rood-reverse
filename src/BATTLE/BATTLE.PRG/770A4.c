@@ -7,6 +7,7 @@
 #include "src/SLUS_010.40/32154.h"
 #include "src/SLUS_010.40/overlay.h"
 #include "build/src/include/lbas.h"
+#include "scratch.h"
 #include "tilePosition.h"
 #include <abs.h>
 #include <rand.h>
@@ -145,7 +146,7 @@ int func_800DFBCC(func_800E78F4_t* arg0, int index, int area)
 
     position = arg0->unk34;
     pair = (RoutePair*)routes;
-    pair->raw = (*(u_int**)0x1F8003F4)[area * 16 + index];
+    pair->raw = (*VS_SCRATCH_AT(u_int**, 0x3F4))[area * 16 + index];
 
     if ((pair->r[0].x == 0) && (pair->r[0].direction == 0)) {
         return 6;
@@ -202,22 +203,22 @@ int func_800DFBCC(func_800E78F4_t* arg0, int index, int area)
             u_char* step;
 
             arg0->unk154[0] =
-                (*(u_short(**)[32])0x1F8003C0)[candidate.z][candidate.x] % 16;
+                (*VS_SCRATCH_AT(u_short(**)[32], 0x3C0))[candidate.z][candidate.x] % 16;
             arg0->unk5 = 0;
             amount = route.distance + 1;
             step = &D_800F175C[route.direction];
-            candidate.x += amount * ((D_800F16EC_t*)0x1F8003EC)[*step].dx;
-            candidate.z += amount * ((D_800F16EC_t*)0x1F8003EC)[*step].dz;
+            candidate.x += amount * VS_SCRATCH_AT(D_800F16EC_t*, 0x3EC)[*step].dx;
+            candidate.z += amount * VS_SCRATCH_AT(D_800F16EC_t*, 0x3EC)[*step].dz;
             result = func_800D954C(arg0, candidate);
 
             if (result < 0) {
             center:
                 if ((arg0->unk15C != 16)
-                    && ((func_800E78F4_t**)0x1F80037C)[arg0->unk15C]) {
+                    && VS_SCRATCH_AT(func_800E78F4_t**, 0x37C)[arg0->unk15C]) {
                     arg0->unk17C =
-                        ((func_800E78F4_t**)0x1F80037C)[arg0->unk15C]->unk60->vx;
+                        VS_SCRATCH_AT(func_800E78F4_t**, 0x37C)[arg0->unk15C]->unk60->vx;
                     arg0->unk180 =
-                        ((func_800E78F4_t**)0x1F80037C)[arg0->unk15C]->unk60->vz;
+                        VS_SCRATCH_AT(func_800E78F4_t**, 0x37C)[arg0->unk15C]->unk60->vz;
                 } else {
                     arg0->unk17C = candidate.x * 128 + 64;
                     arg0->unk180 = candidate.z * 128 + 64;
@@ -242,13 +243,15 @@ int func_800DFBCC(func_800E78F4_t* arg0, int index, int area)
             u_char* table = D_800F175C;
             u_char* direction = &table[route.direction];
 
-            candidate.x += ((D_800F16EC_t*)0x1F8003EC)[*direction].dx;
-            candidate.z += ((D_800F16EC_t*)0x1F8003EC)[*direction].dz;
+            candidate.x += VS_SCRATCH_AT(D_800F16EC_t*, 0x3EC)[*direction].dx;
+            candidate.z += VS_SCRATCH_AT(D_800F16EC_t*, 0x3EC)[*direction].dz;
 
             if (func_800D954C(arg0, candidate) > 0) {
-                if (((*(u_short(**)[32])0x1F8003BC)[candidate.z][candidate.x] & 0x1C00)
-                    || (((*(u_char**)0x1F8003C4)[position.z * *(u_char*)0x1F8003DC
-                                                 + position.x]
+                if (((*VS_SCRATCH_AT(u_short(**)[32], 0x3BC))[candidate.z][candidate.x]
+                        & 0x1C00)
+                    || (((*VS_SCRATCH_AT(
+                             u_char**, 0x3C4))[position.z * *VS_SCRATCH_AT(u_char*, 0x3DC)
+                                               + position.x]
                             >> *direction)
                         & 1)) {
                     goto stop;
@@ -267,7 +270,8 @@ int func_800DFBCC(func_800E78F4_t* arg0, int index, int area)
     if (pair->r[0].unk0_10 && pair->r[0].unk0_15) {
         if (count == 1) {
         areaOnly:
-            arg0->unk154[0] = (*(u_short(**)[32])0x1F8003C0)[position.z][position.x] % 16;
+            arg0->unk154[0] =
+                (*VS_SCRATCH_AT(u_short(**)[32], 0x3C0))[position.z][position.x] % 16;
             return 6;
         }
 
@@ -285,14 +289,16 @@ int func_800DFBCC(func_800E78F4_t* arg0, int index, int area)
     for (i = 0; i < count; ++i) {
         route = (i == 0) ? routes[0] : routes[1];
 
-        if (!((*(u_short(**)[32])0x1F8003BC)[route.z][route.x] & 0x1C00)) {
+        if (!((*VS_SCRATCH_AT(u_short(**)[32], 0x3BC))[route.z][route.x] & 0x1C00)) {
             continue;
         }
 
         route = (i != 0) ? routes[0] : routes[1];
 
-        if (((*(u_short(**)[32])0x1F8003BC)[route.z][route.x] & 0x1C00) || (count == 1)) {
-            arg0->unk154[0] = (*(u_short(**)[32])0x1F8003C0)[position.z][position.x] % 16;
+        if (((*VS_SCRATCH_AT(u_short(**)[32], 0x3BC))[route.z][route.x] & 0x1C00)
+            || (count == 1)) {
+            arg0->unk154[0] =
+                (*VS_SCRATCH_AT(u_short(**)[32], 0x3C0))[position.z][position.x] % 16;
             return 6;
         }
 
@@ -346,13 +352,15 @@ int func_800E02B4(func_800E78F4_t* arg0, int arg1, int arg2)
     u_int height;
     Actor* actor;
 
-    if ((((D_1F8003D0_t*)0x1F8003D0)->unk2 >> arg1) & 1) {
-        return ((D_1F8003D0_t*)0x1F8003D0)->unk4[arg1];
+    if ((VS_SCRATCH_AT(D_1F8003D0_t*, 0x3D0)->unk2 >> arg1) & 1) {
+        return VS_SCRATCH_AT(D_1F8003D0_t*, 0x3D0)->unk4[arg1];
     }
 
-    x = arg0->unk4C.vx + arg2 * (arg0->unkB3 * ((D_800F16EC_t*)0x1F8003EC)[arg1].dx);
+    x = arg0->unk4C.vx
+      + arg2 * (arg0->unkB3 * VS_SCRATCH_AT(D_800F16EC_t*, 0x3EC)[arg1].dx);
     y = arg0->unk4C.vy;
-    z = arg0->unk4C.vz + arg2 * (arg0->unkB3 * ((D_800F16EC_t*)0x1F8003EC)[arg1].dz);
+    z = arg0->unk4C.vz
+      + arg2 * (arg0->unkB3 * VS_SCRATCH_AT(D_800F16EC_t*, 0x3EC)[arg1].dz);
 
     for (i = func_8008D2C0(points) - 1; i != -1; --i) {
         dx = points[i].vx - x;
@@ -360,10 +368,10 @@ int func_800E02B4(func_800E78F4_t* arg0, int arg1, int arg2)
         dz = points[i].vz - z;
 
         if (arg2
-            && ((((D_800F16EC_t*)0x1F8003EC)[arg1].dx > 0 && dx < 0)
-                || (((D_800F16EC_t*)0x1F8003EC)[arg1].dx < 0 && dx > 0)
-                || (((D_800F16EC_t*)0x1F8003EC)[arg1].dz > 0 && dz < 0)
-                || (((D_800F16EC_t*)0x1F8003EC)[arg1].dz < 0 && dz > 0))) {
+            && ((VS_SCRATCH_AT(D_800F16EC_t*, 0x3EC)[arg1].dx > 0 && dx < 0)
+                || (VS_SCRATCH_AT(D_800F16EC_t*, 0x3EC)[arg1].dx < 0 && dx > 0)
+                || (VS_SCRATCH_AT(D_800F16EC_t*, 0x3EC)[arg1].dz > 0 && dz < 0)
+                || (VS_SCRATCH_AT(D_800F16EC_t*, 0x3EC)[arg1].dz < 0 && dz > 0))) {
             continue;
         }
 
@@ -371,14 +379,14 @@ int func_800E02B4(func_800E78F4_t* arg0, int arg1, int arg2)
         height = (arg0->unkB8 + 32) >> 1;
 
         if (ABS(dx) <= radius && ABS(dz) <= radius && ABS(dy) <= height) {
-            ((D_1F8003D0_t*)0x1F8003D0)->unk2 |= 1 << arg1;
-            ((D_1F8003D0_t*)0x1F8003D0)->unk4[arg1] = 1;
+            VS_SCRATCH_AT(D_1F8003D0_t*, 0x3D0)->unk2 |= 1 << arg1;
+            VS_SCRATCH_AT(D_1F8003D0_t*, 0x3D0)->unk4[arg1] = 1;
             return 1;
         }
     }
 
     for (actor = vs_battle_actors[0]; actor != NULL; actor = actor->next) {
-        func_800E78F4_t* other = ((func_800E78F4_t**)0x1F80037C)[actor->id];
+        func_800E78F4_t* other = VS_SCRATCH_AT(func_800E78F4_t**, 0x37C)[actor->id];
         D_800F4538_t* model = other->unk58;
 
         if (other->unk88 == arg0->unk88 || other->unk88 == 0) {
@@ -390,10 +398,10 @@ int func_800E02B4(func_800E78F4_t* arg0, int arg1, int arg2)
         dz = model->unk0.position.vz - z;
 
         if (arg2
-            && ((((D_800F16EC_t*)0x1F8003EC)[arg1].dx > 0 && dx < 0)
-                || (((D_800F16EC_t*)0x1F8003EC)[arg1].dx < 0 && dx > 0)
-                || (((D_800F16EC_t*)0x1F8003EC)[arg1].dz > 0 && dz < 0)
-                || (((D_800F16EC_t*)0x1F8003EC)[arg1].dz < 0 && dz > 0))) {
+            && ((VS_SCRATCH_AT(D_800F16EC_t*, 0x3EC)[arg1].dx > 0 && dx < 0)
+                || (VS_SCRATCH_AT(D_800F16EC_t*, 0x3EC)[arg1].dx < 0 && dx > 0)
+                || (VS_SCRATCH_AT(D_800F16EC_t*, 0x3EC)[arg1].dz > 0 && dz < 0)
+                || (VS_SCRATCH_AT(D_800F16EC_t*, 0x3EC)[arg1].dz < 0 && dz > 0))) {
             continue;
         }
 
@@ -406,43 +414,44 @@ int func_800E02B4(func_800E78F4_t* arg0, int arg1, int arg2)
         }
 
         if (ABS(dx) <= radius && ABS(dz) <= radius && ABS(dy) <= height) {
-            ((D_1F8003D0_t*)0x1F8003D0)->unk2 |= 1 << arg1;
-            ((D_1F8003D0_t*)0x1F8003D0)->unk4[arg1] = actor->id + 1;
+            VS_SCRATCH_AT(D_1F8003D0_t*, 0x3D0)->unk2 |= 1 << arg1;
+            VS_SCRATCH_AT(D_1F8003D0_t*, 0x3D0)->unk4[arg1] = actor->id + 1;
             return actor->id + 1;
         }
     }
 
-    ((D_1F8003D0_t*)0x1F8003D0)->unk2 |= 1 << arg1;
-    ((D_1F8003D0_t*)0x1F8003D0)->unk4[arg1] = 0;
+    VS_SCRATCH_AT(D_1F8003D0_t*, 0x3D0)->unk2 |= 1 << arg1;
+    VS_SCRATCH_AT(D_1F8003D0_t*, 0x3D0)->unk4[arg1] = 0;
     return 0;
 }
 
 int func_800E0678(func_800E78F4_t* arg0, int arg1)
 {
-    if ((((D_1F8003D0_t*)0x1F8003D0)->unk0 >> arg1) & 1) {
-        return (((D_1F8003D0_t*)0x1F8003D0)->unk1 & (1 << arg1)) > 0;
+    if ((VS_SCRATCH_AT(D_1F8003D0_t*, 0x3D0)->unk0 >> arg1) & 1) {
+        return (VS_SCRATCH_AT(D_1F8003D0_t*, 0x3D0)->unk1 & (1 << arg1)) > 0;
     }
 
     if (!func_800E02B4(arg0, arg1, 1)) {
-        int x = arg0->unk34.x + ((D_800F16EC_t*)0x1F8003EC)[arg1].dx;
-        int z = arg0->unk34.z + ((D_800F16EC_t*)0x1F8003EC)[arg1].dz;
+        int x = arg0->unk34.x + VS_SCRATCH_AT(D_800F16EC_t*, 0x3EC)[arg1].dx;
+        int z = arg0->unk34.z + VS_SCRATCH_AT(D_800F16EC_t*, 0x3EC)[arg1].dz;
 
         if (x <= D_800F58BC->unk0 && x >= D_800F58BC->unk2 && z <= D_800F58BC->unk1
-            && z >= D_800F58BC->unk3 && !((*(u_short(**)[32])0x1F8003C0)[z][x] & 0x40)
+            && z >= D_800F58BC->unk3
+            && !((*VS_SCRATCH_AT(u_short(**)[32], 0x3C0))[z][x] & 0x40)
             && (arg0->unk38.x != x || arg0->unk38.z != z)) {
             if (D_800F58BC->unk14
                 && func_800E42EC(x, z) + arg0->unkBE < D_800F58BC->unk14) {
                 return 0;
             }
 
-            ((D_1F8003D0_t*)0x1F8003D0)->unk0 |= 1 << arg1;
-            ((D_1F8003D0_t*)0x1F8003D0)->unk1 |= 1 << arg1;
+            VS_SCRATCH_AT(D_1F8003D0_t*, 0x3D0)->unk0 |= 1 << arg1;
+            VS_SCRATCH_AT(D_1F8003D0_t*, 0x3D0)->unk1 |= 1 << arg1;
             return 1;
         }
     }
 
-    ((D_1F8003D0_t*)0x1F8003D0)->unk0 |= 1 << arg1;
-    ((D_1F8003D0_t*)0x1F8003D0)->unk1 &= ~(1 << arg1);
+    VS_SCRATCH_AT(D_1F8003D0_t*, 0x3D0)->unk0 |= 1 << arg1;
+    VS_SCRATCH_AT(D_1F8003D0_t*, 0x3D0)->unk1 &= ~(1 << arg1);
     return 0;
 }
 
@@ -457,8 +466,9 @@ int func_800E0850(func_800E78F4_t* arg0, u_int arg1)
     arg1 = (arg1 >> 9) & 6;
     while (--count != -1) {
         if (func_800E0678(arg0, arg1) != 0) {
-            int h = func_800E42EC(arg0->unk34.x + ((D_800F16EC_t*)0x1F8003EC)[arg1].dx,
-                arg0->unk34.z + ((D_800F16EC_t*)0x1F8003EC)[arg1].dz);
+            int h = func_800E42EC(
+                arg0->unk34.x + VS_SCRATCH_AT(D_800F16EC_t*, 0x3EC)[arg1].dx,
+                arg0->unk34.z + VS_SCRATCH_AT(D_800F16EC_t*, 0x3EC)[arg1].dz);
             if (h < min) {
                 min = h;
             }
@@ -528,7 +538,8 @@ void func_800E0A68(func_800E78F4_t* state, int action)
     angle &= 0xFFF;
 
     if (state->unk0 && (func_800E45F4(state->unk34, state->unk168) < 2)
-        && ((*(u_short(**)[32])0x1F8003C0)[state->unk168.z][state->unk168.x] & 0x40)) {
+        && ((*VS_SCRATCH_AT(u_short(**)[32], 0x3C0))[state->unk168.z][state->unk168.x]
+            & 0x40)) {
         int centerZ;
         int centerAngle;
         int selectedHeight;
@@ -598,7 +609,8 @@ void func_800E0A68(func_800E78F4_t* state, int action)
         floorY = state->unkBE;
         actor = D_800F4538[state->unkE5];
 
-        if (!((*(u_short(**)[32])0x1F8003C0)[state->unk168.z][state->unk168.x] & 0x20)) {
+        if (!((*VS_SCRATCH_AT(u_short(**)[32], 0x3C0))[state->unk168.z][state->unk168.x]
+                & 0x20)) {
             floorY += func_800E42E0(state->unk168);
         }
 
@@ -634,7 +646,7 @@ void func_800E0A68(func_800E78F4_t* state, int action)
 
     func_800E3600(state, angle, 2);
 
-    switch (*(int*)0x1F8003C8) {
+    switch (*VS_SCRATCH_AT(int*, 0x3C8)) {
     case 5:
         angle = state->unk188 * (ONE / 8);
 
@@ -770,13 +782,13 @@ void func_800E1238(func_800E78F4_t* arg0, int arg1)
     arg0->unk7 = 1;
     func_800E3600(arg0, arg1, 3);
 
-    if (*(int*)0x1F8003C8 != 5 && *(int*)0x1F8003C8 != 7) {
+    if (*VS_SCRATCH_AT(int*, 0x3C8) != 5 && *VS_SCRATCH_AT(int*, 0x3C8) != 7) {
         func_800E678C(arg0);
         func_800E2CCC(arg0);
         return;
     }
 
-    if (*(int*)0x1F8003C8 == 5) {
+    if (*VS_SCRATCH_AT(int*, 0x3C8) == 5) {
         arg1 = arg0->unk188 * (ONE / 8);
     }
 
@@ -869,8 +881,10 @@ void func_800E153C(func_800E78F4_t* arg0, int arg1)
 
             if (func_800D954C(arg0, dest) <= 0) {
                 for (i = 0; i < 4; ++i) {
-                    dest.x = arg0->unk168.x + ((D_800F16EC_t*)0x1F8003EC)[i * 2].dx;
-                    dest.z = arg0->unk168.z + ((D_800F16EC_t*)0x1F8003EC)[i * 2].dz;
+                    dest.x =
+                        arg0->unk168.x + VS_SCRATCH_AT(D_800F16EC_t*, 0x3EC)[i * 2].dx;
+                    dest.z =
+                        arg0->unk168.z + VS_SCRATCH_AT(D_800F16EC_t*, 0x3EC)[i * 2].dz;
 
                     if (func_800D954C(arg0, dest) > 0) {
                         arg0->unk168 = dest;
@@ -923,8 +937,8 @@ u_char func_800E1850(u_char arg0, vs_TilePosition arg1, int arg2)
 
     for (i = 0; i < 8; ++i) {
         if ((arg0 >> i) & 1) {
-            if (func_800E42EC(x + ((D_800F16EC_t*)0x1F8003EC)[i].dx,
-                    z2 + ((D_800F16EC_t*)0x1F8003EC)[i].dz)
+            if (func_800E42EC(x + VS_SCRATCH_AT(D_800F16EC_t*, 0x3EC)[i].dx,
+                    z2 + VS_SCRATCH_AT(D_800F16EC_t*, 0x3EC)[i].dz)
                 > arg2) {
                 arg0 &= ~(1 << i);
             }
@@ -935,8 +949,8 @@ u_char func_800E1850(u_char arg0, vs_TilePosition arg1, int arg2)
 
 void func_800E1908(func_800E78F4_t* arg0)
 {
-    u_char* tile =
-        &(*(u_char**)0x1F8003C4)[arg0->unk34.z * *(u_char*)0x1F8003DC + arg0->unk34.x];
+    u_char* tile = &(*VS_SCRATCH_AT(
+        u_char**, 0x3C4))[arg0->unk34.z * *VS_SCRATCH_AT(u_char*, 0x3DC) + arg0->unk34.x];
     int old = *tile;
     Actor* actor = arg0->unk54;
     int result;
@@ -945,7 +959,7 @@ void func_800E1908(func_800E78F4_t* arg0)
     func_800E3600(arg0,
         ratan2(arg0->unk4C.vx - arg0->unk17C, arg0->unk4C.vz - arg0->unk180) & 0xFFF, 0);
     *tile = old;
-    result = *(int*)0x1F8003C8;
+    result = *VS_SCRATCH_AT(int*, 0x3C8);
 
     if ((0xA0 >> result) & 1) {
         actor->unk9 = 9;
@@ -971,8 +985,8 @@ void func_800E19FC(func_800E78F4_t* arg0)
         return;
     }
 
-    current = (*(u_short(**)[32])0x1F8003C0)[arg0->unk34.z][arg0->unk34.x] & 15;
-    next = (*(u_short(**)[32])0x1F8003C0)[arg0->unk168.z][arg0->unk168.x] & 15;
+    current = (*VS_SCRATCH_AT(u_short(**)[32], 0x3C0))[arg0->unk34.z][arg0->unk34.x] & 15;
+    next = (*VS_SCRATCH_AT(u_short(**)[32], 0x3C0))[arg0->unk168.z][arg0->unk168.x] & 15;
 
     if (current != next) {
         if (arg0->unk29) {
@@ -982,11 +996,14 @@ void func_800E19FC(func_800E78F4_t* arg0)
                 arg0->unk17C = arg0->unk168.x * 128 + 64;
                 arg0->unk180 = arg0->unk168.z * 128 + 64;
 
-                if (((*(u_short(**)[32])0x1F8003C0)[arg0->unk168.z][arg0->unk168.x] & 15)
-                    != ((*(u_short(**)[32])0x1F8003C0)[arg0->unk34.z][arg0->unk34.x]
+                if (((*VS_SCRATCH_AT(
+                         u_short(**)[32], 0x3C0))[arg0->unk168.z][arg0->unk168.x]
+                        & 15)
+                    != ((*VS_SCRATCH_AT(
+                            u_short(**)[32], 0x3C0))[arg0->unk34.z][arg0->unk34.x]
                         & 15)) {
                     arg0->unk2 = 1;
-                    ((D_1F8003D0_t*)0x1F8003D0)->unk0 = 0;
+                    VS_SCRATCH_AT(D_1F8003D0_t*, 0x3D0)->unk0 = 0;
                 }
             } else {
                 func_800E4BB8(arg0);
@@ -1001,7 +1018,7 @@ void func_800E19FC(func_800E78F4_t* arg0)
             }
         } else {
             arg0->unk2 = 1;
-            ((D_1F8003D0_t*)0x1F8003D0)->unk0 = 0;
+            VS_SCRATCH_AT(D_1F8003D0_t*, 0x3D0)->unk0 = 0;
         }
     }
 
@@ -1029,18 +1046,19 @@ int func_800E1BB8(func_800E78F4_t* arg0, vs_TilePosition arg1, u_int arg2, int a
 
     for (i = 0; i < 4; ++i) {
         if (!(arg0->unk15E & 8)) {
-            if (*(int*)0x1F8003F4) {
+            if (*VS_SCRATCH_AT(int*, 0x3F4)) {
                 candidate.surface =
-                    ((*(u_char**)0x1F8003C4)[arg0->unk11C.z * *(u_char*)0x1F8003DC
-                                             + arg0->unk11C.x]
+                    ((*VS_SCRATCH_AT(
+                         u_char**, 0x3C4))[arg0->unk11C.z * *VS_SCRATCH_AT(u_char*, 0x3DC)
+                                           + arg0->unk11C.x]
                         >> i * 2)
                     & 1;
             } else {
                 candidate.surface = func_800E4690(arg0->unk11C, i * 2);
             }
 
-            candidate.x = arg0->unk11C.x + ((D_800F16EC_t*)0x1F8003EC)[i * 2].dx;
-            candidate.z = arg0->unk11C.z + ((D_800F16EC_t*)0x1F8003EC)[i * 2].dz;
+            candidate.x = arg0->unk11C.x + VS_SCRATCH_AT(D_800F16EC_t*, 0x3EC)[i * 2].dx;
+            candidate.z = arg0->unk11C.z + VS_SCRATCH_AT(D_800F16EC_t*, 0x3EC)[i * 2].dz;
 
             if (candidate.surface) {
                 if (!func_800D96C8(arg0, arg0->unk11C, candidate, i * 2)) {
@@ -1051,14 +1069,16 @@ int func_800E1BB8(func_800E78F4_t* arg0, vs_TilePosition arg1, u_int arg2, int a
             }
 
             if (!arg0->unk2
-                && ((*(u_short(**)[32])0x1F8003C0)[candidate.z][candidate.x] & 15)
-                       != ((*(u_short(**)[32])0x1F8003C0)[arg0->unk11C.z][arg0->unk11C.x]
+                && ((*VS_SCRATCH_AT(u_short(**)[32], 0x3C0))[candidate.z][candidate.x]
+                       & 15)
+                       != ((*VS_SCRATCH_AT(
+                               u_short(**)[32], 0x3C0))[arg0->unk11C.z][arg0->unk11C.x]
                            & 15)) {
                 continue;
             }
         }
 
-        if (!((*(u_short(**)[32])0x1F8003C0)[candidate.z][candidate.x] & 32)) {
+        if (!((*VS_SCRATCH_AT(u_short(**)[32], 0x3C0))[candidate.z][candidate.x] & 32)) {
             choices[count++] = i * 2;
         }
     }
@@ -1073,8 +1093,8 @@ int func_800E1BB8(func_800E78F4_t* arg0, vs_TilePosition arg1, u_int arg2, int a
         chosen = func_800E45D4(4096) % count;
     }
 
-    arg0->unk11C.x += ((D_800F16EC_t*)0x1F8003EC)[choices[chosen]].dx;
-    arg0->unk11C.z += ((D_800F16EC_t*)0x1F8003EC)[choices[chosen]].dz;
+    arg0->unk11C.x += VS_SCRATCH_AT(D_800F16EC_t*, 0x3EC)[choices[chosen]].dx;
+    arg0->unk11C.z += VS_SCRATCH_AT(D_800F16EC_t*, 0x3EC)[choices[chosen]].dz;
     arg0->unkD0 = choices[chosen];
     ++arg0->unk15D;
     return arg2 < arg0->unk15D;
@@ -1122,7 +1142,7 @@ void func_800E1EAC(func_800E78F4_t* arg0, vs_TilePosition arg1, u_int arg2)
     }
 
     arg0->unk2 = 1;
-    *(u_char*)0x1F8003D0 = 0;
+    *VS_SCRATCH_AT(u_char*, 0x3D0) = 0;
 
     value = arg0->unkC2 < move;
 
@@ -1168,12 +1188,12 @@ void func_800E1EAC(func_800E78F4_t* arg0, vs_TilePosition arg1, u_int arg2)
 
             for (side = arg0->unkD0 >> 9, step = 0; step < 2;
                 side = (side + 2) & 7, ++step) {
-                int x = arg0->unk34.x + ((D_800F16EC_t*)0x1F8003EC)[side].dx;
-                int z = arg0->unk34.z + ((D_800F16EC_t*)0x1F8003EC)[side].dz;
+                int x = arg0->unk34.x + VS_SCRATCH_AT(D_800F16EC_t*, 0x3EC)[side].dx;
+                int z = arg0->unk34.z + VS_SCRATCH_AT(D_800F16EC_t*, 0x3EC)[side].dz;
 
                 if (D_800F58BC->unk1 < z || z < D_800F58BC->unk3 || D_800F58BC->unk0 < x
                     || x < D_800F58BC->unk2
-                    || ((*(u_short(**)[32])0x1F8003C0)[z][x] & 0x800)) {
+                    || ((*VS_SCRATCH_AT(u_short(**)[32], 0x3C0))[z][x] & 0x800)) {
                     arg0->unkD2 = 0;
                     break;
                 }
@@ -1406,7 +1426,7 @@ int func_800E24EC(func_800E78F4_t* s, int option)
 
             case 2:
                 s->unk3 = 1;
-                *(unsigned char*)0x1F8003D0 = 0;
+                *VS_SCRATCH_AT(unsigned char*, 0x3D0) = 0;
                 s->unk4 = 1;
                 s->unk17C = model->unk0.position.vx;
                 s->unk180 = model->unk0.position.vz;
@@ -1591,10 +1611,10 @@ void func_800E2CCC(func_800E78F4_t* arg0)
         u_int quadrant = (angle & 0xFFF) / (ONE / 4);
         direction = (angle & 0x3FF) > ONE / 8 ? ((quadrant + 1) & 3) * 2 : quadrant * 2;
 
-        for (i = 0, bounds = (u_char*)0x1F8003DC; i < 4; ++i) {
+        for (i = 0, bounds = VS_SCRATCH_AT(u_char*, 0x3DC); i < 4; ++i) {
             direction = (direction + i * 2) & 7;
-            nx = (x + ((D_800F16EC_t*)0x1F8003EC)[direction].dx) & 0xFF;
-            nz = (z2 + ((D_800F16EC_t*)0x1F8003EC)[direction].dz) & 0xFF;
+            nx = (x + VS_SCRATCH_AT(D_800F16EC_t*, 0x3EC)[direction].dx) & 0xFF;
+            nz = (z2 + VS_SCRATCH_AT(D_800F16EC_t*, 0x3EC)[direction].dz) & 0xFF;
 
             if (nx < bounds[0] && nz < bounds[1]) {
                 int height = (func_800E4320(nx, nz) << 17) >> 17;
@@ -1632,16 +1652,19 @@ int func_800E2F5C(func_800E78F4_t* state, int (*test)(func_800E78F4_t*, int), in
         int boundZ;
         int cell;
 
-        if (hit != 0 && !(((func_800E78F4_t**)0x1F80037C)[blocker]->unk15E & 0x30)
-            && !((func_800E78F4_t**)0x1F80037C)[blocker]->unk19A) {
-            ((func_800E78F4_t**)0x1F80037C)[blocker]->unk19A = func_800E45D4(4) + 4;
+        if (hit != 0 && !(VS_SCRATCH_AT(func_800E78F4_t**, 0x37C)[blocker]->unk15E & 0x30)
+            && !VS_SCRATCH_AT(func_800E78F4_t**, 0x37C)[blocker]->unk19A) {
+            VS_SCRATCH_AT(func_800E78F4_t**, 0x37C)
+            [blocker]->unk19A = func_800E45D4(4) + 4;
         }
 
         if (!state->unk4 && !path.changed && !test(state, path.direction)) {
             vs_TilePosition ahead;
 
-            ahead.x = state->unk34.x + ((D_800F16EC_t*)0x1F8003EC)[path.direction].dx;
-            ahead.z = state->unk34.z + ((D_800F16EC_t*)0x1F8003EC)[path.direction].dz;
+            ahead.x =
+                state->unk34.x + VS_SCRATCH_AT(D_800F16EC_t*, 0x3EC)[path.direction].dx;
+            ahead.z =
+                state->unk34.z + VS_SCRATCH_AT(D_800F16EC_t*, 0x3EC)[path.direction].dz;
             ahead.surface = 0;
 
             if (!func_800D96C8(state, state->unk34, ahead, path.direction)
@@ -1657,10 +1680,10 @@ int func_800E2F5C(func_800E78F4_t* state, int (*test)(func_800E78F4_t*, int), in
         boundZ = path.boundZ * 128;
 
         if (!state->unk4) {
-            int x = state->unk34.x + ((D_800F16EC_t*)0x1F8003EC)[direction].dx;
-            int z = state->unk34.z + ((D_800F16EC_t*)0x1F8003EC)[direction].dz;
+            int x = state->unk34.x + VS_SCRATCH_AT(D_800F16EC_t*, 0x3EC)[direction].dx;
+            int z = state->unk34.z + VS_SCRATCH_AT(D_800F16EC_t*, 0x3EC)[direction].dz;
 
-            if ((((*(u_short(**)[32])0x1F8003C0)[z][x] >> mask) & 1)
+            if ((((*VS_SCRATCH_AT(u_short(**)[32], 0x3C0))[z][x] >> mask) & 1)
                 || (x > D_800F58BC->unk0) || (z > D_800F58BC->unk1)
                 || (x < D_800F58BC->unk2) || (z < D_800F58BC->unk3)) {
                 state->unkE8 = 0;
@@ -1758,8 +1781,10 @@ int func_800E2F5C(func_800E78F4_t* state, int (*test)(func_800E78F4_t*, int), in
                     return 5;
                 }
 
-                point.x = state->unk34.x + ((D_800F16EC_t*)0x1F8003EC)[direction].dx;
-                point.z = state->unk34.z + ((D_800F16EC_t*)0x1F8003EC)[direction].dz;
+                point.x =
+                    state->unk34.x + VS_SCRATCH_AT(D_800F16EC_t*, 0x3EC)[direction].dx;
+                point.z =
+                    state->unk34.z + VS_SCRATCH_AT(D_800F16EC_t*, 0x3EC)[direction].dz;
                 point.surface = 0;
 
                 if (func_800D96C8(state, state->unk34, point, direction)

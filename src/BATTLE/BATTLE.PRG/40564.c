@@ -41,14 +41,8 @@ extern func_800AAE9C_t D_800E909C[][28];
 extern short D_800E8F30[];
 extern u_char D_800E8F2C;
 
-static inline DR_MOVE* vs_battlePacketBegin(void)
-{
-    return ((vs_Scratch*)0x1F800000)->nextPrim;
-}
-static inline void vs_battlePacketEnd(DR_MOVE* p)
-{
-    ((vs_Scratch*)0x1F800000)->nextPrim = p + 1;
-}
+static inline DR_MOVE* vs_battlePacketBegin(void) { return VS_SCRATCH->nextPrim; }
+static inline void vs_battlePacketEnd(DR_MOVE* p) { VS_SCRATCH->nextPrim = p + 1; }
 
 // Inlined copy of 3A1A0 func_800A4A24
 static inline SVECTOR* func_800A4A24(int id)
@@ -121,7 +115,7 @@ MpdTile* func_800A8D64(SVECTOR* arg0, int arg1)
 
 int func_800A8E84(D_800F4538_t* actor, SVECTOR* position)
 {
-    D_1F8003BC_t* scratch = (D_1F8003BC_t*)0x1F8003BC;
+    D_1F8003BC_t* scratch = VS_SCRATCH_AT(D_1F8003BC_t*, 0x3BC);
     int i;
 
     if (actor->unk0.unkF != 0) {
@@ -168,7 +162,7 @@ int func_800A8E84(D_800F4538_t* actor, SVECTOR* position)
 
 int func_800A8FD4(D_800F4538_t* actor, SVECTOR* motion)
 {
-    D_1F8003BC_t* scratch = (D_1F8003BC_t*)0x1F8003BC;
+    D_1F8003BC_t* scratch = VS_SCRATCH_AT(D_1F8003BC_t*, 0x3BC);
     D_1F8003BC_t* clear;
     D_800F4538_t** entry;
     int i;
@@ -1206,10 +1200,10 @@ void setActorScale(int arg0, SVECTOR* arg1, int arg2)
 
 void func_800AAC80(RECT* arg0, int arg1, int arg2)
 {
-    DR_MOVE* drMove = *(DR_MOVE**)0x1F800000;
+    DR_MOVE* drMove = VS_SCRATCH->nextPrim;
     SetDrawMove(drMove, arg0, arg1, arg2);
     func_8007A824(drMove);
-    *(DR_MOVE**)0x1F800000 = drMove + 1;
+    VS_SCRATCH->nextPrim = drMove + 1;
 }
 
 void func_800AACDC(void)
@@ -1223,14 +1217,14 @@ void func_800AACDC(void)
     sp10.w = 18;
     sp10.h = 36;
 
-    new_var = (void*)0x1F800000;
-    temp_s0 = *((DR_MOVE**)0x1F800000);
+    new_var = VS_SCRATCH;
+    temp_s0 = VS_SCRATCH->nextPrim;
     new_var = (void*)0x10;
 
     SetDrawMove(temp_s0, &sp10, 16, 400);
     func_8007A824(temp_s0);
 
-    *((void**)0x1F800000) = (DR_MOVE*)(temp_s0 + 1);
+    VS_SCRATCH->nextPrim = temp_s0 + 1;
 }
 
 int func_800AAD4C(int actorId, int index, int value, int mode)

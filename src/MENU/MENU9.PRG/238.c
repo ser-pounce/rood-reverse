@@ -467,10 +467,10 @@ static int calculateProgress(void)
         vs_main_scoredata.openedChestCount = openedChestCount;
     }
 
-    vs_main_memcpy(&cameraPositionBackup,
-        &((vs_Scratch*)getScratchAddr(0))->camera.position, sizeof cameraPositionBackup);
-    vs_main_memcpy(&cameraAnglesBackup,
-        &((vs_Scratch*)getScratchAddr(0))->camera.angles.vx, sizeof cameraAnglesBackup);
+    vs_main_memcpy(
+        &cameraPositionBackup, &VS_SCRATCH->camera.position, sizeof cameraPositionBackup);
+    vs_main_memcpy(
+        &cameraAnglesBackup, &VS_SCRATCH->camera.angles.vx, sizeof cameraAnglesBackup);
     setTitleFlags();
     calculateScore();
     determineCharacterRank();
@@ -1406,10 +1406,10 @@ static int menuInput(void)
  */
 static void restoreCamera(void)
 {
-    vs_main_memcpy(&((vs_Scratch*)getScratchAddr(0))->camera.position,
-        &cameraPositionBackup, sizeof cameraPositionBackup);
-    vs_main_memcpy(&((vs_Scratch*)getScratchAddr(0))->camera.angles.vx,
-        &cameraAnglesBackup, sizeof cameraAnglesBackup);
+    vs_main_memcpy(
+        &VS_SCRATCH->camera.position, &cameraPositionBackup, sizeof cameraPositionBackup);
+    vs_main_memcpy(
+        &VS_SCRATCH->camera.angles.vx, &cameraAnglesBackup, sizeof cameraAnglesBackup);
 }
 
 /**
@@ -1497,7 +1497,7 @@ static void buildCameraMatrix(MATRIX* cameraMatrix)
     angle2 = rsin(cameraAngles.vx) * -cameraDistance;
     position.vy = (angle2 / ONE) - (cameraHeightOffset / 2);
 
-    scratch = (vs_Scratch*)getScratchAddr(0);
+    scratch = VS_SCRATCH;
     setVector(&scratch->camera.position, position.vx * ONE, position.vy * ONE,
         position.vz * ONE);
     scratch->camera.angles.vx = cameraAngles.vx;
@@ -1561,9 +1561,9 @@ static void renderEnemyInfoBg(int x, int y, int w, int h, int color)
     LINE_G2* line;
     POLY_F4* poly;
 
-    void** scratch = (void**)getScratchAddr(0);
+    vs_Scratch* scratch = VS_SCRATCH;
 
-    line = scratch[0];
+    line = scratch->nextPrim;
 
     for (i = y, var_s7 = w; i < ((y + h) - 1); ++i, --var_s7) {
         setLineG2(line);
@@ -1573,7 +1573,7 @@ static void renderEnemyInfoBg(int x, int y, int w, int h, int color)
         setRGB1(
             line, bgColorStops1[color].r, bgColorStops1[color].g, bgColorStops1[color].b);
 
-        AddPrim(*((void**)getScratchAddr(1)) + 0x1C, line++);
+        AddPrim(VS_SCRATCH->depthOt + 0x1C, line++);
     }
 
     x += 2;
@@ -1584,11 +1584,11 @@ static void renderEnemyInfoBg(int x, int y, int w, int h, int color)
     setXY4(poly, x, y, (x + w) - 1, y, x, (y + h) - 1, (x + w) - h, (y + h) - 1);
     setRGB0(poly, 0, 0, 0);
 
-    scratch = (void**)getScratchAddr(0);
+    scratch = VS_SCRATCH;
 
-    AddPrim(scratch[1] + 0x1C, poly++);
+    AddPrim(scratch->depthOt + 0x1C, poly++);
 
-    scratch[0] = (void*)poly;
+    scratch->nextPrim = poly;
 
     insertTPage(7, getTPage(0, 3, 0, 0));
 }
@@ -1606,12 +1606,12 @@ static void renderGradientQuad(int x, int y, int w, int h, int color)
     char b0;
     POLY_G4* polyG4;
     POLY_F4* polyF4;
-    void** scratch = (void**)0x1F800000;
+    vs_Scratch* scratch = VS_SCRATCH;
 
     int a3 = (x + w) - 1;
     int a2 = (y + h) - 1;
 
-    polyG4 = scratch[0];
+    polyG4 = scratch->nextPrim;
     setPolyG4(polyG4);
     r0 = bgColorStops0[color].r;
     g0 = bgColorStops0[color].g;
@@ -1626,7 +1626,7 @@ static void renderGradientQuad(int x, int y, int w, int h, int color)
     setRGB2(polyG4, r0, g0, b0);
     setRGB3(polyG4, r1, g1, b1);
 
-    AddPrim(scratch[1] + 0x1C, polyG4++);
+    AddPrim(scratch->depthOt + 0x1C, polyG4++);
 
     x += 2;
     y += 2;
@@ -1636,9 +1636,9 @@ static void renderGradientQuad(int x, int y, int w, int h, int color)
     setXY4(polyF4, x, y, (x + w) - 1, y, x, (y + h) - 1, (x + w) - 1, (y + h) - 1);
     setRGB0(polyF4, 0, 0, 0);
 
-    AddPrim(scratch[1] + 0x1C, polyF4++);
+    AddPrim(scratch->depthOt + 0x1C, polyF4++);
 
-    scratch[0] = polyF4;
+    scratch->nextPrim = polyF4;
 
     insertTPage(7, getTPage(0, 3, 0, 0));
 }
@@ -1650,8 +1650,8 @@ static void renderGradientQuad(int x, int y, int w, int h, int color)
 static void renderFooterBg(int x)
 {
     POLY_F4* polyF4;
-    void** scratch = (void**)getScratchAddr(0);
-    POLY_G4* polyG4 = scratch[0];
+    vs_Scratch* scratch = VS_SCRATCH;
+    POLY_G4* polyG4 = scratch->nextPrim;
 
     setPolyG4(polyG4);
     setXY4(polyG4, 0, x, 320, x, 0, x + 8, 320, x + 8);
@@ -1661,7 +1661,7 @@ static void renderFooterBg(int x)
     setRGB3(polyG4, 128, 128, 128);
     setSemiTrans(polyG4, 1);
 
-    AddPrim(scratch[1] + 0x1C, polyG4++);
+    AddPrim(scratch->depthOt + 0x1C, polyG4++);
 
     polyF4 = (POLY_F4*)polyG4;
 
@@ -1669,9 +1669,9 @@ static void renderFooterBg(int x)
     setXY4(polyF4, 0, x + 8, 320, x + 8, 0, 240, 320, 240);
     setRGB0(polyF4, 0, 0, 0);
 
-    AddPrim(scratch[1] + 0x1C, polyF4++);
+    AddPrim(scratch->depthOt + 0x1C, polyF4++);
 
-    scratch[0] = polyF4;
+    scratch->nextPrim = polyF4;
 
     insertTPage(7, getTPage(0, 2, 0, 0));
 }
@@ -1687,7 +1687,7 @@ static void renderTopMenu(int animStep)
     vs_GeomOffset sp20;
     char sp28[128];
     MATRIX spA8;
-    void** scratch;
+    vs_Scratch* scratch;
 
     if (animStep < 8) {
         renderScreenEdgeFade();
@@ -1705,17 +1705,17 @@ static void renderTopMenu(int animStep)
 
     sprintf(sp28, "#%ld", score);
 
-    scratch = (void**)getScratchAddr(0);
+    scratch = VS_SCRATCH;
 
     vs_battle_renderTextRawColor("SCORE", (((animStep * 16) - 120) & 0xFFFF) | (16 << 16),
-        vs_getRGB888(128, 128, 128), scratch[1] + 0x1C);
+        vs_getRGB888(128, 128, 128), scratch->depthOt + 0x1C);
     vs_battle_renderTextRawColor(sp28, ((animStep * 16) & 0xFFFF) | (16 << 16),
-        vs_getRGB888(128, 128, 128), scratch[1] + 0x1C);
+        vs_getRGB888(128, 128, 128), scratch->depthOt + 0x1C);
 
     renderGradientQuad((animStep * 16) - 128, 16, 136, 12, 2);
     vs_battle_renderTextRawColor("RISK   BREAKER   RANK",
         (((animStep * 16) - 120) & 0xFFFF) | (184 << 16), vs_getRGB888(128, 128, 128),
-        scratch[1] + 0x1C);
+        scratch->depthOt + 0x1C);
 
     renderGradientQuad((animStep * 16) - 128, 184, 136, 12, 1);
     renderFooterBg(236 - (animStep * 6));
@@ -1846,7 +1846,7 @@ static void renderTitleNo(int x, int y, int titleNo, int dimmed)
     sprintf(digits, "%02d", titleNo);
 
     x += 19;
-    poly = *(void**)0x1F800000;
+    poly = VS_SCRATCH->nextPrim;
 
     for (i = 1; i >= 0; --i, x -= 5) {
 
@@ -1867,10 +1867,10 @@ static void renderTitleNo(int x, int y, int titleNo, int dimmed)
             setClut(poly, 832, 223);
         }
 
-        AddPrim(*(void**)0x1F800008, poly++);
+        AddPrim(VS_SCRATCH->frontOt, poly++);
     }
 
-    *(void**)0x1F800000 = poly;
+    VS_SCRATCH->nextPrim = poly;
 }
 
 /**
@@ -1889,7 +1889,7 @@ static void renderEnemyNo(int x, int y, int enemyNo, int dimmed)
     sprintf(digits, "%03d", enemyNo);
 
     x += 0x18;
-    poly = *(void**)getScratchAddr(0);
+    poly = VS_SCRATCH->nextPrim;
 
     for (i = 2; i >= 0; --i, x -= 5) {
 
@@ -1909,10 +1909,10 @@ static void renderEnemyNo(int x, int y, int enemyNo, int dimmed)
             setClut(poly, 832, 223);
         }
 
-        AddPrim(*(void**)getScratchAddr(2), poly++);
+        AddPrim(VS_SCRATCH->frontOt, poly++);
     }
 
-    *(void**)getScratchAddr(0) = poly;
+    VS_SCRATCH->nextPrim = poly;
 }
 
 /**
@@ -2083,7 +2083,7 @@ static void renderEnemyDetailScreen(int animState, int state)
     int temp_s2;
     int temp_s4;
     int temp_s6;
-    void** scratch;
+    vs_Scratch* scratch;
 
     if (animState < 8) {
         renderScreenEdgeFade();
@@ -2119,25 +2119,25 @@ static void renderEnemyDetailScreen(int animState, int state)
         vs_battle_getMenuItem(0)->state = 0;
 
         temp_s4 = animState * 16;
-        scratch = (void**)getScratchAddr(0);
+        scratch = VS_SCRATCH;
 
-        vs_mainmenu_renderButton(buttonIdL2, temp_s4 - 120, 15, scratch[1] + 24);
+        vs_mainmenu_renderButton(buttonIdL2, temp_s4 - 120, 15, scratch->depthOt + 24);
 
         temp_s0 = (temp_s4 - 100) & 0xFFFF;
 
         vs_battle_renderTextRawColor(
-            "ROTATION", temp_s0 | (18 << 16), rotationColor, scratch[1] + 24);
+            "ROTATION", temp_s0 | (18 << 16), rotationColor, scratch->depthOt + 24);
 
         temp_s6 = temp_s4 - 112;
 
         renderEnemyInfoBg(temp_s6, 18, 96, 12, 3);
-        vs_mainmenu_renderButton(buttonIdR2, temp_s4 - 120, 34, scratch[1] + 24);
+        vs_mainmenu_renderButton(buttonIdR2, temp_s4 - 120, 34, scratch->depthOt + 24);
         vs_battle_renderTextRawColor(
-            "ZOOM", temp_s0 | (36 << 16), zoomColor, scratch[1] + 24);
+            "ZOOM", temp_s0 | (36 << 16), zoomColor, scratch->depthOt + 24);
         renderEnemyInfoBg(temp_s6, 36, 78, 12, 3);
         sprintf(sp60, "NO.   %03d/%03d", selectedEnemy + 1, 78);
-        vs_battle_renderTextRawColor(
-            sp60, ((temp_s4 - 120) & 0xFFFF) | 0xA00000, 0x808080, scratch[1] + 0x1C);
+        vs_battle_renderTextRawColor(sp60, ((temp_s4 - 120) & 0xFFFF) | 0xA00000,
+            0x808080, scratch->depthOt + 0x1C);
         renderGradientQuad(temp_s4 - 128, 160, 100, 12, 2);
         vs_battle_renderTextRawColor(enemyClassName[monBinData[selectedEnemy].classId],
             ((temp_s2 + 188) & 0xFFFF) | 0x9B0000, 0x808080, NULL);
@@ -2150,8 +2150,8 @@ static void renderEnemyDetailScreen(int animState, int state)
  */
 static void renderScreenEdgeFade(void)
 {
-    void** scratch = (void**)0x1F800000;
-    POLY_G4* poly = scratch[0];
+    vs_Scratch* scratch = VS_SCRATCH;
+    POLY_G4* poly = scratch->nextPrim;
 
     setPolyG4(poly);
     setXY4(poly, 0, 0, 64, 0, 0, 240, 64, 240);
@@ -2161,7 +2161,7 @@ static void renderScreenEdgeFade(void)
     setRGB3(poly, 0, 0, 0);
     setSemiTrans(poly, 1);
 
-    AddPrim(scratch[1] + 0x20, poly++);
+    AddPrim(scratch->depthOt + 0x20, poly++);
 
     setPolyG4(poly);
     setXY4(poly, 256, 0, 320, 0, 256, 240, 320, 240);
@@ -2171,9 +2171,9 @@ static void renderScreenEdgeFade(void)
     setRGB3(poly, 128, 128, 128);
     setSemiTrans(poly, 1);
 
-    AddPrim(scratch[1] + 32, poly++);
+    AddPrim(scratch->depthOt + 32, poly++);
 
-    scratch[0] = poly;
+    scratch->nextPrim = poly;
 
     insertTPage(8, getTPage(0, 2, 0, 0));
 }
@@ -2525,9 +2525,9 @@ static void renderBossRushRecords(int selected)
     int var_s7;
     int time;
     vs_MenuItem* menuItem;
-    void** p;
-    void** r;
-    void** q;
+    vs_Scratch* p;
+    vs_Scratch* r;
+    vs_Scratch* q;
 
     var_s1 = gazetteRows;
     var_s7 = 0;
@@ -2577,16 +2577,16 @@ static void renderBossRushRecords(int selected)
         }
     }
 
-    p = ((void**)0x1F800000);
-    vs_battle_renderTextRawColor(
-        "PLAYER TIME", vs_getXY((selected * 0x10) - 0x78, 0x20), 0x808080, p[1] + 0x1C);
+    p = VS_SCRATCH;
+    vs_battle_renderTextRawColor("PLAYER TIME", vs_getXY((selected * 0x10) - 0x78, 0x20),
+        0x808080, p->depthOt + 0x1C);
     renderGradientQuad((selected * 0x10) - 0x80, 0x20, 0x60, 0xC, 1);
     vs_battle_renderTextRawColor(
-        "1ST", vs_getXY((selected * 0x10) - 0x68, 0x32), 0x808080, p[1] + 0x1C);
+        "1ST", vs_getXY((selected * 0x10) - 0x68, 0x32), 0x808080, p->depthOt + 0x1C);
     vs_battle_renderTextRawColor(
-        "2ND", vs_getXY((selected * 0x10) - 0x68, 0x50), 0x808080, p[1] + 0x1C);
+        "2ND", vs_getXY((selected * 0x10) - 0x68, 0x50), 0x808080, p->depthOt + 0x1C);
     vs_battle_renderTextRawColor(
-        "3RD", vs_getXY((selected * 0x10) - 0x68, 0x6E), 0x808080, p[1] + 0x1C);
+        "3RD", vs_getXY((selected * 0x10) - 0x68, 0x6E), 0x808080, p->depthOt + 0x1C);
 
     for (j = 0; j < 3; ++j) {
 
@@ -2595,36 +2595,36 @@ static void renderBossRushRecords(int selected)
         if (time != 0x800000) {
             sprintf(
                 sp28, "$%02d:%02d:%02d", time >> 0x10, (time >> 8) & 0xFF, time & 0xFF);
-            q = ((void**)0x1F800000);
+            q = VS_SCRATCH;
             vs_battle_renderTextRawColor(sp28,
                 vs_getXY_2((selected * 16) - 40, 50 + j * 30), vs_getRGB(128, 128, 128),
-                q[1] + 0x1C);
+                q->depthOt + 0x1C);
             sprintf(sp28, "ROUND    %d",
                 vs_main_scoredata.bossTimeTrialScores[sp38][j].round + 1);
             vs_battle_renderTextRawColor(sp28,
                 vs_getXY_2((selected * 16) - 60, 62 + j * 30), vs_getRGB(128, 128, 128),
-                q[1] + 0x1C);
+                q->depthOt + 0x1C);
         } else {
-            q = ((void**)0x1F800000);
+            q = VS_SCRATCH;
             vs_battle_renderTextRawColor("$--:--:--",
                 vs_getXY_2((selected * 16) - 40, 50 + j * 30), vs_getRGB(80, 80, 80),
-                q[1] + 0x1C);
+                q->depthOt + 0x1C);
         }
     }
 
     renderGradientQuad((selected * 0x10) - 0x70, 0x32, 0x80, 0x54, 2);
-    r = ((void**)0x1F800000);
+    r = VS_SCRATCH;
     vs_battle_renderTextRawColor("REFERENCE TIME", vs_getXY(selected * 16 - 0x78, 0x8C),
-        vs_getRGB(128, 128, 128), r[1] + 0x1C);
+        vs_getRGB(128, 128, 128), r->depthOt + 0x1C);
     renderGradientQuad((selected * 0x10) - 0x80, 0x8C, 0x70, 0xC, 1);
 
     if ((var_s7 == 8) && (selected == var_s7)) {
         if (sp3C->disabled != 0) {
             vs_battle_renderTextRawColor(
-                "$--:--:--", vs_getXY(88, 158), vs_getRGB(80, 80, 80), r[1] + 0x1C);
+                "$--:--:--", vs_getXY(88, 158), vs_getRGB(80, 80, 80), r->depthOt + 0x1C);
         } else {
             vs_battle_renderTextRawColor(timeAttackReferenceTimes[sp38],
-                vs_getXY(88, 158), vs_getRGB(128, 128, 128), r[1] + 0x1C);
+                vs_getXY(88, 158), vs_getRGB(128, 128, 128), r->depthOt + 0x1C);
         }
     }
     renderGradientQuad((selected * 0x10) - 0x70, 0x9E, 0x80, 0xC, 2);
@@ -2787,7 +2787,7 @@ static void renderEnemyNavigation(int direction)
     int x;
     int clut;
     POLY_FT4* poly;
-    void** scratch;
+    vs_Scratch* scratch;
     int new_var;
 
     if (hideUi == 0) {
@@ -2821,8 +2821,8 @@ static void renderEnemyNavigation(int direction)
         }
 
         x -= 8;
-        scratch = (void**)getScratchAddr(0);
-        poly = scratch[0];
+        scratch = VS_SCRATCH;
+        poly = scratch->nextPrim;
 
         setPolyFT4(poly);
         setXY4(poly, x, 96, x + 16, 96, x, 112, x + 16, 112);
@@ -2832,9 +2832,9 @@ static void renderEnemyNavigation(int direction)
         poly->clut = clut;
         setShadeTex(poly, 1);
 
-        AddPrim(scratch[1], poly++);
+        AddPrim(scratch->depthOt, poly++);
 
-        scratch[0] = poly;
+        scratch->nextPrim = poly;
     }
 }
 

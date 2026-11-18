@@ -81,7 +81,7 @@ int VS_SURFACE_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
 #endif
     int initIndex;
     VS_SURFACE_STATE* state;
-    func_800FA098_arg1* scratch = (func_800FA098_arg1*)0x1F8001D0;
+    func_800FA098_arg1* scratch = VS_SCRATCH_AT(func_800FA098_arg1*, 0x1D0);
     func_800FA098_arg0* effect;
     MATRIX* actorMatrix;
     vs_PFileTexture* texture;

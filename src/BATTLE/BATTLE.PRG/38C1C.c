@@ -7,6 +7,7 @@
 #include "actor.h"
 #include "entity.h"
 #include "src/SLUS_010.40/31724.h"
+#include "scratch.h"
 #include "vs_inline_c.h"
 #include <libgpu.h>
 #include <inline_c.h>
@@ -380,7 +381,7 @@ MATRIX* func_800A1DE8(int actorId, int bone, MATRIX* unused)
 {
     MATRIX zeroTranslation;
     long flag;
-    func_800A1DE8_t* scratch = (void*)0x1F80035C;
+    func_800A1DE8_t* scratch = VS_SCRATCH_AT(func_800A1DE8_t*, 0x35C);
     D_800F4538_t* actor = D_800F4538[actorId];
 
     if (actor == NULL) {

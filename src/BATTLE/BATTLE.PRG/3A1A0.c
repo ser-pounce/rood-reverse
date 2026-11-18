@@ -10,6 +10,7 @@
 #include "battleUnk.h"
 #include "entity.h"
 #include "src/SLUS_010.40/gameState.h"
+#include "scratch.h"
 #include "tilePosition.h"
 
 typedef struct {
@@ -987,7 +988,7 @@ int func_800A4494(int contact, SVECTOR* point)
 
 int func_800A46A4(D_800F4538_t* actor)
 {
-    D_1F8003BC_t* scratch = (D_1F8003BC_t*)0x1F8003BC;
+    D_1F8003BC_t* scratch = VS_SCRATCH_AT(D_1F8003BC_t*, 0x3BC);
     int saved = actor->unk0.unkC_0;
     int radius = actor->unk63C;
     int direction;
@@ -1700,7 +1701,7 @@ int func_800A6EE8(SVECTOR* arg0, int arg1, int arg2, int arg3)
 
 void func_800A70DC(D_800F4538_t* actor, int diagonal)
 {
-    D_1F8003BC_t* samples = (D_1F8003BC_t*)0x1F8003BC;
+    D_1F8003BC_t* samples = VS_SCRATCH_AT(D_1F8003BC_t*, 0x3BC);
     int i;
     int j;
     int delta;
@@ -1807,7 +1808,7 @@ void func_800A7524(D_800F4538_t* actor, SVECTOR* motion)
         return;
     }
 
-    scratch = (D_1F8003BC_t*)0x1F8003BC;
+    scratch = VS_SCRATCH_AT(D_1F8003BC_t*, 0x3BC);
     x = 0;
     z = (scratch->blocked[0] != 0) * 16;
 
@@ -1898,7 +1899,7 @@ int func_800A8B34(SVECTOR* arg0, int arg1)
     int los;
     int diff;
     int q;
-    D_1F8003BC_t* sb = (D_1F8003BC_t*)0x1F8003BC;
+    D_1F8003BC_t* sb = VS_SCRATCH_AT(D_1F8003BC_t*, 0x3BC);
     D_800F4538_t* actor = sb->unk18;
     int limit = sb->unk1C[arg1 & 7];
 

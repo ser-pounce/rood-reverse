@@ -4,13 +4,14 @@
 
 #include "src/SLUS_010.40/memory.h"
 #include "src/BATTLE/BATTLE.PRG/battleEffect.h"
+#include "scratch.h"
 
 int VS_PARTICLE_DISPATCH_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
 {
     func_800FA098_arg0* effect;
     int count;
     short largest;
-    func_800FA098_arg1* scratch = (func_800FA098_arg1*)0x1F8001D0;
+    func_800FA098_arg1* scratch = VS_SCRATCH_AT(func_800FA098_arg1*, 0x1D0);
     func_800FA098_arg3* state = arg0->unk8;
     D_800F53B8_t* battle = D_800F53BC;
     int alive = 1;

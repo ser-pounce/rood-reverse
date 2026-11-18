@@ -192,10 +192,6 @@ typedef struct {
 } ParticleTween;
 
 typedef struct {
-    int unk0;
-} func_800BDBB4_t2;
-
-typedef struct {
     char remaining;
     char next;
     char actors[17];
@@ -218,9 +214,16 @@ typedef struct {
     char unk40[16];
     SVECTOR rotation;
     SVECTOR rotation2;
-    char unk60[16];
+    SVECTOR unk60;
+    char unk68[8];
     MATRIX matrix;
 } CameraScratch;
+
+/**
+ * The camera code's workspace in the scratchpad. The three structs overlay each other,
+ * and are three names for the same slots.
+ */
+#define CAMERA_SCRATCH VS_SCRATCH_AT(CameraScratch*, 0x88)
 
 typedef struct {
     int distance;
@@ -229,16 +232,32 @@ typedef struct {
     VECTOR delta;
     VECTOR candidate;
     VECTOR direction;
-    char unk40[0x30];
+    char unk40[16];
+    SVECTOR unk50;
+    SVECTOR unk58;
+    SVECTOR unk60;
+    char unk68[8];
     MATRIX matrix;
 } CameraMotionScratch;
 
+#define CAMERA_MOTION_SCRATCH VS_SCRATCH_AT(CameraMotionScratch*, 0x88)
+
 typedef struct {
-    char unk0[0x50];
+    int unk0;
+    int unk4;
+    char unk8[8];
+    VECTOR unk10;
+    VECTOR unk20;
+    VECTOR unk30;
+    char unk40[16];
     SVECTOR a;
     SVECTOR b;
     SVECTOR c;
+    char unk68[8];
+    MATRIX unk70;
 } CameraShakeScratch;
+
+#define CAMERA_SHAKE_SCRATCH VS_SCRATCH_AT(CameraShakeScratch*, 0x88)
 
 // Comparison selected by the high nibble of a conditional opcode's second byte, applied
 // as `flag <op> operand`
@@ -4301,7 +4320,7 @@ void drawScanlines(void)
     DR_TPAGE* tpage;
     short y;
 
-    vs_Scratch* scratch = (vs_Scratch*)0x1F800000;
+    vs_Scratch* scratch = VS_SCRATCH;
     prim = scratch->nextPrim;
 
     ++scanlinePhase;
@@ -4321,7 +4340,7 @@ void drawScanlines(void)
             prim->y0 = prim->y1 = y;
             prim->x1 = vs_main_screenWidth;
 
-            scratch = (vs_Scratch*)0x1F800000;
+            scratch = VS_SCRATCH;
             AddPrim(scratch->frontOt, prim++);
         }
     }
@@ -4329,7 +4348,7 @@ void drawScanlines(void)
     tpage = (DR_TPAGE*)prim;
     SetDrawTPage(tpage, 1, 1, GetTPage(0, 2, 0, 0));
 
-    scratch = (vs_Scratch*)0x1F800000;
+    scratch = VS_SCRATCH;
     AddPrim(scratch->frontOt, tpage++);
     scratch->nextPrim = tpage;
 }
@@ -4498,7 +4517,6 @@ static void applyCameraState(void)
 {
     VECTOR cameraLookAt;
     VECTOR cameraPos;
-    SVECTOR* vec;
 
     if (cameraFollowsAshley != 0) {
         initialiseCameraFromSpherical(&cameraPos, &cameraLookAt, -1, -1);
@@ -4513,18 +4531,17 @@ static void applyCameraState(void)
         }
     }
     if (*(short*)&D_800F4BA4->unk1A4.unk0 != 0) {
-        sVectorToFixedPointVector((VECTOR*)0x1F800098, (SVECTOR*)&D_800F4BA4->unk1BE);
-        sVectorToFixedPointVector((VECTOR*)0x1F8000A8, (SVECTOR*)&D_800F4BA4->unk1C6);
-        vec = (SVECTOR*)0x1F800088;
-        vec[10].vz = 0;
-        vec[10].vx = 0;
-        vec[10].vy = atan2FixedPoint(
+        sVectorToFixedPointVector(&CAMERA_SCRATCH->v1, (SVECTOR*)&D_800F4BA4->unk1BE);
+        sVectorToFixedPointVector(&CAMERA_SCRATCH->v2, (SVECTOR*)&D_800F4BA4->unk1C6);
+        CAMERA_SCRATCH->rotation.vz = 0;
+        CAMERA_SCRATCH->rotation.vx = 0;
+        CAMERA_SCRATCH->rotation.vy = atan2FixedPoint(
             cameraLookAt.vx - cameraPos.vx, cameraLookAt.vz - cameraPos.vz);
-        RotMatrix_gte((SVECTOR*)0x1F8000D8, (MATRIX*)0x1F8000F8);
-        ApplyMatrixLV((MATRIX*)0x1F8000F8, (VECTOR*)0x1F800098, (VECTOR*)0x1F800098);
-        ApplyMatrixLV((MATRIX*)0x1F8000F8, (VECTOR*)0x1F8000A8, (VECTOR*)0x1F8000A8);
-        vectorAdd(&cameraLookAt, &cameraLookAt, (VECTOR*)0x1F800098);
-        vectorAdd(&cameraPos, &cameraPos, (VECTOR*)0x1F8000A8);
+        RotMatrix_gte(&CAMERA_SCRATCH->rotation, &CAMERA_SCRATCH->matrix);
+        ApplyMatrixLV(&CAMERA_SCRATCH->matrix, &CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1);
+        ApplyMatrixLV(&CAMERA_SCRATCH->matrix, &CAMERA_SCRATCH->v2, &CAMERA_SCRATCH->v2);
+        vectorAdd(&cameraLookAt, &cameraLookAt, &CAMERA_SCRATCH->v1);
+        vectorAdd(&cameraPos, &cameraPos, &CAMERA_SCRATCH->v2);
     }
     setCameraLookAt(&cameraLookAt);
     setCameraPosition(&cameraPos);
@@ -4572,9 +4589,9 @@ void returnToGameplayCamera(short facing, int zoom)
     vectorCopy(&D_800F4BA4->eye.position, &sp10);
     vectorCopy(&D_800F4BA4->lookAt.position, &sp20);
     temp_s0 = vectorMagnitude(vectorSubtract(
-        (VECTOR*)0x1F800098, &D_800F4BA4->eye.current, &D_800F4BA4->eye.position));
+        &CAMERA_SCRATCH->v1, &D_800F4BA4->eye.current, &D_800F4BA4->eye.position));
     temp_v0 = (temp_s0
-                  + vectorMagnitude(vectorSubtract((VECTOR*)0x1F800098,
+                  + vectorMagnitude(vectorSubtract(&CAMERA_SCRATCH->v1,
                       &D_800F4BA4->lookAt.current, &D_800F4BA4->lookAt.position)))
             / 0x28000;
     if ((temp_v0 << 0x10) != 0) {
@@ -4620,7 +4637,7 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
         vectorCopy(&c->start, &c->current);
         vectorSubtract(&c->velocity, &c->position, &c->current);
         c->value =
-            vectorMagnitude(vectorSubtract((VECTOR*)0x1F800098, &c->target, &c->current));
+            vectorMagnitude(vectorSubtract(&CAMERA_SCRATCH->v1, &c->target, &c->current));
         return scriptNext;
     case 4: {
         CameraScratch* s;
@@ -4631,13 +4648,13 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
         c->ease2 = script[2] & 15;
         c->ease3 = script[2] >> 4;
         vectorCopy(&c->start, &c->target);
-        s = (CameraScratch*)0x1F800088;
+        s = CAMERA_SCRATCH;
         setVector(&s->v1, c->current.vx - c->target.vx, 0, c->current.vz - c->target.vz);
-        c->value = vectorMagnitude((VECTOR*)0x1F800098);
+        c->value = vectorMagnitude(&CAMERA_SCRATCH->v1);
         c->angle = atan2FixedPoint(s->v1.vx, s->v1.vz) & 4095;
         setVector(
             &s->v2, c->position.vx - c->target.vx, 0, c->position.vz - c->target.vz);
-        c->delta = vectorMagnitude((VECTOR*)0x1F8000A8) - c->value;
+        c->delta = vectorMagnitude(&CAMERA_SCRATCH->v2) - c->value;
         s->value = (atan2FixedPoint(s->v2.vx, s->v2.vz) & 4095) - c->angle;
         if (s->value < -ONE / 2) {
             s->value += ONE;
@@ -4661,7 +4678,7 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
             }
             break;
         }
-        c->angleDelta = ((CameraScratch*)0x1F800088)->value;
+        c->angleDelta = CAMERA_SCRATCH->value;
         c->aux.vy = c->current.vy - c->target.vy;
         c->velocity.vy = c->position.vy - c->target.vy - c->aux.vy;
         return scriptNext;
@@ -4676,9 +4693,9 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
         c->ease2 = script[6] >> 4;
         c->ease3 = script[7] & 15;
         vectorCopy(&c->position, &c->target);
-        s = (CameraScratch*)0x1F800088;
+        s = CAMERA_SCRATCH;
         setVector(&s->v1, c->current.vx - c->target.vx, 0, c->current.vz - c->target.vz);
-        c->value = vectorMagnitude((VECTOR*)0x1F800098);
+        c->value = vectorMagnitude(&CAMERA_SCRATCH->v1);
         c->delta = ((c->value * script[5]) >> 6) - c->value;
         c->angle = atan2FixedPoint(s->v1.vx, s->v1.vz);
         c->angleDelta = getShort(script + 1);
@@ -4688,11 +4705,11 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
         return scriptNext;
     }
     case 7:
-        func_800A190C(
-            resolveActorId(getShort(script + 1)), script[3], (SVECTOR*)0x1F8000D8, 2);
-        sVectorToFixedPointVector((VECTOR*)0x1F800098, (SVECTOR*)0x1F8000D8);
-        setVectorImm((VECTOR*)0x1F8000A8, script + 4);
-        vectorAdd(&c->position, (VECTOR*)0x1F800098, (VECTOR*)0x1F8000A8);
+        func_800A190C(resolveActorId(getShort(script + 1)), script[3],
+            &CAMERA_SCRATCH->rotation, 2);
+        sVectorToFixedPointVector(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->rotation);
+        setVectorImm(&CAMERA_SCRATCH->v2, script + 4);
+        vectorAdd(&c->position, &CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v2);
         if (D_800F4BA4->attachedActor != 0x2000) {
             vectorSubtract(&c->position, &c->position, &D_800F4BA4->attachedPosition);
         }
@@ -4713,19 +4730,19 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
         return scriptNext;
     case 10: {
         int id = resolveActorId(getShort(script + 1));
-        CameraScratch* s = (CameraScratch*)0x1F800088;
+        CameraScratch* s = CAMERA_SCRATCH;
         s->value = id;
         vs_battle_getActorPosition(id, &D_800F4BA4->unk1D0);
         s->rotation2.vz = 0;
         s->rotation2.vx = 0;
         s->rotation2.vy = D_800F4BA4->unk1D0.unk0.unk4.pad;
-        RotMatrix_gte((SVECTOR*)0x1F8000E0, (MATRIX*)0x1F8000F8);
-        setVectorImm((VECTOR*)0x1F800098, script + 4);
-        ApplyMatrixLV((MATRIX*)0x1F8000F8, (VECTOR*)0x1F800098, (VECTOR*)0x1F800098);
-        func_800A190C(s->value, script[3], (SVECTOR*)0x1F8000E0, 2);
+        RotMatrix_gte(&CAMERA_SCRATCH->rotation2, &CAMERA_SCRATCH->matrix);
+        setVectorImm(&CAMERA_SCRATCH->v1, script + 4);
+        ApplyMatrixLV(&CAMERA_SCRATCH->matrix, &CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1);
+        func_800A190C(s->value, script[3], &CAMERA_SCRATCH->rotation2, 2);
         vectorAdd(&c->position,
-            sVectorToFixedPointVector((VECTOR*)0x1F8000A8, (SVECTOR*)0x1F8000E0),
-            (VECTOR*)0x1F800098);
+            sVectorToFixedPointVector(&CAMERA_SCRATCH->v2, &CAMERA_SCRATCH->rotation2),
+            &CAMERA_SCRATCH->v1);
         if (D_800F4BA4->attachedActor != 0x2000) {
             vectorSubtract(&c->position, &c->position, &D_800F4BA4->attachedPosition);
         }
@@ -4737,16 +4754,16 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
         c->time = 0;
         c->ease1 = easingLinear;
         c->duration = script[2];
-        vectorSubtract((VECTOR*)0x1F800098, &c->target, &c->current);
-        vecToRotMatrix((VECTOR*)0x1F800098, (MATRIX*)0x1F8000F8);
-        s = (CameraScratch*)0x1F800088;
+        vectorSubtract(&CAMERA_SCRATCH->v1, &c->target, &c->current);
+        vecToRotMatrix(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->matrix);
+        s = CAMERA_SCRATCH;
         s->matrix.t[0] = c->current.vx >> 12;
         s->matrix.t[1] = c->current.vy >> 12;
         s->matrix.t[2] = c->current.vz >> 12;
-        c->current.vy = func_800BD2B8((MATRIX*)0x1F8000F8);
+        c->current.vy = func_800BD2B8(&CAMERA_SCRATCH->matrix);
         vectorCopy(&c->computed, &c->current);
         c->delta = vectorMagnitude(
-            vectorSubtract((VECTOR*)0x1F800098, &c->position, &c->computed));
+            vectorSubtract(&CAMERA_SCRATCH->v1, &c->position, &c->computed));
         c->value = c->delta / script[2];
         D_800F4BA4->unk27C.vx = D_800F4BA4->unk27C.vy = D_800F4BA4->unk27C.vz =
             0x80000000;
@@ -4786,62 +4803,60 @@ void func_800BCA8C(D_800F4BA4_t2* c, D_800F4BA4_t2* other)
     }
     switch (c->mode) {
     case 2:
-        ((CameraScratch*)0x1F800088)->value =
-            func_800BFEBC(c->ease1, c->time, c->duration);
-        vectorFixedPointMult(
-            (VECTOR*)0x1F800098, &c->velocity, ((CameraScratch*)0x1F800088)->value);
-        vectorAdd(&c->computed, &c->start, (VECTOR*)0x1F800098);
+        CAMERA_SCRATCH->value = func_800BFEBC(c->ease1, c->time, c->duration);
+        vectorFixedPointMult(&CAMERA_SCRATCH->v1, &c->velocity, CAMERA_SCRATCH->value);
+        vectorAdd(&c->computed, &c->start, &CAMERA_SCRATCH->v1);
         break;
     case 3: {
-        CameraScratch* s = (CameraScratch*)0x1F800088;
+        CameraScratch* s = CAMERA_SCRATCH;
         s->value = func_800BFEBC(c->ease1, c->time, c->duration);
-        vectorFixedPointMult((VECTOR*)0x1F800098, &c->velocity, s->value);
-        vectorAdd((VECTOR*)0x1F8000A8, &c->start, (VECTOR*)0x1F800098);
-        vectorSubtract((VECTOR*)0x1F800098, (VECTOR*)0x1F8000A8, &c->target);
-        toNormalIntegerVector((VECTOR*)0x1F800098, (VECTOR*)0x1F800098);
+        vectorFixedPointMult(&CAMERA_SCRATCH->v1, &c->velocity, s->value);
+        vectorAdd(&CAMERA_SCRATCH->v2, &c->start, &CAMERA_SCRATCH->v1);
+        vectorSubtract(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v2, &c->target);
+        toNormalIntegerVector(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1);
         s->distance = vectorMagnitude(
-            vectorSubtract((VECTOR*)0x1F8000A8, &c->target, &c->position));
+            vectorSubtract(&CAMERA_SCRATCH->v2, &c->target, &c->position));
         s->value = c->value
                  + fixedPointMult(s->distance - c->value,
                      func_800BFEBC(c->ease1, c->time, c->duration));
-        vectorFixedPointMult((VECTOR*)0x1F800098, (VECTOR*)0x1F800098, s->value);
-        vectorAdd(&c->computed, &c->target, (VECTOR*)0x1F800098);
+        vectorFixedPointMult(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1, s->value);
+        vectorAdd(&c->computed, &c->target, &CAMERA_SCRATCH->v1);
         break;
     }
     case 4: {
-        CameraScratch* s = (CameraScratch*)0x1F800088;
+        CameraScratch* s = CAMERA_SCRATCH;
         s->rotation.vz = 0;
         s->rotation.vx = 0;
         s->rotation.vy =
             c->angle
             + ((c->angleDelta * func_800BFEBC(c->ease1, c->time, c->duration)) >> 12);
-        RotMatrix_gte((SVECTOR*)0x1F8000D8, (MATRIX*)0x1F8000F8);
+        RotMatrix_gte(&CAMERA_SCRATCH->rotation, &CAMERA_SCRATCH->matrix);
         s->v1.vz =
             c->value
             + fixedPointMult(c->delta, func_800BFEBC(c->ease2, c->time, c->duration));
         s->v1.vx = 0;
         s->v1.vy = 0;
-        ApplyMatrixLV((MATRIX*)0x1F8000F8, (VECTOR*)0x1F800098, (VECTOR*)0x1F800098);
+        ApplyMatrixLV(&CAMERA_SCRATCH->matrix, &CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1);
         s->v1.vy = c->aux.vy
                  + fixedPointMult(
                      c->velocity.vy, func_800BFEBC(c->ease3, c->time, c->duration));
-        vectorAdd(&c->computed, &c->start, (VECTOR*)0x1F800098);
+        vectorAdd(&c->computed, &c->start, &CAMERA_SCRATCH->v1);
         break;
     }
     case 5: {
-        CameraScratch* s = (CameraScratch*)0x1F800088;
+        CameraScratch* s = CAMERA_SCRATCH;
         s->rotation.vz = 0;
         s->rotation.vx = 0;
         s->rotation.vy =
             c->angle
             + ((c->angleDelta * func_800BFEBC(c->ease1, c->time, c->duration)) >> 12);
-        RotMatrix_gte((SVECTOR*)0x1F8000D8, (MATRIX*)0x1F8000F8);
+        RotMatrix_gte(&CAMERA_SCRATCH->rotation, &CAMERA_SCRATCH->matrix);
         s->v1.vz =
             c->value
             + fixedPointMult(c->delta, func_800BFEBC(c->ease2, c->time, c->duration));
         s->v1.vx = 0;
         s->v1.vy = 0;
-        ApplyMatrixLV((MATRIX*)0x1F8000F8, (VECTOR*)0x1F800098, (VECTOR*)0x1F800098);
+        ApplyMatrixLV(&CAMERA_SCRATCH->matrix, &CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1);
         c->computed.vx = c->position.vx + s->v1.vx;
         c->computed.vz = c->position.vz + s->v1.vz;
         c->computed.vy = c->start.vy
@@ -4850,9 +4865,9 @@ void func_800BCA8C(D_800F4BA4_t2* c, D_800F4BA4_t2* other)
         break;
     }
     case 8:
-        func_800A190C(c->value, c->delta, (SVECTOR*)0x1F8000D8, 2);
+        func_800A190C(c->value, c->delta, &CAMERA_SCRATCH->rotation, 2);
         vectorAdd(&c->computed,
-            sVectorToFixedPointVector((VECTOR*)0x1F800098, (SVECTOR*)0x1F8000D8),
+            sVectorToFixedPointVector(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->rotation),
             &c->velocity);
         break;
     case 9:
@@ -4868,11 +4883,11 @@ void func_800BCA8C(D_800F4BA4_t2* c, D_800F4BA4_t2* other)
         CameraScratch* s;
         vectorAdd(&c->momentumPosition, &c->momentumPosition, &c->momentumStep);
         fraction = func_800BFEBC(easingSineOut, c->time, c->duration);
-        s = (CameraScratch*)0x1F800088;
+        s = CAMERA_SCRATCH;
         s->value = fraction;
-        vectorSubtract((VECTOR*)0x1F800098, &c->computed, &c->momentumPosition);
-        vectorFixedPointMult((VECTOR*)0x1F800098, (VECTOR*)0x1F800098, s->value);
-        vectorAdd(&c->current, &c->momentumPosition, (VECTOR*)0x1F800098);
+        vectorSubtract(&CAMERA_SCRATCH->v1, &c->computed, &c->momentumPosition);
+        vectorFixedPointMult(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1, s->value);
+        vectorAdd(&c->current, &c->momentumPosition, &CAMERA_SCRATCH->v1);
     } else {
         vectorCopy(&c->current, &c->computed);
     }
@@ -4892,51 +4907,57 @@ void func_800BCFB4(D_800F4BA4_t2* c)
     CameraMotionScratch* finalScratch;
     short i;
     int height;
-    vectorSubtract((VECTOR*)0x1F800098, &c->target, &c->position);
-    vecToRotMatrix((VECTOR*)0x1F800098, (MATRIX*)0x1F8000F8);
-    scratch = (CameraMotionScratch*)0x1F800088;
+    vectorSubtract(&CAMERA_MOTION_SCRATCH->delta, &c->target, &c->position);
+    vecToRotMatrix(&CAMERA_MOTION_SCRATCH->delta, &CAMERA_MOTION_SCRATCH->matrix);
+    scratch = CAMERA_MOTION_SCRATCH;
     scratch->matrix.t[0] = c->position.vx >> 12;
     scratch->matrix.t[1] = c->position.vy >> 12;
     scratch->matrix.t[2] = c->position.vz >> 12;
     setVector(&scratch->delta, c->position.vx - c->computed.vx,
-        func_800BD2B8((MATRIX*)0x1F8000F8) - c->computed.vy,
+        func_800BD2B8(&CAMERA_MOTION_SCRATCH->matrix) - c->computed.vy,
         c->position.vz - c->computed.vz);
-    scratch->distance = vectorMagnitude((VECTOR*)0x1F800098);
+    scratch->distance = vectorMagnitude(&CAMERA_MOTION_SCRATCH->delta);
     scratch->steps = scratch->distance / c->value;
     if (scratch->steps < 2) {
         c->time = c->duration;
     } else if (scratch->steps > 10) {
         scratch->steps = 10;
     }
-    toNormalIntegerVector((VECTOR*)0x1F800098, (VECTOR*)0x1F800098);
-    vectorFixedPointMult((VECTOR*)0x1F800098, (VECTOR*)0x1F800098, c->value);
-    vectorCopy((VECTOR*)0x1F8000A8, &c->computed);
-    for (i = 1; i <= ((CameraMotionScratch*)0x1F800088)->steps; ++i) {
-        scratch = (CameraMotionScratch*)0x1F800088;
-        vectorAdd((VECTOR*)0x1F8000A8, (VECTOR*)0x1F8000A8, (VECTOR*)0x1F800098);
-        vectorSubtract((VECTOR*)0x1F8000B8, &c->target, (VECTOR*)0x1F8000A8);
-        vecToRotMatrix((VECTOR*)0x1F8000B8, (MATRIX*)0x1F8000F8);
+    toNormalIntegerVector(&CAMERA_MOTION_SCRATCH->delta, &CAMERA_MOTION_SCRATCH->delta);
+    vectorFixedPointMult(
+        &CAMERA_MOTION_SCRATCH->delta, &CAMERA_MOTION_SCRATCH->delta, c->value);
+    vectorCopy(&CAMERA_MOTION_SCRATCH->candidate, &c->computed);
+    for (i = 1; i <= CAMERA_MOTION_SCRATCH->steps; ++i) {
+        scratch = CAMERA_MOTION_SCRATCH;
+        vectorAdd(&CAMERA_MOTION_SCRATCH->candidate, &CAMERA_MOTION_SCRATCH->candidate,
+            &CAMERA_MOTION_SCRATCH->delta);
+        vectorSubtract(&CAMERA_MOTION_SCRATCH->direction, &c->target,
+            &CAMERA_MOTION_SCRATCH->candidate);
+        vecToRotMatrix(&CAMERA_MOTION_SCRATCH->direction, &CAMERA_MOTION_SCRATCH->matrix);
         scratch->matrix.t[0] = scratch->candidate.vx >> 12;
         scratch->matrix.t[1] = scratch->candidate.vy >> 12;
         scratch->matrix.t[2] = scratch->candidate.vz >> 12;
-        height = func_800BD2B8((MATRIX*)0x1F8000F8);
+        height = func_800BD2B8(&CAMERA_MOTION_SCRATCH->matrix);
         if (height < scratch->candidate.vy) {
             setVector(&scratch->delta, scratch->candidate.vx - c->computed.vx,
                 height - c->computed.vy, scratch->candidate.vz - c->computed.vz);
-            toNormalIntegerVector((VECTOR*)0x1F800098, (VECTOR*)0x1F800098);
-            vectorFixedPointMult((VECTOR*)0x1F800098, (VECTOR*)0x1F800098, c->value);
+            toNormalIntegerVector(
+                &CAMERA_MOTION_SCRATCH->delta, &CAMERA_MOTION_SCRATCH->delta);
+            vectorFixedPointMult(
+                &CAMERA_MOTION_SCRATCH->delta, &CAMERA_MOTION_SCRATCH->delta, c->value);
             break;
         }
     }
-    vectorAdd((VECTOR*)0x1F8000A8, (VECTOR*)0x1F800098, &c->computed);
-    finalScratch = (CameraMotionScratch*)0x1F800088;
+    vectorAdd(
+        &CAMERA_MOTION_SCRATCH->candidate, &CAMERA_MOTION_SCRATCH->delta, &c->computed);
+    finalScratch = CAMERA_MOTION_SCRATCH;
     if (finalScratch->candidate.vx == D_800F4BA4->unk27C.vx
         && finalScratch->candidate.vy == D_800F4BA4->unk27C.vy
         && finalScratch->candidate.vz == D_800F4BA4->unk27C.vz) {
         c->time = c->duration;
     } else {
         vectorCopy(&D_800F4BA4->unk27C, &c->computed);
-        vectorCopy(&c->computed, (VECTOR*)0x1F8000A8);
+        vectorCopy(&c->computed, &CAMERA_MOTION_SCRATCH->candidate);
     }
 }
 
@@ -5232,7 +5253,7 @@ void func_800BDAB4(void)
 
 int func_800BDBB4(func_800BDBB4_t* arg0)
 {
-    func_800BDBB4_t2* a0;
+    CameraScratch* a0;
     int v0;
 
     if (arg0->unk1E == 0) {
@@ -5242,11 +5263,11 @@ int func_800BDBB4(func_800BDBB4_t* arg0)
     arg0->unk1C = arg0->unk1C + (vs_gametime_vblanksPerFrame >> 1);
 
     v0 = func_800BFEBC(arg0->unk1, arg0->unk1C, arg0->unk1E);
-    a0 = (func_800BDBB4_t2*)0x1F800088;
-    a0->unk0 = v0;
-    arg0->unk2 = (arg0->unkA + ((arg0->unk12 * a0->unk0) >> 0xC));
-    arg0->unk4 = (arg0->unkC + ((arg0->unk14 * a0->unk0) >> 0xC));
-    arg0->unk6 = (arg0->unkE + ((arg0->unk16 * a0->unk0) >> 0xC));
+    a0 = CAMERA_SCRATCH;
+    a0->value = v0;
+    arg0->unk2 = (arg0->unkA + ((arg0->unk12 * a0->value) >> 0xC));
+    arg0->unk4 = (arg0->unkC + ((arg0->unk14 * a0->value) >> 0xC));
+    arg0->unk6 = (arg0->unkE + ((arg0->unk16 * a0->value) >> 0xC));
 
     if (arg0->unk1C == arg0->unk1E) {
         arg0->unk1E = 0;
@@ -5327,9 +5348,9 @@ void func_800BDF6C(func_800BDF6C_unk180_t* arg0)
         if (arg0->unk9 < arg0->unk8) {
             arg0->unk8 = arg0->unk9;
         }
-        *(int*)0x1F800088 = func_800BFEBC(arg0->unk1, arg0->unk8, arg0->unk9);
+        CAMERA_SCRATCH->value = func_800BFEBC(arg0->unk1, arg0->unk8, arg0->unk9);
         new_var = &arg0->unk6;
-        arg0->unk2 = arg0->unk4 + ((*new_var * *(int*)0x1F800088) >> 0xC);
+        arg0->unk2 = arg0->unk4 + ((*new_var * CAMERA_SCRATCH->value) >> 0xC);
         if (arg0->unk8 == arg0->unk9) {
             arg0->unk9 = 0;
         }
@@ -5353,20 +5374,20 @@ int func_800BE01C(func_800BDF6C_t* arg0)
 
     switch (arg0->unk0.u8[1]) {
     case 0:
-        *(int*)0x1F800088 = 0x1000;
+        CAMERA_SCRATCH->value = 0x1000;
         break;
     case 1:
-        *(int*)0x1F800088 = rsin(((arg0->unk8 << 0xA) / arg0->unk9) + 0x400);
+        CAMERA_SCRATCH->value = rsin(((arg0->unk8 << 0xA) / arg0->unk9) + 0x400);
         break;
     case 2:
-        *(int*)0x1F800088 = rsin((arg0->unk8 << 0xB) / arg0->unk9);
+        CAMERA_SCRATCH->value = rsin((arg0->unk8 << 0xB) / arg0->unk9);
         break;
     case 3:
-        *(int*)0x1F800088 = rsin((arg0->unk8 << 0xA) / arg0->unk9);
+        CAMERA_SCRATCH->value = rsin((arg0->unk8 << 0xA) / arg0->unk9);
         break;
     }
     arg0->unk2 = (((rsin((temp_s1 * arg0->unk8) / arg0->unk9) * arg0->unk6) >> 0xC)
-                     * *(int*)0x1F800088)
+                     * CAMERA_SCRATCH->value)
               >> 0xC;
     if (arg0->unk8 == arg0->unk9) {
         arg0->unk9 = 0;
@@ -5374,17 +5395,18 @@ int func_800BE01C(func_800BDF6C_t* arg0)
     return 1;
 }
 
-// https://decomp.me/scratch/3pQUE
+// The totals in a and b are read back at their fixed addresses and not as members, which
+// the match needs.
 void func_800BE180(void)
 {
     short count = 0;
-    CameraShakeScratch* clear = (CameraShakeScratch*)0x1F800088;
+    CameraShakeScratch* clear = CAMERA_SHAKE_SCRATCH;
     short i = 0;
     int x, y, z;
     CameraShakeScratch* scratch;
     func_800BDF6C_t* entry = (func_800BDF6C_t*)&D_800F4BA4->unk1A4.unk2;
     clear->a.vx = clear->a.vy = clear->a.vz = clear->b.vx = clear->b.vy = clear->b.vz = 0;
-    scratch = (CameraShakeScratch*)0x1F800088;
+    scratch = CAMERA_SHAKE_SCRATCH;
     for (; i < 2; ++entry, ++i) {
         if (func_800BE01C(entry)) {
             setVector(&scratch->c, x = entry->unk2 * (((entry->unkA >> 2) & 3) - 1),
@@ -5401,12 +5423,12 @@ void func_800BE180(void)
     }
     D_800F4BA4->unk1A4.unk0.s16 = count;
     if (count) {
-        D_800F4BA4->unk1BE = ((SVECTOR*)0x1F8000D8)->vx;
-        D_800F4BA4->unk1C0 = ((SVECTOR*)0x1F8000D8)->vy;
-        D_800F4BA4->unk1C2 = ((SVECTOR*)0x1F8000D8)->vz;
-        D_800F4BA4->unk1C6 = ((SVECTOR*)0x1F8000E0)->vx;
-        D_800F4BA4->unk1C8 = ((SVECTOR*)0x1F8000E0)->vy;
-        D_800F4BA4->unk1CA = ((SVECTOR*)0x1F8000E0)->vz;
+        D_800F4BA4->unk1BE = VS_SCRATCH_AT(SVECTOR*, 0xD8)->vx;
+        D_800F4BA4->unk1C0 = VS_SCRATCH_AT(SVECTOR*, 0xD8)->vy;
+        D_800F4BA4->unk1C2 = VS_SCRATCH_AT(SVECTOR*, 0xD8)->vz;
+        D_800F4BA4->unk1C6 = VS_SCRATCH_AT(SVECTOR*, 0xE0)->vx;
+        D_800F4BA4->unk1C8 = VS_SCRATCH_AT(SVECTOR*, 0xE0)->vy;
+        D_800F4BA4->unk1CA = VS_SCRATCH_AT(SVECTOR*, 0xE0)->vz;
     }
 }
 

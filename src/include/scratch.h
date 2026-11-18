@@ -21,3 +21,14 @@ typedef struct {
 } vs_Scratch;
 
 extern vs_Scratch vs_scratch;
+
+/**
+ * The scratchpad holds several workspaces over one another, so the type to view it as
+ * has to be given.
+ * @param type The pointer type to give it, such as `MATRIX*`.
+ * @param offset Offset from the start of the scratchpad.
+ */
+#define VS_SCRATCH_AT(type, offset) ((type)(0x1F800000 + (offset)))
+
+/** The frame state at the start of the scratchpad. */
+#define VS_SCRATCH VS_SCRATCH_AT(vs_Scratch*, 0)

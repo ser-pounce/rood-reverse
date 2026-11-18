@@ -1,15 +1,16 @@
+#include "scratch.h"
 #include "texture.h"
 
 void renderTextureFadeInTint(int x, int y, int texId, CVECTOR colors[])
 {
     POLY_GT4* poly;
-    void** p;
+    vs_Scratch* p;
 
     if (colors[0].cd == 0) {
         return;
     }
 
-    poly = *(void**)0x1F800000;
+    poly = VS_SCRATCH->nextPrim;
 
     setPolyGT4(poly);
     setXY4(poly, x, y, disMap[texId].w + x, y, x, disMap[texId].h + y,
@@ -44,11 +45,11 @@ void renderTextureFadeInTint(int x, int y, int texId, CVECTOR colors[])
         poly->tpage = disMap[texId].tpage;
     }
 
-    p = (void**)0x1F800000;
+    p = VS_SCRATCH;
 
-    AddPrim(p[1] - 0x1C, poly++);
+    AddPrim(p->depthOt - 0x1C, poly++);
 
-    p[0] = poly;
+    p->nextPrim = poly;
 }
 
 static inline int adjust(int component, int weight)
@@ -60,10 +61,10 @@ static inline int adjust(int component, int weight)
 void renderTexturePopIn(int x, int y, int texId, CVECTOR colors[])
 {
     POLY_GT4* poly;
-    void** p;
+    vs_Scratch* p;
 
     if (colors[0].cd != 0) {
-        poly = *(void**)0x1F800000;
+        poly = VS_SCRATCH->nextPrim;
 
         setPolyGT4(poly);
         setXY4(poly, x, y, disMap[texId].w + x, y, x, disMap[texId].h + y,
@@ -118,11 +119,11 @@ void renderTexturePopIn(int x, int y, int texId, CVECTOR colors[])
             poly->tpage = disMap[texId].tpage;
         }
 
-        p = (void**)0x1F800000;
+        p = VS_SCRATCH;
 
-        AddPrim(p[1] - 0x1C, poly++);
+        AddPrim(p->depthOt - 0x1C, poly++);
 
-        p[0] = poly;
+        p->nextPrim = poly;
     }
 }
 
@@ -133,12 +134,12 @@ void renderTextureWipe(int x, int y, int texId, CVECTOR colors[], int maxX)
     int i;
     char var_s6;
     POLY_GT4* poly;
-    void** scratch;
+    vs_Scratch* scratch;
 
     if ((x + disMap[texId].w) < (maxX - 64)) {
 
-        scratch = (void**)0x1F800000;
-        poly = scratch[0];
+        scratch = VS_SCRATCH;
+        poly = scratch->nextPrim;
 
         setPolyGT4(poly);
         setXY4(poly, x, y, disMap[texId].w + x, y, x, disMap[texId].h + y,
@@ -155,18 +156,18 @@ void renderTextureWipe(int x, int y, int texId, CVECTOR colors[], int maxX)
         poly->clut = disMap[texId].clut;
         poly->tpage = disMap[texId].tpage;
 
-        scratch = (void**)0x1F800000;
+        scratch = VS_SCRATCH;
 
-        AddPrim(scratch[1] - 0x1C, poly++);
+        AddPrim(scratch->depthOt - 0x1C, poly++);
 
-        scratch[0] = poly;
+        scratch->nextPrim = poly;
         return;
     }
 
     if (x < maxX) {
 
-        scratch = (void**)0x1F800000;
-        poly = scratch[0];
+        scratch = VS_SCRATCH;
+        poly = scratch->nextPrim;
         var_s6 = disMap[texId].x;
 
         for (i = 0; i < disMap[texId].w; i += 12, x += 12, var_s6 += 12) {
@@ -220,12 +221,12 @@ void renderTextureWipe(int x, int y, int texId, CVECTOR colors[], int maxX)
             poly->clut = (disMap[texId].clut + 1);
             poly->tpage = (disMap[texId].tpage | 0x20);
 
-            scratch = (void**)0x1F800000;
+            scratch = VS_SCRATCH;
 
-            AddPrim(scratch[1] - 0x1C, poly++);
+            AddPrim(scratch->depthOt - 0x1C, poly++);
         }
 
-        scratch = (void**)0x1F800000;
-        scratch[0] = poly;
+        scratch = VS_SCRATCH;
+        scratch->nextPrim = poly;
     }
 }

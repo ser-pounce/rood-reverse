@@ -4290,7 +4290,7 @@ void func_800CD3E4(int index)
     u_short* verts = (u_short*)D_800EB588[box->unk0.shape];
     u_char* shape;
     int header;
-    int* points = (int*)0x1F800088;
+    int* points = VS_SCRATCH_AT(int*, 0x88);
     short* out;
     u_long* prim;
     int x = box->unk24;
@@ -4308,7 +4308,7 @@ void func_800CD3E4(int index)
         return;
     }
 
-    out = (short*)0x1F800088;
+    out = VS_SCRATCH_AT(short*, 0x88);
     flip = box->unk0.flip;
     shape = (u_char*)verts;
     part = ((int*)shape)[box->unk0.tail];
@@ -5803,7 +5803,7 @@ void func_800D0C60(D_800F53B8_t* arg0, func_800D0548_arg1* arg1)
 void func_800D0D08(D_800F53B8_t* arg0)
 {
     int i;
-    func_800D0B30_t2* scratch = (func_800D0B30_t2*)0x1F8002C8;
+    func_800D0B30_t2* scratch = VS_SCRATCH_AT(func_800D0B30_t2*, 0x2C8);
 
     for (i = 0; i < D_800F569C->block9Data->unk15; ++i) {
         func_800D0B30_t* definition = &D_800F569C->block10Data[i];
@@ -6659,7 +6659,7 @@ int func_800D4C18(D_800F53B8_t* arg0)
     func_800D2904_t* node;
 
     func_800D52A4(next);
-    func_800D6E24(arg0->unk18, (void*)0x1F80015C);
+    func_800D6E24(arg0->unk18, VS_SCRATCH_AT(void*, 0x15C));
 
     for (node = next; next != NULL; node = next) {
         next = node->next;

@@ -141,7 +141,7 @@ void applyScreenLensDistortion(void)
 {
     u_long* ot = vs_scratch.depthOt;
     u_long saved = *ot;
-    u_short* table = (u_short*)0x1F800088;
+    u_short* table = VS_SCRATCH_AT(u_short*, 0x88);
     int count = 0;
     u_long* packet;
     int temp;

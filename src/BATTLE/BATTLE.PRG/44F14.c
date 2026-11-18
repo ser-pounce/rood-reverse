@@ -804,7 +804,7 @@ void func_800AE980(D_800F4538_unkC54* dst, D_800F4538_unkC54* src, int count)
 
 void func_800AEAE8(D_800F4538_t* actor)
 {
-    D_1F80035C_t* scratch = (void*)0x1F80035C;
+    D_1F80035C_t* scratch = VS_SCRATCH_AT(D_1F80035C_t*, 0x35C);
 
     D_800F2458.unk1FD0[0] = 64;
     D_800F2458.unk1FD0[1] = 64;
@@ -832,8 +832,8 @@ void func_800AEAE8(D_800F4538_t* actor)
 void func_800AECA0(MATRIX* source)
 {
     MATRIX roll;
-    D_1F80035C_t* scratch = (void*)0x1F80035C;
-    vs_Scratch* view = (void*)0x1F800000;
+    D_1F80035C_t* scratch = VS_SCRATCH_AT(D_1F80035C_t*, 0x35C);
+    vs_Scratch* view = VS_SCRATCH;
     int i;
 
     for (i = 0; i < 3; ++i) {
@@ -988,7 +988,7 @@ void func_800AEF94(MATRIX* camera)
                     }
                 }
 
-                view = (void*)0x1F800000;
+                view = VS_SCRATCH;
                 view->depthOt += actor->unk6F4.otDepth * 4;
                 applyVector(&actor->unk0.position, actor->unk6F4.x, actor->unk6F4.y,
                     actor->unk6F4.z, +=);
@@ -1029,8 +1029,8 @@ void func_800AEF94(MATRIX* camera)
         func_800B217C(weapon, &actor->bones[weapon->unkD]);
     }
 
-    scratch = (void*)0x1F80035C;
-    view = (void*)0x1F800000;
+    scratch = VS_SCRATCH_AT(D_1F80035C_t*, 0x35C);
+    view = VS_SCRATCH;
     view->depthOt += 16;
 
     for (i = 0; i < 16; ++i) {
@@ -1176,7 +1176,7 @@ inline void func_800AF960(D_800F4538_t* arg0)
 void func_800AFA28(D_800F4538_t* actor, D_800F4538_unkC54* state, int mode)
 {
     u_short* header;
-    D_1F8003EC_t* scratch = (void*)0x1F8003EC;
+    D_1F8003EC_t* scratch = VS_SCRATCH_AT(void*, 0x3EC);
     int first;
     int last;
     int i;
@@ -1261,7 +1261,7 @@ void func_800AFA28(D_800F4538_t* actor, D_800F4538_unkC54* state, int mode)
 
 void func_800AFDE8(int offset, SVECTOR* value, int rotation)
 {
-    D_1F8003EC_t* scratch = (void*)0x1F8003EC;
+    D_1F8003EC_t* scratch = VS_SCRATCH_AT(void*, 0x3EC);
     SVECTOR* delta = &value[84];
     u_char* data = (u_char*)(u_int)(u_short)value->pad;
     int nextFrame = (u_short)delta->pad;
@@ -1374,7 +1374,7 @@ void func_800AFDE8(int offset, SVECTOR* value, int rotation)
 
 void func_800B002C(D_800F4538_t* actor, int arg1)
 {
-    D_1F80035C_t* scratch = (void*)0x1F80035C;
+    D_1F80035C_t* scratch = VS_SCRATCH_AT(D_1F80035C_t*, 0x35C);
     int dx;
     int yaw;
     int pitch;
@@ -1622,7 +1622,7 @@ void func_800B002C(D_800F4538_t* actor, int arg1)
 
 void func_800B07DC(D_800F4538_t* actor)
 {
-    D_1F80035C_t* scratch = (void*)0x1F80035C;
+    D_1F80035C_t* scratch = VS_SCRATCH_AT(D_1F80035C_t*, 0x35C);
 
     setVector(
         &scratch->rotation, actor->unk0.unk24, actor->unk0.facing, actor->unk0.unk28);
@@ -1644,7 +1644,7 @@ void func_800B07DC(D_800F4538_t* actor)
 
 void func_800B0908(D_800F45E0_t* object, UNUSED int arg1)
 {
-    D_1F80035C_t* scratch = (void*)0x1F80035C;
+    D_1F80035C_t* scratch = VS_SCRATCH_AT(D_1F80035C_t*, 0x35C);
     int step;
     int mode;
     int other;

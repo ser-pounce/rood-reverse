@@ -9420,9 +9420,15 @@ void func_8007D734(void* arg0)
     }
 }
 
-void func_8007DD50(int arg0)
+/**
+ * Turns the frame buffer effect on or off. The effect draws the contents of the frame
+ * buffer back over the screen, offset, scaled, rotated, tinted and blended, which makes
+ * ghosting and zoom or spin echoes of the scene.
+ * @param enable 1 to turn on, 0 to turn off.
+ */
+void setFramebufferEffect(int enable)
 {
-    if (arg0 != 0) {
+    if (enable != 0) {
         D_800F1B98 = 1;
         if (D_800F1ABC == NULL) {
             D_800F1ABC = vs_main_allocHeapR(sizeof *D_800F1ABC);

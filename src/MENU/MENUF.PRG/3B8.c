@@ -1077,7 +1077,7 @@ int renderTimeAttackStart(void)
         func_8007DE2C(0);
         func_8007DE44(0U);
         func_8007DE5C(0);
-        func_8007DD50(1);
+        setFramebufferEffect(1);
 
         ++screenState;
 
@@ -1147,7 +1147,7 @@ int renderTimeAttackStart(void)
     } else if (screenState == 4) {
         func_8007C36C(2);
         func_8007DDB8(&D_801096F0[2]);
-        func_8007DD50(0);
+        setFramebufferEffect(0);
         func_8007E0A8(0x1D, 2, 5);
 
         return 1;

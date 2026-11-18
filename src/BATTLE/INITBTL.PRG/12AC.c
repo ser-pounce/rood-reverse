@@ -109,20 +109,20 @@ static int (*skipOpcodeTableInit[])(u_char*, short) = { vs_battle_script_invalid
     vs_battle_script_Cx_Dx_camera, vs_battle_script_Cx_Dx_camera,
     vs_battle_script_invalidOpcode, vs_battle_script_invalidOpcode,
     vs_battle_script_DE_clearCameraMomentum, vs_battle_script_DF_setCameraMomentum,
-    vs_battle_script_yield, vs_battle_script_E1, vs_battle_script_E2_E3_camera,
-    vs_battle_script_E2_E3_camera, vs_battle_script_B9_BA_BF_E4_E5_E6_E7_ED,
+    vs_battle_script_yield, vs_battle_script_E1_setFramebufferEffect,
+    vs_battle_script_E2_E3_camera, vs_battle_script_E2_E3_camera,
     vs_battle_script_B9_BA_BF_E4_E5_E6_E7_ED, vs_battle_script_B9_BA_BF_E4_E5_E6_E7_ED,
-    vs_battle_script_B9_BA_BF_E4_E5_E6_E7_ED, vs_battle_script_E8_attachCameraToActor,
-    vs_battle_script_E9_returnToGameplayCamera, vs_battle_script_EA_EB_EC_EE_EF_camera,
+    vs_battle_script_B9_BA_BF_E4_E5_E6_E7_ED, vs_battle_script_B9_BA_BF_E4_E5_E6_E7_ED,
+    vs_battle_script_E8_attachCameraToActor, vs_battle_script_E9_returnToGameplayCamera,
     vs_battle_script_EA_EB_EC_EE_EF_camera, vs_battle_script_EA_EB_EC_EE_EF_camera,
-    vs_battle_script_B9_BA_BF_E4_E5_E6_E7_ED, vs_battle_script_EA_EB_EC_EE_EF_camera,
-    vs_battle_script_EA_EB_EC_EE_EF_camera, vs_battle_script_yield, vs_battle_script_F1,
-    vs_battle_script_F2_playMenuSelectSfx, vs_battle_script_F3, vs_battle_script_F4,
-    vs_battle_script_F5, vs_battle_script_F6, vs_battle_script_F7_queueNextEvt,
+    vs_battle_script_EA_EB_EC_EE_EF_camera, vs_battle_script_B9_BA_BF_E4_E5_E6_E7_ED,
+    vs_battle_script_EA_EB_EC_EE_EF_camera, vs_battle_script_EA_EB_EC_EE_EF_camera,
+    vs_battle_script_yield, vs_battle_script_F1, vs_battle_script_F2_playMenuSelectSfx,
+    vs_battle_script_F3, vs_battle_script_F4, vs_battle_script_F5, vs_battle_script_F6,
+    vs_battle_script_F7_queueNextEvt, vs_battle_script_invalidOpcode,
     vs_battle_script_invalidOpcode, vs_battle_script_invalidOpcode,
     vs_battle_script_invalidOpcode, vs_battle_script_invalidOpcode,
-    vs_battle_script_invalidOpcode, vs_battle_script_invalidOpcode,
-    vs_battle_script_FE_FF, vs_battle_script_FE_FF };
+    vs_battle_script_invalidOpcode, vs_battle_script_FE_FF, vs_battle_script_FE_FF };
 
 void initScriptFunctionTable(void)
 {

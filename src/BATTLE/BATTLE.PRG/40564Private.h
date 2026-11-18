@@ -83,8 +83,8 @@ VS_HIDDEN(func_800AB788);
 void func_800AB9A4(void*);
 VS_HIDDEN(func_800AB9A4);
 
-void func_800AC37C(int, int);
-VS_HIDDEN(func_800AC37C);
+void fadeActor(int, int);
+VS_HIDDEN(fadeActor);
 
 void func_800AC440(D_800F4538_t* arg0, int arg1, int arg2);
 VS_HIDDEN(func_800AC440);

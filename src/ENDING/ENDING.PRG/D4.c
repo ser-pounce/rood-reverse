@@ -137,7 +137,7 @@ static void renderPhantomPain(CreditsElement* element)
                 int dx = 8 - j;
 
                 dx = ABS(dx) * 18;
-                rippleDist[i][j] = vs_gte_rsqrt(dx * dx + dy);
+                rippleDist[i][j] = SquareRoot0(dx * dx + dy);
             }
         }
         /* fallthrough */
@@ -396,7 +396,7 @@ static int distanceFromScreencenter(int x, int y)
 {
     x -= 160;
     y -= 112;
-    return vs_gte_rsqrt(x * x + y * y);
+    return SquareRoot0(x * x + y * y);
 }
 
 #define CLAMP_HI(v) ((v) < 129 ? (v) : 128)
@@ -2273,7 +2273,7 @@ static void renderIncrementalScore(int x, int y, int timer, UNUSED int _)
 
         if ((onScreenScore == score) && (incrementingScore != 0)) {
             incrementingScore = 0;
-            vs_main_evictSfx(126, 114);
+            vs_main_stopSfx(126, 114);
             vs_main_playSfxDefault(126, 115);
         }
     }
@@ -2389,7 +2389,7 @@ static void renderIncrementalMapCompletion(int x, int y, int timer, UNUSED int _
         if ((onScreenMapCompletion == mapCompletionPercent)
             && (incrementingMapCompletion != 0)) {
             incrementingMapCompletion = 0;
-            vs_main_evictSfx(126, 114);
+            vs_main_stopSfx(126, 114);
             vs_main_playSfxDefault(126, 115);
         }
     }

@@ -74,14 +74,14 @@ VS_HIDDEN(func_800CB7DC);
 TextOffset func_800CCE10(int arg0, int arg1, int arg2, int arg3);
 VS_HIDDEN(func_800CCE10);
 
-int decreaseMiscCount(int);
-VS_HIDDEN(decreaseMiscCount);
+int removeMiscItem(int);
+VS_HIDDEN(removeMiscItem);
 
 int func_800CEEBC(void);
 VS_HIDDEN(func_800CEEBC);
 
-void func_800CEF38(int arg0);
-VS_HIDDEN(func_800CEF38);
+void rearmEffectStage(int arg0);
+VS_HIDDEN(rearmEffectStage);
 
 int func_800CEF74(int);
 VS_HIDDEN(func_800CEF74);
@@ -89,8 +89,8 @@ VS_HIDDEN(func_800CEF74);
 int func_800CF0E8(ActionEffectRequest*, int, int);
 VS_HIDDEN(func_800CF0E8);
 
-void func_800CF1A8(void);
-VS_HIDDEN(func_800CF1A8);
+void cancelEffects(void);
+VS_HIDDEN(cancelEffects);
 
 int func_800CF3F8(ActionEffectRequest*, int);
 VS_HIDDEN(func_800CF3F8);
@@ -98,11 +98,11 @@ VS_HIDDEN(func_800CF3F8);
 int func_800CF48C(void);
 VS_HIDDEN(func_800CF48C);
 
-void func_800CF7A8(int, int, int, int);
-VS_HIDDEN(func_800CF7A8);
+void startTrailEffect(int, int, int, int);
+VS_HIDDEN(startTrailEffect);
 
-void func_800CF830(int, int);
-VS_HIDDEN(func_800CF830);
+void fadeOutTrails(int, int);
+VS_HIDDEN(fadeOutTrails);
 
 void func_800CF8BC(void);
 VS_HIDDEN(func_800CF8BC);

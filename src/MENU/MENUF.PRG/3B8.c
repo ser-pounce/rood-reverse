@@ -811,15 +811,15 @@ int renderCongratulationsScreen(void)
 
                     vs_main_fadeSfxVolume(0x7E, 0x74, 0x40, 0x30);
                     vs_main_fadeSfxVolume(0x7E, 0x75, 0x40, 0x30);
-                    vs_main_fadeSfxPitch(0x7E, 0x74, -0x10, 0x30);
-                    vs_main_fadeSfxPitch(0x7E, 0x75, -0x10, 0x30);
+                    vs_main_rampSfxPitch(0x7E, 0x74, -0x10, 0x30);
+                    vs_main_rampSfxPitch(0x7E, 0x75, -0x10, 0x30);
                 }
 
                 renderPressButtonPrompt(214, 187, 48, screenTimer);
             }
         } else if (vs_main_buttonsPressed.all & PADRright) {
 
-            vs_main_evictSfx(0x7E, 0);
+            vs_main_stopSfx(0x7E, 0);
 
             screenTimer = 272;
             incrementingScore = 0;
@@ -846,8 +846,8 @@ int renderCongratulationsScreen(void)
 
         if ((temp_v1 == 8) && (elementAnimationState == temp_v1)) {
 
-            vs_main_evictSfx(0x7E, 0x74);
-            vs_main_evictSfx(0x7E, 0x75);
+            vs_main_stopSfx(0x7E, 0x74);
+            vs_main_stopSfx(0x7E, 0x75);
             vs_main_playSfxDefault(0x7E, 0x77);
             vs_main_playSfxDefault(0x7E, 0x78);
 
@@ -929,7 +929,7 @@ int renderTimeAttackEnd(void)
         }
 
         if (screenTimer == 0x60) {
-            vs_main_evictSfx(0x7E, 0x72);
+            vs_main_stopSfx(0x7E, 0x72);
             vs_main_playSfxDefault(0x7E, 0x73);
         }
 
@@ -965,7 +965,7 @@ int renderTimeAttackEnd(void)
 
         if ((vs_main_buttonsPressed.all & PADRright) || (screenTimer >= 192)) {
 
-            vs_main_evictSfx(0x7E, 0);
+            vs_main_stopSfx(0x7E, 0);
 
             screenTimer = 0;
             ++screenState;
@@ -1453,7 +1453,7 @@ void renderIncrementalScore(int x, int y, int timer, UNUSED int arg3)
 
             incrementingScore = 0;
 
-            vs_main_evictSfx(0x7E, 0x72);
+            vs_main_stopSfx(0x7E, 0x72);
             vs_main_playSfxDefault(0x7E, 0x73);
         }
     }
@@ -1571,7 +1571,7 @@ void renderIncrementalMapCompletion(int arg0, int arg1, int arg2, UNUSED int arg
             && (incrementingMapCompletion != 0)) {
             incrementingMapCompletion = 0;
 
-            vs_main_evictSfx(0x7E, 0x72);
+            vs_main_stopSfx(0x7E, 0x72);
             vs_main_playSfxDefault(0x7E, 0x73);
         }
     }
@@ -2463,13 +2463,13 @@ int renderCubePuzzleStart(void)
     if (vs_main_buttonsPressed.all & PADRright) {
         if (screenTimer >= 78) {
 
-            vs_main_evictSfx(126, 0);
+            vs_main_stopSfx(126, 0);
             func_8007E0A8(29, 2, 5);
 
             return 1;
         }
 
-        vs_main_evictSfx(126, 0);
+        vs_main_stopSfx(126, 0);
 
         screenTimer = 78;
     }
@@ -2521,7 +2521,7 @@ int renderCubePuzzleEnd(void)
         }
 
         if (screenTimer == 64) {
-            vs_main_evictSfx(0x7E, 0x72);
+            vs_main_stopSfx(0x7E, 0x72);
             vs_main_playSfxDefault(0x7E, 0x73);
         }
 
@@ -2549,7 +2549,7 @@ int renderCubePuzzleEnd(void)
         if (vs_main_buttonsPressed.all & PADRright) {
             if (screenTimer >= 138) {
 
-                vs_main_evictSfx(0x7E, 0);
+                vs_main_stopSfx(0x7E, 0);
                 func_8007E0A8(0x1D, 2, 5);
 
                 vs_main_scoredata.miscScore += puzzleModeRankPoints[rank];
@@ -2559,7 +2559,7 @@ int renderCubePuzzleEnd(void)
                 return 1;
             }
 
-            vs_main_evictSfx(0x7E, 0);
+            vs_main_stopSfx(0x7E, 0);
 
             screenTimer = 138;
         }
@@ -2600,7 +2600,7 @@ int renderCubePuzzleQuit(void)
     if (vs_main_buttonsPressed.all & PADRright) {
         if (screenTimer > 62) {
 
-            vs_main_evictSfx(0x7E, 0);
+            vs_main_stopSfx(0x7E, 0);
             func_8007E0A8(0x1D, 1, 5);
             nop1();
 
@@ -2609,7 +2609,7 @@ int renderCubePuzzleQuit(void)
 
         screenTimer = 63;
 
-        vs_main_evictSfx(0x7E, 0);
+        vs_main_stopSfx(0x7E, 0);
     }
 
     return 0;

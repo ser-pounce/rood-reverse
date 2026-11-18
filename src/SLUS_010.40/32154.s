@@ -206,7 +206,7 @@ endlabel func_80041AF4
 
 # hasm: trapping arithmetic
 # hasm: unconditional b branch
-glabel vs_gte_rsqrt
+glabel SquareRoot0
     mtc2    $a0, $30
     lui     $v0, %hi(D_80040C18)
     addiu   $v0, $v0, %lo(D_80040C18)
@@ -233,7 +233,7 @@ glabel vs_gte_rsqrt
 .L80041BE8:
     jr      $ra
     srl     $v0, $t0, 12
-endlabel vs_gte_rsqrt
+endlabel SquareRoot0
 
 # hasm: trapping arithmetic
 # hasm: unconditional b branch

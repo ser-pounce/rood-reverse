@@ -222,8 +222,8 @@ void computeSphericalOffset(VECTOR*, VECTOR*, SphericalValues*);
 void setCameraPositionFromAngles(SphericalValues* arg0);
 void setCameraLookAtFromAngles(SphericalValues* arg0);
 void func_8007B10C(int, int, int, short, short);
-int func_8007C4E0(vs_Warp*, int, int);
-int func_8007C5C0(vs_Warp*, int, int);
+int warpToMap(vs_Warp*, int, int);
+int warpToZone(vs_Warp*, int, int);
 int func_8007C694(int, int, int, int, int);
 int func_8007F434(void);
 int getActionCost(u_int, vs_ActorStats*, int);
@@ -240,8 +240,8 @@ int func_8008B4C8(char arg0);
 static void loadZnd(int id);
 void loadMpd(int arg0);
 void loadZndTims(void*);
-int func_8008AB80(int);
-int func_8008ABB8(int);
+int showRoom(int);
+int hideRoom(int);
 void func_8008B2E0(void* arg0, int arg1, int arg2, int arg3);
 void func_8008B4BC(int arg0);
 void vsBattleNop2(int arg0);
@@ -316,7 +316,7 @@ extern int D_800F185C;
 extern int D_800F1860;
 extern int D_800F1864;
 extern void* D_800F1870;
-extern int firstPersonViewEnabled;
+extern int renderAllGeometry;
 extern vs_CharInitData* D_800F188C;
 extern int D_800F18A8;
 extern int D_800F18AC;
@@ -369,16 +369,16 @@ extern short D_800F1D68;
 extern u_char D_800F1D6E;
 extern char D_800F1D6F;
 extern u_char D_800F1D70[];
-extern vs_CdQueueSlot* D_800F1DAC;
-extern vs_CdQueueSlot* D_800F1DB0;
-extern short D_800F1DB8;
-extern short D_800F1DBA;
-extern short D_800F1DBE;
+extern vs_CdQueueSlot* backgroundImageCdSlot;
+extern vs_CdQueueSlot* backgroundLayoutCdSlot;
+extern short backgroundParallaxX;
+extern short backgroundParallaxY;
+extern short backgroundTexturePageCount;
 extern char D_800F1DC6;
-extern char D_800F1DC8;
-extern u_char D_800F1DC9;
-extern BackgroundLayout* D_800F1DCC;
-extern u_long* D_800F1DD0;
+extern char backgroundTexturePage;
+extern u_char backgroundVisible;
+extern BackgroundLayout* backgroundLayout;
+extern u_long* backgroundImageBuffer;
 extern short D_800F5160;
 
 extern u_int D_800F196C;
@@ -429,7 +429,7 @@ void func_80069D78(void)
 {
     syncCameraAnglesFromPosition(NULL);
     vs_scratch.firstPersonViewFacing =
-        ((vs_scratch.firstPersonViewFacing & 0x7FFF) | (firstPersonViewEnabled << 0x10));
+        ((vs_scratch.firstPersonViewFacing & 0x7FFF) | (renderAllGeometry << 0x10));
 }
 
 static void clearZoneEnemyCache(void)
@@ -1549,7 +1549,7 @@ void func_8006C39C(void)
 void func_8006C40C(void)
 {
     vs_main_setClutState(1);
-    func_8007B1B8(8, 4, 0, 0, 0);
+    transformSceneColors(8, 4, 0, 0, 0);
     func_8006C250();
     func_8008B4BC(0);
     func_8008D594(0);
@@ -1562,9 +1562,9 @@ void func_8006C40C(void)
 
 void nop1(void) { }
 
-void func_8006C480(int arg0, int arg1) { func_800CF7A8(arg0, arg1, 0, 0); }
+void startActorTrail(int actor, int bone) { startTrailEffect(actor, bone, 0, 0); }
 
-void func_8006C4A4(int arg0, int arg1) { func_800CF830(arg0, arg1); }
+void stopActorTrails(int actor, int bone) { fadeOutTrails(actor, bone); }
 
 void func_8006C4C4(int effectId, HitEntity* arg1, int targetLimb)
 {
@@ -1913,12 +1913,12 @@ void func_8006CE70(SVECTOR* arg0)
 void func_8006D028(int arg0, int arg1)
 {
     D_800F185C = arg0;
-    func_8007B29C(0xE, 8, arg0, 0x10, 0, 0);
+    transformActorColors(0xE, 8, arg0, 0x10, 0, 0);
 }
 
 void func_8006D064(void)
 {
-    func_8007B29C(8, 4, D_800F185C, 0, 0, 0);
+    transformActorColors(8, 4, D_800F185C, 0, 0, 0);
     D_800F185C = 0;
 }
 
@@ -3116,7 +3116,7 @@ void func_8006FCBC(void)
 
     cameraMode = 10;
     temp_s0 = &D_800F19CC->unk854[0];
-    func_8006C4A4(temp_s0->unk4.unk0.hit.targetActor,
+    stopActorTrails(temp_s0->unk4.unk0.hit.targetActor,
         func_800A152C(temp_s0->unk4.unk0.hit.targetActor, 0xF0, 0));
 }
 
@@ -3270,9 +3270,9 @@ void func_80070278(void)
             func_8009F8DC(temp_s0->unk4.unk0.hit.targetActor) * 2;
     }
 
-    vs_main_evictSfx(0x7E, 0x34);
-    vs_main_evictSfx(0x7E, 0x35);
-    vs_main_evictSfx(0x7E, 0x36);
+    vs_main_stopSfx(0x7E, 0x34);
+    vs_main_stopSfx(0x7E, 0x35);
+    vs_main_stopSfx(0x7E, 0x36);
     func_800CB50C();
 
     D_800F19CC->unk2C03 = 0;
@@ -3525,7 +3525,7 @@ void func_80070F28(int arg0)
     if (D_800F19CC->unk8.unk4.unk0.hit.targetActor == 0) {
         if (D_800F18EC->unk2 != 7) {
             if (D_800F18EC->unk2 == 8) {
-                decreaseMiscCount(D_800F18EC->executeAbility.u16[1]);
+                removeMiscItem(D_800F18EC->executeAbility.u16[1]);
             }
         }
         D_800F18EC->unk2 = 0;
@@ -3608,7 +3608,7 @@ void func_80070F28(int arg0)
     }
 
     vs_main_setClutState(1);
-    func_8007B1B8(8, 4, 0, 0, 0);
+    transformSceneColors(8, 4, 0, 0, 0);
     func_8006C250();
     func_80095B70(1);
     func_8008B4C8(0);
@@ -3829,7 +3829,7 @@ void func_800719FC(UNUSED int arg0)
         D_800F19CC->unk29B0.unk2 = ratan2(dx, dz);
         dy = D_800F19CC->unk8.unk844.vy - origin.vy;
         D_800F19CC->unk29B0.unk4.values[3] =
-            ratan2(dy, vs_gte_rsqrt(dx * dx + dz * dz)) / 16 + 64;
+            ratan2(dy, SquareRoot0(dx * dx + dz * dz)) / 16 + 64;
         D_800F19CC->unk29B0.unk8.vec =
             *(SVECTOR*)&vs_battle_actors[D_800F19CC->unk8.unk4.unk0.hit.targetActor]
                  ->commandArgs.s16[2];
@@ -4508,7 +4508,7 @@ void func_800738E4(void)
 
     func_8008D594(0);
     func_80095B70(0);
-    firstPersonViewEnabled = 0;
+    renderAllGeometry = 0;
 
     for (i = 0; i < 16; ++i) {
         if ((vs_battle_actors[i] != NULL) && (vs_battle_actors[i]->unk8 == 0x10)) {
@@ -4585,7 +4585,7 @@ int func_80073AFC(MpdRoomSectionA* arg0)
                 if (itemIdIsInInventory(arg0->keyOrSigil) != 0) {
                     if (arg0->keyOrSigil >= chamomileSigil) {
                         vs_battle_setStateFlag(arg0->keyOrSigil + 0x1B6, 2);
-                        decreaseMiscCount(arg0->keyOrSigil);
+                        removeMiscItem(arg0->keyOrSigil);
                     }
                     arg0->unk0.unk8.lock.state = 0;
                     action = 2;
@@ -4684,7 +4684,7 @@ void func_80073E30(MpdRoomSectionA* arg0, int arg1)
             }
             vs_battle_setStateFlag(arg0->unkE + 0x1B6, 1);
             if (arg0->unkE >= 0x1D2) {
-                decreaseMiscCount(arg0->unkE);
+                removeMiscItem(arg0->unkE);
             }
         }
         arg0->keyOrSigil = 0;
@@ -4900,7 +4900,7 @@ void func_80074580(void)
 
     if (stepCameraTransition() != 0) {
         cameraMode = 1;
-        firstPersonViewEnabled = 1;
+        renderAllGeometry = 1;
         firstPersonRendering = 1;
         func_8008C40C();
     }
@@ -4915,7 +4915,7 @@ void checkFirstPersonViewExit(void)
     }
 
     cameraMode = 2;
-    firstPersonViewEnabled = 0;
+    renderAllGeometry = 0;
     firstPersonRendering = 0;
 
     vs_battle_getActorPosition(0, &sp10);
@@ -5190,9 +5190,9 @@ int func_80074BAC(int actorIndex, ActorLocation* position)
                         }
 
                         if (door->zndId == zoneContext.zndId) {
-                            func_8007C4E0(door, 0, 8);
+                            warpToMap(door, 0, 8);
                         } else {
-                            func_8007C5C0(door, 0, 8);
+                            warpToZone(door, 0, 8);
                         }
 
                         func_800A0ABC(actorIndex);
@@ -5227,9 +5227,9 @@ int func_80074BAC(int actorIndex, ActorLocation* position)
             destination.faceCamera = 0;
 
             if (destination.zndId == zoneContext.zndId) {
-                func_8007C4E0(&destination, 0, 8);
+                warpToMap(&destination, 0, 8);
             } else {
-                func_8007C5C0(&destination, 0, 8);
+                warpToZone(&destination, 0, 8);
             }
 
             func_800A0ABC(actorIndex);
@@ -5249,7 +5249,7 @@ int func_80074BAC(int actorIndex, ActorLocation* position)
 
         actor->stats->currentHP -= 20;
         vs_battle_setDoorEntered();
-        func_8007C4E0(&vs_battle_spawnPoint, 0, 8);
+        warpToMap(&vs_battle_spawnPoint, 0, 8);
         func_80093B68(actor->stats->unk957, 0, 0x80000014, 0);
         func_800A0ABC(actorIndex);
         func_8008B8F8((void*)&vs_battle_spawnPoint);
@@ -6701,10 +6701,10 @@ int func_80077F70(void)
     }
     temp_v0 = sp18.vx - sp10.vx;
     temp_v0_2 = sp18.vz - sp10.vz;
-    temp_v0_3 = vs_gte_rsqrt((temp_v0 * temp_v0) + (temp_v0_2 * temp_v0_2));
+    temp_v0_3 = SquareRoot0((temp_v0 * temp_v0) + (temp_v0_2 * temp_v0_2));
     temp_v1 = sp18.vy - sp10.vy;
 
-    return vs_gte_rsqrt((temp_v1 * temp_v1) + (temp_v0_3 * temp_v0_3));
+    return SquareRoot0((temp_v1 * temp_v1) + (temp_v0_3 * temp_v0_3));
 }
 
 void func_800780A8(SVECTOR* arg0)
@@ -8175,26 +8175,26 @@ void func_8007B10C(int arg0, int arg1, int arg2, short arg3, short arg4)
     vs_main_transformClutSlot(arg0, arg1, 2, arg2, arg3, arg4);
 }
 
-void func_8007B1B8(int arg0, int arg1, short arg2, short arg3, short arg4)
+void transformSceneColors(int mode, int duration, short r, short g, short b)
 {
-    vs_main_transformClutSlot(arg0, arg1, 0, arg2, arg3, arg4);
-    vs_main_transformClutSlot(arg0, arg1, 1, arg2, arg3, arg4);
-    vs_main_transformClutSlot(arg0, arg1, 2, arg2, arg3, arg4);
-    vs_main_transformColorSlot(arg0, arg1, 0, arg2, arg3, arg4);
-    vs_main_transformClutSlot(arg0, arg1, 0xD, arg2, arg3, arg4);
+    vs_main_transformClutSlot(mode, duration, 0, r, g, b);
+    vs_main_transformClutSlot(mode, duration, 1, r, g, b);
+    vs_main_transformClutSlot(mode, duration, 2, r, g, b);
+    vs_main_transformColorSlot(mode, duration, 0, r, g, b);
+    vs_main_transformClutSlot(mode, duration, 0xD, r, g, b);
 }
 
-void func_8007B29C(int arg0, int arg1, int arg2, short arg3, short arg4, short arg5)
+void transformActorColors(int mode, int duration, int actor, short r, short g, short b)
 {
-    if (arg2 < 9) {
-        vs_main_transformClutSlot(arg0, arg1, arg2 + 4, arg3, arg4, arg5);
-        vs_main_transformColorSlot(arg0, arg1, arg2 + 1, arg3, arg4, arg5);
+    if (actor < 9) {
+        vs_main_transformClutSlot(mode, duration, actor + 4, r, g, b);
+        vs_main_transformColorSlot(mode, duration, actor + 1, r, g, b);
     }
 }
 
-void func_8007B344(int arg0, int arg1, short arg2, short arg3, short arg4)
+void transformBackgroundColors(int mode, int duration, short r, short g, short b)
 {
-    vs_main_transformBgColors(arg0, arg1, arg2, arg3, arg4);
+    vs_main_transformBgColors(mode, duration, r, g, b);
 }
 
 void func_8007B378(int arg0, u_short* arg1, int arg2, int arg3)
@@ -8226,7 +8226,7 @@ void func_8007B410(void)
 void func_8007B470(void)
 {
     vs_main_setClutState(1);
-    func_8007B1B8(8, 4, 0, 0, 0);
+    transformSceneColors(8, 4, 0, 0, 0);
     func_8006C250();
     func_8008B4BC(0);
     func_8008E480(0);
@@ -8376,7 +8376,7 @@ void func_8007B9CC(void)
     func_8007B764();
 }
 
-int func_8007B9FC(void)
+int updateScriptMenu(void)
 {
     switch (cameraMode) {
     case 3:
@@ -8396,7 +8396,7 @@ int func_8007B9FC(void)
     }
 }
 
-void func_8007BA98(int id0, int count0, int id1, int count1)
+void showMiscLoot(int firstId, int firstCount, int secondId, int secondCount)
 {
     vs_LootListNode* temp_a0;
     vs_LootListNode* temp_v0;
@@ -8404,15 +8404,15 @@ void func_8007BA98(int id0, int count0, int id1, int count1)
     temp_v0 = vs_main_allocHeapR(sizeof *temp_v0);
     if (temp_v0 != NULL) {
         vs_main_bzero(temp_v0, sizeof *temp_v0);
-        temp_v0->loot.misc[0].id = id0;
-        if (id0 & 0xFFFF) {
-            temp_v0->loot.misc[0].count = count0;
+        temp_v0->loot.misc[0].id = firstId;
+        if (firstId & 0xFFFF) {
+            temp_v0->loot.misc[0].count = firstCount;
             temp_v0->loot.misc[0].difficultyFlags = 3;
             temp_v0->actorId |= 1;
         }
-        temp_v0->loot.misc[1].id = id1;
-        if (id1 & 0xFFFF) {
-            temp_v0->loot.misc[1].count = count1;
+        temp_v0->loot.misc[1].id = secondId;
+        if (secondId & 0xFFFF) {
+            temp_v0->loot.misc[1].count = secondCount;
             temp_v0->loot.misc[1].difficultyFlags = 3;
             temp_v0->actorId |= 1;
         }
@@ -8513,15 +8513,15 @@ int setUiHidden(int hidden)
     return hidden;
 }
 
-int func_8007BDD8(int arg0)
+int cullOccludingGeometry(int cull)
 {
     func_8008C40C();
-    return firstPersonViewEnabled = ~arg0 & 1;
+    return renderAllGeometry = ~cull & 1;
 }
 
 int func_8007BE10(int arg0) { return D_800F18B0 = arg0; }
 
-void func_8007BE20(int arg0, int arg1)
+void startEffect(int effectId, int actorId)
 {
     ActionEffectRequest request;
     int i;
@@ -8531,17 +8531,17 @@ void func_8007BE20(int arg0, int arg1)
 
     request.count = 1;
     request.source.type = 5;
-    request.effectId = arg0;
+    request.effectId = effectId;
     request.otherCount = 0;
     request.source.value.position.vz = 0;
     request.source.value.position.vy = 0;
     request.source.value.position.vx = 0;
     request.targets[0].type = 4;
-    request.targets[0].value.actor.actor = arg1;
+    request.targets[0].value.actor.actor = actorId;
     request.targets[0].value.actor.part = 0;
 
     for (i = 0; i < 16; ++i) {
-        if ((actors[i] != NULL) && (i != arg1)) {
+        if ((actors[i] != NULL) && (i != actorId)) {
             request.others[count] = i;
             ++count;
         }
@@ -8551,47 +8551,47 @@ void func_8007BE20(int arg0, int arg1)
     func_800CF0E8(&request, 0, 0);
 }
 
-void func_8007BEC4(int arg0) { func_800CEF74(arg0); }
+void triggerEffectStage(int arg0) { func_800CEF74(arg0); }
 
-int func_8007BEE4(void) { return func_800CF48C(); }
+int getEffectState(void) { return func_800CF48C(); }
 
-void func_8007BF04(void) { }
+void effectNop(void) { }
 
-int func_8007BF0C(void) { return func_800CEEBC() != 0; }
+int isEffectStageReady(void) { return func_800CEEBC() != 0; }
 
-void func_8007BF2C(void) { func_8008AB80(0); }
+void showCurrentRoom(void) { showRoom(0); }
 
-void func_8007BF4C(void) { func_8008ABB8(0); }
+void hideCurrentRoom(void) { hideRoom(0); }
 
-void func_8007BF6C(int arg0)
+void enableActor(int actorId)
 {
-    if (vs_battle_actors[arg0] != NULL) {
-        vs_battle_setActorFlags(arg0, vs_battle_getActorFlags(arg0) | 1);
+    if (vs_battle_actors[actorId] != NULL) {
+        vs_battle_setActorFlags(actorId, vs_battle_getActorFlags(actorId) | 1);
     }
 }
 
-void func_8007BFC0(void)
+void enableAllActors(void)
 {
     int i;
 
     for (i = 0; i < 16; ++i) {
-        func_8007BF6C(i);
+        enableActor(i);
     }
 }
 
-void func_8007BFF8(int arg0)
+void disableActor(int actorId)
 {
-    if (vs_battle_actors[arg0] != NULL) {
-        vs_battle_setActorFlags(arg0, vs_battle_getActorFlags(arg0) & ~1);
+    if (vs_battle_actors[actorId] != NULL) {
+        vs_battle_setActorFlags(actorId, vs_battle_getActorFlags(actorId) & ~1);
     }
 }
 
-void func_8007C050(void)
+void disableAllActors(void)
 {
     int i;
 
     for (i = 0; i < 16; ++i) {
-        func_8007BFF8(i);
+        disableActor(i);
     }
 }
 
@@ -8699,25 +8699,25 @@ int func_8007C36C(int arg0)
     return vs_gametime_tickspeed;
 }
 
-int func_8007C398(void)
+int getScreenTransitionPhase(void)
 {
     switch (vs_battle_screenTransitionStep) {
     case 1:
     case 2:
-        return 1;
+        return screenTransitionWarpOut;
     case 3:
-        return 2;
+        return screenTransitionWarpLoading;
     case 4:
-        return 3;
+        return screenTransitionWarpIn;
     case 5:
-        return 4;
+        return screenTransitionOut;
     case 6:
-        return 5;
+        return screenTransitionOutDone;
     case 7:
-        return 6;
+        return screenTransitionIn;
     case 0:
     default:
-        return 0;
+        return screenTransitionIdle;
     }
 }
 
@@ -8725,19 +8725,19 @@ void vs_battle_enableDispMask(void) { enableDispMask(); }
 
 void vs_battle_disableDispMask(void) { disableDispMask(); }
 
-void setScreenTransition(int arg0, int arg1, int arg2)
+void setScreenTransition(int effect, int speed, int angle)
 {
-    vs_battle_screenTransitionEffect = arg0;
-    vs_battle_screenTransitionSpeed = arg1;
-    vs_battle_screenTransitionWipeAngle = arg2;
+    vs_battle_screenTransitionEffect = effect;
+    vs_battle_screenTransitionSpeed = speed;
+    vs_battle_screenTransitionWipeAngle = angle;
 }
 
-void setScreenTransitionWipeAngle(int arg0)
+void setScreenTransitionWipeAngle(int angle)
 {
-    vs_battle_screenTransitionWipeAngle = arg0;
+    vs_battle_screenTransitionWipeAngle = angle;
 }
 
-void func_8007C46C(int effect, int speed, int angle)
+void startScreenTransitionOut(int effect, int speed, int angle)
 {
     if (vs_battle_screenTransitionStep == 1 || vs_battle_screenTransitionStep == 2) {
         return;
@@ -8749,24 +8749,25 @@ void func_8007C46C(int effect, int speed, int angle)
     vs_battle_screenTransitionWipeAngle = angle;
 }
 
-void func_8007C4AC(int effect, int arg1, int arg2)
+void startScreenTransitionIn(int effect, int speed, int angle)
 {
     vs_battle_screenTransitionStep = 7;
     vs_battle_screenTransitionEffect = effect;
-    vs_battle_screenTransitionSpeed = arg1;
-    vs_battle_screenTransitionWipeAngle = arg2;
+    vs_battle_screenTransitionSpeed = speed;
+    vs_battle_screenTransitionWipeAngle = angle;
 }
 
 void func_8007C4D4(void) { D_800F19A0 = 0; }
 
-int func_8007C4E0(vs_Warp* arg0, int effect, int speed)
+/** Starts a warp to a map in the current zone, with a screen transition. */
+int warpToMap(vs_Warp* warp, int effect, int speed)
 {
-    vs_battle_spawnPoint = *arg0;
+    vs_battle_spawnPoint = *warp;
     vs_battle_screenTransitionStep = 1;
     vs_battle_screenTransitionEffect = effect;
     vs_battle_screenTransitionSpeed = speed;
     vs_battle_spawnPoint.zndId = zoneContext.zndId;
-    loadMpd(arg0->mpdId);
+    loadMpd(warp->mpdId);
     func_8009E5C4(0);
     func_800A0A1C(0, 1);
     func_8008B8F8(NULL);
@@ -8774,33 +8775,37 @@ int func_8007C4E0(vs_Warp* arg0, int effect, int speed)
     return 1;
 }
 
-void func_8007C580(vs_Warp* arg0, int arg1, int arg2)
+/** As warpToMap, but records the door within one tile of the player as the one entered.
+ */
+void warpToMapThroughDoor(vs_Warp* warp, int effect, int speed)
 {
     vs_ActorPosition sp10;
 
-    func_8007C4E0(arg0, arg1, arg2);
+    warpToMap(warp, effect, speed);
     vs_battle_getActorPosition(0, &sp10);
     func_8008B960(sp10.unk0.unk0.x, sp10.unk0.unk0.z, sp10.unk0.unk0.surface);
 }
 
-int func_8007C5C0(vs_Warp* arg0, int effect, int speed)
+/** Starts a warp to a map in another zone, with a screen transition. */
+int warpToZone(vs_Warp* warp, int effect, int speed)
 {
-    vs_battle_spawnPoint = *arg0;
+    vs_battle_spawnPoint = *warp;
     vs_battle_screenTransitionStep = 2;
     vs_battle_screenTransitionEffect = effect;
     vs_battle_screenTransitionSpeed = speed;
-    loadZnd(arg0->zndId);
+    loadZnd(warp->zndId);
     func_8009E5C4(0);
     func_800A0A1C(0, 1);
     func_8008B8F8(NULL);
     return 1;
 }
 
-void func_8007C654(vs_Warp* arg0, int arg1, int arg2)
+/** As warpToZone, but records the door within a tile of the player as the one entered. */
+void warpToZoneThroughDoor(vs_Warp* warp, int effect, int speed)
 {
     vs_ActorPosition sp10;
 
-    func_8007C5C0(arg0, arg1, arg2);
+    warpToZone(warp, effect, speed);
     vs_battle_getActorPosition(0, &sp10);
     func_8008B960(sp10.unk0.unk0.x, sp10.unk0.unk0.z, sp10.unk0.unk0.surface);
 }
@@ -8869,7 +8874,7 @@ int vs_battle_getCurrentRoomId(void)
     return getLocationId(zoneContext.zndId, zoneContext.mapId);
 }
 
-void func_8007C8A4(int arg0, int arg1)
+void playActorSfx(int arg0, int arg1)
 {
     if ((vs_battle_actors[arg0] != 0) && (arg0 < 16)) {
         func_800AE4FC(vs_battle_actors[arg0]->unk44, arg1);
@@ -13329,7 +13334,7 @@ int func_800863A4(int arg0, int arg1, int targetStats, int arg3, SVECTOR* arg4,
         sp860.unk2 = ratan2(temp_s1, temp_s0);
         temp_s0_2 = arg5->vy - arg4->vy;
         sp860.unk4.values[3] =
-            (ratan2(temp_s0_2, vs_gte_rsqrt((temp_s1 * temp_s1) + (temp_s0 * temp_s0)))
+            (ratan2(temp_s0_2, SquareRoot0((temp_s1 * temp_s1) + (temp_s0 * temp_s0)))
                 / 16)
             + 0x40;
         memcpy(&sp860.unk8, arg4, sizeof *arg4);
@@ -14744,7 +14749,7 @@ void finishLoadZnd(int id)
             zoneContext.musicSlot = 0;
 
             if (musicId != 0) {
-                vs_main_loadAndWaitSoundSlot(musicId);
+                vs_main_loadAndWaitInstrumentBank(musicId);
                 zoneContext.musicSlot = vs_main_loadAndWaitMusicSlot(musicId, 3);
             }
         }
@@ -15259,7 +15264,7 @@ void func_80089DC0(int arg0)
     func_80086754(0x21000, vs_battle_characterState->stats);
 
     firstPersonRendering = 0;
-    firstPersonViewEnabled = 0;
+    renderAllGeometry = 0;
     D_800F1A50[0] = 1;
     D_800F1868 = 0;
     setActorsAwake(1);
@@ -15331,8 +15336,8 @@ void func_80089DC0(int arg0)
             func_8008EA90(1);
             func_80073718();
         } else {
-            func_8007BF2C();
-            func_8007BFC0();
+            showCurrentRoom();
+            enableAllActors();
             func_8008EA90(0);
             func_80093A14();
             func_8006F5CC();
@@ -15594,9 +15599,9 @@ int loadMpdRoomSection(int arg0, void* data)
         vs_battle_setRoomsUnk0(vs_battle_roomData.sectionF);
         vs_battle_roomData.sectionF->rooms[0].visited = 1;
         if (vs_main_stateFlags.doorEntered == 0) {
-            setDoorEntered2(vs_battle_doorEntered);
+            setEnteredDoor(vs_battle_doorEntered);
         } else {
-            setDoorEntered2(vs_main_stateFlags.doorEntered - 1);
+            setEnteredDoor(vs_main_stateFlags.doorEntered - 1);
             vs_main_stateFlags.doorEntered = 0;
         }
     }
@@ -15623,18 +15628,18 @@ void vs_battle_setDoorEntered(void)
     vs_main_stateFlags.doorEntered = vs_battle_doorEntered + 1;
 }
 
-int func_8008AB80(int arg0)
+int showRoom(int id)
 {
-    if ((vs_battle_roomData.unk0 == 1) && (vs_battle_roomData.unk2 == arg0)) {
+    if ((vs_battle_roomData.unk0 == 1) && (vs_battle_roomData.unk2 == id)) {
         vs_battle_roomData.unk1 = vs_battle_roomData.unk0;
         return 1;
     }
     return 0;
 }
 
-int func_8008ABB8(int arg0)
+int hideRoom(int id)
 {
-    if ((vs_battle_roomData.unk0 == 1) && (vs_battle_roomData.unk2 == arg0)) {
+    if ((vs_battle_roomData.unk0 == 1) && (vs_battle_roomData.unk2 == id)) {
         vs_battle_roomData.unk1 = 0;
         return 1;
     }
@@ -15645,7 +15650,7 @@ int func_8008ABF0(int arg0)
 {
     if (vs_battle_roomData.unk0 == 1) {
         if (vs_battle_roomData.unk2 == arg0) {
-            func_8008F234();
+            unloadBackground();
             func_80091378();
             func_80092A18();
             if (vs_battle_roomData.geometrySection != 0) {
@@ -16188,14 +16193,14 @@ int func_8008BF48(MpdRoomSectionA* arg0)
         vs_main_playSfxDefault(0x7E, 0x16);
         vs_main_playSfxDefault(0x7E, 0x17);
     }
-    func_8009291C(arg0->unk0.unk8.lock.unk1);
+    startRoomTask(arg0->unk0.unk8.lock.unk1);
     if (arg0->unkE != 0) {
         func_8008BD74(arg0);
     }
     if (arg0->unk10 != -1) {
         temp_s0 = vs_battle_roomData.sectionA;
         if (temp_s0[arg0->unk10].unk0.unkA != 0) {
-            func_8009291C(temp_s0[arg0->unk10].unk0.unk8.lock.unk1);
+            startRoomTask(temp_s0[arg0->unk10].unk0.unk8.lock.unk1);
             if (temp_s0[arg0->unk10].unkE != 0) {
                 func_8008BD74(&temp_s0[arg0->unk10]);
             }
@@ -16259,7 +16264,7 @@ void func_8008C0C0(void)
 
 int func_8008C1C8(MpdRoomSectionA* arg0)
 {
-    if (func_80093764(arg0->unk0.unk8.lock.unk1) != 0) {
+    if (isRoomTaskRunning(arg0->unk0.unk8.lock.unk1) != 0) {
         return 0;
     }
     if (arg0->unkE == 0) {
@@ -16765,7 +16770,7 @@ void func_8008D658(MpdRoomSectionA* arg0)
         vs_main_playSfxDefault(0x7E, 0x3D);
         vs_main_playSfxDefault(0x7E, 0x3E);
     }
-    func_8009291C(arg0->unk0.unk6);
+    startRoomTask(arg0->unk0.unk6);
     arg0->unk0.unkB = 0;
     arg0->unk0.unk8.s16 = arg0->unk0.unk8.s16 == 0;
     temp_v0 = func_8008B764(arg0->unk0.unk0, arg0->unk0.unk2, arg0->unk0.unk4);
@@ -16825,51 +16830,58 @@ void vs_battle_parseTim(u_long* arg0, TIM_IMAGE* tim)
     tim->paddr = arg0 + 3;
 }
 
+// TODO: Add a type-safe NON_MATCHING lookup in the two following functions.
+#define FIND_DOORS(data)                                                               \
+    (data) = vs_battle_roomData.sectionF;                                              \
+    (data) = &vs_battle_roomData.sectionF                                              \
+                  ->rooms[vs_battle_roomData.sectionF->roomCount];                     \
+    (data) += (*(int*)(data) * 8) + 4;                                                 \
+    (data) += (*(int*)(data) * 4) + 4;                                                 \
+    (data) += (*(int*)(data) * 4) + 4;                                                 \
+    (data) += (*(int*)(data) * 4) + 4;                                                 \
+    (data) += (*(int*)(data) * 4) + 4
+
 int getDoorId(int door)
 {
-    int* temp_v1;
-
     if (vs_battle_roomData.sectionF != NULL) {
-        temp_v1 = (int*)vs_battle_roomData.sectionF
-                + (vs_battle_roomData.sectionF->roomCount * 3 + 1);
-        temp_v1 = temp_v1 + ((*temp_v1 * 2) + 1);
-        temp_v1 = temp_v1 + ((*temp_v1) + 1);
-        temp_v1 = temp_v1 + ((*temp_v1) + 1);
-        temp_v1 = temp_v1 + ((*temp_v1) + 1);
-        temp_v1 = temp_v1 + ((*temp_v1) + 1);
-        if ((door < *temp_v1++) && (door >= 0)) {
-            temp_v1 += door;
-            return ((char*)temp_v1)[1];
+        int count;
+        void* data;
+
+        FIND_DOORS(data);
+        count = ((vs_RoomDoors*)data)->count;
+        data = ((vs_RoomDoors*)data)->doors;
+
+        if ((door < count) && (door >= 0)) {
+            data += door * sizeof(vs_RoomDoor);
+            return ((vs_RoomDoor*)data)->id;
         }
     }
+
     return -1;
 }
 
-void setDoorEntered2(int arg0)
+void setEnteredDoor(int door)
 {
-    int temp_a3;
-    int i;
-
-    vs_battle_doorEntered = arg0;
+    vs_battle_doorEntered = door;
 
     if (vs_battle_roomData.sectionF != NULL) {
-        int* temp_v1 = (int*)vs_battle_roomData.sectionF;
-        temp_v1 += vs_battle_roomData.sectionF->roomCount * 3 + 1;
-        temp_v1 = temp_v1 + ((*temp_v1 * 2) + 1);
-        temp_v1 = temp_v1 + ((*temp_v1) + 1);
-        temp_v1 = temp_v1 + ((*temp_v1) + 1);
-        temp_v1 = temp_v1 + ((*temp_v1) + 1);
-        temp_v1 = temp_v1 + ((*temp_v1) + 1);
-        temp_a3 = *temp_v1++;
+        int i;
+        int count;
+        void* data;
 
-        for (i = 0; i < temp_a3; ++i) {
-            if (i == arg0) {
-                ((char*)temp_v1)[2] |= 0x10;
+        FIND_DOORS(data);
+        count = ((vs_RoomDoors*)data)->count;
+        data = ((vs_RoomDoors*)data)->doors;
+
+        for (i = 0; i < count; ++i, data += sizeof(vs_RoomDoor)) {
+            if (i == door) {
+                ((vs_RoomDoor*)data)->flags |= 0x10;
             }
-            ++temp_v1;
         }
     }
 }
+
+#undef FIND_DOORS
 
 short func_8008DA24(int arg0, int arg1)
 {
@@ -17197,7 +17209,7 @@ MpdRoomSection9* func_8008E400(int* arg0)
     return NULL;
 }
 
-int func_8008E470(void) { return (u_int)vs_battle_roomData.section14 < 1; }
+int roomHasNoSoundBank(void) { return (u_int)vs_battle_roomData.section14 < 1; }
 
 void func_8008E480(int arg0)
 {
@@ -17236,7 +17248,7 @@ void func_8008E4DC(int arg0)
         }
         if (vs_battle_roomData.sectionB != NULL) {
             if (vs_battle_roomData.sectionB->unk2C >= 0) {
-                func_800936F8(vs_battle_roomData.sectionB->unk2C);
+                toggleRoomTaskPaused(vs_battle_roomData.sectionB->unk2C);
             }
         }
         D_800F1D6F = !D_800F1D6F;
@@ -17309,15 +17321,15 @@ int func_8008E7BC(int arg0, int arg1, u_int arg2)
 
 void func_8008E88C(void)
 {
-    D_800F1DAC = NULL;
-    D_800F1DB0 = NULL;
-    D_800F1DCC = NULL;
-    D_800F1DD0 = NULL;
+    backgroundImageCdSlot = NULL;
+    backgroundLayoutCdSlot = NULL;
+    backgroundLayout = NULL;
+    backgroundImageBuffer = NULL;
     D_800F1DD4 = NULL;
-    D_800F1DC9 = 0;
-    D_800F1DBC = -2;
+    backgroundVisible = 0;
+    particleEffectSound = -2;
     D_800F1DCA = 0;
-    D_800F1DCB = 1;
+    particleEffectDrift = 1;
     func_8008E938();
 }
 
@@ -17334,10 +17346,10 @@ void func_8008E938(void)
     MpdRoomSectionB* temp_s0;
     int i;
 
-    D_800F1DB4 = 0;
-    D_800F1DB6 = 0;
-    D_800F1DB8 = 0x1000;
-    D_800F1DBA = 0x1000;
+    backgroundOffsetX = 0;
+    backgroundOffsetY = 0;
+    backgroundParallaxX = 0x1000;
+    backgroundParallaxY = 0x1000;
 
     if (vs_battle_roomData.sectionB != NULL) {
 
@@ -17382,22 +17394,22 @@ int func_8008EA90(int arg0)
         MpdRoomSectionB* new_var4 = new_var2;
         new_var2 = vs_battle_roomData.sectionB;
         if ((arg0 == 0) || (new_var4->unk34 != 1)) {
-            func_80090C2C(new_var4->unk34);
+            setParticleEffect(new_var4->unk34);
         } else {
-            func_80090C2C(0);
+            setParticleEffect(0);
         }
         return 1;
     }
     return 0;
 }
 
-void func_8008EAE4(int arg0, int arg1)
+void setBackgroundParallax(int arg0, int arg1)
 {
-    D_800F1DB8 = arg0;
-    D_800F1DBA = arg1;
+    backgroundParallaxX = arg0;
+    backgroundParallaxY = arg1;
 }
 
-void func_8008EAF8(int arg0) { D_800F1DC9 = arg0; }
+void setBackgroundVisible(int arg0) { backgroundVisible = arg0; }
 
 void func_8008EB04(int* arg0, int* arg1)
 {
@@ -17455,13 +17467,16 @@ void func_8008EC48(VECTOR* arg0)
     int green;
     int blue;
 
-    if ((D_800F1DC9 != 0) && (D_800F1DCC != NULL)) {
-        if (((D_800F1DCC->width - 1) < 31u) && ((D_800F1DCC->height - 1) < 31u)) {
-            int x = (((vs_Scratch*)0x1F800000)->camera.angles.vy * D_800F1DB8) / ONE
-                  - D_800F1DB4;
-            int y = (((vs_Scratch*)0x1F800000)->camera.angles.vx * D_800F1DBA) / ONE;
-            y = D_800F1DB6 - y;
-            func_8009147C(D_800F1DCC, x, y, D_800F1DC8);
+    if ((backgroundVisible != 0) && (backgroundLayout != NULL)) {
+        if (((backgroundLayout->width - 1) < 31u)
+            && ((backgroundLayout->height - 1) < 31u)) {
+            int x =
+                (((vs_Scratch*)0x1F800000)->camera.angles.vy * backgroundParallaxX) / ONE
+                - backgroundOffsetX;
+            int y =
+                (((vs_Scratch*)0x1F800000)->camera.angles.vx * backgroundParallaxY) / ONE;
+            y = backgroundOffsetY - y;
+            func_8009147C(backgroundLayout, x, y, backgroundTexturePage);
         }
     } else if (D_800F1DC6 != 0) {
         prim = ((vs_Scratch*)0x1F800000)->unk0;
@@ -17512,7 +17527,7 @@ void func_8008EC48(VECTOR* arg0)
     }
 }
 
-int func_8008EFCC(int arg0)
+int loadBackground(int texturePage)
 {
     u_short* temp_s0;
     int new_var;
@@ -17522,10 +17537,10 @@ int func_8008EFCC(int arg0)
     int var_s0;
 
     temp_s0 = vs_battle_roomData.section10;
-    D_800F1DC8 = arg0;
+    backgroundTexturePage = texturePage;
     if (temp_s0 != 0) {
-        D_800F1DBE = *temp_s0;
-        if (func_8007DFF0(D_800F1DC8, D_800F1DBE, 5) != 0) {
+        backgroundTexturePageCount = *temp_s0;
+        if (func_8007DFF0(backgroundTexturePage, backgroundTexturePageCount, 5) != 0) {
             new_var = 0x800;
             temp_s2 = (vs_CdFile*)(temp_s0 + 0x20);
             temp_s3 = (vs_CdFile*)(temp_s0 + 0x42);
@@ -17537,61 +17552,61 @@ int func_8008EFCC(int arg0)
             if ((var_s0 & 0x7FF) != 0) {
                 var_s0 = (var_s0 + new_var) - (var_s0 & 0x7FF);
             }
-            D_800F1DD0 = vs_main_allocHeapR(var_a0);
-            D_800F1DCC = vs_main_allocHeapR(var_s0);
-            if ((D_800F1DD0 == 0) || (D_800F1DCC == 0)) {
+            backgroundImageBuffer = vs_main_allocHeapR(var_a0);
+            backgroundLayout = vs_main_allocHeapR(var_s0);
+            if ((backgroundImageBuffer == 0) || (backgroundLayout == 0)) {
                 return 0;
             }
-            D_800F1DAC = vs_main_allocateCdQueueSlot(temp_s2);
-            D_800F1DB0 = vs_main_allocateCdQueueSlot(temp_s3);
-            vs_main_cdEnqueue(D_800F1DAC, D_800F1DD0);
-            vs_main_cdEnqueue(D_800F1DB0, D_800F1DCC);
+            backgroundImageCdSlot = vs_main_allocateCdQueueSlot(temp_s2);
+            backgroundLayoutCdSlot = vs_main_allocateCdQueueSlot(temp_s3);
+            vs_main_cdEnqueue(backgroundImageCdSlot, backgroundImageBuffer);
+            vs_main_cdEnqueue(backgroundLayoutCdSlot, backgroundLayout);
             return 1;
         }
     }
-    D_800F1DAC = 0;
-    D_800F1DB0 = 0;
+    backgroundImageCdSlot = 0;
+    backgroundLayoutCdSlot = 0;
     return 0;
 }
 
-int func_8008F0FC(void)
+int pollBackgroundLoad(void)
 {
-    if ((D_800F1DAC != NULL) && (D_800F1DAC->state == 4)) {
+    if ((backgroundImageCdSlot != NULL) && (backgroundImageCdSlot->state == 4)) {
         TIM_IMAGE tim;
 
-        *D_800F1DD0 = 0x10;
-        vs_battle_parseTim(D_800F1DD0, &tim);
+        *backgroundImageBuffer = 0x10;
+        vs_battle_parseTim(backgroundImageBuffer, &tim);
         if (tim.paddr != NULL) {
-            tim.prect->x = (tim.prect->x & 0x3F) + ((D_800F1DC8 & 0xF) << 6);
-            tim.prect->y = (char)tim.prect->y + ((D_800F1DC8 & 0x10) * 0x10);
+            tim.prect->x = (tim.prect->x & 0x3F) + ((backgroundTexturePage & 0xF) << 6);
+            tim.prect->y = (char)tim.prect->y + ((backgroundTexturePage & 0x10) * 0x10);
             LoadImage(tim.prect, (u_long*)tim.paddr);
         }
         if (tim.caddr != NULL) {
             vs_main_loadClut((void*)tim.caddr, 0xE, 0, 0x100);
         }
-        vs_main_freeCdQueueSlot(D_800F1DAC);
-        D_800F1DAC = NULL;
+        vs_main_freeCdQueueSlot(backgroundImageCdSlot);
+        backgroundImageCdSlot = NULL;
         return 0;
     }
 
-    if ((D_800F1DB0 != NULL) && (D_800F1DB0->state == 4)) {
-        vs_main_freeHeapR(D_800F1DD0);
-        D_800F1DD0 = NULL;
-        vs_main_freeCdQueueSlot(D_800F1DB0);
-        D_800F1DB0 = NULL;
+    if ((backgroundLayoutCdSlot != NULL) && (backgroundLayoutCdSlot->state == 4)) {
+        vs_main_freeHeapR(backgroundImageBuffer);
+        backgroundImageBuffer = NULL;
+        vs_main_freeCdQueueSlot(backgroundLayoutCdSlot);
+        backgroundLayoutCdSlot = NULL;
         return 1;
     }
     return 0;
 }
 
-int func_8008F234(void)
+int unloadBackground(void)
 {
-    D_800F1DC9 = 0;
-    if (D_800F1DCC != NULL) {
-        D_800F1DC9 = 0;
-        func_8007E0A8(D_800F1DC8, D_800F1DBE, 5);
-        vs_main_freeHeapR(D_800F1DCC);
-        D_800F1DCC = NULL;
+    backgroundVisible = 0;
+    if (backgroundLayout != NULL) {
+        backgroundVisible = 0;
+        func_8007E0A8(backgroundTexturePage, backgroundTexturePageCount, 5);
+        vs_main_freeHeapR(backgroundLayout);
+        backgroundLayout = NULL;
         return 1;
     }
     return 0;

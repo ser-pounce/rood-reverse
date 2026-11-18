@@ -41,8 +41,8 @@ typedef struct {
     u_char ease3;
     u_char time;
     u_char duration;
-    u_char follow;
-    u_char following;
+    u_char carryMomentum;
+    u_char carrying;
     int value;
     int delta;
     short angle;
@@ -51,8 +51,8 @@ typedef struct {
     VECTOR position;
     VECTOR velocity;
     VECTOR aux;
-    VECTOR followDelta;
-    VECTOR followPosition;
+    VECTOR momentumStep;
+    VECTOR momentumPosition;
     VECTOR previousCamera;
     VECTOR computed;
     VECTOR current;
@@ -284,8 +284,8 @@ int func_800BD610(void);
 int func_800BDBB4(func_800BDBB4_t* arg0);
 void func_800BDF6C(func_800BDF6C_unk180_t* arg0);
 void func_800BE180(void);
-void func_800BE36C(int, int);
-void func_800BE3A0(void);
+void setCameraMomentum(int lookAt, int eye);
+void clearCameraMomentum(void);
 void sweepCameraToPlayerView(char side);
 void scaleCameraMoveDurationByDistance(short target);
 VECTOR* vectorAdd(VECTOR* arg0, VECTOR* arg1, VECTOR* arg2);
@@ -3954,10 +3954,7 @@ int vs_battle_script_BC_loadScreenEffects(UNUSED u_char* arg0, UNUSED short arg1
  * Does nothing. Only the room scripts of MAP101 and MAP213 use it, with the byte 0x0C,
  * right after setEnteredDoor.
  */
-int vs_battle_script_BD_nop(UNUSED u_char* arg0, UNUSED short arg1)
-{
-    return scriptNext;
-}
+int vs_battle_script_BD_nop(UNUSED u_char* arg0, UNUSED short arg1) { return scriptNext; }
 
 /**
  * Releases the screen effects overlay.
@@ -3969,16 +3966,29 @@ int vs_battle_script_BE_unloadScreenEffects(UNUSED u_char* arg0, UNUSED short ar
     return (scriptSkipMode == scriptSkipping) ? scriptYield : scriptNext;
 }
 
-int vs_battle_script_DE(UNUSED u_char* arg0, UNUSED short arg1)
+/**
+ * Interrupts camera movement and drops the momentum carried over from the last move
+ * (see opcode DF).
+ */
+int vs_battle_script_DE_clearCameraMomentum(UNUSED u_char* arg0, UNUSED short arg1)
 {
-    func_800BE3A0();
+    clearCameraMomentum();
+
     return scriptNext;
 }
 
-int vs_battle_script_DF(u_char* arg0, UNUSED short arg1)
+/**
+ * Chooses whether the camera carries its speed over from the end of a move into the
+ * next one: it keeps going past the target and curves into the next move instead of
+ * stopping first.
+ * @param script Opcode bytes:
+ *   - [1] = bit 0 for the look-at point, bit 1 for the eye
+ */
+int vs_battle_script_DF_setCameraMomentum(u_char* script, UNUSED short arg1)
 {
-    int new_var = arg0[1] & 2;
-    func_800BE36C(arg0[1] & 1, new_var != 0);
+    int eye = script[1] & 2;
+    setCameraMomentum(script[1] & 1, eye != 0);
+
     return scriptNext;
 }
 
@@ -4248,9 +4258,9 @@ void func_800BBBE8(void)
     vectorCopy(&D_800F4BA4->eye.target, &sp30);
 
     D_800F4BA4->lookAt.mode = 0xF;
-    D_800F4BA4->lookAt.follow = D_800F4BA4->lookAt.following = 0;
+    D_800F4BA4->lookAt.carryMomentum = D_800F4BA4->lookAt.carrying = 0;
     D_800F4BA4->eye.mode = 0xF;
-    D_800F4BA4->eye.follow = D_800F4BA4->eye.following = 0;
+    D_800F4BA4->eye.carryMomentum = D_800F4BA4->eye.carrying = 0;
     D_800F4BA4->unk168.unkA = 0;
     D_800F4BA4->unk168.unk2 = 0;
     D_800F4BA4->unk168.unk0 = 1;
@@ -4700,25 +4710,25 @@ void func_800BCA8C(D_800F4BA4_t2* c, D_800F4BA4_t2* other)
         break;
     }
     vectorCopy(&c->previousCamera, &c->current);
-    if (c->follow & c->following) {
+    if (c->carryMomentum & c->carrying) {
         int fraction;
         CameraScratch* s;
-        vectorAdd(&c->followPosition, &c->followPosition, &c->followDelta);
+        vectorAdd(&c->momentumPosition, &c->momentumPosition, &c->momentumStep);
         fraction = func_800BFEBC(easingSineOut, c->time, c->duration);
         s = (CameraScratch*)0x1F800088;
         s->value = fraction;
-        vectorSubtract((VECTOR*)0x1F800098, &c->computed, &c->followPosition);
+        vectorSubtract((VECTOR*)0x1F800098, &c->computed, &c->momentumPosition);
         vectorFixedPointMult((VECTOR*)0x1F800098, (VECTOR*)0x1F800098, s->value);
-        vectorAdd(&c->current, &c->followPosition, (VECTOR*)0x1F800098);
+        vectorAdd(&c->current, &c->momentumPosition, (VECTOR*)0x1F800098);
     } else {
         vectorCopy(&c->current, &c->computed);
     }
     if (c->time == c->duration) {
         c->mode = 15;
-        if (c->follow) {
-            c->following = 1;
-            vectorCopy(&c->followPosition, &c->current);
-            vectorSubtract(&c->followDelta, &c->current, &c->previousCamera);
+        if (c->carryMomentum) {
+            c->carrying = 1;
+            vectorCopy(&c->momentumPosition, &c->current);
+            vectorSubtract(&c->momentumStep, &c->current, &c->previousCamera);
         }
     }
 }
@@ -5241,25 +5251,25 @@ void func_800BE180(void)
     }
 }
 
-void func_800BE36C(int arg0, int arg1)
+void setCameraMomentum(int lookAt, int eye)
 {
-    D_800F4BA4->lookAt.follow = arg0;
-    D_800F4BA4->lookAt.following = 0;
-    D_800F4BA4->eye.follow = arg1;
-    D_800F4BA4->eye.following = 0;
+    D_800F4BA4->lookAt.carryMomentum = lookAt;
+    D_800F4BA4->lookAt.carrying = 0;
+    D_800F4BA4->eye.carryMomentum = eye;
+    D_800F4BA4->eye.carrying = 0;
 }
 
-void func_800BE3A0(void)
+void clearCameraMomentum(void)
 {
     D_800F4BA4_t* c1 = D_800F4BA4;
     D_800F4BA4_t* c2;
     c1->eye.mode = 0xF;
     c1->lookAt.mode = 0xF;
     c2 = D_800F4BA4;
-    c2->eye.following = 0;
-    c2->eye.follow = 0;
-    c2->lookAt.following = 0;
-    c2->lookAt.follow = 0;
+    c2->eye.carrying = 0;
+    c2->eye.carryMomentum = 0;
+    c2->lookAt.carrying = 0;
+    c2->lookAt.carryMomentum = 0;
 }
 
 /**

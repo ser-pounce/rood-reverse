@@ -4297,36 +4297,39 @@ int getActorScreenPositionAndUpAngle(int actorId, SVECTOR* position)
  */
 void drawScanlines(void)
 {
-    LINE_F2* var_s3;
-    short i;
-    u_int temp_v0_2;
+    LINE_F2* prim;
+    short y;
 
-    void** p = (void**)0x1F800000;
-    var_s3 = (LINE_F2*)p[0];
+    vs_Scratch* scratch = (vs_Scratch*)0x1F800000;
+    prim = scratch->unk0;
 
     ++scanlinePhase;
 
-    for (i = 0; i < vs_main_screenHeight; ++i) {
-        u_short v;
-        temp_v0_2 = (((i + (scanlinePhase >> 1)) & 1) << 5);
-        v = temp_v0_2;
-        if (temp_v0_2 != 0) {
-            SetLineF2(var_s3);
-            var_s3->r0 = var_s3->g0 = var_s3->b0 = v;
-            setSemiTrans(var_s3, 1);
-            var_s3->x0 = 0;
-            var_s3->y0 = var_s3->y1 = i;
-            var_s3->x1 = vs_main_screenWidth;
-            p = (void**)0x1F800000;
-            AddPrim(p[2], var_s3++);
+    for (y = 0; y < vs_main_screenHeight; ++y) {
+        u_int shade = (((y + (scanlinePhase >> 1)) & 1) << 5);
+        u_short color = shade;
+
+        if (shade != 0) {
+            SetLineF2(prim);
+
+            prim->r0 = prim->g0 = prim->b0 = color;
+
+            setSemiTrans(prim, 1);
+
+            prim->x0 = 0;
+            prim->y0 = prim->y1 = y;
+            prim->x1 = vs_main_screenWidth;
+
+            scratch = (vs_Scratch*)0x1F800000;
+            AddPrim(scratch->unk8, prim++);
         }
     }
 
-    SetDrawTPage((DR_TPAGE*)var_s3, 1, 1, GetTPage(0, 2, 0, 0));
+    SetDrawTPage((DR_TPAGE*)prim, 1, 1, GetTPage(0, 2, 0, 0));
 
-    p = (void**)0x1F800000;
-    AddPrim(p[2], var_s3);
-    p[0] = (LINE_F2*)&var_s3->x0;
+    scratch = (vs_Scratch*)0x1F800000;
+    AddPrim(scratch->unk8, prim);
+    scratch->unk0 = (LINE_F2*)&prim->x0;
 }
 
 void func_800BB9B0(void)

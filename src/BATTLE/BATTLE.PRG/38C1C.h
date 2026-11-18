@@ -3,7 +3,7 @@
 #include <libgte.h>
 
 enum ActorPoint {
-    actorPointRaised = 0xFA, // position raised by unk65A, scaled by the actor's scale
+    actorPointRaised = 0xFA, // position raised by scaled unk65A, near the root bone
     actorPointAboveHead = 0xFB, // position raised by the actor's height
     actorPointPosition = 0xFD, // the actor's position
 };

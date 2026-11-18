@@ -337,7 +337,8 @@ extern char loopCounters[];
 extern short D_800F4C22;
 extern void* nextEvtBuffer;
 extern char D_800F4C34;
-extern u_char* D_800F4C38[];
+/** Next opcode of the code running in each script slot, NULL if it isn't running. */
+extern u_char* scriptSlots[];
 extern short particleEffectSoundToRestore;
 extern char weaponAnimating;
 extern short mpdScriptSection;
@@ -4119,20 +4120,36 @@ int vs_battle_script_F3_setScanlines(u_char* script, UNUSED short arg1)
     return scriptNext;
 }
 
-int vs_battle_script_F4(u_char* arg0, UNUSED short arg1)
+/**
+ * Joins the code forked into a script slot by opcode F5.
+ * @param script Opcode bytes:
+ *   - [1] = slot in the low 2 bits, bit 7 set to stop the slot instead of waiting
+ */
+int vs_battle_script_F4_joinScript(u_char* script, UNUSED short arg1)
 {
-    u_short temp_a0 = arg0[1] & 3;
-    if ((arg0[1] & 0x80)) {
-        D_800F4C38[temp_a0] = 0;
+    u_short slot = script[1] & 3;
+
+    if ((script[1] & 0x80)) {
+        scriptSlots[slot] = 0;
+
         return scriptNext;
     }
-    return D_800F4C38[temp_a0] != 0 ? scriptRepeat : scriptNext;
+
+    return scriptSlots[slot] != 0 ? scriptRepeat : scriptNext;
 }
 
-int vs_battle_script_F5(u_char* arg0, UNUSED short arg1)
+/**
+ * Starts the script immediately following this opcode in a separate script slot,
+ * and jumps the current script ahead.
+ * @param script Opcode bytes:
+ *   - [1] = slot to run the forked script in, 1 to 3
+ *   - [2-3] = Current script continues from this offset
+ */
+int vs_battle_script_F5_forkAndJump(u_char* script, UNUSED short arg1)
 {
-    D_800F4C38[arg0[1]] = arg0 + 4;
-    return (int)&arg0[getShort(arg0 + 2)];
+    scriptSlots[script[1]] = script + 4;
+
+    return (long)&script[getShort(script + 2)];
 }
 
 int vs_battle_script_F6(UNUSED u_char* arg0, UNUSED short arg1) { return scriptEnd; }
@@ -6001,8 +6018,8 @@ void parseEvt(u_char* data)
             ((u_short*)table)[i] ? (char*)table + ((u_short*)table)[i] : 0;
     }
 
-    D_800F4C38[0] = data + 16;
-    D_800F4C38[1] = D_800F4C38[2] = D_800F4C38[3] = 0;
+    scriptSlots[0] = data + 16;
+    scriptSlots[1] = scriptSlots[2] = scriptSlots[3] = 0;
     scriptSkipMode = scriptSkipOff;
     skipRequested = 0;
 
@@ -6107,7 +6124,7 @@ int func_800BF850(void)
     updateCameraAttachment();
 
     if (D_800F4C22 == 0) {
-        if (func_800BFBB8(D_800F4C38, 0) != 0) {
+        if (func_800BFBB8(scriptSlots, 0) != 0) {
             if (cameraReturned == 0 && nextEvtQueued == 0
                 && scriptWarpState == scriptWarpIdle) {
                 returnToGameplayCamera(-1, -1);
@@ -6117,8 +6134,8 @@ int func_800BF850(void)
         }
 
         for (i = 1; i < 4; ++i) {
-            if (D_800F4C38[i] != NULL) {
-                func_800BFBB8(&D_800F4C38[i], i);
+            if (scriptSlots[i] != NULL) {
+                func_800BFBB8(&scriptSlots[i], i);
             }
         }
     }

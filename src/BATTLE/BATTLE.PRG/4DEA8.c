@@ -315,7 +315,7 @@ extern u_char D_800E9C1C[];
 extern short D_800E9C24[];
 extern u_char D_800E9C28;
 extern u_char D_800E9C2C;
-extern u_short D_800F4B20;
+extern u_short scanlinePhase;
 extern GimTween gimTweens[];
 extern ParticleTween particleTween;
 extern char D_800F4B8B;
@@ -330,7 +330,7 @@ extern char D_800F4BB8;
 extern u_char effectCancelled;
 extern char* vibrationPatterns[];
 extern short D_800F4BE0;
-extern char D_800F4BE4;
+extern char scanlinesEnabled;
 extern void* mpdRoomDoorSection;
 extern char scriptMenuState;
 extern char loopCounters[];
@@ -4107,9 +4107,15 @@ int vs_battle_script_F1_setFrameRate(u_char* script, UNUSED short arg1)
     return scriptNext;
 }
 
-int vs_battle_script_F3(u_char* arg0, UNUSED short arg1)
+/**
+ * Toggles the scanline effect, see drawScanlines.
+ * @param script Opcode bytes:
+ *   - [1] = 1 for on, 0 for off
+ */
+int vs_battle_script_F3_setScanlines(u_char* script, UNUSED short arg1)
 {
-    D_800F4BE4 = arg0[1];
+    scanlinesEnabled = script[1];
+
     return scriptNext;
 }
 
@@ -4228,7 +4234,10 @@ int getActorScreenPosition(int arg0, SVECTOR* arg1)
     return arg1->vz;
 }
 
-void func_800BB874(void)
+/**
+ * Renders an interlaced scanline effect.
+ */
+void drawScanlines(void)
 {
     LINE_F2* var_s3;
     short i;
@@ -4237,11 +4246,11 @@ void func_800BB874(void)
     void** p = (void**)0x1F800000;
     var_s3 = (LINE_F2*)p[0];
 
-    ++D_800F4B20;
+    ++scanlinePhase;
 
     for (i = 0; i < vs_main_screenHeight; ++i) {
         u_short v;
-        temp_v0_2 = (((i + (D_800F4B20 >> 1)) & 1) << 5);
+        temp_v0_2 = (((i + (scanlinePhase >> 1)) & 1) << 5);
         v = temp_v0_2;
         if (temp_v0_2 != 0) {
             SetLineF2(var_s3);
@@ -6003,7 +6012,7 @@ void parseEvt(u_char* data)
     effectCancelled = 0;
     weaponAnimating = 0;
     textBoxSelectionPending = 0;
-    D_800F4BE4 = 0;
+    scanlinesEnabled = 0;
     scriptMenuState = scriptMenuClosed;
     scriptWarpState = scriptWarpIdle;
     cameraReturned = 0;
@@ -6120,8 +6129,8 @@ int func_800BF850(void)
     func_800BB9B0();
     func_800BBAFC();
 
-    if (D_800F4BE4 != 0) {
-        func_800BB874();
+    if (scanlinesEnabled != 0) {
+        drawScanlines();
     }
 
     if (D_800F4C22 != 0 && getCameraIdleFlags() == 255) {

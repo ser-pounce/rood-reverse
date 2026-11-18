@@ -277,7 +277,7 @@ void setCameraFollowsAshley(int follows);
 void updateCameraAttachment(void);
 void func_800BCA8C(D_800F4BA4_t2*, D_800F4BA4_t2*);
 void func_800BCFB4(D_800F4BA4_t2*);
-void func_800BC1CC(short, int);
+void returnToGameplayCamera(short facing, int zoom);
 int func_800BD2B8(MATRIX*);
 void func_800BD57C(func_800BD57C_t* arg0);
 int func_800BD610(void);
@@ -286,7 +286,7 @@ void func_800BDF6C(func_800BDF6C_unk180_t* arg0);
 void func_800BE180(void);
 void setCameraMomentum(int lookAt, int eye);
 void clearCameraMomentum(void);
-void sweepCameraToPlayerView(char side);
+void sweepCameraToSavedPlayerView(char side);
 void scaleCameraMoveDurationByDistance(short target);
 VECTOR* vectorAdd(VECTOR* arg0, VECTOR* arg1, VECTOR* arg2);
 VECTOR* vectorSubtract(VECTOR* arg0, VECTOR* arg1, VECTOR* arg2);
@@ -325,7 +325,7 @@ extern char D_800F4BA8;
 extern void* mpdClearedSection;
 extern u_short* scriptStrings;
 extern char switchValue;
-extern short D_800F4BB6;
+extern short cameraReturned;
 extern char D_800F4BB8;
 extern u_char effectCancelled;
 extern char* vibrationPatterns[];
@@ -3797,7 +3797,7 @@ int vs_battle_script_B7_specialOp(u_char* script, UNUSED short arg1)
         specialDiscardNextEvt = 6,
         specialSetCameraFollowsAshley = 7,
         specialPauseBattleTimer = 8,
-        specialSweepCameraToPlayerView = 9,
+        specialSweepCameraToSavedPlayerView = 9,
         specialSetCameraPitchPreset = 10,
         specialScaleCameraMoveDurationByDistance = 11,
         specialSetCloudstoneFreezeTimer = 12,
@@ -3871,8 +3871,8 @@ int vs_battle_script_B7_specialOp(u_char* script, UNUSED short arg1)
         pauseBattleTimer(script[2]);
         break;
 
-    case specialSweepCameraToPlayerView:
-        sweepCameraToPlayerView(script[2]);
+    case specialSweepCameraToSavedPlayerView:
+        sweepCameraToSavedPlayerView(script[2]);
         break;
 
     case specialSetCameraPitchPreset:
@@ -4004,11 +4004,21 @@ int vs_battle_script_E8_attachCameraToActor(u_char* script, UNUSED short arg1)
     return scriptNext;
 }
 
-int vs_battle_script_E9(u_char* arg0, UNUSED short arg1)
+/**
+ * Moves the camera back to the gameplay view of Ashley, optionally turning it to a new
+ * facing and zoom. To restore the view saved before the scene, see
+ * sweepCameraToSavedPlayerView (special opcode B7, sub-opcode 9).
+ * @param script Opcode bytes:
+ *   - [1] = facing of the camera in 45 degree steps, 0xFF = unchanged
+ *   - [2] = zoom, 1 = normal, 2 = zoomed out, 0 = unchanged
+ */
+int vs_battle_script_E9_returnToGameplayCamera(u_char* script, UNUSED short arg1)
 {
-    func_800BC1CC(
-        arg0[1] != 0xFF ? ((arg0[1] + 4) & 7) : -1, arg0[2] != 0 ? arg0[2] : -1);
-    D_800F4BB6 = 1;
+    returnToGameplayCamera(
+        script[1] != 0xFF ? ((script[1] + 4) & 7) : -1, script[2] != 0 ? script[2] : -1);
+
+    cameraReturned = 1;
+
     return scriptNext;
 }
 
@@ -4416,7 +4426,14 @@ static void applyCameraState(void)
     }
 }
 
-void func_800BC1CC(short arg0, int arg1)
+/**
+ * Moves the scripted camera to the gameplay camera's view of Ashley. The time taken
+ * depends on how far the camera has to go. Does nothing except stop following Ashley if
+ * the camera is following him.
+ * @param facing New facing of the gameplay camera, -1 = unchanged.
+ * @param zoom 1 = normal, 2 = zoomed out, -1 = unchanged.
+ */
+void returnToGameplayCamera(short facing, int zoom)
 {
     VECTOR sp10;
     VECTOR sp20;
@@ -4427,7 +4444,7 @@ void func_800BC1CC(short arg0, int arg1)
         cameraFollowsAshley = 0;
         return;
     }
-    initialiseCameraFromSpherical(&sp10, &sp20, arg0, (short)arg1);
+    initialiseCameraFromSpherical(&sp10, &sp20, facing, (short)zoom);
     vectorCopy(&D_800F4BA4->eye.position, &sp10);
     vectorCopy(&D_800F4BA4->lookAt.position, &sp20);
     temp_s0 = vectorMagnitude(vectorSubtract(
@@ -5289,7 +5306,7 @@ void clearCameraMomentum(void)
  * saved in state flags 0xAF and 0xB0), coming in from above and from one side.
  * @param side 0 or 1, which side the camera comes in from.
  */
-void sweepCameraToPlayerView(char side)
+void sweepCameraToSavedPlayerView(char side)
 {
     VECTOR sp10;
     VECTOR sp20;
@@ -5931,7 +5948,7 @@ void parseEvt(u_char* data)
     D_800F4BE4 = 0;
     scriptMenuState = scriptMenuClosed;
     scriptWarpState = scriptWarpIdle;
-    D_800F4BB6 = 0;
+    cameraReturned = 0;
     scriptWaitFrames[0] = 0;
     D_800F4C22 = 0;
 
@@ -6024,9 +6041,9 @@ int func_800BF850(void)
 
     if (D_800F4C22 == 0) {
         if (func_800BFBB8(D_800F4C38, 0) != 0) {
-            if (D_800F4BB6 == 0 && nextEvtQueued == 0
+            if (cameraReturned == 0 && nextEvtQueued == 0
                 && scriptWarpState == scriptWarpIdle) {
-                func_800BC1CC(-1, -1);
+                returnToGameplayCamera(-1, -1);
             }
 
             D_800F4C22 = 1;

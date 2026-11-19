@@ -181,7 +181,7 @@ void func_800DC574(func_800E78F4_t* arg0, int arg1)
 
         if (entry->unk4_5 != 0) {
             // Potential bug in original, needs investigating.
-            // The test of unk2B branches to the next instruction and the
+            // The original branches on unk2B but the
             // (unkC_19 + 76) / 2 it computes is overwritten, so the chance is unkC_19
             // capped at 76 either way.
             if (roll < MIN(entry->unkC_19, 76)) {
@@ -212,10 +212,9 @@ void func_800DC638(void)
     }
 
     // Potential bug in original, needs investigating.
-    // Both key tests shift and mask their key in place, so after its first use a key
-    // holds the last result and not the bits read from the cell. On the first cell,
-    // with its low half off, the first high key shift uses the address of points
-    // instead of 1.
+    // lowKey/highKey are overwritten inside the j loop below,
+    // so only the first use sees the key stored in the cell.
+    // original shifts this, not 1, on the first cell (likely unintended)
     held = (u_int)points;
 
     for (i = 0; i < 256; ++i) {

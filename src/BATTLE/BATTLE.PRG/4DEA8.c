@@ -71,14 +71,14 @@ enum {
 };
 
 typedef struct {
-    char unk0;
-    char unk1;
-    short unk2;
-    short unk4;
-    short unk6;
-    short unk8;
-    short unkA;
-} func_800BD57C_t;
+    char changed;
+    char ease;
+    short value;
+    short start;
+    short delta;
+    short elapsed;
+    short duration;
+} AngleTween;
 
 typedef struct {
     union {
@@ -129,8 +129,8 @@ typedef struct {
 typedef struct {
     CameraChannel lookAt;
     CameraChannel eye;
-    func_800BD57C_t unk168;
-    func_800BD57C_t unk174;
+    AngleTween roll;
+    AngleTween unk174;
     func_800BDF6C_unk180_t projectionDistance;
     func_800BDF6C_unk180_t nearClip;
     func_800BDF6C_unk180_t farClip;
@@ -309,7 +309,7 @@ static void stepCameraChannel(CameraChannel*, CameraChannel*);
 void func_800BCFB4(CameraChannel*);
 void returnToGameplayCamera(short facing, int zoom);
 int func_800BD2B8(MATRIX*);
-void func_800BD57C(func_800BD57C_t* arg0);
+static void stepAngleTween(AngleTween*);
 u_char getCameraIdleFlags(void);
 int func_800BDBB4(func_800BDBB4_t* arg0);
 void func_800BDF6C(func_800BDF6C_unk180_t* arg0);
@@ -4432,18 +4432,18 @@ void func_800BBBE8(void)
     scriptCamera->lookAt.carryMomentum = scriptCamera->lookAt.carrying = 0;
     scriptCamera->eye.mode = cameraModeIdle;
     scriptCamera->eye.carryMomentum = scriptCamera->eye.carrying = 0;
-    scriptCamera->unk168.unkA = 0;
-    scriptCamera->unk168.unk2 = 0;
-    scriptCamera->unk168.unk0 = 1;
+    scriptCamera->roll.duration = 0;
+    scriptCamera->roll.value = 0;
+    scriptCamera->roll.changed = 1;
 
     setFramebufferEffect(0);
 
-    scriptCamera->unk174.unkA = 0;
-    scriptCamera->unk174.unk2 = 0;
+    scriptCamera->unk174.duration = 0;
+    scriptCamera->unk174.value = 0;
 
     func_8007DDAC(0);
 
-    scriptCamera->unk174.unk0 = 1;
+    scriptCamera->unk174.changed = 1;
     scriptCamera->unk1FC.unk4 = ONE;
     scriptCamera->unk1FC.unk2 = ONE;
 
@@ -4557,13 +4557,13 @@ static void applyCameraState(void)
     }
     setCameraLookAt(&cameraLookAt);
     setCameraPosition(&cameraPos);
-    if (scriptCamera->unk168.unk0 != 0) {
-        setCameraRoll(scriptCamera->unk168.unk2);
-        scriptCamera->unk168.unk0 = 0;
+    if (scriptCamera->roll.changed != 0) {
+        setCameraRoll(scriptCamera->roll.value);
+        scriptCamera->roll.changed = 0;
     }
-    if (scriptCamera->unk174.unk0 != 0) {
-        func_8007DDAC(scriptCamera->unk174.unk2);
-        scriptCamera->unk174.unk0 = 0;
+    if (scriptCamera->unk174.changed != 0) {
+        func_8007DDAC(scriptCamera->unk174.value);
+        scriptCamera->unk174.changed = 0;
     }
     if (scriptCamera->projectionDistance.unk0 != 0) {
         vs_battle_setProjectionDistance(scriptCamera->projectionDistance.unk2);
@@ -4905,8 +4905,8 @@ static void updateCamera(void)
 
     stepCameraChannel(&scriptCamera->lookAt, &scriptCamera->eye);
     stepCameraChannel(&scriptCamera->eye, &scriptCamera->lookAt);
-    func_800BD57C(&scriptCamera->unk168);
-    func_800BD57C(&scriptCamera->unk174);
+    stepAngleTween(&scriptCamera->roll);
+    stepAngleTween(&scriptCamera->unk174);
     func_800BDF6C(&scriptCamera->projectionDistance);
     func_800BDF6C(&scriptCamera->nearClip);
     func_800BDF6C(&scriptCamera->farClip);
@@ -5175,64 +5175,69 @@ int func_800BD2B8(MATRIX* arg0)
 
 int vs_battle_script_E2_E3_camera(u_char* arg0, UNUSED short arg1)
 {
-    func_800BD57C_t* var_s0;
+    AngleTween* var_s0;
 
     switch (arg0[0]) {
     case 0xE2:
-        var_s0 = &scriptCamera->unk168;
+        var_s0 = &scriptCamera->roll;
         break;
     case 0xE3:
         var_s0 = &scriptCamera->unk174;
         break;
     }
 
-    var_s0->unkA = arg0[4];
+    var_s0->duration = arg0[4];
 
-    if (var_s0->unkA == 0) {
-        var_s0->unk2 = getShort(arg0 + 1);
-        var_s0->unk0 = 1;
+    if (var_s0->duration == 0) {
+        var_s0->value = getShort(arg0 + 1);
+        var_s0->changed = 1;
     } else {
-        var_s0->unk4 = var_s0->unk2;
-        var_s0->unk6 = getShort(arg0 + 1) - var_s0->unk2;
-        if (var_s0->unk6 < -(ONE / 2)) {
-            var_s0->unk6 += ONE;
-        } else if (var_s0->unk6 > (ONE / 2)) {
-            var_s0->unk6 -= ONE;
+        var_s0->start = var_s0->value;
+        var_s0->delta = getShort(arg0 + 1) - var_s0->value;
+        if (var_s0->delta < -(ONE / 2)) {
+            var_s0->delta += ONE;
+        } else if (var_s0->delta > (ONE / 2)) {
+            var_s0->delta -= ONE;
         }
 
         switch (arg0[3] >> 4) {
         case 0:
-            if (var_s0->unk6 > 0) {
-                var_s0->unk6 -= ONE;
+            if (var_s0->delta > 0) {
+                var_s0->delta -= ONE;
             }
             break;
         case 2:
-            if (var_s0->unk6 < 0) {
-                var_s0->unk6 += ONE;
+            if (var_s0->delta < 0) {
+                var_s0->delta += ONE;
             }
             break;
         }
 
-        var_s0->unk1 = arg0[3] & 0xF;
-        var_s0->unk8 = 0;
+        var_s0->ease = arg0[3] & 0xF;
+        var_s0->elapsed = 0;
     }
     return scriptNext;
 }
 
-void func_800BD57C(func_800BD57C_t* arg0)
+/** Steps an angle tween by one frame. */
+static void stepAngleTween(AngleTween* tween)
 {
-    if (arg0->unkA > 0) {
-        arg0->unk8 += vs_gametime_vblanksPerFrame >> 1;
-
-        arg0->unk2 = (arg0->unk4
-                      + ((arg0->unk6 * func_800BFEBC(arg0->unk1, arg0->unk8, arg0->unkA))
-                          >> 0xC));
-
-        if (arg0->unk8 >= arg0->unkA) {
-            arg0->unkA = 0;
-        }
-        arg0->unk0 = 1;
+    if (tween->duration <= 0) {
+        return;
     }
+
+    tween->elapsed += vs_gametime_vblanksPerFrame >> 1;
+
+    tween->value =
+        tween->start
+        + ((tween->delta * func_800BFEBC(tween->ease, tween->elapsed, tween->duration))
+            >> 0xC);
+
+    if (tween->elapsed >= tween->duration) {
+        tween->duration = 0;
+    }
+
+    tween->changed = 1;
 }
 
 /**
@@ -5248,7 +5253,7 @@ u_char getCameraIdleFlags(void)
     if (scriptCamera->eye.mode == cameraModeIdle) {
         temp_a2 = temp_a2 | 2;
     }
-    if (scriptCamera->unk168.unkA == 0) {
+    if (scriptCamera->roll.duration == 0) {
         temp_a2 |= 4;
     }
     if (scriptCamera->projectionDistance.unk9 == 0) {

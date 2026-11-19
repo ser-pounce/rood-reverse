@@ -59,7 +59,6 @@ typedef struct {
 
 void func_800E5EC0(int, int, int);
 void func_800E72D0(void);
-void func_800E7370(func_800E78F4_t*);
 void func_800E7660(func_800E78F4_t*);
 
 extern D_800F16EC_t D_800F16EC[8];
@@ -68,7 +67,6 @@ extern u_short D_800F17B8[][2];
 extern u_short D_800F17C8[][2];
 extern u_char D_800F17D8[];
 extern u_short (*D_800F58B8)[32];
-extern int D_800F58C0;
 extern int D_800F590C;
 
 int func_800E5568(func_800E5568_t* arg0)

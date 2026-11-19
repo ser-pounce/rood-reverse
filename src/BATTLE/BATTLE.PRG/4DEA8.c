@@ -144,7 +144,7 @@ typedef struct {
     func_800BDBB4_t unk23C;
     func_800BDBB4_t unk25C;
     VECTOR unk27C;
-} D_800F4BA4_t;
+} ScriptCamera;
 
 typedef struct {
     u_int visible : 1;
@@ -339,7 +339,7 @@ extern GimTween gimTweens[];
 extern ParticleTween particleTween;
 extern char D_800F4B8B;
 extern char cameraFollowsAshley;
-extern D_800F4BA4_t* D_800F4BA4;
+extern ScriptCamera* scriptCamera;
 extern char D_800F4BA8;
 extern void* mpdClearedSection;
 extern u_short* scriptStrings;
@@ -4407,69 +4407,69 @@ void func_800BBBE8(void)
     VECTOR sp20;
     VECTOR sp30;
 
-    D_800F4BA4 = vs_main_allocHeapR(sizeof *D_800F4BA4);
+    scriptCamera = vs_main_allocHeapR(sizeof *scriptCamera);
     cameraFollowsAshley = 0;
 
     getCameraPosition(&sp20);
     getCameraLookAt(&sp30);
-    vectorCopy(&D_800F4BA4->eye.current, &sp20);
-    vectorCopy(&D_800F4BA4->lookAt.otherPosition, &sp20);
-    vectorCopy(&D_800F4BA4->lookAt.current, &sp30);
-    vectorCopy(&D_800F4BA4->eye.otherPosition, &sp30);
+    vectorCopy(&scriptCamera->eye.current, &sp20);
+    vectorCopy(&scriptCamera->lookAt.otherPosition, &sp20);
+    vectorCopy(&scriptCamera->lookAt.current, &sp30);
+    vectorCopy(&scriptCamera->eye.otherPosition, &sp30);
 
-    D_800F4BA4->lookAt.mode = 0xF;
-    D_800F4BA4->lookAt.carryMomentum = D_800F4BA4->lookAt.carrying = 0;
-    D_800F4BA4->eye.mode = 0xF;
-    D_800F4BA4->eye.carryMomentum = D_800F4BA4->eye.carrying = 0;
-    D_800F4BA4->unk168.unkA = 0;
-    D_800F4BA4->unk168.unk2 = 0;
-    D_800F4BA4->unk168.unk0 = 1;
+    scriptCamera->lookAt.mode = 0xF;
+    scriptCamera->lookAt.carryMomentum = scriptCamera->lookAt.carrying = 0;
+    scriptCamera->eye.mode = 0xF;
+    scriptCamera->eye.carryMomentum = scriptCamera->eye.carrying = 0;
+    scriptCamera->unk168.unkA = 0;
+    scriptCamera->unk168.unk2 = 0;
+    scriptCamera->unk168.unk0 = 1;
 
     setFramebufferEffect(0);
 
-    D_800F4BA4->unk174.unkA = 0;
-    D_800F4BA4->unk174.unk2 = 0;
+    scriptCamera->unk174.unkA = 0;
+    scriptCamera->unk174.unk2 = 0;
 
     func_8007DDAC(0);
 
-    D_800F4BA4->unk174.unk0 = 1;
-    D_800F4BA4->unk1FC.unk4 = ONE;
-    D_800F4BA4->unk1FC.unk2 = ONE;
+    scriptCamera->unk174.unk0 = 1;
+    scriptCamera->unk1FC.unk4 = ONE;
+    scriptCamera->unk1FC.unk2 = ONE;
 
     func_8007DDB8(&D_800E9C0C);
 
-    D_800F4BA4->unk21C.unk2 = D_800F4BA4->unk21C.unk4 = D_800F4BA4->unk21C.unk6 =
-        D_800F4BA4->unk1FC.unk1E = 0;
+    scriptCamera->unk21C.unk2 = scriptCamera->unk21C.unk4 = scriptCamera->unk21C.unk6 =
+        scriptCamera->unk1FC.unk1E = 0;
 
     func_8007DDD4(&D_800E9C08);
 
-    D_800F4BA4->unk21C.unk1E = 0;
-    D_800F4BA4->unk23C.unk4 = ONE;
-    D_800F4BA4->unk23C.unk2 = ONE;
+    scriptCamera->unk21C.unk1E = 0;
+    scriptCamera->unk23C.unk4 = ONE;
+    scriptCamera->unk23C.unk2 = ONE;
 
     func_8007DDF8(&D_800E9C0C);
 
-    D_800F4BA4->unk23C.unk1E = 0;
+    scriptCamera->unk23C.unk1E = 0;
 
     func_8007DE2C(1);
 
-    D_800F4BA4->unk25C.unk2 = ONE;
-    D_800F4BA4->unk25C.unk1E = D_800F4BA4->unk25C.unk4 = 0;
-    D_800F4BA4->projectionDistance.unk2 = 0x200;
-    D_800F4BA4->projectionDistance.unk9 = 0;
-    D_800F4BA4->projectionDistance.unk0 = 1;
-    D_800F4BA4->nearClip.unk2 = 0x40;
-    D_800F4BA4->nearClip.unk9 = 0;
-    D_800F4BA4->nearClip.unk0 = 1;
-    D_800F4BA4->farClip.unk2 = 0x1000;
-    D_800F4BA4->farClip.unk9 = 0;
-    D_800F4BA4->farClip.unk0 = 1;
-    D_800F4BA4->unk1A4.unk0.s16 = 0;
-    D_800F4BA4->unk1A4.unkB = D_800F4BA4->unk1B0.unkB = 0;
-    D_800F4BA4->attachedActor = 0x2000;
+    scriptCamera->unk25C.unk2 = ONE;
+    scriptCamera->unk25C.unk1E = scriptCamera->unk25C.unk4 = 0;
+    scriptCamera->projectionDistance.unk2 = 0x200;
+    scriptCamera->projectionDistance.unk9 = 0;
+    scriptCamera->projectionDistance.unk0 = 1;
+    scriptCamera->nearClip.unk2 = 0x40;
+    scriptCamera->nearClip.unk9 = 0;
+    scriptCamera->nearClip.unk0 = 1;
+    scriptCamera->farClip.unk2 = 0x1000;
+    scriptCamera->farClip.unk9 = 0;
+    scriptCamera->farClip.unk0 = 1;
+    scriptCamera->unk1A4.unk0.s16 = 0;
+    scriptCamera->unk1A4.unkB = scriptCamera->unk1B0.unkB = 0;
+    scriptCamera->attachedActor = 0x2000;
 }
 
-void func_800BBDDC(void) { vs_main_freeHeapR(D_800F4BA4); }
+void func_800BBDDC(void) { vs_main_freeHeapR(scriptCamera); }
 
 /**
  * Makes the scripted camera follow Ashley with the gameplay camera's view, until the
@@ -4486,14 +4486,14 @@ void attachCameraToActor(u_short actor)
 {
     int _[4];
     if (actor == 0x2000) {
-        if (D_800F4BA4->attachedActor != actor) {
-            vectorAdd(&D_800F4BA4->eye.current, &D_800F4BA4->eye.current,
-                &D_800F4BA4->attachedPosition);
-            vectorAdd(&D_800F4BA4->lookAt.current, &D_800F4BA4->lookAt.current,
-                &D_800F4BA4->attachedPosition);
+        if (scriptCamera->attachedActor != actor) {
+            vectorAdd(&scriptCamera->eye.current, &scriptCamera->eye.current,
+                &scriptCamera->attachedPosition);
+            vectorAdd(&scriptCamera->lookAt.current, &scriptCamera->lookAt.current,
+                &scriptCamera->attachedPosition);
         }
     }
-    D_800F4BA4->attachedActor = actor;
+    scriptCamera->attachedActor = actor;
     updateCameraAttachment();
 }
 
@@ -4502,16 +4502,16 @@ void updateCameraAttachment(void)
 {
     vs_ActorPosition sp10;
 
-    if (D_800F4BA4->attachedActor == 0x2000) {
-        D_800F4BA4->attachedPosition.vz = 0;
-        D_800F4BA4->attachedPosition.vy = 0;
-        D_800F4BA4->attachedPosition.vx = 0;
+    if (scriptCamera->attachedActor == 0x2000) {
+        scriptCamera->attachedPosition.vz = 0;
+        scriptCamera->attachedPosition.vy = 0;
+        scriptCamera->attachedPosition.vx = 0;
         return;
     }
-    vs_battle_getActorPosition(D_800F4BA4->attachedActor, &sp10);
-    D_800F4BA4->attachedPosition.vx = sp10.unk0.unk4.vx * ONE;
-    D_800F4BA4->attachedPosition.vy = sp10.unk0.unk4.vy * ONE;
-    D_800F4BA4->attachedPosition.vz = sp10.unk0.unk4.vz * ONE;
+    vs_battle_getActorPosition(scriptCamera->attachedActor, &sp10);
+    scriptCamera->attachedPosition.vx = sp10.unk0.unk4.vx * ONE;
+    scriptCamera->attachedPosition.vy = sp10.unk0.unk4.vy * ONE;
+    scriptCamera->attachedPosition.vz = sp10.unk0.unk4.vz * ONE;
 }
 
 static void applyCameraState(void)
@@ -4521,19 +4521,19 @@ static void applyCameraState(void)
 
     if (cameraFollowsAshley != 0) {
         initialiseCameraFromSpherical(&cameraPos, &cameraLookAt, -1, -1);
-        vectorCopy(&D_800F4BA4->lookAt.current, &cameraLookAt);
-        vectorCopy(&D_800F4BA4->eye.current, &cameraPos);
+        vectorCopy(&scriptCamera->lookAt.current, &cameraLookAt);
+        vectorCopy(&scriptCamera->eye.current, &cameraPos);
     } else {
-        vectorCopy(&cameraLookAt, &D_800F4BA4->lookAt.current);
-        vectorCopy(&cameraPos, &D_800F4BA4->eye.current);
-        if (D_800F4BA4->attachedActor != 0x2000) {
-            vectorAdd(&cameraLookAt, &cameraLookAt, &D_800F4BA4->attachedPosition);
-            vectorAdd(&cameraPos, &cameraPos, &D_800F4BA4->attachedPosition);
+        vectorCopy(&cameraLookAt, &scriptCamera->lookAt.current);
+        vectorCopy(&cameraPos, &scriptCamera->eye.current);
+        if (scriptCamera->attachedActor != 0x2000) {
+            vectorAdd(&cameraLookAt, &cameraLookAt, &scriptCamera->attachedPosition);
+            vectorAdd(&cameraPos, &cameraPos, &scriptCamera->attachedPosition);
         }
     }
-    if (*(short*)&D_800F4BA4->unk1A4.unk0 != 0) {
-        sVectorToFixedPointVector(&CAMERA_SCRATCH->v1, (SVECTOR*)&D_800F4BA4->unk1BE);
-        sVectorToFixedPointVector(&CAMERA_SCRATCH->v2, (SVECTOR*)&D_800F4BA4->unk1C6);
+    if (*(short*)&scriptCamera->unk1A4.unk0 != 0) {
+        sVectorToFixedPointVector(&CAMERA_SCRATCH->v1, (SVECTOR*)&scriptCamera->unk1BE);
+        sVectorToFixedPointVector(&CAMERA_SCRATCH->v2, (SVECTOR*)&scriptCamera->unk1C6);
         CAMERA_SCRATCH->rotation.vz = 0;
         CAMERA_SCRATCH->rotation.vx = 0;
         CAMERA_SCRATCH->rotation.vy = atan2FixedPoint(
@@ -4546,25 +4546,25 @@ static void applyCameraState(void)
     }
     setCameraLookAt(&cameraLookAt);
     setCameraPosition(&cameraPos);
-    if (D_800F4BA4->unk168.unk0 != 0) {
-        setCameraRoll(D_800F4BA4->unk168.unk2);
-        D_800F4BA4->unk168.unk0 = 0;
+    if (scriptCamera->unk168.unk0 != 0) {
+        setCameraRoll(scriptCamera->unk168.unk2);
+        scriptCamera->unk168.unk0 = 0;
     }
-    if (D_800F4BA4->unk174.unk0 != 0) {
-        func_8007DDAC(D_800F4BA4->unk174.unk2);
-        D_800F4BA4->unk174.unk0 = 0;
+    if (scriptCamera->unk174.unk0 != 0) {
+        func_8007DDAC(scriptCamera->unk174.unk2);
+        scriptCamera->unk174.unk0 = 0;
     }
-    if (D_800F4BA4->projectionDistance.unk0 != 0) {
-        vs_battle_setProjectionDistance(D_800F4BA4->projectionDistance.unk2);
-        D_800F4BA4->projectionDistance.unk0 = 0;
+    if (scriptCamera->projectionDistance.unk0 != 0) {
+        vs_battle_setProjectionDistance(scriptCamera->projectionDistance.unk2);
+        scriptCamera->projectionDistance.unk0 = 0;
     }
-    if (D_800F4BA4->nearClip.unk0 != 0) {
-        setNearClip(D_800F4BA4->nearClip.unk2);
-        D_800F4BA4->nearClip.unk0 = 0;
+    if (scriptCamera->nearClip.unk0 != 0) {
+        setNearClip(scriptCamera->nearClip.unk2);
+        scriptCamera->nearClip.unk0 = 0;
     }
-    if (D_800F4BA4->farClip.unk0 != 0) {
-        setFarClip(D_800F4BA4->farClip.unk2, fogDepthOverridden);
-        D_800F4BA4->farClip.unk0 = 0;
+    if (scriptCamera->farClip.unk0 != 0) {
+        setFarClip(scriptCamera->farClip.unk2, fogDepthOverridden);
+        scriptCamera->farClip.unk0 = 0;
     }
 }
 
@@ -4587,13 +4587,13 @@ void returnToGameplayCamera(short facing, int zoom)
         return;
     }
     initialiseCameraFromSpherical(&sp10, &sp20, facing, (short)zoom);
-    vectorCopy(&D_800F4BA4->eye.position, &sp10);
-    vectorCopy(&D_800F4BA4->lookAt.position, &sp20);
+    vectorCopy(&scriptCamera->eye.position, &sp10);
+    vectorCopy(&scriptCamera->lookAt.position, &sp20);
     temp_s0 = vectorMagnitude(vectorSubtract(
-        &CAMERA_SCRATCH->v1, &D_800F4BA4->eye.current, &D_800F4BA4->eye.position));
+        &CAMERA_SCRATCH->v1, &scriptCamera->eye.current, &scriptCamera->eye.position));
     temp_v0 = (temp_s0
                   + vectorMagnitude(vectorSubtract(&CAMERA_SCRATCH->v1,
-                      &D_800F4BA4->lookAt.current, &D_800F4BA4->lookAt.position)))
+                      &scriptCamera->lookAt.current, &scriptCamera->lookAt.position)))
             / 0x28000;
     if ((temp_v0 << 0x10) != 0) {
         D_800E9C1C[2] = D_800E9C1C[6] = temp_v0;
@@ -4656,11 +4656,11 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
     CameraChannel* otherChannel;
 
     if (!(script[0] & 16)) {
-        channel = &D_800F4BA4->lookAt;
-        otherChannel = &D_800F4BA4->eye;
+        channel = &scriptCamera->lookAt;
+        otherChannel = &scriptCamera->eye;
     } else {
-        channel = &D_800F4BA4->eye;
-        otherChannel = &D_800F4BA4->lookAt;
+        channel = &scriptCamera->eye;
+        otherChannel = &scriptCamera->lookAt;
     }
 
     switch (script[0] & 15) {
@@ -4800,9 +4800,9 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
         setVectorImm(&CAMERA_SCRATCH->v2, script + 4);
         vectorAdd(&channel->position, &CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v2);
 
-        if (D_800F4BA4->attachedActor != 0x2000) {
+        if (scriptCamera->attachedActor != 0x2000) {
             vectorSubtract(
-                &channel->position, &channel->position, &D_800F4BA4->attachedPosition);
+                &channel->position, &channel->position, &scriptCamera->attachedPosition);
         }
 
         return scriptNext;
@@ -4833,11 +4833,11 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
         CameraScratch* s = CAMERA_SCRATCH;
         s->value = id;
 
-        vs_battle_getActorPosition(id, &D_800F4BA4->unk1D0);
+        vs_battle_getActorPosition(id, &scriptCamera->unk1D0);
 
         s->rotation2.vz = 0;
         s->rotation2.vx = 0;
-        s->rotation2.vy = D_800F4BA4->unk1D0.unk0.unk4.pad;
+        s->rotation2.vy = scriptCamera->unk1D0.unk0.unk4.pad;
 
         RotMatrix_gte(&CAMERA_SCRATCH->rotation2, &CAMERA_SCRATCH->matrix);
         setVectorImm(&CAMERA_SCRATCH->v1, script + 4);
@@ -4848,9 +4848,9 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
             sVectorToFixedPointVector(&CAMERA_SCRATCH->v2, &CAMERA_SCRATCH->rotation2),
             &CAMERA_SCRATCH->v1);
 
-        if (D_800F4BA4->attachedActor != 0x2000) {
+        if (scriptCamera->attachedActor != 0x2000) {
             vectorSubtract(
-                &channel->position, &channel->position, &D_800F4BA4->attachedPosition);
+                &channel->position, &channel->position, &scriptCamera->attachedPosition);
         }
 
         return scriptNext;
@@ -4879,7 +4879,7 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
         channel->delta = vectorMagnitude(
             vectorSubtract(&CAMERA_SCRATCH->v1, &channel->position, &channel->computed));
         channel->value = channel->delta / script[2];
-        D_800F4BA4->unk27C.vx = D_800F4BA4->unk27C.vy = D_800F4BA4->unk27C.vz =
+        scriptCamera->unk27C.vx = scriptCamera->unk27C.vy = scriptCamera->unk27C.vz =
             0x80000000;
 
         return scriptNext;
@@ -4887,21 +4887,23 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
     }
 }
 
-void func_800BC9E0(void)
+/** Advances the camera by one frame. */
+static void updateCamera(void)
 {
-    D_800F4BA4->eye.otherPosition.vx = D_800F4BA4->lookAt.current.vx;
-    D_800F4BA4->eye.otherPosition.vy = D_800F4BA4->lookAt.current.vy;
-    D_800F4BA4->eye.otherPosition.vz = D_800F4BA4->lookAt.current.vz;
-    D_800F4BA4->lookAt.otherPosition.vx = D_800F4BA4->eye.current.vx;
-    D_800F4BA4->lookAt.otherPosition.vy = D_800F4BA4->eye.current.vy;
-    D_800F4BA4->lookAt.otherPosition.vz = D_800F4BA4->eye.current.vz;
-    func_800BCA8C(&D_800F4BA4->lookAt, &D_800F4BA4->eye);
-    func_800BCA8C(&D_800F4BA4->eye, &D_800F4BA4->lookAt);
-    func_800BD57C(&D_800F4BA4->unk168);
-    func_800BD57C(&D_800F4BA4->unk174);
-    func_800BDF6C(&D_800F4BA4->projectionDistance);
-    func_800BDF6C(&D_800F4BA4->nearClip);
-    func_800BDF6C(&D_800F4BA4->farClip);
+    scriptCamera->eye.otherPosition.vx = scriptCamera->lookAt.current.vx;
+    scriptCamera->eye.otherPosition.vy = scriptCamera->lookAt.current.vy;
+    scriptCamera->eye.otherPosition.vz = scriptCamera->lookAt.current.vz;
+    scriptCamera->lookAt.otherPosition.vx = scriptCamera->eye.current.vx;
+    scriptCamera->lookAt.otherPosition.vy = scriptCamera->eye.current.vy;
+    scriptCamera->lookAt.otherPosition.vz = scriptCamera->eye.current.vz;
+
+    func_800BCA8C(&scriptCamera->lookAt, &scriptCamera->eye);
+    func_800BCA8C(&scriptCamera->eye, &scriptCamera->lookAt);
+    func_800BD57C(&scriptCamera->unk168);
+    func_800BD57C(&scriptCamera->unk174);
+    func_800BDF6C(&scriptCamera->projectionDistance);
+    func_800BDF6C(&scriptCamera->nearClip);
+    func_800BDF6C(&scriptCamera->farClip);
     func_800BE180();
 }
 
@@ -5066,12 +5068,12 @@ void func_800BCFB4(CameraChannel* c)
     vectorAdd(
         &CAMERA_MOTION_SCRATCH->candidate, &CAMERA_MOTION_SCRATCH->delta, &c->computed);
     finalScratch = CAMERA_MOTION_SCRATCH;
-    if (finalScratch->candidate.vx == D_800F4BA4->unk27C.vx
-        && finalScratch->candidate.vy == D_800F4BA4->unk27C.vy
-        && finalScratch->candidate.vz == D_800F4BA4->unk27C.vz) {
+    if (finalScratch->candidate.vx == scriptCamera->unk27C.vx
+        && finalScratch->candidate.vy == scriptCamera->unk27C.vy
+        && finalScratch->candidate.vz == scriptCamera->unk27C.vz) {
         c->time = c->duration;
     } else {
-        vectorCopy(&D_800F4BA4->unk27C, &c->computed);
+        vectorCopy(&scriptCamera->unk27C, &c->computed);
         vectorCopy(&c->computed, &CAMERA_MOTION_SCRATCH->candidate);
     }
 }
@@ -5127,10 +5129,10 @@ int vs_battle_script_E2_E3_camera(u_char* arg0, UNUSED short arg1)
 
     switch (arg0[0]) {
     case 0xE2:
-        var_s0 = &D_800F4BA4->unk168;
+        var_s0 = &scriptCamera->unk168;
         break;
     case 0xE3:
-        var_s0 = &D_800F4BA4->unk174;
+        var_s0 = &scriptCamera->unk174;
         break;
     }
 
@@ -5191,27 +5193,27 @@ void func_800BD57C(func_800BD57C_t* arg0)
  */
 u_char getCameraIdleFlags(void)
 {
-    u_char temp_a2 = D_800F4BA4->lookAt.mode == 0xF;
+    u_char temp_a2 = scriptCamera->lookAt.mode == 0xF;
 
-    if (D_800F4BA4->eye.mode == 0xF) {
+    if (scriptCamera->eye.mode == 0xF) {
         temp_a2 = temp_a2 | 2;
     }
-    if (D_800F4BA4->unk168.unkA == 0) {
+    if (scriptCamera->unk168.unkA == 0) {
         temp_a2 |= 4;
     }
-    if (D_800F4BA4->projectionDistance.unk9 == 0) {
+    if (scriptCamera->projectionDistance.unk9 == 0) {
         temp_a2 |= 8;
     }
-    if (D_800F4BA4->nearClip.unk9 == 0) {
+    if (scriptCamera->nearClip.unk9 == 0) {
         temp_a2 |= 0x10;
     }
-    if (D_800F4BA4->farClip.unk9 == 0) {
+    if (scriptCamera->farClip.unk9 == 0) {
         temp_a2 |= 0x20;
     }
-    if (D_800F4BA4->unk25C.unk1E == 0) {
+    if (scriptCamera->unk25C.unk1E == 0) {
         temp_a2 |= 0x40;
     }
-    if ((D_800F4BA4->unk1A4.unkB + D_800F4BA4->unk1B0.unkB) == 0) {
+    if ((scriptCamera->unk1A4.unkB + scriptCamera->unk1B0.unkB) == 0) {
         temp_a2 |= 0x80;
     }
     return temp_a2;
@@ -5233,53 +5235,56 @@ int vs_battle_script_B9_BA_BF_E4_E5_E6_E7_ED(u_char* script, UNUSED short arg1)
         return scriptNext;
 
     case 228:
-        D_800F4BA4->unk1FC.unk1E = script[4];
-        if (D_800F4BA4->unk1FC.unk1E == 0) {
+        scriptCamera->unk1FC.unk1E = script[4];
+        if (scriptCamera->unk1FC.unk1E == 0) {
             values.vx = (script[1] << 7);
             values.vy = (script[2] << 7);
             func_8007DDB8(&values);
         } else {
-            D_800F4BA4->unk1FC.unk1C = 0;
+            scriptCamera->unk1FC.unk1C = 0;
             func_8007DE88(&values);
-            D_800F4BA4->unk1FC.unk12 =
-                (script[1] << 7) - (D_800F4BA4->unk1FC.unkA = values.vx);
-            D_800F4BA4->unk1FC.unk14 =
-                (script[2] << 7) - (D_800F4BA4->unk1FC.unkC = values.vy);
-            D_800F4BA4->unk1FC.unk1 = script[3];
+            scriptCamera->unk1FC.unk12 =
+                (script[1] << 7) - (scriptCamera->unk1FC.unkA = values.vx);
+            scriptCamera->unk1FC.unk14 =
+                (script[2] << 7) - (scriptCamera->unk1FC.unkC = values.vy);
+            scriptCamera->unk1FC.unk1 = script[3];
         }
         return scriptNext;
 
     case 229:
-        D_800F4BA4->unk21C.unk1E = script[5];
-        if (D_800F4BA4->unk21C.unk1E == 0) {
+        scriptCamera->unk21C.unk1E = script[5];
+        if (scriptCamera->unk21C.unk1E == 0) {
             color.r = script[1];
             color.g = script[2];
             color.b = script[3];
             func_8007DDD4(&color);
         } else {
-            D_800F4BA4->unk21C.unk1C = 0;
+            scriptCamera->unk21C.unk1C = 0;
             func_8007DEA8(&color);
-            D_800F4BA4->unk21C.unk12 = script[1] - (D_800F4BA4->unk21C.unkA = color.r);
-            D_800F4BA4->unk21C.unk14 = script[2] - (D_800F4BA4->unk21C.unkC = color.g);
-            D_800F4BA4->unk21C.unk16 = script[3] - (D_800F4BA4->unk21C.unkE = color.b);
-            D_800F4BA4->unk21C.unk1 = script[4];
+            scriptCamera->unk21C.unk12 =
+                script[1] - (scriptCamera->unk21C.unkA = color.r);
+            scriptCamera->unk21C.unk14 =
+                script[2] - (scriptCamera->unk21C.unkC = color.g);
+            scriptCamera->unk21C.unk16 =
+                script[3] - (scriptCamera->unk21C.unkE = color.b);
+            scriptCamera->unk21C.unk1 = script[4];
         }
         return scriptNext;
 
     case 230:
-        D_800F4BA4->unk23C.unk1E = script[4];
-        if (D_800F4BA4->unk23C.unk1E == 0) {
+        scriptCamera->unk23C.unk1E = script[4];
+        if (scriptCamera->unk23C.unk1E == 0) {
             values.vx = (signed char)script[1];
             values.vy = (signed char)script[2];
             func_8007DDF8(&values);
         } else {
-            D_800F4BA4->unk23C.unk1C = 0;
+            scriptCamera->unk23C.unk1C = 0;
             func_8007DECC(&values);
-            D_800F4BA4->unk23C.unk12 =
-                (signed char)script[1] - (D_800F4BA4->unk23C.unkA = values.vx);
-            D_800F4BA4->unk23C.unk14 =
-                (signed char)script[2] - (D_800F4BA4->unk23C.unkC = values.vy);
-            D_800F4BA4->unk23C.unk1 = script[3];
+            scriptCamera->unk23C.unk12 =
+                (signed char)script[1] - (scriptCamera->unk23C.unkA = values.vx);
+            scriptCamera->unk23C.unk14 =
+                (signed char)script[2] - (scriptCamera->unk23C.unkC = values.vy);
+            scriptCamera->unk23C.unk1 = script[3];
         }
         return scriptNext;
 
@@ -5290,23 +5295,24 @@ int vs_battle_script_B9_BA_BF_E4_E5_E6_E7_ED(u_char* script, UNUSED short arg1)
     // [1] = zoom (<< 6), [2] = distortion (signed), [3] = tween type, [4] = tween
     // duration, 0 = immediate. See setScreenLensDistortion.
     case 237:
-        if (D_800F4BA4->unk25C.unk1E > 0) {
+        if (scriptCamera->unk25C.unk1E > 0) {
             return scriptRepeat;
         }
 
-        D_800F4BA4->unk25C.unk1E = script[4];
-        if (D_800F4BA4->unk25C.unk1E == 0) {
-            D_800F4BA4->unk25C.unk2 = effectValue = script[1] << 6;
-            D_800F4BA4->unk25C.unk4 = (signed char)script[2];
-            setScreenLensDistortion(effectValue, D_800F4BA4->unk25C.unk4);
+        scriptCamera->unk25C.unk1E = script[4];
+        if (scriptCamera->unk25C.unk1E == 0) {
+            scriptCamera->unk25C.unk2 = effectValue = script[1] << 6;
+            scriptCamera->unk25C.unk4 = (signed char)script[2];
+            setScreenLensDistortion(effectValue, scriptCamera->unk25C.unk4);
         } else {
-            D_800F4BA4->unk25C.unk1C = 0;
-            D_800F4BA4->unk25C.unk12 =
-                (script[1] << 6) - (D_800F4BA4->unk25C.unkA = D_800F4BA4->unk25C.unk2);
-            D_800F4BA4->unk25C.unk14 =
+            scriptCamera->unk25C.unk1C = 0;
+            scriptCamera->unk25C.unk12 =
+                (script[1] << 6)
+                - (scriptCamera->unk25C.unkA = scriptCamera->unk25C.unk2);
+            scriptCamera->unk25C.unk14 =
                 (signed char)script[2]
-                - (D_800F4BA4->unk25C.unkC = D_800F4BA4->unk25C.unk4);
-            D_800F4BA4->unk25C.unk1 = script[3];
+                - (scriptCamera->unk25C.unkC = scriptCamera->unk25C.unk4);
+            scriptCamera->unk25C.unk1 = script[3];
         }
         return scriptNext;
 
@@ -5345,24 +5351,24 @@ void func_800BDAB4(void)
     VECTOR sp10;
     CVECTOR sp20;
 
-    if (func_800BDBB4(&D_800F4BA4->unk1FC) != 0) {
-        sp10.vx = D_800F4BA4->unk1FC.unk2;
-        sp10.vy = D_800F4BA4->unk1FC.unk4;
+    if (func_800BDBB4(&scriptCamera->unk1FC) != 0) {
+        sp10.vx = scriptCamera->unk1FC.unk2;
+        sp10.vy = scriptCamera->unk1FC.unk4;
         func_8007DDB8(&sp10);
     }
-    if (func_800BDBB4(&D_800F4BA4->unk21C) != 0) {
-        sp20.r = D_800F4BA4->unk21C.unk2;
-        sp20.g = D_800F4BA4->unk21C.unk4;
-        sp20.b = D_800F4BA4->unk21C.unk6;
+    if (func_800BDBB4(&scriptCamera->unk21C) != 0) {
+        sp20.r = scriptCamera->unk21C.unk2;
+        sp20.g = scriptCamera->unk21C.unk4;
+        sp20.b = scriptCamera->unk21C.unk6;
         func_8007DDD4(&sp20);
     }
-    if (func_800BDBB4(&D_800F4BA4->unk23C) != 0) {
-        sp10.vx = D_800F4BA4->unk23C.unk2;
-        sp10.vy = D_800F4BA4->unk23C.unk4;
+    if (func_800BDBB4(&scriptCamera->unk23C) != 0) {
+        sp10.vx = scriptCamera->unk23C.unk2;
+        sp10.vy = scriptCamera->unk23C.unk4;
         func_8007DDF8(&sp10);
     }
-    if (func_800BDBB4(&D_800F4BA4->unk25C) != 0) {
-        setScreenLensDistortion(D_800F4BA4->unk25C.unk2, D_800F4BA4->unk25C.unk4);
+    if (func_800BDBB4(&scriptCamera->unk25C) != 0) {
+        setScreenLensDistortion(scriptCamera->unk25C.unk2, scriptCamera->unk25C.unk4);
     }
 }
 
@@ -5396,46 +5402,48 @@ int vs_battle_script_EA_EB_EC_EE_EF_camera(u_char* script, UNUSED short arg1)
     short i;
     switch (script[0]) {
     case 234:
-        if ((D_800F4BA4->projectionDistance.unk9 = script[3]) == 0) {
-            D_800F4BA4->projectionDistance.unk2 = script[1] ? (script[1] << 2) : ONE / 8;
-            D_800F4BA4->projectionDistance.unk0 = 1;
+        if ((scriptCamera->projectionDistance.unk9 = script[3]) == 0) {
+            scriptCamera->projectionDistance.unk2 =
+                script[1] ? (script[1] << 2) : ONE / 8;
+            scriptCamera->projectionDistance.unk0 = 1;
         } else {
-            D_800F4BA4->projectionDistance.unk6 =
+            scriptCamera->projectionDistance.unk6 =
                 script[1] ? (script[1] << 2)
-                                - (D_800F4BA4->projectionDistance.unk4 =
-                                        D_800F4BA4->projectionDistance.unk2)
+                                - (scriptCamera->projectionDistance.unk4 =
+                                        scriptCamera->projectionDistance.unk2)
                           : ONE / 8;
-            D_800F4BA4->projectionDistance.unk1 = script[2];
-            D_800F4BA4->projectionDistance.unk8 = 0;
+            scriptCamera->projectionDistance.unk1 = script[2];
+            scriptCamera->projectionDistance.unk8 = 0;
         }
         return scriptNext;
     case 235:
-        if ((D_800F4BA4->nearClip.unk9 = script[3]) == 0) {
-            D_800F4BA4->nearClip.unk2 = script[1] ? script[1] : 64;
-            D_800F4BA4->nearClip.unk0 = 1;
+        if ((scriptCamera->nearClip.unk9 = script[3]) == 0) {
+            scriptCamera->nearClip.unk2 = script[1] ? script[1] : 64;
+            scriptCamera->nearClip.unk0 = 1;
         } else {
-            D_800F4BA4->nearClip.unk6 =
+            scriptCamera->nearClip.unk6 =
                 (script[1] ? script[1] : 64)
-                - (D_800F4BA4->nearClip.unk4 = D_800F4BA4->nearClip.unk2);
-            D_800F4BA4->nearClip.unk1 = script[2];
-            D_800F4BA4->nearClip.unk8 = 0;
+                - (scriptCamera->nearClip.unk4 = scriptCamera->nearClip.unk2);
+            scriptCamera->nearClip.unk1 = script[2];
+            scriptCamera->nearClip.unk8 = 0;
         }
         return scriptNext;
     case 236:
-        if ((D_800F4BA4->farClip.unk9 = script[3]) == 0) {
-            D_800F4BA4->farClip.unk2 = script[1] ? (script[1] << 7) : ONE;
-            D_800F4BA4->farClip.unk0 = 1;
+        if ((scriptCamera->farClip.unk9 = script[3]) == 0) {
+            scriptCamera->farClip.unk2 = script[1] ? (script[1] << 7) : ONE;
+            scriptCamera->farClip.unk0 = 1;
         } else {
-            D_800F4BA4->farClip.unk6 =
-                script[1] ? (script[1] << 7)
-                                - (D_800F4BA4->farClip.unk4 = D_800F4BA4->farClip.unk2)
-                          : ONE;
-            D_800F4BA4->farClip.unk1 = script[2];
-            D_800F4BA4->farClip.unk8 = 0;
+            scriptCamera->farClip.unk6 =
+                script[1]
+                    ? (script[1] << 7)
+                          - (scriptCamera->farClip.unk4 = scriptCamera->farClip.unk2)
+                    : ONE;
+            scriptCamera->farClip.unk1 = script[2];
+            scriptCamera->farClip.unk8 = 0;
         }
         return scriptNext;
     case 239:
-        entry = (func_800BDF6C_t*)&D_800F4BA4->unk1A4.unk2;
+        entry = (func_800BDF6C_t*)&scriptCamera->unk1A4.unk2;
         if (script[2] == 0) {
             entry[0].unk9 = entry[1].unk9 = 0;
             return scriptNext;
@@ -5519,7 +5527,7 @@ void func_800BE180(void)
     short i = 0;
     int x, y, z;
     CameraShakeScratch* scratch;
-    func_800BDF6C_t* entry = (func_800BDF6C_t*)&D_800F4BA4->unk1A4.unk2;
+    func_800BDF6C_t* entry = (func_800BDF6C_t*)&scriptCamera->unk1A4.unk2;
     clear->a.vx = clear->a.vy = clear->a.vz = clear->b.vx = clear->b.vy = clear->b.vz = 0;
     scratch = CAMERA_SHAKE_SCRATCH;
     for (; i < 2; ++entry, ++i) {
@@ -5536,32 +5544,32 @@ void func_800BE180(void)
             ++count;
         }
     }
-    D_800F4BA4->unk1A4.unk0.s16 = count;
+    scriptCamera->unk1A4.unk0.s16 = count;
     if (count) {
-        D_800F4BA4->unk1BE = VS_SCRATCH_AT(SVECTOR*, 0xD8)->vx;
-        D_800F4BA4->unk1C0 = VS_SCRATCH_AT(SVECTOR*, 0xD8)->vy;
-        D_800F4BA4->unk1C2 = VS_SCRATCH_AT(SVECTOR*, 0xD8)->vz;
-        D_800F4BA4->unk1C6 = VS_SCRATCH_AT(SVECTOR*, 0xE0)->vx;
-        D_800F4BA4->unk1C8 = VS_SCRATCH_AT(SVECTOR*, 0xE0)->vy;
-        D_800F4BA4->unk1CA = VS_SCRATCH_AT(SVECTOR*, 0xE0)->vz;
+        scriptCamera->unk1BE = VS_SCRATCH_AT(SVECTOR*, 0xD8)->vx;
+        scriptCamera->unk1C0 = VS_SCRATCH_AT(SVECTOR*, 0xD8)->vy;
+        scriptCamera->unk1C2 = VS_SCRATCH_AT(SVECTOR*, 0xD8)->vz;
+        scriptCamera->unk1C6 = VS_SCRATCH_AT(SVECTOR*, 0xE0)->vx;
+        scriptCamera->unk1C8 = VS_SCRATCH_AT(SVECTOR*, 0xE0)->vy;
+        scriptCamera->unk1CA = VS_SCRATCH_AT(SVECTOR*, 0xE0)->vz;
     }
 }
 
 void setCameraMomentum(int lookAt, int eye)
 {
-    D_800F4BA4->lookAt.carryMomentum = lookAt;
-    D_800F4BA4->lookAt.carrying = 0;
-    D_800F4BA4->eye.carryMomentum = eye;
-    D_800F4BA4->eye.carrying = 0;
+    scriptCamera->lookAt.carryMomentum = lookAt;
+    scriptCamera->lookAt.carrying = 0;
+    scriptCamera->eye.carryMomentum = eye;
+    scriptCamera->eye.carrying = 0;
 }
 
 void clearCameraMomentum(void)
 {
-    D_800F4BA4_t* c1 = D_800F4BA4;
-    D_800F4BA4_t* c2;
+    ScriptCamera* c1 = scriptCamera;
+    ScriptCamera* c2;
     c1->eye.mode = 0xF;
     c1->lookAt.mode = 0xF;
-    c2 = D_800F4BA4;
+    c2 = scriptCamera;
     c2->eye.carrying = 0;
     c2->eye.carryMomentum = 0;
     c2->lookAt.carrying = 0;
@@ -5591,17 +5599,17 @@ void sweepCameraToSavedPlayerView(char side)
     sp30.vy += D_800E9C24[temp_s0] << 0xC;
     sp10.vy += D_800E9C24[temp_s0] << 0xC;
 
-    vectorCopy(&D_800F4BA4->lookAt.current, &sp10);
-    vectorCopy(&D_800F4BA4->lookAt.otherPosition, &sp30);
-    vectorCopy(&D_800F4BA4->eye.otherPosition, &sp10);
-    vectorCopy(&D_800F4BA4->eye.current, &sp30);
+    vectorCopy(&scriptCamera->lookAt.current, &sp10);
+    vectorCopy(&scriptCamera->lookAt.otherPosition, &sp30);
+    vectorCopy(&scriptCamera->eye.otherPosition, &sp10);
+    vectorCopy(&scriptCamera->eye.current, &sp30);
 
-    D_800F4BA4->lookAt.mode = 0xF;
+    scriptCamera->lookAt.mode = 0xF;
 
     initialiseCameraFromSpherical(&sp40, &sp20, temp_s3, temp_s0 + 1);
 
-    vectorCopy(&D_800F4BA4->eye.position, &sp40);
-    vectorCopy(&D_800F4BA4->lookAt.position, &sp20);
+    vectorCopy(&scriptCamera->eye.position, &sp40);
+    vectorCopy(&scriptCamera->lookAt.position, &sp20);
 
     vs_battle_script_Cx_Dx_camera(&D_800E9C28, 0);
     vs_battle_script_Cx_Dx_camera(&D_800E9C2C, 0);
@@ -5630,8 +5638,8 @@ void scaleCameraMoveDurationByDistance(short target)
     CameraChannel* var_a0;
     CameraChannel* temp_s1;
 
-    temp_s0 = &D_800F4BA4->lookAt;
-    temp_s1 = &D_800F4BA4->eye;
+    temp_s0 = &scriptCamera->lookAt;
+    temp_s1 = &scriptCamera->eye;
 
     if (target == 2) {
         scaleMoveDurationByDistance(temp_s0);
@@ -6323,7 +6331,7 @@ int func_800BF850(void)
         }
     }
 
-    func_800BC9E0();
+    updateCamera();
     func_800BDAB4();
     applyCameraState();
     func_800BB9B0();

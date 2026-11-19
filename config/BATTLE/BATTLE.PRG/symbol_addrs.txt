@@ -474,6 +474,7 @@ customEasings = 0x800F4B28; // size:0x8
 gimTweens = 0x800F4B30;
 particleTween = 0x800F4B88;
 cameraFollowsAshley = 0x800F4BA0; // size:0x1
+scriptCamera = 0x800F4BA4;
 mpdClearedSection = 0x800F4BAC;
 scriptStrings = 0x800F4BB0;
 switchValue = 0x800F4BB4;

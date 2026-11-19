@@ -95,16 +95,16 @@ typedef struct {
 } func_800BDF6C_t;
 
 typedef struct {
-    char unk0;
-    char unk1;
-    short unk2;
-    short unk4;
-    short unk6;
-    char unk8;
-    char unk9;
+    char changed;
+    char ease;
+    short value;
+    short start;
+    short delta;
+    char elapsed;
+    char duration;
     char unkA;
     char unkB;
-} func_800BDF6C_unk180_t;
+} ProjectionTween;
 
 typedef struct {
     char unk0;
@@ -131,9 +131,9 @@ typedef struct {
     CameraChannel eye;
     AngleTween roll;
     AngleTween unk174;
-    func_800BDF6C_unk180_t projectionDistance;
-    func_800BDF6C_unk180_t nearClip;
-    func_800BDF6C_unk180_t farClip;
+    ProjectionTween projectionDistance;
+    ProjectionTween nearClip;
+    ProjectionTween farClip;
     func_800BDF6C_t unk1A4;
     func_800BDF6C_t unk1B0;
     short unk1BC;
@@ -312,7 +312,7 @@ int func_800BD2B8(MATRIX*);
 static void stepAngleTween(AngleTween*);
 u_char getCameraIdleFlags(void);
 int func_800BDBB4(func_800BDBB4_t* arg0);
-void func_800BDF6C(func_800BDF6C_unk180_t* arg0);
+static void stepProjectionTween(ProjectionTween*);
 void func_800BE180(void);
 void setCameraMomentum(int lookAt, int eye);
 void clearCameraMomentum(void);
@@ -4466,15 +4466,15 @@ void func_800BBBE8(void)
 
     scriptCamera->unk25C.unk2 = ONE;
     scriptCamera->unk25C.unk1E = scriptCamera->unk25C.unk4 = 0;
-    scriptCamera->projectionDistance.unk2 = 0x200;
-    scriptCamera->projectionDistance.unk9 = 0;
-    scriptCamera->projectionDistance.unk0 = 1;
-    scriptCamera->nearClip.unk2 = 0x40;
-    scriptCamera->nearClip.unk9 = 0;
-    scriptCamera->nearClip.unk0 = 1;
-    scriptCamera->farClip.unk2 = 0x1000;
-    scriptCamera->farClip.unk9 = 0;
-    scriptCamera->farClip.unk0 = 1;
+    scriptCamera->projectionDistance.value = 0x200;
+    scriptCamera->projectionDistance.duration = 0;
+    scriptCamera->projectionDistance.changed = 1;
+    scriptCamera->nearClip.value = 0x40;
+    scriptCamera->nearClip.duration = 0;
+    scriptCamera->nearClip.changed = 1;
+    scriptCamera->farClip.value = 0x1000;
+    scriptCamera->farClip.duration = 0;
+    scriptCamera->farClip.changed = 1;
     scriptCamera->unk1A4.unk0.s16 = 0;
     scriptCamera->unk1A4.unkB = scriptCamera->unk1B0.unkB = 0;
     scriptCamera->attachedActor = 0x2000;
@@ -4565,17 +4565,17 @@ static void applyCameraState(void)
         func_8007DDAC(scriptCamera->unk174.value);
         scriptCamera->unk174.changed = 0;
     }
-    if (scriptCamera->projectionDistance.unk0 != 0) {
-        vs_battle_setProjectionDistance(scriptCamera->projectionDistance.unk2);
-        scriptCamera->projectionDistance.unk0 = 0;
+    if (scriptCamera->projectionDistance.changed != 0) {
+        vs_battle_setProjectionDistance(scriptCamera->projectionDistance.value);
+        scriptCamera->projectionDistance.changed = 0;
     }
-    if (scriptCamera->nearClip.unk0 != 0) {
-        setNearClip(scriptCamera->nearClip.unk2);
-        scriptCamera->nearClip.unk0 = 0;
+    if (scriptCamera->nearClip.changed != 0) {
+        setNearClip(scriptCamera->nearClip.value);
+        scriptCamera->nearClip.changed = 0;
     }
-    if (scriptCamera->farClip.unk0 != 0) {
-        setFarClip(scriptCamera->farClip.unk2, fogDepthOverridden);
-        scriptCamera->farClip.unk0 = 0;
+    if (scriptCamera->farClip.changed != 0) {
+        setFarClip(scriptCamera->farClip.value, fogDepthOverridden);
+        scriptCamera->farClip.changed = 0;
     }
 }
 
@@ -4907,9 +4907,9 @@ static void updateCamera(void)
     stepCameraChannel(&scriptCamera->eye, &scriptCamera->lookAt);
     stepAngleTween(&scriptCamera->roll);
     stepAngleTween(&scriptCamera->unk174);
-    func_800BDF6C(&scriptCamera->projectionDistance);
-    func_800BDF6C(&scriptCamera->nearClip);
-    func_800BDF6C(&scriptCamera->farClip);
+    stepProjectionTween(&scriptCamera->projectionDistance);
+    stepProjectionTween(&scriptCamera->nearClip);
+    stepProjectionTween(&scriptCamera->farClip);
     func_800BE180();
 }
 
@@ -5256,13 +5256,13 @@ u_char getCameraIdleFlags(void)
     if (scriptCamera->roll.duration == 0) {
         temp_a2 |= 4;
     }
-    if (scriptCamera->projectionDistance.unk9 == 0) {
+    if (scriptCamera->projectionDistance.duration == 0) {
         temp_a2 |= 8;
     }
-    if (scriptCamera->nearClip.unk9 == 0) {
+    if (scriptCamera->nearClip.duration == 0) {
         temp_a2 |= 0x10;
     }
-    if (scriptCamera->farClip.unk9 == 0) {
+    if (scriptCamera->farClip.duration == 0) {
         temp_a2 |= 0x20;
     }
     if (scriptCamera->unk25C.unk1E == 0) {
@@ -5453,44 +5453,44 @@ int vs_battle_script_EA_EB_EC_EE_EF_camera(u_char* script, UNUSED short arg1)
     short i;
     switch (script[0]) {
     case 234:
-        if ((scriptCamera->projectionDistance.unk9 = script[3]) == 0) {
-            scriptCamera->projectionDistance.unk2 =
+        if ((scriptCamera->projectionDistance.duration = script[3]) == 0) {
+            scriptCamera->projectionDistance.value =
                 script[1] ? (script[1] << 2) : ONE / 8;
-            scriptCamera->projectionDistance.unk0 = 1;
+            scriptCamera->projectionDistance.changed = 1;
         } else {
-            scriptCamera->projectionDistance.unk6 =
+            scriptCamera->projectionDistance.delta =
                 script[1] ? (script[1] << 2)
-                                - (scriptCamera->projectionDistance.unk4 =
-                                        scriptCamera->projectionDistance.unk2)
+                                - (scriptCamera->projectionDistance.start =
+                                        scriptCamera->projectionDistance.value)
                           : ONE / 8;
-            scriptCamera->projectionDistance.unk1 = script[2];
-            scriptCamera->projectionDistance.unk8 = 0;
+            scriptCamera->projectionDistance.ease = script[2];
+            scriptCamera->projectionDistance.elapsed = 0;
         }
         return scriptNext;
     case 235:
-        if ((scriptCamera->nearClip.unk9 = script[3]) == 0) {
-            scriptCamera->nearClip.unk2 = script[1] ? script[1] : 64;
-            scriptCamera->nearClip.unk0 = 1;
+        if ((scriptCamera->nearClip.duration = script[3]) == 0) {
+            scriptCamera->nearClip.value = script[1] ? script[1] : 64;
+            scriptCamera->nearClip.changed = 1;
         } else {
-            scriptCamera->nearClip.unk6 =
+            scriptCamera->nearClip.delta =
                 (script[1] ? script[1] : 64)
-                - (scriptCamera->nearClip.unk4 = scriptCamera->nearClip.unk2);
-            scriptCamera->nearClip.unk1 = script[2];
-            scriptCamera->nearClip.unk8 = 0;
+                - (scriptCamera->nearClip.start = scriptCamera->nearClip.value);
+            scriptCamera->nearClip.ease = script[2];
+            scriptCamera->nearClip.elapsed = 0;
         }
         return scriptNext;
     case 236:
-        if ((scriptCamera->farClip.unk9 = script[3]) == 0) {
-            scriptCamera->farClip.unk2 = script[1] ? (script[1] << 7) : ONE;
-            scriptCamera->farClip.unk0 = 1;
+        if ((scriptCamera->farClip.duration = script[3]) == 0) {
+            scriptCamera->farClip.value = script[1] ? (script[1] << 7) : ONE;
+            scriptCamera->farClip.changed = 1;
         } else {
-            scriptCamera->farClip.unk6 =
+            scriptCamera->farClip.delta =
                 script[1]
                     ? (script[1] << 7)
-                          - (scriptCamera->farClip.unk4 = scriptCamera->farClip.unk2)
+                          - (scriptCamera->farClip.start = scriptCamera->farClip.value)
                     : ONE;
-            scriptCamera->farClip.unk1 = script[2];
-            scriptCamera->farClip.unk8 = 0;
+            scriptCamera->farClip.ease = script[2];
+            scriptCamera->farClip.elapsed = 0;
         }
         return scriptNext;
     case 239:
@@ -5514,22 +5514,28 @@ int vs_battle_script_EA_EB_EC_EE_EF_camera(u_char* script, UNUSED short arg1)
     }
 }
 
-void func_800BDF6C(func_800BDF6C_unk180_t* arg0)
+/** Steps a projection parameter tween by a frame. */
+static void stepProjectionTween(ProjectionTween* tween)
 {
-    if (arg0->unk9 != 0) {
-        short* new_var;
-        arg0->unk8 += vs_gametime_vblanksPerFrame >> 1;
-        if (arg0->unk9 < arg0->unk8) {
-            arg0->unk8 = arg0->unk9;
-        }
-        CAMERA_SCRATCH->value = func_800BFEBC(arg0->unk1, arg0->unk8, arg0->unk9);
-        new_var = &arg0->unk6;
-        arg0->unk2 = arg0->unk4 + ((*new_var * CAMERA_SCRATCH->value) >> 0xC);
-        if (arg0->unk8 == arg0->unk9) {
-            arg0->unk9 = 0;
-        }
-        arg0->unk0 = 1;
+    if (tween->duration == 0) {
+        return;
     }
+
+    tween->elapsed += vs_gametime_vblanksPerFrame >> 1;
+
+    if (tween->duration < tween->elapsed) {
+        tween->elapsed = tween->duration;
+    }
+
+    CAMERA_SCRATCH->value = func_800BFEBC(tween->ease, tween->elapsed, tween->duration);
+
+    tween->value = tween->start + ((tween->delta * CAMERA_SCRATCH->value) >> 0xC);
+
+    if (tween->elapsed == tween->duration) {
+        tween->duration = 0;
+    }
+
+    tween->changed = 1;
 }
 
 int func_800BE01C(func_800BDF6C_t* arg0)

@@ -81,10 +81,8 @@ typedef struct {
 } AngleTween;
 
 typedef struct {
-    union {
-        u_char u8[2];
-        short s16;
-    } unk0;
+    u_char unk0;
+    u_char envelope;
     short unk2;
     short unk4;
     short unk6;
@@ -92,7 +90,7 @@ typedef struct {
     char unk9;
     char unkA;
     char unkB;
-} func_800BDF6C_t;
+} ShakeEntry;
 
 typedef struct {
     char changed;
@@ -134,16 +132,10 @@ typedef struct {
     ProjectionTween projectionDistance;
     ProjectionTween nearClip;
     ProjectionTween farClip;
-    func_800BDF6C_t unk1A4;
-    func_800BDF6C_t unk1B0;
-    short unk1BC;
-    short unk1BE;
-    short unk1C0;
-    short unk1C2;
-    short unk1C4;
-    short unk1C6;
-    short unk1C8;
-    short unk1CA;
+    short shakeCount;
+    ShakeEntry shakeEntries[2];
+    SVECTOR shakeLookAt;
+    short shakeEye[3];
     int unk1CC;
     vs_ActorPosition unk1D0;
     int unk1E0[2];
@@ -313,7 +305,7 @@ static void stepAngleTween(AngleTween*);
 u_char getCameraIdleFlags(void);
 int func_800BDBB4(func_800BDBB4_t* arg0);
 static void stepProjectionTween(ProjectionTween*);
-void func_800BE180(void);
+static void updateCameraShake(void);
 void setCameraMomentum(int lookAt, int eye);
 void clearCameraMomentum(void);
 void sweepCameraToSavedPlayerView(char side);
@@ -4475,8 +4467,8 @@ void func_800BBBE8(void)
     scriptCamera->farClip.value = 0x1000;
     scriptCamera->farClip.duration = 0;
     scriptCamera->farClip.changed = 1;
-    scriptCamera->unk1A4.unk0.s16 = 0;
-    scriptCamera->unk1A4.unkB = scriptCamera->unk1B0.unkB = 0;
+    scriptCamera->shakeCount = 0;
+    scriptCamera->shakeEntries[0].unk9 = scriptCamera->shakeEntries[1].unk9 = 0;
     scriptCamera->attachedActor = 0x2000;
 }
 
@@ -4542,9 +4534,9 @@ static void applyCameraState(void)
             vectorAdd(&cameraPos, &cameraPos, &scriptCamera->attachedPosition);
         }
     }
-    if (*(short*)&scriptCamera->unk1A4.unk0 != 0) {
-        sVectorToFixedPointVector(&CAMERA_SCRATCH->v1, (SVECTOR*)&scriptCamera->unk1BE);
-        sVectorToFixedPointVector(&CAMERA_SCRATCH->v2, (SVECTOR*)&scriptCamera->unk1C6);
+    if (scriptCamera->shakeCount != 0) {
+        sVectorToFixedPointVector(&CAMERA_SCRATCH->v1, &scriptCamera->shakeLookAt);
+        sVectorToFixedPointVector(&CAMERA_SCRATCH->v2, (SVECTOR*)scriptCamera->shakeEye);
         CAMERA_SCRATCH->rotation.vz = 0;
         CAMERA_SCRATCH->rotation.vx = 0;
         CAMERA_SCRATCH->rotation.vy = atan2FixedPoint(
@@ -4910,7 +4902,7 @@ static void updateCamera(void)
     stepProjectionTween(&scriptCamera->projectionDistance);
     stepProjectionTween(&scriptCamera->nearClip);
     stepProjectionTween(&scriptCamera->farClip);
-    func_800BE180();
+    updateCameraShake();
 }
 
 /** Steps one camera channel by a frame, evaluating its current mode. */
@@ -5268,7 +5260,7 @@ u_char getCameraIdleFlags(void)
     if (scriptCamera->unk25C.unk1E == 0) {
         temp_a2 |= 0x40;
     }
-    if ((scriptCamera->unk1A4.unkB + scriptCamera->unk1B0.unkB) == 0) {
+    if ((scriptCamera->shakeEntries[0].unk9 + scriptCamera->shakeEntries[1].unk9) == 0) {
         temp_a2 |= 0x80;
     }
     return temp_a2;
@@ -5449,7 +5441,7 @@ int func_800BDBB4(func_800BDBB4_t* arg0)
 
 int vs_battle_script_EA_EB_EC_EE_EF_camera(u_char* script, UNUSED short arg1)
 {
-    func_800BDF6C_t* entry;
+    ShakeEntry* entry;
     short i;
     switch (script[0]) {
     case 234:
@@ -5494,7 +5486,7 @@ int vs_battle_script_EA_EB_EC_EE_EF_camera(u_char* script, UNUSED short arg1)
         }
         return scriptNext;
     case 239:
-        entry = (func_800BDF6C_t*)&scriptCamera->unk1A4.unk2;
+        entry = scriptCamera->shakeEntries;
         if (script[2] == 0) {
             entry[0].unk9 = entry[1].unk9 = 0;
             return scriptNext;
@@ -5504,7 +5496,7 @@ int vs_battle_script_EA_EB_EC_EE_EF_camera(u_char* script, UNUSED short arg1)
                 entry->unk4 = script[1];
                 entry->unk6 = script[2];
                 entry->unkA = script[3];
-                entry->unk0.u8[1] = script[4];
+                entry->envelope = script[4];
                 entry->unk9 = script[5];
                 entry->unk8 = 0;
                 break;
@@ -5538,7 +5530,7 @@ static void stepProjectionTween(ProjectionTween* tween)
     tween->changed = 1;
 }
 
-int func_800BE01C(func_800BDF6C_t* arg0)
+int func_800BE01C(ShakeEntry* arg0)
 {
     int temp_s1 = arg0->unk4 << 0xC;
 
@@ -5552,7 +5544,7 @@ int func_800BE01C(func_800BDF6C_t* arg0)
         arg0->unk8 = arg0->unk9;
     }
 
-    switch (arg0->unk0.u8[1]) {
+    switch (arg0->envelope) {
     case 0:
         CAMERA_SCRATCH->value = 0x1000;
         break;
@@ -5575,40 +5567,60 @@ int func_800BE01C(func_800BDF6C_t* arg0)
     return 1;
 }
 
-// The totals in a and b are read back at their fixed addresses and not as members, which
-// the match needs.
-void func_800BE180(void)
+/**
+ * Sums the active shake entries for the look-at and the eye.
+ */
+static void updateCameraShake(void)
 {
     short count = 0;
     CameraShakeScratch* clear = CAMERA_SHAKE_SCRATCH;
     short i = 0;
-    int x, y, z;
     CameraShakeScratch* scratch;
-    func_800BDF6C_t* entry = (func_800BDF6C_t*)&scriptCamera->unk1A4.unk2;
-    clear->a.vx = clear->a.vy = clear->a.vz = clear->b.vx = clear->b.vy = clear->b.vz = 0;
+    ShakeEntry* entry = scriptCamera->shakeEntries;
+    clear->b.vx = clear->b.vy = clear->b.vz = 0;
+    clear->a.vx = clear->a.vy = clear->a.vz = 0;
     scratch = CAMERA_SHAKE_SCRATCH;
+
     for (; i < 2; ++entry, ++i) {
-        if (func_800BE01C(entry)) {
-            setVector(&scratch->c, x = entry->unk2 * (((entry->unkA >> 2) & 3) - 1),
-                y = entry->unk2 * (((entry->unkA >> 4) & 3) - 1),
-                z = entry->unk2 * ((entry->unkA >> 6) - 1));
-            if (entry->unkA & 1) {
-                applyVector(&scratch->a, x, y, z, +=);
-            }
-            if (entry->unkA & 2) {
-                addVector(&scratch->b, &scratch->c);
-            }
-            ++count;
+        int x;
+        int y;
+        int z;
+
+        if (!func_800BE01C(entry)) {
+            continue;
         }
+
+        x = entry->unk2 * (((entry->unkA >> 2) & 3) - 1);
+        scratch->c.vx = x;
+
+        y = entry->unk2 * (((entry->unkA >> 4) & 3) - 1);
+        scratch->c.vy = y;
+
+        z = entry->unk2 * ((entry->unkA >> 6) - 1);
+        scratch->c.vz = z;
+
+        if (entry->unkA & 1) {
+            applyVector(&scratch->a, x, y, z, +=);
+        }
+
+        if (entry->unkA & 2) {
+            addVector(&scratch->b, &scratch->c);
+        }
+
+        ++count;
     }
-    scriptCamera->unk1A4.unk0.s16 = count;
+
+    scriptCamera->shakeCount = count;
+
     if (count) {
-        scriptCamera->unk1BE = VS_SCRATCH_AT(SVECTOR*, 0xD8)->vx;
-        scriptCamera->unk1C0 = VS_SCRATCH_AT(SVECTOR*, 0xD8)->vy;
-        scriptCamera->unk1C2 = VS_SCRATCH_AT(SVECTOR*, 0xD8)->vz;
-        scriptCamera->unk1C6 = VS_SCRATCH_AT(SVECTOR*, 0xE0)->vx;
-        scriptCamera->unk1C8 = VS_SCRATCH_AT(SVECTOR*, 0xE0)->vy;
-        scriptCamera->unk1CA = VS_SCRATCH_AT(SVECTOR*, 0xE0)->vz;
+        // The totals in a and b are read back at their fixed addresses and not as
+        // members, which the match needs.
+        scriptCamera->shakeLookAt.vx = VS_SCRATCH_AT(SVECTOR*, 0xD8)->vx;
+        scriptCamera->shakeLookAt.vy = VS_SCRATCH_AT(SVECTOR*, 0xD8)->vy;
+        scriptCamera->shakeLookAt.vz = VS_SCRATCH_AT(SVECTOR*, 0xD8)->vz;
+        scriptCamera->shakeEye[0] = VS_SCRATCH_AT(SVECTOR*, 0xE0)->vx;
+        scriptCamera->shakeEye[1] = VS_SCRATCH_AT(SVECTOR*, 0xE0)->vy;
+        scriptCamera->shakeEye[2] = VS_SCRATCH_AT(SVECTOR*, 0xE0)->vz;
     }
 }
 

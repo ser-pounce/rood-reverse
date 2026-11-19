@@ -294,7 +294,7 @@ int getActorScreenPositionAndUpAngle(int actorId, SVECTOR* position);
 void attachCameraToActor(u_short actor);
 void setCameraFollowsAshley(int follows);
 void updateCameraAttachment(void);
-void func_800BCA8C(CameraChannel*, CameraChannel*);
+static void stepCameraChannel(CameraChannel*, CameraChannel*);
 void func_800BCFB4(CameraChannel*);
 void returnToGameplayCamera(short facing, int zoom);
 int func_800BD2B8(MATRIX*);
@@ -4897,8 +4897,8 @@ static void updateCamera(void)
     scriptCamera->lookAt.otherPosition.vy = scriptCamera->eye.current.vy;
     scriptCamera->lookAt.otherPosition.vz = scriptCamera->eye.current.vz;
 
-    func_800BCA8C(&scriptCamera->lookAt, &scriptCamera->eye);
-    func_800BCA8C(&scriptCamera->eye, &scriptCamera->lookAt);
+    stepCameraChannel(&scriptCamera->lookAt, &scriptCamera->eye);
+    stepCameraChannel(&scriptCamera->eye, &scriptCamera->lookAt);
     func_800BD57C(&scriptCamera->unk168);
     func_800BD57C(&scriptCamera->unk174);
     func_800BDF6C(&scriptCamera->projectionDistance);
@@ -4907,113 +4907,159 @@ static void updateCamera(void)
     func_800BE180();
 }
 
-void func_800BCA8C(CameraChannel* c, CameraChannel* other)
+/** Steps one camera channel by a frame, evaluating its current mode. */
+static void stepCameraChannel(CameraChannel* channel, UNUSED CameraChannel* other)
 {
-    if (c->mode == 15) {
+    if (channel->mode == 15) {
         return;
     }
-    if (c->mode != 11) {
-        c->time += vs_gametime_vblanksPerFrame >> 1;
-        if (c->time > c->duration) {
-            c->time = c->duration;
+
+    if (channel->mode != 11) {
+        channel->time += vs_gametime_vblanksPerFrame >> 1;
+        if (channel->time > channel->duration) {
+            channel->time = channel->duration;
         }
     }
-    switch (c->mode) {
+
+    switch (channel->mode) {
     case 2:
-        CAMERA_SCRATCH->value = func_800BFEBC(c->ease1, c->time, c->duration);
-        vectorFixedPointMult(&CAMERA_SCRATCH->v1, &c->velocity, CAMERA_SCRATCH->value);
-        vectorAdd(&c->computed, &c->start, &CAMERA_SCRATCH->v1);
+        CAMERA_SCRATCH->value =
+            func_800BFEBC(channel->ease1, channel->time, channel->duration);
+
+        vectorFixedPointMult(
+            &CAMERA_SCRATCH->v1, &channel->velocity, CAMERA_SCRATCH->value);
+        vectorAdd(&channel->computed, &channel->start, &CAMERA_SCRATCH->v1);
+
         break;
+
     case 3: {
-        CameraScratch* s = CAMERA_SCRATCH;
-        s->value = func_800BFEBC(c->ease1, c->time, c->duration);
-        vectorFixedPointMult(&CAMERA_SCRATCH->v1, &c->velocity, s->value);
-        vectorAdd(&CAMERA_SCRATCH->v2, &c->start, &CAMERA_SCRATCH->v1);
-        vectorSubtract(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v2, &c->otherPosition);
+        CAMERA_SCRATCH->value =
+            func_800BFEBC(channel->ease1, channel->time, channel->duration);
+
+        vectorFixedPointMult(
+            &CAMERA_SCRATCH->v1, &channel->velocity, CAMERA_SCRATCH->value);
+        vectorAdd(&CAMERA_SCRATCH->v2, &channel->start, &CAMERA_SCRATCH->v1);
+        vectorSubtract(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v2, &channel->otherPosition);
         toNormalIntegerVector(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1);
-        s->distance = vectorMagnitude(
-            vectorSubtract(&CAMERA_SCRATCH->v2, &c->otherPosition, &c->position));
-        s->value = c->value
-                 + fixedPointMult(s->distance - c->value,
-                     func_800BFEBC(c->ease1, c->time, c->duration));
-        vectorFixedPointMult(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1, s->value);
-        vectorAdd(&c->computed, &c->otherPosition, &CAMERA_SCRATCH->v1);
+
+        CAMERA_SCRATCH->distance = vectorMagnitude(vectorSubtract(
+            &CAMERA_SCRATCH->v2, &channel->otherPosition, &channel->position));
+        CAMERA_SCRATCH->value =
+            channel->value
+            + fixedPointMult(CAMERA_SCRATCH->distance - channel->value,
+                func_800BFEBC(channel->ease1, channel->time, channel->duration));
+
+        vectorFixedPointMult(
+            &CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1, CAMERA_SCRATCH->value);
+        vectorAdd(&channel->computed, &channel->otherPosition, &CAMERA_SCRATCH->v1);
+
         break;
     }
+
     case 4: {
-        CameraScratch* s = CAMERA_SCRATCH;
-        s->rotation.vz = 0;
-        s->rotation.vx = 0;
-        s->rotation.vy =
-            c->angle
-            + ((c->angleDelta * func_800BFEBC(c->ease1, c->time, c->duration)) >> 12);
+        CAMERA_SCRATCH->rotation.vz = 0;
+        CAMERA_SCRATCH->rotation.vx = 0;
+        CAMERA_SCRATCH->rotation.vy =
+            channel->angle
+            + ((channel->angleDelta
+                   * func_800BFEBC(channel->ease1, channel->time, channel->duration))
+                >> 12);
+
         RotMatrix_gte(&CAMERA_SCRATCH->rotation, &CAMERA_SCRATCH->matrix);
-        s->v1.vz =
-            c->value
-            + fixedPointMult(c->delta, func_800BFEBC(c->ease2, c->time, c->duration));
-        s->v1.vx = 0;
-        s->v1.vy = 0;
+
+        CAMERA_SCRATCH->v1.vz =
+            channel->value
+            + fixedPointMult(channel->delta,
+                func_800BFEBC(channel->ease2, channel->time, channel->duration));
+        CAMERA_SCRATCH->v1.vx = 0;
+        CAMERA_SCRATCH->v1.vy = 0;
+
         ApplyMatrixLV(&CAMERA_SCRATCH->matrix, &CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1);
-        s->v1.vy = c->aux.vy
-                 + fixedPointMult(
-                     c->velocity.vy, func_800BFEBC(c->ease3, c->time, c->duration));
-        vectorAdd(&c->computed, &c->start, &CAMERA_SCRATCH->v1);
+
+        CAMERA_SCRATCH->v1.vy =
+            channel->aux.vy
+            + fixedPointMult(channel->velocity.vy,
+                func_800BFEBC(channel->ease3, channel->time, channel->duration));
+        vectorAdd(&channel->computed, &channel->start, &CAMERA_SCRATCH->v1);
+
         break;
     }
+
     case 5: {
-        CameraScratch* s = CAMERA_SCRATCH;
-        s->rotation.vz = 0;
-        s->rotation.vx = 0;
-        s->rotation.vy =
-            c->angle
-            + ((c->angleDelta * func_800BFEBC(c->ease1, c->time, c->duration)) >> 12);
+        CAMERA_SCRATCH->rotation.vz = 0;
+        CAMERA_SCRATCH->rotation.vx = 0;
+        CAMERA_SCRATCH->rotation.vy =
+            channel->angle
+            + ((channel->angleDelta
+                   * func_800BFEBC(channel->ease1, channel->time, channel->duration))
+                >> 12);
+
         RotMatrix_gte(&CAMERA_SCRATCH->rotation, &CAMERA_SCRATCH->matrix);
-        s->v1.vz =
-            c->value
-            + fixedPointMult(c->delta, func_800BFEBC(c->ease2, c->time, c->duration));
-        s->v1.vx = 0;
-        s->v1.vy = 0;
+
+        CAMERA_SCRATCH->v1.vz =
+            channel->value
+            + fixedPointMult(channel->delta,
+                func_800BFEBC(channel->ease2, channel->time, channel->duration));
+        CAMERA_SCRATCH->v1.vx = 0;
+        CAMERA_SCRATCH->v1.vy = 0;
+
         ApplyMatrixLV(&CAMERA_SCRATCH->matrix, &CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1);
-        c->computed.vx = c->position.vx + s->v1.vx;
-        c->computed.vz = c->position.vz + s->v1.vz;
-        c->computed.vy = c->start.vy
-                       + fixedPointMult(
-                           c->velocity.vy, func_800BFEBC(c->ease3, c->time, c->duration));
+
+        channel->computed.vx = channel->position.vx + CAMERA_SCRATCH->v1.vx;
+        channel->computed.vz = channel->position.vz + CAMERA_SCRATCH->v1.vz;
+        channel->computed.vy =
+            channel->start.vy
+            + fixedPointMult(channel->velocity.vy,
+                func_800BFEBC(channel->ease3, channel->time, channel->duration));
+
         break;
     }
+
     case 8:
-        func_800A190C(c->value, c->delta, &CAMERA_SCRATCH->rotation, 2);
-        vectorAdd(&c->computed,
+        func_800A190C(channel->value, channel->delta, &CAMERA_SCRATCH->rotation, 2);
+        vectorAdd(&channel->computed,
             sVectorToFixedPointVector(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->rotation),
-            &c->velocity);
+            &channel->velocity);
         break;
+
     case 9:
-        vectorAdd(&c->computed, &c->velocity, &c->otherPosition);
+        vectorAdd(&channel->computed, &channel->velocity, &channel->otherPosition);
         break;
+
     case 11:
-        func_800BCFB4(c);
+        func_800BCFB4(channel);
         break;
     }
-    vectorCopy(&c->previousCamera, &c->current);
-    if (c->carryMomentum & c->carrying) {
-        int fraction;
-        CameraScratch* s;
-        vectorAdd(&c->momentumPosition, &c->momentumPosition, &c->momentumStep);
-        fraction = func_800BFEBC(easingSineOut, c->time, c->duration);
-        s = CAMERA_SCRATCH;
-        s->value = fraction;
-        vectorSubtract(&CAMERA_SCRATCH->v1, &c->computed, &c->momentumPosition);
-        vectorFixedPointMult(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1, s->value);
-        vectorAdd(&c->current, &c->momentumPosition, &CAMERA_SCRATCH->v1);
+
+    vectorCopy(&channel->previousCamera, &channel->current);
+
+    if (channel->carryMomentum & channel->carrying) {
+
+        vectorAdd(&channel->momentumPosition, &channel->momentumPosition,
+            &channel->momentumStep);
+
+        CAMERA_SCRATCH->value =
+            func_800BFEBC(easingSineOut, channel->time, channel->duration);
+
+        vectorSubtract(
+            &CAMERA_SCRATCH->v1, &channel->computed, &channel->momentumPosition);
+        vectorFixedPointMult(
+            &CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1, CAMERA_SCRATCH->value);
+        vectorAdd(&channel->current, &channel->momentumPosition, &CAMERA_SCRATCH->v1);
     } else {
-        vectorCopy(&c->current, &c->computed);
+        vectorCopy(&channel->current, &channel->computed);
     }
-    if (c->time == c->duration) {
-        c->mode = 15;
-        if (c->carryMomentum) {
-            c->carrying = 1;
-            vectorCopy(&c->momentumPosition, &c->current);
-            vectorSubtract(&c->momentumStep, &c->current, &c->previousCamera);
+
+    if (channel->time == channel->duration) {
+
+        channel->mode = 15;
+
+        if (channel->carryMomentum) {
+            channel->carrying = 1;
+
+            vectorCopy(&channel->momentumPosition, &channel->current);
+            vectorSubtract(
+                &channel->momentumStep, &channel->current, &channel->previousCamera);
         }
     }
 }
@@ -5618,12 +5664,12 @@ void sweepCameraToSavedPlayerView(char side)
 /**
  * Multiplies a camera move's duration by the distance left to travel, in units per 1000.
  */
-static void scaleMoveDurationByDistance(CameraChannel* camera)
+static void scaleMoveDurationByDistance(CameraChannel* channel)
 {
     VECTOR remaining;
 
-    vectorSubtract(&remaining, &camera->current, &camera->position);
-    camera->duration = ((vectorMagnitude(&remaining) >> 0xC) * camera->duration) / 1000;
+    vectorSubtract(&remaining, &channel->current, &channel->position);
+    channel->duration = ((vectorMagnitude(&remaining) >> 0xC) * channel->duration) / 1000;
 }
 
 /**

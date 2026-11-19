@@ -4830,19 +4830,18 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
     case cameraSetDestinationToActorLocalOffset: {
         int id = resolveActorId(getShort(script + 1));
 
-        CameraScratch* s = CAMERA_SCRATCH;
-        s->value = id;
+        CAMERA_SCRATCH->value = id;
 
         vs_battle_getActorPosition(id, &scriptCamera->unk1D0);
 
-        s->rotation2.vz = 0;
-        s->rotation2.vx = 0;
-        s->rotation2.vy = scriptCamera->unk1D0.unk0.unk4.pad;
+        CAMERA_SCRATCH->rotation2.vz = 0;
+        CAMERA_SCRATCH->rotation2.vx = 0;
+        CAMERA_SCRATCH->rotation2.vy = scriptCamera->unk1D0.unk0.unk4.pad;
 
         RotMatrix_gte(&CAMERA_SCRATCH->rotation2, &CAMERA_SCRATCH->matrix);
         setVectorImm(&CAMERA_SCRATCH->v1, script + 4);
         ApplyMatrixLV(&CAMERA_SCRATCH->matrix, &CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1);
-        func_800A190C(s->value, script[3], &CAMERA_SCRATCH->rotation2, 2);
+        func_800A190C(CAMERA_SCRATCH->value, script[3], &CAMERA_SCRATCH->rotation2, 2);
 
         vectorAdd(&channel->position,
             sVectorToFixedPointVector(&CAMERA_SCRATCH->v2, &CAMERA_SCRATCH->rotation2),
@@ -4857,8 +4856,6 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
     }
 
     case cameraTerrainFollowTo: {
-        CameraScratch* s;
-
         channel->mode = 11;
         channel->time = 0;
         channel->ease1 = easingLinear;
@@ -4867,11 +4864,9 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
         vectorSubtract(&CAMERA_SCRATCH->v1, &channel->otherPosition, &channel->current);
         vecToRotMatrix(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->matrix);
 
-        s = CAMERA_SCRATCH;
-
-        s->matrix.t[0] = channel->current.vx >> 12;
-        s->matrix.t[1] = channel->current.vy >> 12;
-        s->matrix.t[2] = channel->current.vz >> 12;
+        CAMERA_SCRATCH->matrix.t[0] = channel->current.vx >> 12;
+        CAMERA_SCRATCH->matrix.t[1] = channel->current.vy >> 12;
+        CAMERA_SCRATCH->matrix.t[2] = channel->current.vz >> 12;
         channel->current.vy = func_800BD2B8(&CAMERA_SCRATCH->matrix);
 
         vectorCopy(&channel->computed, &channel->current);
@@ -5067,7 +5062,6 @@ static void stepCameraChannel(CameraChannel* channel, UNUSED CameraChannel* othe
 void func_800BCFB4(CameraChannel* c)
 {
     CameraMotionScratch* scratch;
-    CameraMotionScratch* finalScratch;
     short i;
     int height;
     vectorSubtract(&CAMERA_MOTION_SCRATCH->delta, &c->otherPosition, &c->position);
@@ -5113,10 +5107,9 @@ void func_800BCFB4(CameraChannel* c)
     }
     vectorAdd(
         &CAMERA_MOTION_SCRATCH->candidate, &CAMERA_MOTION_SCRATCH->delta, &c->computed);
-    finalScratch = CAMERA_MOTION_SCRATCH;
-    if (finalScratch->candidate.vx == scriptCamera->unk27C.vx
-        && finalScratch->candidate.vy == scriptCamera->unk27C.vy
-        && finalScratch->candidate.vz == scriptCamera->unk27C.vz) {
+    if (CAMERA_MOTION_SCRATCH->candidate.vx == scriptCamera->unk27C.vx
+        && CAMERA_MOTION_SCRATCH->candidate.vy == scriptCamera->unk27C.vy
+        && CAMERA_MOTION_SCRATCH->candidate.vz == scriptCamera->unk27C.vz) {
         c->time = c->duration;
     } else {
         vectorCopy(&scriptCamera->unk27C, &c->computed);
@@ -5420,8 +5413,6 @@ void func_800BDAB4(void)
 
 int func_800BDBB4(func_800BDBB4_t* arg0)
 {
-    CameraScratch* a0;
-    int v0;
 
     if (arg0->unk1E == 0) {
         return 0;
@@ -5429,12 +5420,10 @@ int func_800BDBB4(func_800BDBB4_t* arg0)
 
     arg0->unk1C = arg0->unk1C + (vs_gametime_vblanksPerFrame >> 1);
 
-    v0 = func_800BFEBC(arg0->unk1, arg0->unk1C, arg0->unk1E);
-    a0 = CAMERA_SCRATCH;
-    a0->value = v0;
-    arg0->unk2 = (arg0->unkA + ((arg0->unk12 * a0->value) >> 0xC));
-    arg0->unk4 = (arg0->unkC + ((arg0->unk14 * a0->value) >> 0xC));
-    arg0->unk6 = (arg0->unkE + ((arg0->unk16 * a0->value) >> 0xC));
+    CAMERA_SCRATCH->value = func_800BFEBC(arg0->unk1, arg0->unk1C, arg0->unk1E);
+    arg0->unk2 = (arg0->unkA + ((arg0->unk12 * CAMERA_SCRATCH->value) >> 0xC));
+    arg0->unk4 = (arg0->unkC + ((arg0->unk14 * CAMERA_SCRATCH->value) >> 0xC));
+    arg0->unk6 = (arg0->unkE + ((arg0->unk16 * CAMERA_SCRATCH->value) >> 0xC));
 
     if (arg0->unk1C == arg0->unk1E) {
         arg0->unk1E = 0;

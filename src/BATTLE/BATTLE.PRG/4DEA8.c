@@ -59,6 +59,17 @@ typedef struct {
     VECTOR otherPosition;
 } CameraChannel;
 
+enum {
+    cameraModeLerp = 2,
+    cameraModeArc = 3,
+    cameraModeOrbitTo = 4,
+    cameraModeOrbitBy = 5,
+    cameraModeFollowActor = 8,
+    cameraModeLockOffset = 9,
+    cameraModeTerrainFollow = 11,
+    cameraModeIdle = 15
+};
+
 typedef struct {
     char unk0;
     char unk1;
@@ -4417,9 +4428,9 @@ void func_800BBBE8(void)
     vectorCopy(&scriptCamera->lookAt.current, &sp30);
     vectorCopy(&scriptCamera->eye.otherPosition, &sp30);
 
-    scriptCamera->lookAt.mode = 0xF;
+    scriptCamera->lookAt.mode = cameraModeIdle;
     scriptCamera->lookAt.carryMomentum = scriptCamera->lookAt.carrying = 0;
-    scriptCamera->eye.mode = 0xF;
+    scriptCamera->eye.mode = cameraModeIdle;
     scriptCamera->eye.carryMomentum = scriptCamera->eye.carrying = 0;
     scriptCamera->unk168.unkA = 0;
     scriptCamera->unk168.unk2 = 0;
@@ -4670,7 +4681,7 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
         return scriptNext;
 
     case cameraCut:
-        channel->mode = 15;
+        channel->mode = cameraModeIdle;
 
         vectorCopy(&channel->current, &channel->position);
         vectorCopy(&otherChannel->otherPosition, &channel->position);
@@ -4678,7 +4689,7 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
         return scriptNext;
 
     case cameraLerpTo:
-        channel->mode = 2;
+        channel->mode = cameraModeLerp;
         channel->time = 0;
         channel->ease1 = script[1];
         channel->duration = script[2];
@@ -4689,7 +4700,7 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
         return scriptNext;
 
     case cameraArcTo:
-        channel->mode = 3;
+        channel->mode = cameraModeArc;
         channel->time = 0;
         channel->ease1 = script[1];
         channel->duration = script[2];
@@ -4704,7 +4715,7 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
 
     case cameraOrbitTo: {
         CameraScratch* s;
-        channel->mode = 4;
+        channel->mode = cameraModeOrbitTo;
         channel->time = 0;
         channel->duration = script[3];
         channel->ease1 = script[1] >> 4;
@@ -4764,7 +4775,7 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
         CameraScratch* s;
         int height;
 
-        channel->mode = 5;
+        channel->mode = cameraModeOrbitBy;
         channel->time = 0;
         channel->duration = script[8];
         channel->ease1 = script[6] & 15;
@@ -4808,7 +4819,7 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
         return scriptNext;
 
     case cameraFollowActor:
-        channel->mode = 8;
+        channel->mode = cameraModeFollowActor;
         channel->value = resolveActorId(getShort(script + 1));
         channel->delta = script[3];
         channel->time = 0;
@@ -4819,7 +4830,7 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
         return scriptNext;
 
     case cameraLockOffset:
-        channel->mode = 9;
+        channel->mode = cameraModeLockOffset;
         channel->time = 0;
         channel->duration = script[1];
 
@@ -4856,7 +4867,7 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
     }
 
     case cameraTerrainFollowTo: {
-        channel->mode = 11;
+        channel->mode = cameraModeTerrainFollow;
         channel->time = 0;
         channel->ease1 = easingLinear;
         channel->duration = script[2];
@@ -4905,11 +4916,11 @@ static void updateCamera(void)
 /** Steps one camera channel by a frame, evaluating its current mode. */
 static void stepCameraChannel(CameraChannel* channel, UNUSED CameraChannel* other)
 {
-    if (channel->mode == 15) {
+    if (channel->mode == cameraModeIdle) {
         return;
     }
 
-    if (channel->mode != 11) {
+    if (channel->mode != cameraModeTerrainFollow) {
         channel->time += vs_gametime_vblanksPerFrame >> 1;
         if (channel->time > channel->duration) {
             channel->time = channel->duration;
@@ -4917,7 +4928,7 @@ static void stepCameraChannel(CameraChannel* channel, UNUSED CameraChannel* othe
     }
 
     switch (channel->mode) {
-    case 2:
+    case cameraModeLerp:
         CAMERA_SCRATCH->value =
             func_800BFEBC(channel->ease1, channel->time, channel->duration);
 
@@ -4927,7 +4938,7 @@ static void stepCameraChannel(CameraChannel* channel, UNUSED CameraChannel* othe
 
         break;
 
-    case 3: {
+    case cameraModeArc: {
         CAMERA_SCRATCH->value =
             func_800BFEBC(channel->ease1, channel->time, channel->duration);
 
@@ -4951,7 +4962,7 @@ static void stepCameraChannel(CameraChannel* channel, UNUSED CameraChannel* othe
         break;
     }
 
-    case 4: {
+    case cameraModeOrbitTo: {
         CAMERA_SCRATCH->rotation.vz = 0;
         CAMERA_SCRATCH->rotation.vx = 0;
         CAMERA_SCRATCH->rotation.vy =
@@ -4980,7 +4991,7 @@ static void stepCameraChannel(CameraChannel* channel, UNUSED CameraChannel* othe
         break;
     }
 
-    case 5: {
+    case cameraModeOrbitBy: {
         CAMERA_SCRATCH->rotation.vz = 0;
         CAMERA_SCRATCH->rotation.vx = 0;
         CAMERA_SCRATCH->rotation.vy =
@@ -5010,18 +5021,18 @@ static void stepCameraChannel(CameraChannel* channel, UNUSED CameraChannel* othe
         break;
     }
 
-    case 8:
+    case cameraModeFollowActor:
         func_800A190C(channel->value, channel->delta, &CAMERA_SCRATCH->rotation, 2);
         vectorAdd(&channel->computed,
             sVectorToFixedPointVector(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->rotation),
             &channel->velocity);
         break;
 
-    case 9:
+    case cameraModeLockOffset:
         vectorAdd(&channel->computed, &channel->velocity, &channel->otherPosition);
         break;
 
-    case 11:
+    case cameraModeTerrainFollow:
         func_800BCFB4(channel);
         break;
     }
@@ -5047,7 +5058,7 @@ static void stepCameraChannel(CameraChannel* channel, UNUSED CameraChannel* othe
 
     if (channel->time == channel->duration) {
 
-        channel->mode = 15;
+        channel->mode = cameraModeIdle;
 
         if (channel->carryMomentum) {
             channel->carrying = 1;
@@ -5232,9 +5243,9 @@ void func_800BD57C(func_800BD57C_t* arg0)
  */
 u_char getCameraIdleFlags(void)
 {
-    u_char temp_a2 = scriptCamera->lookAt.mode == 0xF;
+    u_char temp_a2 = scriptCamera->lookAt.mode == cameraModeIdle;
 
-    if (scriptCamera->eye.mode == 0xF) {
+    if (scriptCamera->eye.mode == cameraModeIdle) {
         temp_a2 = temp_a2 | 2;
     }
     if (scriptCamera->unk168.unkA == 0) {
@@ -5602,8 +5613,8 @@ void clearCameraMomentum(void)
 {
     ScriptCamera* c1 = scriptCamera;
     ScriptCamera* c2;
-    c1->eye.mode = 0xF;
-    c1->lookAt.mode = 0xF;
+    c1->eye.mode = cameraModeIdle;
+    c1->lookAt.mode = cameraModeIdle;
     c2 = scriptCamera;
     c2->eye.carrying = 0;
     c2->eye.carryMomentum = 0;
@@ -5639,7 +5650,7 @@ void sweepCameraToSavedPlayerView(char side)
     vectorCopy(&scriptCamera->eye.otherPosition, &sp10);
     vectorCopy(&scriptCamera->eye.current, &sp30);
 
-    scriptCamera->lookAt.mode = 0xF;
+    scriptCamera->lookAt.mode = cameraModeIdle;
 
     initialiseCameraFromSpherical(&sp40, &sp20, temp_s3, temp_s0 + 1);
 

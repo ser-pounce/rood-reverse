@@ -304,8 +304,8 @@ VS_HIDDEN(setCloudstoneFreezeTimer);
 short func_8008DA24(int arg0, int arg1);
 VS_HIDDEN(func_8008DA24);
 
-short func_8008DC7C(int arg0, int arg1);
-VS_HIDDEN(func_8008DC7C);
+short getTerrainHeight(int x, int z);
+VS_HIDDEN(getTerrainHeight);
 
 short func_8008DD0C(int arg0, int arg1);
 VS_HIDDEN(func_8008DD0C);

@@ -300,7 +300,7 @@ void updateCameraAttachment(void);
 static void stepCameraChannel(CameraChannel*, CameraChannel*);
 static void stepCameraTerrainFollow(CameraChannel*);
 void returnToGameplayCamera(short facing, int zoom);
-int func_800BD2B8(MATRIX*);
+static int getCameraTerrainHeight(MATRIX*);
 static void stepAngleTween(AngleTween*);
 u_char getCameraIdleFlags(void);
 int func_800BDBB4(func_800BDBB4_t* arg0);
@@ -4870,7 +4870,7 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
         CAMERA_SCRATCH->matrix.t[0] = channel->current.vx >> 12;
         CAMERA_SCRATCH->matrix.t[1] = channel->current.vy >> 12;
         CAMERA_SCRATCH->matrix.t[2] = channel->current.vz >> 12;
-        channel->current.vy = func_800BD2B8(&CAMERA_SCRATCH->matrix);
+        channel->current.vy = getCameraTerrainHeight(&CAMERA_SCRATCH->matrix);
 
         vectorCopy(&channel->computed, &channel->current);
 
@@ -5081,7 +5081,7 @@ static void stepCameraTerrainFollow(CameraChannel* channel)
     scratch->matrix.t[2] = channel->position.vz >> 12;
 
     setVector(&scratch->delta, channel->position.vx - channel->computed.vx,
-        func_800BD2B8(&scratch->matrix) - channel->computed.vy,
+        getCameraTerrainHeight(&scratch->matrix) - channel->computed.vy,
         channel->position.vz - channel->computed.vz);
 
     scratch->distance = vectorMagnitude(&scratch->delta);
@@ -5110,7 +5110,7 @@ static void stepCameraTerrainFollow(CameraChannel* channel)
         scratch->matrix.t[1] = scratch->candidate.vy >> 12;
         scratch->matrix.t[2] = scratch->candidate.vz >> 12;
 
-        height = func_800BD2B8(&scratch->matrix);
+        height = getCameraTerrainHeight(&scratch->matrix);
 
         if (height < scratch->candidate.vy) {
             setVector(&scratch->delta, scratch->candidate.vx - channel->computed.vx,
@@ -5136,50 +5136,56 @@ static void stepCameraTerrainFollow(CameraChannel* channel)
     }
 }
 
-int func_800BD2B8(MATRIX* arg0)
+/**
+ * Lowest terrain height under a square of four points just ahead of the camera, with
+ * some clearance.
+ */
+static int getCameraTerrainHeight(MATRIX* camera)
 {
     VECTOR pos;
     SVECTOR offset;
     long flag;
     int first;
     int second;
-    int h;
+    int third;
+    int fourth;
     short lowest;
 
-    SetRotMatrix(arg0);
-    SetTransMatrix(arg0);
+#define SAMPLE_HEIGHT(result, x, y)                                                     \
+    setVector(&offset, x, y, 150);                                                      \
+    RotTrans(&offset, &pos, &flag);                                                     \
+    result = ((getTerrainHeight(pos.vx, pos.vz) << 17) >> 17) - 200
 
-    setVector(&offset, 80, 80, 150);
-    RotTrans(&offset, &pos, &flag);
-    first = ((func_8008DC7C(pos.vx, pos.vz) << 0x11) >> 0x11) - 200;
+    SetRotMatrix(camera);
+    SetTransMatrix(camera);
+
+    SAMPLE_HEIGHT(first, 80, 80);
+
     lowest = first;
 
-    setVector(&offset, -80, 80, 150);
-    RotTrans(&offset, &pos, &flag);
-    second = ((func_8008DC7C(pos.vx, pos.vz) << 0x11) >> 0x11) - 200;
+    SAMPLE_HEIGHT(second, -80, 80);
 
     if (second < first) {
         lowest = second;
     }
 
-    setVector(&offset, 80, -80, 150);
-    RotTrans(&offset, &pos, &flag);
-    h = ((func_8008DC7C(pos.vx, pos.vz) << 0x11) >> 0x11) - 200;
+    SAMPLE_HEIGHT(third, 80, -80);
 
-    if (h < lowest) {
-        lowest = h;
+    if (third < lowest) {
+        lowest = third;
     }
 
-    setVector(&offset, -80, -80, 150);
-    RotTrans(&offset, &pos, &flag);
-    h = ((func_8008DC7C(pos.vx, pos.vz) << 0x11) >> 0x11) - 200;
+    SAMPLE_HEIGHT(fourth, -80, -80);
 
-    if (h < lowest) {
-        lowest = h;
+    if (fourth < lowest) {
+        lowest = fourth;
     }
 
     return lowest * ONE;
+
+#undef SAMPLE_HEIGHT
 }
+
 
 int vs_battle_script_E2_E3_camera(u_char* arg0, UNUSED short arg1)
 {

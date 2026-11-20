@@ -6049,7 +6049,7 @@ static void normalizeVector(VECTOR* vector, VECTOR* result)
 
 /**
  * Loads the event data of a map.
- * @param triggerSection The map's table of event triggers, see func_800BEC58.
+ * @param triggerSection The map's table of event triggers, see requestEvent.
  * @param triggerSectionLen Size of triggerSection, 0 if there is none.
  * @param entryScript The script run when the map loads.
  * @param entryScriptLen Size of entryScript, 0 if there is none.
@@ -6188,8 +6188,41 @@ int signalEventReady(void)
     return 1;
 }
 
-short func_800BEC58(short type, int arg1, int arg2, short mode)
+/**
+ * Requests the event of the first of the map's triggers that matches a kind of check, or
+ * a specific event.
+ *
+ * @param trigger One or more EventTrigger values.
+ * @param arg1 With eventTriggerForced, the EVT file. With eventTriggerInteract and mode
+ * 0, the actor that interacted.
+ * @param arg2 With eventTriggerInteract, the actor that was interacted with if mode is 0,
+ * or a pointer to the tile if mode is 1.
+ * @param mode 0 or 1, see arg2.
+ * @return An EventRequestResult.
+ */
+short requestEvent(short trigger, int arg1, int arg2, short mode)
 {
+    enum {
+        conditionPlayerOnTile = 1,
+        conditionPlayerInRectangle,
+        conditionFlagVsValue,
+        conditionActorExists,
+        conditionActorRoleCount,
+        conditionInteractActors,
+        conditionActorHpPercent,
+        conditionInteractFacingTile,
+        conditionPlayerStopped,
+        conditionItemOwned,
+        conditionUnk11,
+        conditionUnk12,
+        conditionActorOnTile,
+        conditionActorInRectangle,
+        conditionFlagVsFlag,
+        conditionUnk16,
+        conditionNot = 0xFE,
+        conditionsEnd = 0xFF,
+    };
+
     char buf[64];
     vs_ActorPosition position;
     short i;
@@ -6197,22 +6230,22 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
     short flagId;
     short actorId;
     short flagValue;
-    int result;
+    int conditionMet;
     short negate;
     short eventId;
-    u_char* p;
+    u_char* data;
     short left;
     int right;
 
-    if (type == 255) {
+    if (trigger == eventTriggerPoll) {
         if (eventState == eventIdle) {
-            return 0;
+            return eventRequestNone;
         }
 
-        return 2;
+        return eventRequestBusy;
     }
 
-    if (type == 1) {
+    if (trigger == eventTriggerMapLoad) {
         int pending = mpdEntryScriptPending;
 
         if (pending & 1) {
@@ -6220,45 +6253,47 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
             eventState = eventRequested;
             eventSource = eventFromEntryScript;
             D_800F4BA8 = 1;
-            return 1;
+
+            return eventRequestMade;
         }
     }
 
-    if (type == 64) {
+    if (trigger == eventTriggerForced) {
         evtFile = arg1;
         eventSource = eventFromEvt;
         eventState = eventRequested;
         D_800F4BA8 = 1;
-        return 1;
+
+        return eventRequestMade;
     }
 
     if (eventState != eventIdle && D_800F4BA8 != 0) {
-        return 2;
+        return eventRequestBusy;
     }
 
     for (i = 0; i < 16; ++i) {
         u_short offset = ((u_short*)mpdTriggerSection)[i];
 
         if (offset == 0xFFFF) {
-            return 0;
+            return eventRequestNone;
         }
 
-        p = mpdTriggerSection + offset;
+        data = mpdTriggerSection + offset;
 
-        if (!(*p & type)) {
+        if (!(*data & trigger)) {
             continue;
         }
 
-        ++p;
-        eventId = getShort(p);
-        p += 2;
+        ++data;
+        eventId = getShort(data);
+        data += 2;
         negate = 0;
 
         while (1) {
-            result = 0;
+            conditionMet = 0;
 
-            switch (*p) {
-            case 0xFF:
+            switch (*data) {
+            case conditionsEnd:
                 if (eventId & 0x8000) {
                     evtFile = eventId & 0xF;
                     eventSource = eventFromTriggeredScripts;
@@ -6269,124 +6304,127 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
 
                 eventState = eventRequested;
                 D_800F4BA8 = 0;
-                return 1;
 
-            case 1:
+                return eventRequestMade;
+
+            case conditionPlayerOnTile:
                 vs_battle_getActorPosition(0, &position);
 
-                if (position.unk0.unk0.x == p[1] && position.unk0.unk0.z == p[2]) {
-                    result = 1;
+                if (position.unk0.unk0.x == data[1] && position.unk0.unk0.z == data[2]) {
+                    conditionMet = 1;
                 }
 
-                p += 3;
+                data += 3;
                 break;
 
-            case 2:
+            case conditionPlayerInRectangle:
                 vs_battle_getActorPosition(0, &position);
 
-                if (position.unk0.unk0.x >= p[1] && position.unk0.unk0.x < p[1] + p[3]
-                    && position.unk0.unk0.z >= p[2]
-                    && position.unk0.unk0.z < p[2] + p[4]) {
-                    result = 1;
+                if (position.unk0.unk0.x >= data[1]
+                    && position.unk0.unk0.x < data[1] + data[3]
+                    && position.unk0.unk0.z >= data[2]
+                    && position.unk0.unk0.z < data[2] + data[4]) {
+                    conditionMet = 1;
                 }
 
-                p += 5;
+                data += 5;
                 break;
 
-            case 3:
-                left = getStateFlag(((p[1] & 0xF) << 6) | (p[2] >> 2));
-                right = p[3];
+            case conditionFlagVsValue:
+                left = getStateFlag(((data[1] & 0xF) << 6) | (data[2] >> 2));
+                right = data[3];
                 goto compare;
 
-            case 15:
-                left = getStateFlag(((p[1] & 0xF) << 6) | (p[2] >> 2));
-                right = getStateFlag(((p[2] & 3) << 8) | p[3]);
+            case conditionFlagVsFlag:
+                left = getStateFlag(((data[1] & 0xF) << 6) | (data[2] >> 2));
+                right = getStateFlag(((data[2] & 3) << 8) | data[3]);
+
             compare:
-                switch (p[1] & 0xF0) {
-                case 0x00:
+                switch (data[1] & 0xF0) {
+                case flagComparisonLe:
                     if (left <= right) {
-                        result = 1;
+                        conditionMet = 1;
                     }
                     break;
 
-                case 0x10:
+                case flagComparisonGe:
                     if (left >= right) {
-                        result = 1;
+                        conditionMet = 1;
                     }
                     break;
 
-                case 0x20:
+                case flagComparisonEq:
                     if (left == right) {
-                        result = 1;
+                        conditionMet = 1;
                     }
                     break;
 
-                case 0x30:
+                case flagComparisonNe:
                     if (left != right) {
-                        result = 1;
+                        conditionMet = 1;
                     }
                     break;
 
-                case 0x40:
+                case flagComparisonLt:
                     if (left < right) {
-                        result = 1;
+                        conditionMet = 1;
                     }
                     break;
 
-                case 0x50:
+                case flagComparisonGt:
                     if (left > right) {
-                        result = 1;
+                        conditionMet = 1;
                     }
                     break;
                 }
 
-                p += 4;
+                data += 4;
                 break;
 
-            case 4:
-                left = getShort(p + 1);
+            case conditionActorExists:
+                left = getShort(data + 1);
 
                 if (left & 0x1000) {
                     if (getActor(left & 0x1F) != NULL) {
-                        result = 1;
+                        conditionMet = 1;
                     }
                 } else if (func_8007CF18(left) != 1) {
-                    result = 1;
+                    conditionMet = 1;
                 }
 
-                p += 3;
+                data += 3;
                 break;
 
-            case 5:
-                left = flagValue = countActorsByRole(p[1]);
-                flagId = getShort(p + 2);
+            case conditionActorRoleCount:
+                left = flagValue = countActorsByRole(data[1]);
+                flagId = getShort(data + 2);
 
                 if (flagId != 0) {
                     vs_battle_setStateFlag(flagId, flagValue);
-                    result = 1;
+                    conditionMet = 1;
                 } else if (left != 0) {
-                    result = 1;
+                    conditionMet = 1;
                 }
 
-                p += 4;
+                data += 4;
                 break;
 
-            case 6:
+            case conditionInteractActors:
                 if (mode == 0) {
-                    actorId = resolveActorId(getShort(p + 1));
-                    otherActorId = resolveActorId(getShort(p + 3));
+                    actorId = resolveActorId(getShort(data + 1));
+                    otherActorId = resolveActorId(getShort(data + 3));
 
                     if (actorId != 1 && otherActorId != 1 && arg1 == actorId
                         && arg2 == otherActorId) {
-                        result = 1;
+                        conditionMet = 1;
                     }
                 }
 
-                p += 5;
+                data += 5;
                 break;
 
-            case 7:
-                actorId = resolveActorId(getShort(p + 1));
+            case conditionActorHpPercent:
+                actorId = resolveActorId(getShort(data + 1));
 
                 if (actorId == 1) {
                     negate = 0;
@@ -6394,76 +6432,76 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
                 }
 
                 left = flagValue = func_8007C218(actorId);
-                flagId = getShort(p + 3);
+                flagId = getShort(data + 3);
 
                 if (flagId != 0) {
                     vs_battle_setStateFlag(flagId, flagValue);
-                    result = 1;
+                    conditionMet = 1;
                 } else if (left != 0) {
-                    result = 1;
+                    conditionMet = 1;
                 }
 
-                p += 5;
+                data += 5;
                 break;
 
-            case 8:
-                if (mode == 1 && ((u_char*)arg2)[0] == p[1]
-                    && ((u_char*)arg2)[2] == p[2]) {
-                    result = 1;
+            case conditionInteractFacingTile:
+                if (mode == 1 && ((u_char*)arg2)[0] == data[1]
+                    && ((u_char*)arg2)[2] == data[2]) {
+                    conditionMet = 1;
                 }
 
-                p += 3;
+                data += 3;
                 break;
 
-            case 9:
+            case conditionPlayerStopped:
                 if (!(vs_battle_getActorFlags(0) & 0x104000)) {
-                    result = 1;
+                    conditionMet = 1;
                 }
 
-                ++p;
+                ++data;
                 break;
 
-            case 10:
-                left = flagValue = itemIdIsInInventory(getShort(p + 1));
-                flagId = getShort(p + 3);
+            case conditionItemOwned:
+                left = flagValue = itemIdIsInInventory(getShort(data + 1));
+                flagId = getShort(data + 3);
 
                 if (flagId != 0) {
                     vs_battle_setStateFlag(flagId, flagValue);
-                    result = 1;
+                    conditionMet = 1;
                 } else if (left != 0) {
-                    result = 1;
+                    conditionMet = 1;
                 }
 
-                p += 5;
+                data += 5;
                 break;
 
-            case 11:
-                if ((short)func_800A0024(p[1], &position.unk0) >= 0
-                    && position.unk0.unk0.x == p[2] && position.unk0.unk0.z == p[3]
-                    && (p[4] == 0 || -(position.unk0.unk4.vy / 128) + 1 == p[4])
-                    && (p[5] == 0 || (position.unk0.unk0.extra >> 2) + 1 == p[5])) {
-                    result = 1;
+            case conditionUnk11:
+                if ((short)func_800A0024(data[1], &position.unk0) >= 0
+                    && position.unk0.unk0.x == data[2] && position.unk0.unk0.z == data[3]
+                    && (data[4] == 0 || -(position.unk0.unk4.vy / 128) + 1 == data[4])
+                    && (data[5] == 0 || (position.unk0.unk0.extra >> 2) + 1 == data[5])) {
+                    conditionMet = 1;
                 }
 
-                p += 6;
+                data += 6;
                 break;
 
-            case 12:
-                left = flagValue = -func_800A92B8(p[1], p[2]) / 128;
-                flagId = getShort(p + 3);
+            case conditionUnk12:
+                left = flagValue = -func_800A92B8(data[1], data[2]) / 128;
+                flagId = getShort(data + 3);
 
                 if (flagId != 0) {
                     vs_battle_setStateFlag(flagId, flagValue);
-                    result = 1;
+                    conditionMet = 1;
                 } else if (left != 0) {
-                    result = 1;
+                    conditionMet = 1;
                 }
 
-                p += 5;
+                data += 5;
                 break;
 
-            case 13:
-                actorId = resolveActorId(getShort(p + 1));
+            case conditionActorOnTile:
+                actorId = resolveActorId(getShort(data + 1));
 
                 if (actorId == 1) {
                     negate = 0;
@@ -6472,15 +6510,15 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
 
                 vs_battle_getActorPosition(actorId, &position);
 
-                if (position.unk0.unk0.x == p[3] && position.unk0.unk0.z == p[4]) {
-                    result = 1;
+                if (position.unk0.unk0.x == data[3] && position.unk0.unk0.z == data[4]) {
+                    conditionMet = 1;
                 }
 
-                p += 5;
+                data += 5;
                 break;
 
-            case 14:
-                actorId = resolveActorId(getShort(p + 1));
+            case conditionActorInRectangle:
+                actorId = resolveActorId(getShort(data + 1));
 
                 if (actorId == 1) {
                     negate = 0;
@@ -6489,17 +6527,18 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
 
                 vs_battle_getActorPosition(actorId, &position);
 
-                if (position.unk0.unk0.x >= p[3] && position.unk0.unk0.x < p[3] + p[5]
-                    && position.unk0.unk0.z >= p[4]
-                    && position.unk0.unk0.z < p[4] + p[6]) {
-                    result = 1;
+                if (position.unk0.unk0.x >= data[3]
+                    && position.unk0.unk0.x < data[3] + data[5]
+                    && position.unk0.unk0.z >= data[4]
+                    && position.unk0.unk0.z < data[4] + data[6]) {
+                    conditionMet = 1;
                 }
 
-                p += 7;
+                data += 7;
                 break;
 
-            case 16:
-                actorId = resolveActorId(getShort(p + 1));
+            case conditionUnk16:
+                actorId = resolveActorId(getShort(data + 1));
 
                 if (actorId == 1) {
                     negate = 0;
@@ -6507,23 +6546,23 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
                 }
 
                 if (func_8007CFCC(actorId) != 0) {
-                    result = 1;
+                    conditionMet = 1;
                 }
 
-                p += 3;
+                data += 3;
                 break;
 
-            case 0xFE:
+            case conditionNot:
                 negate = 1;
-                ++p;
+                ++data;
                 continue;
 
             default:
-                sprintf(buf, "UNKNOWN TRIGGER DETECTED:%02x", *p);
+                sprintf(buf, "UNKNOWN TRIGGER DETECTED:%02x", *data);
                 break;
             }
 
-            if (result == negate) {
+            if (conditionMet == negate) {
                 break;
             }
 

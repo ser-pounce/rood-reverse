@@ -77,8 +77,25 @@ VS_HIDDEN(getStateFlag);
 int signalEventReady(void);
 VS_HIDDEN(signalEventReady);
 
-short func_800BEC58(short, int, int, short);
-VS_HIDDEN(func_800BEC58);
+enum EventTrigger {
+    eventTriggerMapLoad = 1,
+    eventTriggerStep = 2,
+    eventTriggerInteract = 4,
+    eventTriggerDefeat = 8,
+    eventTriggerTimer = 0x10,
+    eventTriggerIdle = 0x20,
+    eventTriggerForced = 0x40,
+    eventTriggerPoll = 0xFF,
+};
+
+enum EventRequestResult {
+    eventRequestNone,
+    eventRequestMade,
+    eventRequestBusy,
+};
+
+short requestEvent(short trigger, int arg1, int arg2, short mode);
+VS_HIDDEN(requestEvent);
 
 int loadMpdEventSections(void* triggerSection, u_short triggerSectionLen,
     void* entryScript, u_short entryScriptLen, void* triggeredScripts,

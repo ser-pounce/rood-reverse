@@ -4513,9 +4513,9 @@ void func_800738E4(void)
     func_800DEC88(NULL);
     func_800DC638();
 
-    if ((func_800BEC58(0xA, 0, 0, 0) == 1)
+    if ((requestEvent(eventTriggerStep | eventTriggerDefeat, 0, 0, 0) == eventRequestMade)
         || ((vs_main_battleTimer.mode != battleTimerOff)
-            && (func_800BEC58(0x10, 0, 0, 0) == 1))) {
+            && (requestEvent(eventTriggerTimer, 0, 0, 0) == eventRequestMade))) {
         func_80073870();
         return;
     }
@@ -4989,7 +4989,7 @@ int func_80074860(int arg0)
     vs_battle_getActorPosition(arg0, &sp10);
     func_80074798(&sp10, sp20);
     // BUG: arg2 should be an actor ID?
-    return func_800BEC58(4, 0, (int)sp20, 1) == 1;
+    return requestEvent(eventTriggerInteract, 0, (int)sp20, 1) == eventRequestMade;
 }
 
 MpdRoomSectionA* func_800748B8(int arg0)
@@ -5124,7 +5124,8 @@ int func_80074BAC(int actorIndex, ActorLocation* position)
         if (D_800F196C != 3) {
             MpdRoomSection9* trigger;
 
-            if (cell->unk0_13 && func_800BEC58(2, 0, 0, 0) == 1) {
+            if (cell->unk0_13
+                && requestEvent(eventTriggerStep, 0, 0, 0) == eventRequestMade) {
                 func_80073898();
                 actor->currentTile = coordinates->unk0;
                 actor->currentTile.extra = layer;
@@ -5308,7 +5309,8 @@ int func_800751B8(int arg0, ActorLocation* arg1)
                     vs_battle_actors[arg0]->stats->currentHP = 0;
                     func_800792E4(0, arg0, 0);
 
-                    if (func_800BEC58(0xC, 0, 0, 0) == 1) {
+                    if (requestEvent(eventTriggerInteract | eventTriggerDefeat, 0, 0, 0)
+                        == eventRequestMade) {
                         return 1;
                     }
                     return 2;
@@ -7265,7 +7267,7 @@ int func_800792E4(int arg0, int arg1, int arg2)
             enemyDefeated(arg0, arg1, arg2);
             if (arg1 == 0) {
                 func_8009722C();
-                func_800BEC58(0x40, 0, 0, 0);
+                requestEvent(eventTriggerForced, 0, 0, 0);
                 func_80073898();
                 ret = 1;
             } else if (vs_battle_actors[arg1]->unk26 == 0) {
@@ -7353,7 +7355,8 @@ void func_800793C0(void)
     if (D_800F196C == 3) {
         return;
     }
-    if (func_800BEC58(12, 0, 0, 0) == 1) {
+    if (requestEvent(eventTriggerInteract | eventTriggerDefeat, 0, 0, 0)
+        == eventRequestMade) {
         func_80073898();
         return;
     }
@@ -7461,7 +7464,8 @@ void vs_battle_exec(void)
                                 break;
                             }
 
-                            if (func_800BEC58(0x20, 0, 0, 0) == 1) {
+                            if (requestEvent(eventTriggerIdle, 0, 0, 0)
+                                == eventRequestMade) {
                                 func_80073898();
                                 break;
                             }
@@ -7507,7 +7511,8 @@ void vs_battle_exec(void)
                                     i = func_800A3760(0, 0xA0, 0x80);
 
                                     if ((i >= 0) && (vs_battle_actors[i]->unk24 == 4)
-                                        && (func_800BEC58(4, 0, i, 0) == 1)) {
+                                        && (requestEvent(eventTriggerInteract, 0, i, 0)
+                                            == eventRequestMade)) {
                                         func_80073898();
                                         break;
                                     }
@@ -7621,7 +7626,8 @@ void vs_battle_exec(void)
                                 func_800C8778();
                                 func_80075554();
 
-                                if (func_800BEC58(0xFF, 0, 0, 0) == 0) {
+                                if (requestEvent(eventTriggerPoll, 0, 0, 0)
+                                    == eventRequestNone) {
                                     if ((vs_main_startState == 3)
                                         || (vs_main_startState == 4)) {
                                         vs_main_resetGame();
@@ -14460,7 +14466,7 @@ int updateBattleTimer(void)
     vs_battle_setStateFlag(0xA3, vs_main_battleTimer.time.t.h);
 
     if ((var_s2 == 0) && (vs_main_battleTimer.time.t.f == 0)
-        && (func_800BEC58(16, 0, 0, 0) == 1)) {
+        && (requestEvent(eventTriggerTimer, 0, 0, 0) == eventRequestMade)) {
         var_s1 = 1;
     }
 
@@ -14489,7 +14495,9 @@ int func_80088554(void)
                     var_s1 = func_800792E4(0, i, 0);
 
                     if ((var_s1 == 0) && (i != 0)) {
-                        if (func_800BEC58(0xC, 0, 0, 0) == 1) {
+                        if (requestEvent(
+                                eventTriggerInteract | eventTriggerDefeat, 0, 0, 0)
+                            == eventRequestMade) {
                             var_s1 = 1;
                         } else {
                             var_s1 = 2;
@@ -14614,7 +14622,10 @@ int func_80088554(void)
                                 var_s1 = func_800792E4(0, i, 0);
 
                                 if ((var_s1 == 0) && (i != 0)) {
-                                    if (func_800BEC58(0xC, 0, 0, 0) == 1) {
+                                    if (requestEvent(
+                                            eventTriggerInteract | eventTriggerDefeat, 0,
+                                            0, 0)
+                                        == eventRequestMade) {
                                         var_s1 = 1;
                                     } else {
                                         var_s1 = 2;
@@ -15366,7 +15377,7 @@ void func_80089DC0(int arg0)
         func_8008EA90(1);
         func_80073718();
     } else {
-        if (func_800BEC58(1, 0, 0, 0) == 1) {
+        if (requestEvent(eventTriggerMapLoad, 0, 0, 0) == eventRequestMade) {
             signalEventReady();
             func_8008EA90(1);
             func_80073718();

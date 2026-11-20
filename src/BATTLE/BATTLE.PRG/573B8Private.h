@@ -2,8 +2,8 @@
 #include "common.h"
 #include "573B8.h"
 
-short func_800BFBB8(u_char**, short);
-VS_HIDDEN(func_800BFBB8);
+short runScript(u_char** next, short slot);
+VS_HIDDEN(runScript);
 
 void releaseScriptControl(void);
 VS_HIDDEN(releaseScriptControl);

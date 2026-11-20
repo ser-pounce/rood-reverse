@@ -29,10 +29,11 @@ enum ActorSelector {
     actorSelectorAll = 0x2000, // where a list of actors is expected: every actor
 };
 
-// Return values of script opcode handlers, as interpreted by func_800BFBB8
+// Return values of script opcode handlers, as interpreted by runScript. Any other value
+// is the address of the opcode to jump to.
 enum ScriptResult {
     scriptNext = 0, // advance to the next opcode and keep running
-    scriptRepeat = 1, // not finished: stop and run this opcode again next frame
+    scriptWait = 1, // not finished: stop and run this opcode again next frame
     scriptFinish = 2, // the main script has finished, which ends the scene
     scriptEnd = 3, // terminate this script
     scriptYield = 4, // advance past this opcode, resume next frame

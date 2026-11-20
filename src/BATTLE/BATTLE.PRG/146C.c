@@ -313,7 +313,7 @@ extern int renderAllGeometry;
 extern vs_CharInitData* D_800F188C;
 extern int D_800F18A8;
 extern int D_800F18AC;
-extern int D_800F18B0;
+extern int switchZoneMusic;
 extern D_800F18C8_t D_800F18C8;
 extern int D_800F18E0;
 extern void* D_800F18E4;
@@ -8519,7 +8519,12 @@ int cullOccludingGeometry(int cull)
     return renderAllGeometry = ~cull & 1;
 }
 
-int func_8007BE10(int arg0) { return D_800F18B0 = arg0; }
+/**
+ * Sets whether loading a zone with different music than the current music switches to
+ * it, otherwise the music keeps playing.
+ * @param enable 1 to switch the music.
+ */
+int setSwitchZoneMusic(int enable) { return switchZoneMusic = enable; }
 
 void startEffect(int effectId, int actorId)
 {
@@ -14823,7 +14828,7 @@ void finishLoadZnd(int id)
     }
 
     if (vs_main_getCurrentMusicId() != musicId) {
-        if (D_800F18B0 != 0) {
+        if (switchZoneMusic != 0) {
             vs_main_stopMusic();
 
             for (i = 0; i < 4;) {

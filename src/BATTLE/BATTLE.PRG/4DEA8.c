@@ -2664,7 +2664,7 @@ int vs_battle_script_68_warp(u_char* script, UNUSED short arg1)
         if (script[1] == 0) {
             warpToMapThroughDoor(&warp, script[8], script[9]);
         } else {
-            func_8007BE10((script[7] >> 3) & 1);
+            setSwitchZoneMusic((script[7] >> 3) & 1);
             warpToZoneThroughDoor(&warp, script[8], script[9]);
         }
 

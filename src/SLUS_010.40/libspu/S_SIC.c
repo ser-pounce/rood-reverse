@@ -1,3 +1,15 @@
-#include "common.h"
+#include "spu.h"
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libspu/S_SIC", SpuSetIRQCallback);
+extern volatile SpuIRQCallbackProc D_8003089C;
+extern void _SpuCallback(void (*func)(void));
+
+SpuIRQCallbackProc SpuSetIRQCallback(SpuIRQCallbackProc func)
+{
+    SpuIRQCallbackProc old = D_8003089C;
+
+    if (func != old) {
+        D_8003089C = func;
+        _SpuCallback(func);
+    }
+    return old;
+}

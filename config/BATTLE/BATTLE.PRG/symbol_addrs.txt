@@ -485,6 +485,7 @@ cameraReturned = 0x800F4BB6; // size:0x2
 effectCancelled = 0x800F4BB9; // size:0x1
 evtCdSlot = 0x800F4BBC;
 vibrationPatterns = 0x800F4BC0; // size:0x20
+eventSource = 0x800F4BE0;
 scriptWarpState = 0x800F4BE2; // size:0x2
 scanlinesEnabled = 0x800F4BE4; // size:0x1
 mpdTriggeredScripts = 0x800F4BE8;

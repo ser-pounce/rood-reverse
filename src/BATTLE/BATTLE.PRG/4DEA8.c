@@ -2874,7 +2874,7 @@ int vs_battle_script_72_drawSheatheAshleyWeapon(u_char* script, UNUSED short arg
         int variantOffset;
         int animation;
 
-        if (!getStateFlag(0xAC)) {
+        if (!getStateFlag(savedWeaponDrawn)) {
             return scriptNext;
         }
 
@@ -3899,15 +3899,15 @@ int vs_battle_script_B7_specialOp(u_char* script, UNUSED short arg1)
 
     case specialUnlockAction:
         if (isActionUnlocked(script[2]) != 0) {
-            vs_battle_setStateFlag(0xB1, 0);
+            vs_battle_setStateFlag(specialOpResult, 0);
         } else {
             setActionUnlocked(script[2]);
-            vs_battle_setStateFlag(0xB1, 1);
+            vs_battle_setStateFlag(specialOpResult, 1);
         }
         break;
 
     case specialCountEngagedEnemies:
-        vs_battle_setStateFlag(0xB1, countActorsByRole(actorRoleEngagedEnemy));
+        vs_battle_setStateFlag(specialOpResult, countActorsByRole(actorRoleEngagedEnemy));
         break;
 
     case specialSetAllActorsEnabledAndAwake:
@@ -5828,8 +5828,8 @@ void sweepCameraToSavedPlayerView(char side)
     VECTOR endLookAt;
     VECTOR startEye;
     VECTOR endEye;
-    u_char facing = getStateFlag(0xAF);
-    u_char zoom = getStateFlag(0xB0);
+    u_char facing = getStateFlag(savedCameraFacing);
+    u_char zoom = getStateFlag(savedCameraZoom);
     int startFacing = facing - 1;
 
     initialiseCameraFromSpherical(

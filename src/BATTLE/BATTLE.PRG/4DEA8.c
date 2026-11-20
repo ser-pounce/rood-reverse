@@ -134,7 +134,7 @@ typedef struct {
     CameraChannel lookAt;
     CameraChannel eye;
     AngleTween roll;
-    AngleTween unk174;
+    AngleTween framebufferSpin;
     ProjectionTween projectionDistance;
     ProjectionTween nearClip;
     ProjectionTween farClip;
@@ -4436,12 +4436,12 @@ void func_800BBBE8(void)
 
     setFramebufferEffect(0);
 
-    scriptCamera->unk174.duration = 0;
-    scriptCamera->unk174.value = 0;
+    scriptCamera->framebufferSpin.duration = 0;
+    scriptCamera->framebufferSpin.value = 0;
 
     func_8007DDAC(0);
 
-    scriptCamera->unk174.changed = 1;
+    scriptCamera->framebufferSpin.changed = 1;
     scriptCamera->framebufferScale.value[1] = ONE;
     scriptCamera->framebufferScale.value[0] = ONE;
 
@@ -4560,9 +4560,9 @@ static void applyCameraState(void)
         setCameraRoll(scriptCamera->roll.value);
         scriptCamera->roll.changed = 0;
     }
-    if (scriptCamera->unk174.changed != 0) {
-        func_8007DDAC(scriptCamera->unk174.value);
-        scriptCamera->unk174.changed = 0;
+    if (scriptCamera->framebufferSpin.changed != 0) {
+        func_8007DDAC(scriptCamera->framebufferSpin.value);
+        scriptCamera->framebufferSpin.changed = 0;
     }
     if (scriptCamera->projectionDistance.changed != 0) {
         vs_battle_setProjectionDistance(scriptCamera->projectionDistance.value);
@@ -4905,7 +4905,7 @@ static void updateCamera(void)
     stepCameraChannel(&scriptCamera->lookAt, &scriptCamera->eye);
     stepCameraChannel(&scriptCamera->eye, &scriptCamera->lookAt);
     stepAngleTween(&scriptCamera->roll);
-    stepAngleTween(&scriptCamera->unk174);
+    stepAngleTween(&scriptCamera->framebufferSpin);
     stepProjectionTween(&scriptCamera->projectionDistance);
     stepProjectionTween(&scriptCamera->nearClip);
     stepProjectionTween(&scriptCamera->farClip);
@@ -5194,7 +5194,7 @@ static int getCameraTerrainHeight(MATRIX* camera)
 }
 
 /**
- * Tweens an angle: the camera roll for E2, an angle of the framebuffer effect for E3.
+ * Tweens an angle: the camera roll for E2, the spin of the frame buffer effect for E3.
  * @param script Opcode bytes:
  *   - [1..2] = target angle
  *   - [3] = low nibble the easing, high nibble the direction: 0 negative, 1 shortest,
@@ -5210,7 +5210,7 @@ int vs_battle_script_E2_E3_camera(u_char* script, UNUSED short arg1)
         tween = &scriptCamera->roll;
         break;
     case 0xE3:
-        tween = &scriptCamera->unk174;
+        tween = &scriptCamera->framebufferSpin;
         break;
     }
 
@@ -5623,9 +5623,10 @@ int vs_battle_script_EA_EB_EC_EE_EF_camera(u_char* script, UNUSED short arg1)
         return scriptNext;
 
     // Starts a camera shake in one of the two slots, or stops all shakes.
-    // [1] = number of oscillations, [2] = amplitude, 0 stops all shakes,
+    // [1] = number of oscillations, [2] = amplitude in world units, 0 stops all shakes,
     // [3] = bit 0 shakes the look-at, bit 1 shakes the eye, bits 2-3, 4-5 and 6-7 are the
-    // x, y and z weights of the shake, minus 1,
+    // weights of the shake along x, y and z, minus 1. The shake is turned by the heading
+    // of the camera, so x is sideways and z along the view.
     // [4] = envelope, 0 = constant, 1 = fades out, 2 = swells then fades, 3 = fades in,
     // [5] = duration.
     case 0xEF:

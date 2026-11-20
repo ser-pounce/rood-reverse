@@ -118,23 +118,17 @@ typedef struct {
 
 typedef struct {
     char unk0;
-    char unk1;
-    short unk2;
-    short unk4;
-    short unk6;
+    char ease;
+    short value[3];
     short unk8;
-    short unkA;
-    short unkC;
-    short unkE;
+    short start[3];
     short unk10;
-    short unk12;
-    short unk14;
-    short unk16;
+    short delta[3];
     short unk18;
     short unk1A;
-    short unk1C;
-    short unk1E;
-} func_800BDBB4_t;
+    short elapsed;
+    short duration;
+} ScreenEffectTween;
 
 typedef struct {
     CameraChannel lookAt;
@@ -154,10 +148,10 @@ typedef struct {
     u_short attachedActor;
     u_short unk1EA;
     VECTOR attachedPosition;
-    func_800BDBB4_t unk1FC;
-    func_800BDBB4_t unk21C;
-    func_800BDBB4_t unk23C;
-    func_800BDBB4_t unk25C;
+    ScreenEffectTween framebufferScale;
+    ScreenEffectTween framebufferTint;
+    ScreenEffectTween framebufferOffset;
+    ScreenEffectTween lensDistortion;
     VECTOR unk27C;
 } ScriptCamera;
 
@@ -315,7 +309,7 @@ void returnToGameplayCamera(short facing, int zoom);
 static int getCameraTerrainHeight(MATRIX*);
 static void stepAngleTween(AngleTween*);
 u_char getCameraIdleFlags(void);
-int func_800BDBB4(func_800BDBB4_t* arg0);
+static int stepScreenEffectTween(ScreenEffectTween*);
 static void stepProjectionTween(ProjectionTween*);
 static void updateCameraShake(void);
 void setCameraMomentum(int lookAt, int eye);
@@ -4448,28 +4442,29 @@ void func_800BBBE8(void)
     func_8007DDAC(0);
 
     scriptCamera->unk174.changed = 1;
-    scriptCamera->unk1FC.unk4 = ONE;
-    scriptCamera->unk1FC.unk2 = ONE;
+    scriptCamera->framebufferScale.value[1] = ONE;
+    scriptCamera->framebufferScale.value[0] = ONE;
 
     func_8007DDB8(&D_800E9C0C);
 
-    scriptCamera->unk21C.unk2 = scriptCamera->unk21C.unk4 = scriptCamera->unk21C.unk6 =
-        scriptCamera->unk1FC.unk1E = 0;
+    scriptCamera->framebufferTint.value[0] = scriptCamera->framebufferTint.value[1] =
+        scriptCamera->framebufferTint.value[2] = scriptCamera->framebufferScale.duration =
+            0;
 
     func_8007DDD4(&D_800E9C08);
 
-    scriptCamera->unk21C.unk1E = 0;
-    scriptCamera->unk23C.unk4 = ONE;
-    scriptCamera->unk23C.unk2 = ONE;
+    scriptCamera->framebufferTint.duration = 0;
+    scriptCamera->framebufferOffset.value[1] = ONE;
+    scriptCamera->framebufferOffset.value[0] = ONE;
 
     func_8007DDF8(&D_800E9C0C);
 
-    scriptCamera->unk23C.unk1E = 0;
+    scriptCamera->framebufferOffset.duration = 0;
 
     func_8007DE2C(1);
 
-    scriptCamera->unk25C.unk2 = ONE;
-    scriptCamera->unk25C.unk1E = scriptCamera->unk25C.unk4 = 0;
+    scriptCamera->lensDistortion.value[0] = ONE;
+    scriptCamera->lensDistortion.duration = scriptCamera->lensDistortion.value[1] = 0;
     scriptCamera->projectionDistance.value = 0x200;
     scriptCamera->projectionDistance.duration = 0;
     scriptCamera->projectionDistance.changed = 1;
@@ -5304,7 +5299,7 @@ u_char getCameraIdleFlags(void)
         idle |= cameraIdleFarClip;
     }
 
-    if (scriptCamera->unk25C.unk1E == 0) {
+    if (scriptCamera->lensDistortion.duration == 0) {
         idle |= cameraIdleLensDistortion;
     }
 
@@ -5315,112 +5310,167 @@ u_char getCameraIdleFlags(void)
     return idle;
 }
 
+/**
+ * Sets the parameters of the frame buffer effect and the lens distortion.
+ * @param script Opcode bytes, see the comments on each opcode.
+ */
 int vs_battle_script_B9_BA_BF_E4_E5_E6_E7_ED(u_char* script, UNUSED short arg1)
 {
     VECTOR values;
     CVECTOR color;
     short mode;
     short effectValue;
+
     switch (script[0]) {
-    case 185:
+    // Sets the ordering table index the frame buffer effect is drawn at.
+    // [1-2] = ordering table index.
+    case 0xB9:
         func_8007DE44(getShort(script + 1));
+
         return scriptNext;
 
-    case 186:
+    // Sets which half of the double buffer the frame buffer effect reads.
+    // [1] = flag selecting the half.
+    case 0xBA:
         func_8007DE5C(script[1]);
+
         return scriptNext;
 
-    case 228:
-        scriptCamera->unk1FC.unk1E = script[4];
-        if (scriptCamera->unk1FC.unk1E == 0) {
+    // Tweens the scale of the frame buffer effect.
+    // [1-2] = x and y scale (<< 7), [3] = easing, [4] = tween duration, 0 =
+    // immediate.
+    case 0xE4:
+        scriptCamera->framebufferScale.duration = script[4];
+
+        if (scriptCamera->framebufferScale.duration == 0) {
             values.vx = (script[1] << 7);
             values.vy = (script[2] << 7);
+
             func_8007DDB8(&values);
         } else {
-            scriptCamera->unk1FC.unk1C = 0;
+            scriptCamera->framebufferScale.elapsed = 0;
+
             func_8007DE88(&values);
-            scriptCamera->unk1FC.unk12 =
-                (script[1] << 7) - (scriptCamera->unk1FC.unkA = values.vx);
-            scriptCamera->unk1FC.unk14 =
-                (script[2] << 7) - (scriptCamera->unk1FC.unkC = values.vy);
-            scriptCamera->unk1FC.unk1 = script[3];
+
+            scriptCamera->framebufferScale.delta[0] =
+                (script[1] << 7) - (scriptCamera->framebufferScale.start[0] = values.vx);
+            scriptCamera->framebufferScale.delta[1] =
+                (script[2] << 7) - (scriptCamera->framebufferScale.start[1] = values.vy);
+            scriptCamera->framebufferScale.ease = script[3];
         }
+
         return scriptNext;
 
-    case 229:
-        scriptCamera->unk21C.unk1E = script[5];
-        if (scriptCamera->unk21C.unk1E == 0) {
+    // Tweens the tint of the frame buffer effect.
+    // [1-3] = red, green and blue, [4] = easing, [5] = tween duration, 0 = immediate.
+    case 0xE5:
+        scriptCamera->framebufferTint.duration = script[5];
+
+        if (scriptCamera->framebufferTint.duration == 0) {
             color.r = script[1];
             color.g = script[2];
             color.b = script[3];
+
             func_8007DDD4(&color);
         } else {
-            scriptCamera->unk21C.unk1C = 0;
+            scriptCamera->framebufferTint.elapsed = 0;
+
             func_8007DEA8(&color);
-            scriptCamera->unk21C.unk12 =
-                script[1] - (scriptCamera->unk21C.unkA = color.r);
-            scriptCamera->unk21C.unk14 =
-                script[2] - (scriptCamera->unk21C.unkC = color.g);
-            scriptCamera->unk21C.unk16 =
-                script[3] - (scriptCamera->unk21C.unkE = color.b);
-            scriptCamera->unk21C.unk1 = script[4];
+
+            scriptCamera->framebufferTint.delta[0] =
+                script[1] - (scriptCamera->framebufferTint.start[0] = color.r);
+            scriptCamera->framebufferTint.delta[1] =
+                script[2] - (scriptCamera->framebufferTint.start[1] = color.g);
+            scriptCamera->framebufferTint.delta[2] =
+                script[3] - (scriptCamera->framebufferTint.start[2] = color.b);
+            scriptCamera->framebufferTint.ease = script[4];
         }
+
         return scriptNext;
 
-    case 230:
-        scriptCamera->unk23C.unk1E = script[4];
-        if (scriptCamera->unk23C.unk1E == 0) {
+    // Tweens the offset of the frame buffer effect.
+    // [1-2] = signed x and y offset, [3] = easing, [4] = tween duration, 0 =
+    // immediate.
+    case 0xE6:
+        scriptCamera->framebufferOffset.duration = script[4];
+
+        if (scriptCamera->framebufferOffset.duration == 0) {
             values.vx = (signed char)script[1];
             values.vy = (signed char)script[2];
+
             func_8007DDF8(&values);
         } else {
-            scriptCamera->unk23C.unk1C = 0;
+            scriptCamera->framebufferOffset.elapsed = 0;
+
             func_8007DECC(&values);
-            scriptCamera->unk23C.unk12 =
-                (signed char)script[1] - (scriptCamera->unk23C.unkA = values.vx);
-            scriptCamera->unk23C.unk14 =
-                (signed char)script[2] - (scriptCamera->unk23C.unkC = values.vy);
-            scriptCamera->unk23C.unk1 = script[3];
+
+            scriptCamera->framebufferOffset.delta[0] =
+                (signed char)script[1]
+                - (scriptCamera->framebufferOffset.start[0] = values.vx);
+            scriptCamera->framebufferOffset.delta[1] =
+                (signed char)script[2]
+                - (scriptCamera->framebufferOffset.start[1] = values.vy);
+            scriptCamera->framebufferOffset.ease = script[3];
         }
+
         return scriptNext;
 
-    case 231:
+    // Sets the blend mode of the frame buffer effect.
+    // [1] = blend mode.
+    case 0xE7:
         func_8007DE2C(script[1]);
+
         return scriptNext;
 
-    // [1] = zoom (<< 6), [2] = distortion (signed), [3] = tween type, [4] = tween
+    // Tweens the lens distortion, waiting for a previous tween to finish.
+    // [1] = zoom (<< 6), [2] = distortion (signed), [3] = easing, [4] = tween
     // duration, 0 = immediate. See setScreenLensDistortion.
-    case 237:
-        if (scriptCamera->unk25C.unk1E > 0) {
+    case 0xED:
+        if (scriptCamera->lensDistortion.duration > 0) {
             return scriptRepeat;
         }
 
-        scriptCamera->unk25C.unk1E = script[4];
-        if (scriptCamera->unk25C.unk1E == 0) {
-            scriptCamera->unk25C.unk2 = effectValue = script[1] << 6;
-            scriptCamera->unk25C.unk4 = (signed char)script[2];
-            setScreenLensDistortion(effectValue, scriptCamera->unk25C.unk4);
+        scriptCamera->lensDistortion.duration = script[4];
+
+        if (scriptCamera->lensDistortion.duration == 0) {
+            scriptCamera->lensDistortion.value[0] = effectValue = script[1] << 6;
+            scriptCamera->lensDistortion.value[1] = (signed char)script[2];
+
+            setScreenLensDistortion(effectValue, scriptCamera->lensDistortion.value[1]);
         } else {
-            scriptCamera->unk25C.unk1C = 0;
-            scriptCamera->unk25C.unk12 =
+            scriptCamera->lensDistortion.elapsed = 0;
+            scriptCamera->lensDistortion.delta[0] =
                 (script[1] << 6)
-                - (scriptCamera->unk25C.unkA = scriptCamera->unk25C.unk2);
-            scriptCamera->unk25C.unk14 =
+                - (scriptCamera->lensDistortion.start[0] =
+                        scriptCamera->lensDistortion.value[0]);
+            scriptCamera->lensDistortion.delta[1] =
                 (signed char)script[2]
-                - (scriptCamera->unk25C.unkC = scriptCamera->unk25C.unk4);
-            scriptCamera->unk25C.unk1 = script[3];
+                - (scriptCamera->lensDistortion.start[1] =
+                        scriptCamera->lensDistortion.value[1]);
+            scriptCamera->lensDistortion.ease = script[3];
         }
+
         return scriptNext;
 
-    case 191:
+    // Turns the frame buffer effect on or off with a preset and resets its parameters.
+    // [1-2] = 0 to turn off, else the ordering table index of the effect.
+    case 0xBF:
+
         mode = getShort(script + 1);
+
         if (!mode) {
             func_8007DE2C(0);
+
             values.vx = values.vy = 0;
+
             func_8007DDF8(&values);
+
             values.vx = values.vy = ONE;
+
             func_8007DDB8(&values);
+
             color.r = color.g = color.b = 128;
+
             func_8007DDD4(&color);
             func_8007DE44(0);
             func_8007DE5C(0);
@@ -5428,62 +5478,71 @@ int vs_battle_script_B9_BA_BF_E4_E5_E6_E7_ED(u_char* script, UNUSED short arg1)
         } else {
             setFramebufferEffect(1);
             func_8007DE2C(0);
+
             values.vx = 0;
             values.vy = 2;
+
             func_8007DDF8(&values);
+
             values.vx = values.vy = ONE;
+
             func_8007DDB8(&values);
+
             color.r = color.g = color.b = 144;
+
             func_8007DE5C(1);
             func_8007DDD4(&color);
             func_8007DE44(mode);
         }
+
         return scriptNext;
     }
 }
 
-void func_800BDAB4(void)
+/** Steps the tweens of the frame buffer effect and the lens distortion. */
+static void updateScreenEffectTweens(void)
 {
     VECTOR sp10;
     CVECTOR sp20;
 
-    if (func_800BDBB4(&scriptCamera->unk1FC) != 0) {
-        sp10.vx = scriptCamera->unk1FC.unk2;
-        sp10.vy = scriptCamera->unk1FC.unk4;
+    if (stepScreenEffectTween(&scriptCamera->framebufferScale) != 0) {
+        sp10.vx = scriptCamera->framebufferScale.value[0];
+        sp10.vy = scriptCamera->framebufferScale.value[1];
         func_8007DDB8(&sp10);
     }
-    if (func_800BDBB4(&scriptCamera->unk21C) != 0) {
-        sp20.r = scriptCamera->unk21C.unk2;
-        sp20.g = scriptCamera->unk21C.unk4;
-        sp20.b = scriptCamera->unk21C.unk6;
+    if (stepScreenEffectTween(&scriptCamera->framebufferTint) != 0) {
+        sp20.r = scriptCamera->framebufferTint.value[0];
+        sp20.g = scriptCamera->framebufferTint.value[1];
+        sp20.b = scriptCamera->framebufferTint.value[2];
         func_8007DDD4(&sp20);
     }
-    if (func_800BDBB4(&scriptCamera->unk23C) != 0) {
-        sp10.vx = scriptCamera->unk23C.unk2;
-        sp10.vy = scriptCamera->unk23C.unk4;
+    if (stepScreenEffectTween(&scriptCamera->framebufferOffset) != 0) {
+        sp10.vx = scriptCamera->framebufferOffset.value[0];
+        sp10.vy = scriptCamera->framebufferOffset.value[1];
         func_8007DDF8(&sp10);
     }
-    if (func_800BDBB4(&scriptCamera->unk25C) != 0) {
-        setScreenLensDistortion(scriptCamera->unk25C.unk2, scriptCamera->unk25C.unk4);
+    if (stepScreenEffectTween(&scriptCamera->lensDistortion) != 0) {
+        setScreenLensDistortion(
+            scriptCamera->lensDistortion.value[0], scriptCamera->lensDistortion.value[1]);
     }
 }
 
-int func_800BDBB4(func_800BDBB4_t* arg0)
+/** Steps a screen effect tween by one frame, returns whether it has a new value. */
+static int stepScreenEffectTween(ScreenEffectTween* tween)
 {
-
-    if (arg0->unk1E == 0) {
+    if (tween->duration == 0) {
         return 0;
     }
 
-    arg0->unk1C = arg0->unk1C + (vs_gametime_vblanksPerFrame >> 1);
+    tween->elapsed += vs_gametime_vblanksPerFrame >> 1;
 
-    CAMERA_SCRATCH->value = evaluateEasing(arg0->unk1, arg0->unk1C, arg0->unk1E);
-    arg0->unk2 = (arg0->unkA + ((arg0->unk12 * CAMERA_SCRATCH->value) >> 0xC));
-    arg0->unk4 = (arg0->unkC + ((arg0->unk14 * CAMERA_SCRATCH->value) >> 0xC));
-    arg0->unk6 = (arg0->unkE + ((arg0->unk16 * CAMERA_SCRATCH->value) >> 0xC));
+    CAMERA_SCRATCH->value = evaluateEasing(tween->ease, tween->elapsed, tween->duration);
+    tween->value[0] = tween->start[0] + ((tween->delta[0] * CAMERA_SCRATCH->value) >> 12);
+    tween->value[1] = tween->start[1] + ((tween->delta[1] * CAMERA_SCRATCH->value) >> 12);
+    tween->value[2] = tween->start[2] + ((tween->delta[2] * CAMERA_SCRATCH->value) >> 12);
 
-    if (arg0->unk1C == arg0->unk1E) {
-        arg0->unk1E = 0;
+    if (tween->elapsed == tween->duration) {
+        tween->duration = 0;
     }
     return 1;
 }
@@ -6450,7 +6509,7 @@ int func_800BF850(void)
     }
 
     updateCamera();
-    func_800BDAB4();
+    updateScreenEffectTweens();
     applyCameraState();
     func_800BB9B0();
     func_800BBAFC();

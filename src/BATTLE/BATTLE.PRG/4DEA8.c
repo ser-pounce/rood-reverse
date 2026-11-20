@@ -354,7 +354,7 @@ extern void* mpdTriggerSection;
 extern u_short* scriptStrings;
 extern char switchValue;
 extern short cameraReturned;
-extern char D_800F4BB8;
+extern char eventReady;
 extern u_char effectCancelled;
 extern char* vibrationPatterns[];
 extern short eventSource;
@@ -6095,7 +6095,7 @@ int loadMpdEventSections(void* triggerSection, u_short triggerSectionLen,
     if (scriptWarpState == scriptWarpEnd) {
         eventState = eventIdle;
         scriptWarpState = scriptWarpIdle;
-        D_800F4BB8 = 0;
+        eventReady = 0;
     }
 
     mpdEntryScriptPending = entryScriptLen != 0;
@@ -6174,10 +6174,15 @@ void vs_battle_setStateFlag(short id, char value)
     flags[id] = value;
 }
 
-int func_800BEC30(void)
+/**
+ * Signals that the game is ready for the requested event to start. Does nothing if no
+ * event is requested.
+ * @return Always 1.
+ */
+int signalEventReady(void)
 {
     if (eventState == eventRequested) {
-        D_800F4BB8 = eventRequested;
+        eventReady = 1;
         return 1;
     }
     return 1;
@@ -6592,9 +6597,9 @@ int func_800BF850(void)
     }
 
     if (eventState == eventRequested) {
-        if (D_800F4BB8 != 0) {
+        if (eventReady != 0) {
             eventState = eventStarting;
-            D_800F4BB8 = 0;
+            eventReady = 0;
             func_800BBBE8();
             func_8007CEC0();
 

@@ -483,6 +483,7 @@ mpdTriggerSection = 0x800F4BAC;
 scriptStrings = 0x800F4BB0;
 switchValue = 0x800F4BB4;
 cameraReturned = 0x800F4BB6; // size:0x2
+eventReady = 0x800F4BB8;
 effectCancelled = 0x800F4BB9; // size:0x1
 evtCdSlot = 0x800F4BBC;
 vibrationPatterns = 0x800F4BC0; // size:0x20

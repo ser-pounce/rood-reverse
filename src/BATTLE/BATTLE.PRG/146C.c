@@ -4487,7 +4487,7 @@ void func_80073870(void)
 
 void func_80073898(void)
 {
-    if ((func_800BEB10() << 16) != 0) {
+    if ((getEventId() << 16) != 0) {
         D_800F196C = 3;
         cameraMode = 1;
         return;

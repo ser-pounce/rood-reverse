@@ -53,8 +53,14 @@ enum EventState {
 short getEventState(void);
 VS_HIDDEN(getEventState);
 
-short func_800BEB10(void);
-VS_HIDDEN(func_800BEB10);
+enum EventSource {
+    eventFromEvt,
+    eventFromEntryScript,
+    eventFromTriggeredScripts,
+};
+
+short getEventId(void);
+VS_HIDDEN(getEventId);
 
 void func_800BEB34(void);
 VS_HIDDEN(func_800BEB34);

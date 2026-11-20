@@ -357,7 +357,7 @@ extern short cameraReturned;
 extern char D_800F4BB8;
 extern u_char effectCancelled;
 extern char* vibrationPatterns[];
-extern short D_800F4BE0;
+extern short eventSource;
 extern char scanlinesEnabled;
 extern void* mpdTriggeredScripts;
 extern char scriptMenuState;
@@ -6112,7 +6112,12 @@ int loadMpdEventSections(void* triggerSection, u_short triggerSectionLen,
  */
 short getEventState(void) { return eventState; }
 
-short func_800BEB10(void) { return (D_800F4BE0 << 0xC) | evtFile; }
+/**
+ * Gets an id for the current event.
+ * @return The EventSource in the top nibble, below it the number of the EVT file or
+ * triggered script, if relevant.
+ */
+short getEventId(void) { return (eventSource << 12) | evtFile; }
 
 void func_800BEB34(void)
 {
@@ -6190,7 +6195,7 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
         if (pending & 1) {
             mpdEntryScriptPending = 0;
             eventState = eventRequested;
-            D_800F4BE0 = 1;
+            eventSource = eventFromEntryScript;
             D_800F4BA8 = 1;
             return 1;
         }
@@ -6198,7 +6203,7 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
 
     if (type == 64) {
         evtFile = arg1;
-        D_800F4BE0 = 0;
+        eventSource = eventFromEvt;
         eventState = eventRequested;
         D_800F4BA8 = 1;
         return 1;
@@ -6233,10 +6238,10 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
             case 0xFF:
                 if (eventId & 0x8000) {
                     evtFile = eventId & 0xF;
-                    D_800F4BE0 = 2;
+                    eventSource = eventFromTriggeredScripts;
                 } else {
                     evtFile = eventId;
-                    D_800F4BE0 = 0;
+                    eventSource = eventFromEvt;
                 }
 
                 eventState = eventRequested;
@@ -6589,18 +6594,18 @@ int func_800BF850(void)
         fogDepthOverridden = 0;
         nextEvtQueued = 0;
 
-        switch (D_800F4BE0) {
-        case 1:
+        switch (eventSource) {
+        case eventFromEntryScript:
             parseEvt(evtBuffer);
             eventState = eventRunning;
             break;
 
-        case 2:
+        case eventFromTriggeredScripts:
             parseEvt(mpdTriggeredScripts + ((short*)mpdTriggeredScripts)[evtFile]);
             eventState = eventRunning;
             break;
 
-        case 0:
+        case eventFromEvt:
             func_800C00E8(evtFile, evtBuffer);
             eventState = eventLoading;
             break;
@@ -6658,7 +6663,7 @@ int func_800BF850(void)
     if (D_800F4C22 != 0 && getCameraIdleFlags() == cameraIdleAll) {
         if (nextEvtQueued != 0) {
             eventState = eventLoading;
-            D_800F4BE0 = 0;
+            eventSource = eventFromEvt;
         } else {
             func_800BFD9C();
             eventState = eventIdle;

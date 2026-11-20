@@ -5,6 +5,7 @@
 #include "4DEA8Private.h"
 #include "battleUi.h"
 #include "src/SLUS_010.40/cd.h"
+#include "src/SLUS_010.40/gameFlags.h"
 #include "src/SLUS_010.40/pad.h"
 #include "src/SLUS_010.40/sound.h"
 #include "build/src/include/lbas.h"
@@ -44,7 +45,7 @@ short func_800BFBB8(u_char** arg0, short arg1)
         func_800C0150();
         startScreenTransitionOut(0, 0xFF, 0);
         vs_battle_disableDispMask();
-        vs_battle_setStateFlag(0xA8, 1);
+        vs_battle_setStateFlag(skippingScene, 1);
         scriptSkipMode = scriptSkipping;
     }
 

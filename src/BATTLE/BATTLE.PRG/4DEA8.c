@@ -362,7 +362,7 @@ extern char scanlinesEnabled;
 extern void* mpdTriggeredScripts;
 extern char scriptMenuState;
 extern char loopCounters[];
-extern short D_800F4C22;
+extern short mainScriptEnded;
 extern void* nextEvtBuffer;
 extern char eventState;
 /** Next opcode of the code running in each script slot, NULL if it isn't running. */
@@ -454,14 +454,14 @@ static void endScriptSkip(u_char* script)
 
     while (*script != endOpcode) {
         if (memcmp(script, skipTailMarkerOp, 4) == 0) {
-            vs_battle_setStateFlag(0xA8, 0);
+            vs_battle_setStateFlag(skippingScene, 0);
             return;
         }
         script = &script[D_800E9C30[*script]];
     }
 
     func_80093A70();
-    vs_battle_setStateFlag(0xA8, 0);
+    vs_battle_setStateFlag(skippingScene, 0);
 }
 
 /**
@@ -6571,23 +6571,30 @@ short requestEvent(short trigger, int arg1, int arg2, short mode)
     }
 }
 
-void parseEvt(u_char* data)
+/**
+ * Sets up the engine to run an event's scripts, resetting everything they share.
+ * @param data The event, with offsets to the strings at +2, to the text box shapes after
+ * the built in ones at +4, to the vibration patterns at +6, and the script at +0x10.
+ */
+static void initEvent(u_char* data)
 {
     short i;
-    u_char* table;
+    u_char* shapes;
+    u_char* vibration;
 
     scriptStrings = (u_short*)(data + *(u_short*)(data + 2));
-    table = data + *(u_short*)(data + 4);
+    shapes = data + *(u_short*)(data + 4);
 
     for (i = 9; i < 16; ++i) {
-        D_800EB588[i] = ((u_short*)table)[i - 8] ? table + ((u_short*)table)[i - 8] : 0;
+        textBoxShapes[i] =
+            ((u_short*)shapes)[i - 8] ? shapes + ((u_short*)shapes)[i - 8] : 0;
     }
 
-    table = data + *(u_short*)(data + 6);
+    vibration = data + *(u_short*)(data + 6);
 
     for (i = 0; i < 8; ++i) {
         vibrationPatterns[i] =
-            ((u_short*)table)[i] ? (char*)table + ((u_short*)table)[i] : 0;
+            ((u_short*)vibration)[i] ? (char*)vibration + ((u_short*)vibration)[i] : 0;
     }
 
     scriptSlots[0] = data + 16;
@@ -6595,7 +6602,7 @@ void parseEvt(u_char* data)
     scriptSkipMode = scriptSkipOff;
     skipRequested = 0;
 
-    vs_battle_setStateFlag(168, 0);
+    vs_battle_setStateFlag(skippingScene, 0);
 
     scriptWaitFrames[1] = scriptWaitFrames[2] = scriptWaitFrames[3] = 0;
     effectCancelled = 0;
@@ -6606,7 +6613,7 @@ void parseEvt(u_char* data)
     scriptWarpState = scriptWarpIdle;
     cameraReturned = 0;
     scriptWaitFrames[0] = 0;
-    D_800F4C22 = 0;
+    mainScriptEnded = 0;
 
     for (i = 0; i < 8; ++i) {
         textBoxStatuses[i] = 0;
@@ -6621,7 +6628,7 @@ void parseEvt(u_char* data)
     scriptMusicSlot = vs_main_getcurrentMusicSlot();
     evtCdSlot = NULL;
 
-    for (i = 16; i < 32; ++i) {
+    for (i = scriptScratch; i < scriptScratch + 16; ++i) {
         vs_battle_setStateFlag(i, 0);
     }
 }
@@ -6658,12 +6665,12 @@ int func_800BF850(void)
 
         switch (eventSource) {
         case eventFromEntryScript:
-            parseEvt(evtBuffer);
+            initEvent(evtBuffer);
             eventState = eventRunning;
             break;
 
         case eventFromTriggeredScripts:
-            parseEvt(mpdTriggeredScripts + ((short*)mpdTriggeredScripts)[evtFile]);
+            initEvent(mpdTriggeredScripts + ((short*)mpdTriggeredScripts)[evtFile]);
             eventState = eventRunning;
             break;
 
@@ -6686,7 +6693,7 @@ int func_800BF850(void)
                 nextEvtQueued = 0;
             }
 
-            parseEvt(evtBuffer);
+            initEvent(evtBuffer);
             eventState = eventRunning;
         }
 
@@ -6695,14 +6702,14 @@ int func_800BF850(void)
 
     updateCameraAttachment();
 
-    if (D_800F4C22 == 0) {
+    if (mainScriptEnded == 0) {
         if (func_800BFBB8(scriptSlots, 0) != 0) {
             if (cameraReturned == 0 && nextEvtQueued == 0
                 && scriptWarpState == scriptWarpIdle) {
                 returnToGameplayCamera(-1, -1);
             }
 
-            D_800F4C22 = 1;
+            mainScriptEnded = 1;
         }
 
         for (i = 1; i < 4; ++i) {
@@ -6722,7 +6729,7 @@ int func_800BF850(void)
         drawScanlines();
     }
 
-    if (D_800F4C22 != 0 && getCameraIdleFlags() == cameraIdleAll) {
+    if (mainScriptEnded != 0 && getCameraIdleFlags() == cameraIdleAll) {
         if (nextEvtQueued != 0) {
             eventState = eventLoading;
             eventSource = eventFromEvt;
@@ -6731,7 +6738,7 @@ int func_800BF850(void)
             eventState = eventIdle;
         }
 
-        D_800F4C22 = 0;
+        mainScriptEnded = 0;
     }
 
     return 2;

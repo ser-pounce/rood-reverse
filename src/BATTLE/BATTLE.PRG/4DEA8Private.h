@@ -143,8 +143,8 @@ VS_HIDDEN(skipRequested);
 extern u_char D_800E9C30[];
 VS_HIDDEN(D_800E9C30);
 
-extern u_char* D_800EB588[];
-VS_HIDDEN(D_800EB588);
+extern u_char* textBoxShapes[];
+VS_HIDDEN(textBoxShapes);
 
 extern vs_CdQueueSlot* evtCdSlot;
 VS_HIDDEN(evtCdSlot);

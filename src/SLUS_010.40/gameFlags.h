@@ -6,6 +6,7 @@ enum itemIdentifiers { bronzeKey = 458, chamomileSigil = 466 };
 // Indices into vs_main_stateFlags, an alternative to accessing its members by name
 enum stateFlagIds {
     scriptScratch = 0x10,
+    skippingScene = 0xA8,
     savedWeaponDrawn = 0xAC,
     savedCameraFacing = 0xAF,
     savedCameraZoom = 0xB0,

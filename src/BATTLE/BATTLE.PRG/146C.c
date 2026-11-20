@@ -4481,7 +4481,7 @@ void func_80073718(void)
 
 void func_80073870(void)
 {
-    func_800BEC30();
+    signalEventReady();
     func_80073718();
 }
 
@@ -15367,7 +15367,7 @@ void func_80089DC0(int arg0)
         func_80073718();
     } else {
         if (func_800BEC58(1, 0, 0, 0) == 1) {
-            func_800BEC30();
+            signalEventReady();
             func_8008EA90(1);
             func_80073718();
         } else {

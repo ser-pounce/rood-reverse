@@ -407,7 +407,7 @@ int vs_battle_script_yield(UNUSED u_char* arg0, UNUSED short arg1) { return scri
 int vs_battle_script_0A_waitEvtLoad(UNUSED u_char* arg0, UNUSED short arg1)
 {
     if ((evtCdSlot != 0) && (evtCdSlot->state != CdQueueStateLoaded)) {
-        return scriptRepeat;
+        return scriptWait;
     }
 
     return scriptNext;
@@ -565,7 +565,7 @@ int vs_battle_script_11_showTextBox(u_char* script, UNUSED short arg1)
 
         if (script[3] == 0) {
             textBoxStatuses[script[1]] = 1;
-            return scriptRepeat;
+            return scriptWait;
         }
 
         return scriptNext;
@@ -585,7 +585,7 @@ int vs_battle_script_11_showTextBox(u_char* script, UNUSED short arg1)
         return scriptNext;
     }
 
-    return scriptRepeat;
+    return scriptWait;
 }
 
 /**
@@ -712,7 +712,7 @@ int vs_battle_script_13_initTextBoxNearActor(u_char* script, UNUSED short arg1)
  */
 int vs_battle_script_14_dismissTextBoxAndWait(u_char* script, UNUSED short arg1)
 {
-    return vs_battle_dismissTextBox(script[1]) != 0 ? scriptRepeat : scriptNext;
+    return vs_battle_dismissTextBox(script[1]) != 0 ? scriptWait : scriptNext;
 }
 
 /**
@@ -726,7 +726,7 @@ int vs_battle_script_15_waitButtonPressed(u_char* script, UNUSED short arg1)
         return scriptYield;
     }
 
-    return scriptRepeat;
+    return scriptWait;
 }
 
 /**
@@ -801,7 +801,7 @@ int vs_battle_script_18_tweenGimImage(u_char* script, UNUSED short arg1)
     gim += script[5] >> 6;
 
     if (tween->duration != 0) {
-        return scriptRepeat;
+        return scriptWait;
     }
 
     tween->deltaX = (((signed char)script[1] * 2) - (tween->startX = gim->x));
@@ -831,7 +831,7 @@ int vs_battle_script_19_unloadGim(UNUSED u_char* arg0, UNUSED short arg1)
 int vs_battle_script_1A_waitGimTweens(UNUSED u_char* arg0, UNUSED short arg1)
 {
     return (gimTweens[0].duration | gimTweens[1].duration | gimTweens[2].duration) != 0
-             ? scriptRepeat
+             ? scriptWait
              : scriptNext;
 }
 
@@ -911,7 +911,7 @@ int vs_battle_script_1C_selectTextBox(u_char* script, UNUSED short arg1)
         textBoxSelectionPending = 1;
     }
 
-    return scriptRepeat;
+    return scriptWait;
 }
 
 /**
@@ -1500,7 +1500,7 @@ int vs_battle_script_30_waitActorActivity(u_char* script, UNUSED short arg1)
         }
     }
 
-    return (status & mask) != 0 ? scriptRepeat : scriptNext;
+    return (status & mask) != 0 ? scriptWait : scriptNext;
 }
 
 /**
@@ -1749,7 +1749,7 @@ int vs_battle_script_3A_enqueueEventData(u_char* script, UNUSED short arg1)
 int vs_battle_script_3B_waitDataQueueEmpty(UNUSED u_char* script, UNUSED short arg1)
 {
     // BUG: a full queue has no empty slot (-1), so this does not wait
-    return getEmptyObjectDataSlot() > 0 ? scriptRepeat : scriptNext;
+    return getEmptyObjectDataSlot() > 0 ? scriptWait : scriptNext;
 }
 
 /**
@@ -2331,7 +2331,7 @@ int vs_battle_script_59_openMenu(u_char* script, UNUSED short arg1)
             func_8007B9A0();
             scriptMenuState = scriptMenuOpen;
 
-            return scriptRepeat;
+            return scriptWait;
         }
 
         // Fallthrough
@@ -2347,11 +2347,11 @@ int vs_battle_script_59_openMenu(u_char* script, UNUSED short arg1)
             scriptMusicSlot = 2;
             scriptMenuState = scriptMenuOpen;
 
-            return scriptRepeat;
+            return scriptWait;
         }
 
         if (updateScriptMenu() != 0) {
-            return scriptRepeat;
+            return scriptWait;
         }
 
         vs_battle_setStateFlag(menuFSubmenu, 0);
@@ -2365,7 +2365,7 @@ int vs_battle_script_59_openMenu(u_char* script, UNUSED short arg1)
             func_8007B9A0();
             scriptMenuState = scriptMenuOpen;
 
-            return scriptRepeat;
+            return scriptWait;
         }
 
         // Fallthrough
@@ -2374,7 +2374,7 @@ int vs_battle_script_59_openMenu(u_char* script, UNUSED short arg1)
             func_8007B9CC();
             scriptMenuState = scriptMenuOpen;
 
-            return scriptRepeat;
+            return scriptWait;
         }
 
         if (updateScriptMenu() == 0) {
@@ -2383,14 +2383,14 @@ int vs_battle_script_59_openMenu(u_char* script, UNUSED short arg1)
             return scriptYield;
         }
 
-        return scriptRepeat;
+        return scriptWait;
 
     default:
         if (scriptMenuState == scriptMenuClosed) {
             openMenu(script[1], 2);
             scriptMenuState = scriptMenuOpen;
 
-            return scriptRepeat;
+            return scriptWait;
         }
 
         updateMenu();
@@ -2402,7 +2402,7 @@ int vs_battle_script_59_openMenu(u_char* script, UNUSED short arg1)
             return scriptYield;
         }
 
-        return scriptRepeat;
+        return scriptWait;
     }
 }
 
@@ -2490,7 +2490,7 @@ int vs_battle_script_5E_waitFramesOrButton(u_char* script, short slot)
     if (scriptWaitFrames[slot] == 0) {
         scriptWaitFrames[slot] = script[2];
 
-        return scriptRepeat;
+        return scriptWait;
     }
 
     if ((vs_main_buttonsPressed.all & script[1]) || (--scriptWaitFrames[slot] <= 0)) {
@@ -2500,7 +2500,7 @@ int vs_battle_script_5E_waitFramesOrButton(u_char* script, short slot)
         return scriptNext;
     }
 
-    return scriptRepeat;
+    return scriptWait;
 }
 
 /**
@@ -2677,7 +2677,7 @@ int vs_battle_script_68_warp(u_char* script, UNUSED short arg1)
         return scriptNext;
     }
 
-    return scriptRepeat;
+    return scriptWait;
 }
 
 /**
@@ -2696,7 +2696,7 @@ int vs_battle_script_69_screenTransitionOut(u_char* script, UNUSED short arg1)
             startScreenTransitionOut(script[1], script[2], script[3] * ONE / 256);
         }
 
-        return scriptRepeat;
+        return scriptWait;
     }
 
     return scriptNext;
@@ -2785,7 +2785,7 @@ int vs_battle_script_6D_setSceneVisibility(u_char* script, UNUSED short arg1)
  */
 int vs_battle_script_6E_waitForScreenTransition(UNUSED u_char* script, UNUSED short arg1)
 {
-    return getScreenTransitionPhase() != screenTransitionIdle ? scriptRepeat : scriptNext;
+    return getScreenTransitionPhase() != screenTransitionIdle ? scriptWait : scriptNext;
 }
 
 /**
@@ -2917,7 +2917,7 @@ int vs_battle_script_72_drawSheatheAshleyWeapon(u_char* script, UNUSED short arg
         }
     }
 
-    return scriptRepeat;
+    return scriptWait;
 }
 
 /**
@@ -2949,7 +2949,7 @@ int vs_battle_script_74_loadBackground(u_char* script, UNUSED short arg1)
  */
 int vs_battle_script_75_waitBackgroundLoad(UNUSED u_char* script, UNUSED short arg1)
 {
-    return pollBackgroundLoad() == 0 ? scriptRepeat : scriptNext;
+    return pollBackgroundLoad() == 0 ? scriptWait : scriptNext;
 }
 
 /**
@@ -3233,7 +3233,7 @@ int vs_battle_script_85_loadSfxSlot(u_char* script, UNUSED short arg1)
  */
 int vs_battle_script_86_waitSfxLoad(u_char* script, UNUSED short arg1)
 {
-    return vs_main_finishSfxLoad(script[1]) != 0 ? scriptRepeat : scriptNext;
+    return vs_main_finishSfxLoad(script[1]) != 0 ? scriptWait : scriptNext;
 }
 
 /**
@@ -3390,7 +3390,7 @@ int vs_battle_script_97_waitMusicSilent(u_char* script, UNUSED short arg1)
 
     if (vs_main_getMusicSlotVolume2(slot) != 0) {
         if (vs_main_getMusicSlotVolume(slot) != 0) {
-            return scriptRepeat;
+            return scriptWait;
         }
 
         vs_main_stopMusicSlot(slot);
@@ -3416,7 +3416,7 @@ int vs_battle_script_98_pushMusicState(UNUSED u_char* arg0, UNUSED short arg1)
  */
 int vs_battle_script_99_waitMusicLoad(u_char* script, UNUSED short arg1)
 {
-    return vs_main_finishMusicLoad(script[1]) == 1 ? scriptRepeat : scriptNext;
+    return vs_main_finishMusicLoad(script[1]) == 1 ? scriptWait : scriptNext;
 }
 
 /**
@@ -3434,7 +3434,7 @@ int vs_battle_script_9D_loadInstrumentBank(u_char* script, UNUSED short arg1)
 /** Waits until the instrument bank started by opcode 9D or 89 is loaded and ready. */
 int vs_battle_script_9E_waitInstrumentBankLoad(UNUSED u_char* arg0, UNUSED short arg1)
 {
-    return vs_main_processInstrumentBankLoad() == 1 ? scriptRepeat : scriptNext;
+    return vs_main_processInstrumentBankLoad() == 1 ? scriptWait : scriptNext;
 }
 
 /**
@@ -3446,7 +3446,7 @@ int vs_battle_script_9A_waitMusicBar(u_char* script, UNUSED short arg1)
 {
     int bar = vs_main_getMusicPosition() >> 0x10;
 
-    return bar < getShort(script + 1) ? scriptRepeat : scriptNext;
+    return bar < getShort(script + 1) ? scriptWait : scriptNext;
 }
 
 /**
@@ -3544,10 +3544,10 @@ int vs_battle_script_A2_waitEffectState(u_char* script, UNUSED short arg1)
             effectCancelled = 1;
         }
 
-        return scriptRepeat;
+        return scriptWait;
     }
 
-    return getEffectState() != script[1] ? scriptRepeat : scriptNext;
+    return getEffectState() != script[1] ? scriptWait : scriptNext;
 }
 
 /**
@@ -3567,7 +3567,7 @@ int vs_battle_script_A3_yieldIfSkipping(UNUSED u_char* script, UNUSED short arg1
  */
 int vs_battle_script_A4_waitEffectStageReady(UNUSED u_char* script, UNUSED short arg1)
 {
-    return isEffectStageReady() != 1 ? scriptRepeat : scriptNext;
+    return isEffectStageReady() != 1 ? scriptWait : scriptNext;
 }
 
 /**
@@ -3585,7 +3585,7 @@ int vs_battle_script_A5_cancelEffect(UNUSED u_char* script, UNUSED short arg1)
         return scriptNext;
     }
 
-    return scriptRepeat;
+    return scriptWait;
 }
 
 /**
@@ -3738,7 +3738,7 @@ int vs_battle_script_B4_showMiscLoot(u_char* script, UNUSED short arg1)
         showMiscLoot(getShort(script + 1), script[3], getShort(script + 4), script[6]);
         scriptMenuState = scriptMenuOpen;
 
-        return scriptRepeat;
+        return scriptWait;
     }
 
     if (updateScriptMenu() == 0) {
@@ -3747,7 +3747,7 @@ int vs_battle_script_B4_showMiscLoot(u_char* script, UNUSED short arg1)
         return scriptYield;
     }
 
-    return scriptRepeat;
+    return scriptWait;
 }
 
 /**
@@ -3875,7 +3875,7 @@ int vs_battle_script_B7_specialOp(u_char* script, UNUSED short arg1)
         if (scriptMenuState != scriptMenuClosed) {
 
             if (updateScriptMenu() != 0) {
-                return scriptRepeat;
+                return scriptWait;
             }
 
             vs_battle_setStateFlag(menuFSubmenu, 0);
@@ -3892,7 +3892,7 @@ int vs_battle_script_B7_specialOp(u_char* script, UNUSED short arg1)
 
         scriptMenuState = scriptMenuOpen;
 
-        return scriptRepeat;
+        return scriptWait;
 
     case specialSkipScene:
         skipRequested = 1;
@@ -3977,7 +3977,7 @@ int vs_battle_script_B7_specialOp(u_char* script, UNUSED short arg1)
 int vs_battle_script_B8_waitScreenEffectsLoaded(UNUSED u_char* arg0, UNUSED short arg1)
 {
     if ((screenEffects != NULL) && (screenEffects->loading != 0)) {
-        return scriptRepeat;
+        return scriptWait;
     }
 
     return scriptNext;
@@ -4086,7 +4086,7 @@ int vs_battle_script_E9_returnToGameplayCamera(u_char* script, UNUSED short arg1
  */
 int vs_battle_script_E0_waitCameraIdle(u_char* script, UNUSED short arg1)
 {
-    return script[1] != (script[1] & getCameraIdleFlags()) ? scriptRepeat : scriptNext;
+    return script[1] != (script[1] & getCameraIdleFlags()) ? scriptWait : scriptNext;
 }
 
 /**
@@ -4112,7 +4112,7 @@ int vs_battle_script_F0_waitFrames(u_char* script, short slot)
     if (scriptWaitFrames[slot] == 0) {
         scriptWaitFrames[slot] = script[1];
 
-        return scriptRepeat;
+        return scriptWait;
     }
 
     --scriptWaitFrames[slot];
@@ -4123,7 +4123,7 @@ int vs_battle_script_F0_waitFrames(u_char* script, short slot)
         return scriptNext;
     }
 
-    return scriptRepeat;
+    return scriptWait;
 }
 
 /**
@@ -4165,7 +4165,7 @@ int vs_battle_script_F4_joinScript(u_char* script, UNUSED short arg1)
         return scriptNext;
     }
 
-    return scriptSlots[slot] != 0 ? scriptRepeat : scriptNext;
+    return scriptSlots[slot] != 0 ? scriptWait : scriptNext;
 }
 
 /**
@@ -4231,7 +4231,7 @@ int vs_battle_script_FE_FF_endScene(UNUSED u_char* script, UNUSED short arg1)
         return scriptFinish;
     }
 
-    return scriptRepeat;
+    return scriptWait;
 }
 
 /**
@@ -5444,7 +5444,7 @@ int vs_battle_script_B9_BA_BF_E4_E5_E6_E7_ED(u_char* script, UNUSED short arg1)
     // duration, 0 = immediate. See setScreenLensDistortion.
     case 0xED:
         if (scriptCamera->lensDistortion.duration > 0) {
-            return scriptRepeat;
+            return scriptWait;
         }
 
         scriptCamera->lensDistortion.duration = script[4];
@@ -6726,7 +6726,7 @@ int updateEvent(void)
     updateCameraAttachment();
 
     if (mainScriptEnded == 0) {
-        if (func_800BFBB8(scriptSlots, 0) != 0) {
+        if (runScript(scriptSlots, 0) != 0) {
             if (cameraReturned == 0 && nextEvtQueued == 0
                 && scriptWarpState == scriptWarpIdle) {
                 returnToGameplayCamera(-1, -1);
@@ -6737,7 +6737,7 @@ int updateEvent(void)
 
         for (i = 1; i < 4; ++i) {
             if (scriptSlots[i] != NULL) {
-                func_800BFBB8(&scriptSlots[i], i);
+                runScript(&scriptSlots[i], i);
             }
         }
     }

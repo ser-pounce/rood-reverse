@@ -4666,7 +4666,7 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
     switch (script[0] & 15) {
     case cameraSetDestination:
         setVectorImm(&channel->position, script + 1);
-        
+
         return scriptNext;
 
     case cameraCut:
@@ -4674,7 +4674,7 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
 
         vectorCopy(&channel->current, &channel->position);
         vectorCopy(&otherChannel->otherPosition, &channel->position);
-        
+
         return scriptNext;
 
     case cameraLerpTo:
@@ -4685,7 +4685,7 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
 
         vectorCopy(&channel->start, &channel->current);
         vectorSubtract(&channel->velocity, &channel->position, &channel->current);
-        
+
         return scriptNext;
 
     case cameraArcTo:
@@ -4696,10 +4696,10 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
 
         vectorCopy(&channel->start, &channel->current);
         vectorSubtract(&channel->velocity, &channel->position, &channel->current);
-        
+
         channel->value = vectorMagnitude(vectorSubtract(
             &CAMERA_SCRATCH->v1, &channel->otherPosition, &channel->current));
-        
+
         return scriptNext;
 
     case cameraOrbitTo: {
@@ -4712,21 +4712,21 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
         channel->ease3 = script[2] >> 4;
 
         vectorCopy(&channel->start, &channel->otherPosition);
-        
+
         s = CAMERA_SCRATCH;
-        
+
         setVector(&s->v1, channel->current.vx - channel->otherPosition.vx, 0,
             channel->current.vz - channel->otherPosition.vz);
-        
+
         channel->value = vectorMagnitude(&CAMERA_SCRATCH->v1);
         channel->angle = atan2FixedPoint(s->v1.vx, s->v1.vz) & 4095;
-        
+
         setVector(&s->v2, channel->position.vx - channel->otherPosition.vx, 0,
             channel->position.vz - channel->otherPosition.vz);
-        
+
         channel->delta = vectorMagnitude(&CAMERA_SCRATCH->v2) - channel->value;
         s->value = (atan2FixedPoint(s->v2.vx, s->v2.vz) & 4095) - channel->angle;
-        
+
         if (s->value < -ONE / 2) {
             s->value += ONE;
         }
@@ -4756,8 +4756,8 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
         channel->aux.vy = channel->current.vy - channel->otherPosition.vy;
         channel->velocity.vy =
             channel->position.vy - channel->otherPosition.vy - channel->aux.vy;
-        
-            return scriptNext;
+
+        return scriptNext;
     }
 
     case cameraOrbitBy: {
@@ -4770,24 +4770,24 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
         channel->ease1 = script[6] & 15;
         channel->ease2 = script[6] >> 4;
         channel->ease3 = script[7] & 15;
-        
+
         vectorCopy(&channel->position, &channel->otherPosition);
-        
+
         s = CAMERA_SCRATCH;
-        
+
         setVector(&s->v1, channel->current.vx - channel->otherPosition.vx, 0,
             channel->current.vz - channel->otherPosition.vz);
-        
+
         channel->value = vectorMagnitude(&CAMERA_SCRATCH->v1);
         channel->delta = ((channel->value * script[5]) >> 6) - channel->value;
         channel->angle = atan2FixedPoint(s->v1.vx, s->v1.vz);
         channel->angleDelta = getShort(script + 1);
-        
+
         height = getShort(script + 3) * ONE;
-        
+
         channel->start.vy = channel->current.vy;
         channel->velocity.vy = height - channel->start.vy;
-        
+
         return scriptNext;
     }
 
@@ -4795,17 +4795,16 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
         func_800A190C(resolveActorId(getShort(script + 1)), script[3],
             &CAMERA_SCRATCH->rotation, 2);
 
-        
         sVectorToFixedPointVector(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->rotation);
-        
+
         setVectorImm(&CAMERA_SCRATCH->v2, script + 4);
         vectorAdd(&channel->position, &CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v2);
-        
+
         if (D_800F4BA4->attachedActor != 0x2000) {
             vectorSubtract(
                 &channel->position, &channel->position, &D_800F4BA4->attachedPosition);
         }
-        
+
         return scriptNext;
 
     case cameraFollowActor:
@@ -4814,46 +4813,46 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
         channel->delta = script[3];
         channel->time = 0;
         channel->duration = script[10];
-        
+
         setVectorImm(&channel->velocity, script + 4);
-        
+
         return scriptNext;
 
     case cameraLockOffset:
         channel->mode = 9;
         channel->time = 0;
         channel->duration = script[1];
-        
+
         vectorSubtract(&channel->velocity, &channel->current, &channel->otherPosition);
-        
+
         return scriptNext;
 
     case cameraSetDestinationToActorLocalOffset: {
         int id = resolveActorId(getShort(script + 1));
-        
+
         CameraScratch* s = CAMERA_SCRATCH;
         s->value = id;
 
         vs_battle_getActorPosition(id, &D_800F4BA4->unk1D0);
-        
+
         s->rotation2.vz = 0;
         s->rotation2.vx = 0;
         s->rotation2.vy = D_800F4BA4->unk1D0.unk0.unk4.pad;
-        
+
         RotMatrix_gte(&CAMERA_SCRATCH->rotation2, &CAMERA_SCRATCH->matrix);
         setVectorImm(&CAMERA_SCRATCH->v1, script + 4);
         ApplyMatrixLV(&CAMERA_SCRATCH->matrix, &CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1);
         func_800A190C(s->value, script[3], &CAMERA_SCRATCH->rotation2, 2);
-        
+
         vectorAdd(&channel->position,
             sVectorToFixedPointVector(&CAMERA_SCRATCH->v2, &CAMERA_SCRATCH->rotation2),
             &CAMERA_SCRATCH->v1);
-        
+
         if (D_800F4BA4->attachedActor != 0x2000) {
             vectorSubtract(
                 &channel->position, &channel->position, &D_800F4BA4->attachedPosition);
         }
-        
+
         return scriptNext;
     }
 
@@ -4864,25 +4863,25 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
         channel->time = 0;
         channel->ease1 = easingLinear;
         channel->duration = script[2];
-        
+
         vectorSubtract(&CAMERA_SCRATCH->v1, &channel->otherPosition, &channel->current);
         vecToRotMatrix(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->matrix);
-        
+
         s = CAMERA_SCRATCH;
-        
+
         s->matrix.t[0] = channel->current.vx >> 12;
         s->matrix.t[1] = channel->current.vy >> 12;
         s->matrix.t[2] = channel->current.vz >> 12;
         channel->current.vy = func_800BD2B8(&CAMERA_SCRATCH->matrix);
-        
+
         vectorCopy(&channel->computed, &channel->current);
-        
+
         channel->delta = vectorMagnitude(
             vectorSubtract(&CAMERA_SCRATCH->v1, &channel->position, &channel->computed));
         channel->value = channel->delta / script[2];
         D_800F4BA4->unk27C.vx = D_800F4BA4->unk27C.vy = D_800F4BA4->unk27C.vz =
             0x80000000;
-        
+
         return scriptNext;
     }
     }

@@ -70,6 +70,18 @@ enum {
     cameraModeIdle = 15
 };
 
+enum {
+    cameraIdleLookAt = 1 << 0,
+    cameraIdleEye = 1 << 1,
+    cameraIdleRoll = 1 << 2, // E2
+    cameraIdleProjectionDistance = 1 << 3, // EA
+    cameraIdleNearClip = 1 << 4, // EB
+    cameraIdleFarClip = 1 << 5, // EC
+    cameraIdleLensDistortion = 1 << 6, // ED
+    cameraIdleShake = 1 << 7, // EF
+    cameraIdleAll = 0xFF
+};
+
 typedef struct {
     char changed;
     char ease;
@@ -5266,36 +5278,41 @@ static void stepAngleTween(AngleTween* tween)
 
 /**
  * Gets which camera channels are idle.
- * @return Bit mask of the idle channels: 0x01 look-at, 0x02 eye, 0x04 roll (opcode E2),
- * 0x08 projection distance (EA), 0x10 near clip (EB), 0x20 far clip (EC), 0x40 lens
- * distortion (ED), 0x80 shake (EF).
+ * @return Bit mask of the idle channels, see the cameraIdle flags.
  */
 u_char getCameraIdleFlags(void)
 {
-    u_char temp_a2 = scriptCamera->lookAt.mode == cameraModeIdle;
+    u_char idle = scriptCamera->lookAt.mode == cameraModeIdle;
 
     if (scriptCamera->eye.mode == cameraModeIdle) {
-        temp_a2 = temp_a2 | 2;
+        idle |= cameraIdleEye;
     }
+
     if (scriptCamera->roll.duration == 0) {
-        temp_a2 |= 4;
+        idle |= cameraIdleRoll;
     }
+
     if (scriptCamera->projectionDistance.duration == 0) {
-        temp_a2 |= 8;
+        idle |= cameraIdleProjectionDistance;
     }
+
     if (scriptCamera->nearClip.duration == 0) {
-        temp_a2 |= 0x10;
+        idle |= cameraIdleNearClip;
     }
+
     if (scriptCamera->farClip.duration == 0) {
-        temp_a2 |= 0x20;
+        idle |= cameraIdleFarClip;
     }
+
     if (scriptCamera->unk25C.unk1E == 0) {
-        temp_a2 |= 0x40;
+        idle |= cameraIdleLensDistortion;
     }
+
     if ((scriptCamera->shakeEntries[0].unk9 + scriptCamera->shakeEntries[1].unk9) == 0) {
-        temp_a2 |= 0x80;
+        idle |= cameraIdleShake;
     }
-    return temp_a2;
+
+    return idle;
 }
 
 int vs_battle_script_B9_BA_BF_E4_E5_E6_E7_ED(u_char* script, UNUSED short arg1)
@@ -6442,7 +6459,7 @@ int func_800BF850(void)
         drawScanlines();
     }
 
-    if (D_800F4C22 != 0 && getCameraIdleFlags() == 255) {
+    if (D_800F4C22 != 0 && getCameraIdleFlags() == cameraIdleAll) {
         if (nextEvtQueued != 0) {
             D_800F4C34 = 3;
             D_800F4BE0 = 0;

@@ -4367,7 +4367,7 @@ void func_800BB9B0(void)
     for (i = 0; i < 3; ++i, ++tween, ++gim) {
         if (tween->duration != 0) {
             tween->elapsed += vs_gametime_vblanksPerFrame >> 1;
-            temp_a0 = func_800BFEBC(tween->curve, tween->elapsed, tween->duration);
+            temp_a0 = evaluateEasing(tween->curve, tween->elapsed, tween->duration);
             if (gims != NULL) {
                 gim->x = (tween->startX + ((tween->deltaX * temp_a0) >> 0xC));
                 gim->y = (tween->startY + ((tween->deltaY * temp_a0) >> 0xC));
@@ -4922,7 +4922,7 @@ static void stepCameraChannel(CameraChannel* channel, UNUSED CameraChannel* othe
     switch (channel->mode) {
     case cameraModeLerp:
         CAMERA_SCRATCH->value =
-            func_800BFEBC(channel->ease1, channel->time, channel->duration);
+            evaluateEasing(channel->ease1, channel->time, channel->duration);
 
         vectorFixedPointMult(
             &CAMERA_SCRATCH->v1, &channel->velocity, CAMERA_SCRATCH->value);
@@ -4932,7 +4932,7 @@ static void stepCameraChannel(CameraChannel* channel, UNUSED CameraChannel* othe
 
     case cameraModeArc: {
         CAMERA_SCRATCH->value =
-            func_800BFEBC(channel->ease1, channel->time, channel->duration);
+            evaluateEasing(channel->ease1, channel->time, channel->duration);
 
         vectorFixedPointMult(
             &CAMERA_SCRATCH->v1, &channel->velocity, CAMERA_SCRATCH->value);
@@ -4945,7 +4945,7 @@ static void stepCameraChannel(CameraChannel* channel, UNUSED CameraChannel* othe
         CAMERA_SCRATCH->value =
             channel->value
             + fixedPointMult(CAMERA_SCRATCH->distance - channel->value,
-                func_800BFEBC(channel->ease1, channel->time, channel->duration));
+                evaluateEasing(channel->ease1, channel->time, channel->duration));
 
         vectorFixedPointMult(
             &CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1, CAMERA_SCRATCH->value);
@@ -4960,7 +4960,7 @@ static void stepCameraChannel(CameraChannel* channel, UNUSED CameraChannel* othe
         CAMERA_SCRATCH->rotation.vy =
             channel->angle
             + ((channel->angleDelta
-                   * func_800BFEBC(channel->ease1, channel->time, channel->duration))
+                   * evaluateEasing(channel->ease1, channel->time, channel->duration))
                 >> 12);
 
         RotMatrix_gte(&CAMERA_SCRATCH->rotation, &CAMERA_SCRATCH->matrix);
@@ -4968,7 +4968,7 @@ static void stepCameraChannel(CameraChannel* channel, UNUSED CameraChannel* othe
         CAMERA_SCRATCH->v1.vz =
             channel->value
             + fixedPointMult(channel->delta,
-                func_800BFEBC(channel->ease2, channel->time, channel->duration));
+                evaluateEasing(channel->ease2, channel->time, channel->duration));
         CAMERA_SCRATCH->v1.vx = 0;
         CAMERA_SCRATCH->v1.vy = 0;
 
@@ -4977,7 +4977,7 @@ static void stepCameraChannel(CameraChannel* channel, UNUSED CameraChannel* othe
         CAMERA_SCRATCH->v1.vy =
             channel->aux.vy
             + fixedPointMult(channel->velocity.vy,
-                func_800BFEBC(channel->ease3, channel->time, channel->duration));
+                evaluateEasing(channel->ease3, channel->time, channel->duration));
         vectorAdd(&channel->computed, &channel->start, &CAMERA_SCRATCH->v1);
 
         break;
@@ -4989,7 +4989,7 @@ static void stepCameraChannel(CameraChannel* channel, UNUSED CameraChannel* othe
         CAMERA_SCRATCH->rotation.vy =
             channel->angle
             + ((channel->angleDelta
-                   * func_800BFEBC(channel->ease1, channel->time, channel->duration))
+                   * evaluateEasing(channel->ease1, channel->time, channel->duration))
                 >> 12);
 
         RotMatrix_gte(&CAMERA_SCRATCH->rotation, &CAMERA_SCRATCH->matrix);
@@ -4997,7 +4997,7 @@ static void stepCameraChannel(CameraChannel* channel, UNUSED CameraChannel* othe
         CAMERA_SCRATCH->v1.vz =
             channel->value
             + fixedPointMult(channel->delta,
-                func_800BFEBC(channel->ease2, channel->time, channel->duration));
+                evaluateEasing(channel->ease2, channel->time, channel->duration));
         CAMERA_SCRATCH->v1.vx = 0;
         CAMERA_SCRATCH->v1.vy = 0;
 
@@ -5008,7 +5008,7 @@ static void stepCameraChannel(CameraChannel* channel, UNUSED CameraChannel* othe
         channel->computed.vy =
             channel->start.vy
             + fixedPointMult(channel->velocity.vy,
-                func_800BFEBC(channel->ease3, channel->time, channel->duration));
+                evaluateEasing(channel->ease3, channel->time, channel->duration));
 
         break;
     }
@@ -5037,7 +5037,7 @@ static void stepCameraChannel(CameraChannel* channel, UNUSED CameraChannel* othe
             &channel->momentumStep);
 
         CAMERA_SCRATCH->value =
-            func_800BFEBC(easingSineOut, channel->time, channel->duration);
+            evaluateEasing(easingSineOut, channel->time, channel->duration);
 
         vectorSubtract(
             &CAMERA_SCRATCH->v1, &channel->computed, &channel->momentumPosition);
@@ -5254,7 +5254,7 @@ static void stepAngleTween(AngleTween* tween)
 
     tween->value =
         tween->start
-        + ((tween->delta * func_800BFEBC(tween->ease, tween->elapsed, tween->duration))
+        + ((tween->delta * evaluateEasing(tween->ease, tween->elapsed, tween->duration))
             >> 0xC);
 
     if (tween->elapsed >= tween->duration) {
@@ -5460,7 +5460,7 @@ int func_800BDBB4(func_800BDBB4_t* arg0)
 
     arg0->unk1C = arg0->unk1C + (vs_gametime_vblanksPerFrame >> 1);
 
-    CAMERA_SCRATCH->value = func_800BFEBC(arg0->unk1, arg0->unk1C, arg0->unk1E);
+    CAMERA_SCRATCH->value = evaluateEasing(arg0->unk1, arg0->unk1C, arg0->unk1E);
     arg0->unk2 = (arg0->unkA + ((arg0->unk12 * CAMERA_SCRATCH->value) >> 0xC));
     arg0->unk4 = (arg0->unkC + ((arg0->unk14 * CAMERA_SCRATCH->value) >> 0xC));
     arg0->unk6 = (arg0->unkE + ((arg0->unk16 * CAMERA_SCRATCH->value) >> 0xC));
@@ -5551,7 +5551,7 @@ static void stepProjectionTween(ProjectionTween* tween)
         tween->elapsed = tween->duration;
     }
 
-    CAMERA_SCRATCH->value = func_800BFEBC(tween->ease, tween->elapsed, tween->duration);
+    CAMERA_SCRATCH->value = evaluateEasing(tween->ease, tween->elapsed, tween->duration);
 
     tween->value = tween->start + ((tween->delta * CAMERA_SCRATCH->value) >> 0xC);
 

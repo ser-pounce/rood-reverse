@@ -376,7 +376,7 @@ extern int scriptReturnAddress;
 extern char scriptMusicSlot;
 extern char fogDepthOverridden;
 
-extern char D_800F4B70[];
+extern char actorMoved[];
 extern Gim* gims;
 
 /**
@@ -1024,7 +1024,7 @@ int vs_battle_script_21_walkActorToTile(u_char* script, UNUSED short arg1)
 
     func_8009DC8C(actor);
 
-    D_800F4B70[actor] = 1;
+    actorMoved[actor] = 1;
 
     return scriptNext;
 }
@@ -1161,7 +1161,7 @@ int vs_battle_script_25_moveActorToTile(u_char* script, UNUSED short arg1)
 
     func_8009DC8C(actor);
 
-    D_800F4B70[actor] = 1;
+    actorMoved[actor] = 1;
 
     return scriptNext;
 }
@@ -1209,7 +1209,7 @@ int vs_battle_script_26_moveActorToCoordinate(u_char* arg0, UNUSED short arg1)
 
     func_8009DC8C(actor);
 
-    D_800F4B70[actor] = 1;
+    actorMoved[actor] = 1;
 
     return scriptNext;
 }
@@ -1240,7 +1240,7 @@ int vs_battle_script_27_slideActorToTile(u_char* script, UNUSED short arg1)
 
     func_8009DC8C(actor);
 
-    D_800F4B70[actor] = 1;
+    actorMoved[actor] = 1;
 
     return scriptNext;
 }
@@ -1281,7 +1281,7 @@ int vs_battle_script_28_slideActorToCoordinate(u_char* script, UNUSED short arg1
 
     func_8009DC8C(actor);
 
-    D_800F4B70[actor] = 1;
+    actorMoved[actor] = 1;
 
     return scriptNext;
 }
@@ -1333,7 +1333,7 @@ int vs_battle_script_2A_walkActorToCoordinate(u_char* script, UNUSED short arg1)
 
     func_8009DC8C(actor);
 
-    D_800F4B70[actor] = 1;
+    actorMoved[actor] = 1;
 
     return scriptNext;
 }
@@ -1386,7 +1386,7 @@ int vs_battle_script_2B_turnActorToFacing(u_char* script, UNUSED short arg1)
         turnActorToFacing(actor, script[3] << 4, frames);
     }
 
-    D_800F4B70[actor] = 1;
+    actorMoved[actor] = 1;
 
     return scriptNext;
 }
@@ -1407,7 +1407,7 @@ int vs_battle_script_2C_turnActorToFaceActor(u_char* script, UNUSED short arg1)
     vs_battle_getActorPosition(resolveActorId(getShort(script + 3)), &position);
     turnActorToFaceTile(actor, &position.unk0.unk0, script[5] != 0xFF ? script[5] : -1);
 
-    D_800F4B70[actor] = 1;
+    actorMoved[actor] = 1;
 
     return scriptNext;
 }
@@ -1432,7 +1432,7 @@ int vs_battle_script_2D_turnActorToFaceTile(u_char* script, UNUSED short arg1)
     // BUG: tile.extra is uninitialised, but used as the facing if already on the tile
     turnActorToFaceTile(actor, &tile, script[6] != 0xFF ? script[6] : -1);
 
-    D_800F4B70[actor] = 1;
+    actorMoved[actor] = 1;
 
     return scriptNext;
 }
@@ -1569,7 +1569,7 @@ int vs_battle_script_33_rotateActor(u_char* script, UNUSED short arg1)
         func_800A9FD0(actor, &rotation, frames);
     }
 
-    D_800F4B70[actor] = 1;
+    actorMoved[actor] = 1;
 
     return scriptNext;
 }
@@ -4479,7 +4479,8 @@ void func_800BBBE8(void)
     scriptCamera->attachedActor = 0x2000;
 }
 
-void func_800BBDDC(void) { vs_main_freeHeapR(scriptCamera); }
+/** Frees the scripted camera. */
+void freeScriptCamera(void) { vs_main_freeHeapR(scriptCamera); }
 
 /**
  * Makes the scripted camera follow Ashley with the gameplay camera's view, until the
@@ -6119,10 +6120,13 @@ short getEventState(void) { return eventState; }
  */
 short getEventId(void) { return (eventSource << 12) | evtFile; }
 
-void func_800BEB34(void)
+/**
+ * Releases the event data of the current map, the counterpart of loadMpdEventSections.
+ */
+void unloadMpdEventSections(void)
 {
     if (scriptWarpState == scriptWarpEnd) {
-        func_800BFD9C();
+        releaseScriptControl();
     }
     if (mpdTriggerSection != 0) {
         vs_main_freeHeap(mpdTriggerSection);
@@ -6132,9 +6136,13 @@ void func_800BEB34(void)
     }
 }
 
-void func_800BEB9C(int arg0)
+/**
+ * Clears the zone flags.
+ * @param firstLoad If nonzero, does nothing.
+ */
+void resetZoneFlags(int firstLoad)
 {
-    if (arg0 == 0) {
+    if (firstLoad == 0) {
         short i;
         for (i = 64; i < 128; ++i) {
             vs_battle_setStateFlag(i, 0);
@@ -6142,7 +6150,7 @@ void func_800BEB9C(int arg0)
     }
 }
 
-void func_800BEBEC(void) { }
+void zoneUnloadNop(void) { }
 
 char getStateFlag(short arg0)
 {
@@ -6581,7 +6589,7 @@ int func_800BF850(void)
             func_8007CEC0();
 
             for (i = 0; i < 17; ++i) {
-                D_800F4B70[i] = 0;
+                actorMoved[i] = 0;
             }
 
             return 2;
@@ -6665,7 +6673,7 @@ int func_800BF850(void)
             eventState = eventLoading;
             eventSource = eventFromEvt;
         } else {
-            func_800BFD9C();
+            releaseScriptControl();
             eventState = eventIdle;
         }
 

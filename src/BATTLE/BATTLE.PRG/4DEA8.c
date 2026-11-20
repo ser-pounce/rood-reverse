@@ -5555,12 +5555,21 @@ static int stepScreenEffectTween(ScreenEffectTween* tween)
     return 1;
 }
 
+/**
+ * Sets the projection distance, clip distances and shake of the camera. Opcode EE also
+ * uses this handler, but does nothing and does not return a result.
+ * @param script Opcode bytes, see the comments on each opcode.
+ */
 int vs_battle_script_EA_EB_EC_EE_EF_camera(u_char* script, UNUSED short arg1)
 {
     ShakeEntry* entry;
     short i;
+
     switch (script[0]) {
-    case 234:
+    // Tweens the projection distance.
+    // [1] = projection distance (<< 2), 0 = default, [2] = easing, [3] = tween duration,
+    // 0 = immediate.
+    case 0xEA:
         if ((scriptCamera->projectionDistance.duration = script[3]) == 0) {
             scriptCamera->projectionDistance.value =
                 script[1] ? (script[1] << 2) : ONE / 8;
@@ -5574,8 +5583,12 @@ int vs_battle_script_EA_EB_EC_EE_EF_camera(u_char* script, UNUSED short arg1)
             scriptCamera->projectionDistance.ease = script[2];
             scriptCamera->projectionDistance.elapsed = 0;
         }
+
         return scriptNext;
-    case 235:
+
+    // Tweens the near clip distance.
+    // [1] = distance, 0 = default, [2] = easing, [3] = tween duration, 0 = immediate.
+    case 0xEB:
         if ((scriptCamera->nearClip.duration = script[3]) == 0) {
             scriptCamera->nearClip.value = script[1] ? script[1] : 64;
             scriptCamera->nearClip.changed = 1;
@@ -5586,8 +5599,13 @@ int vs_battle_script_EA_EB_EC_EE_EF_camera(u_char* script, UNUSED short arg1)
             scriptCamera->nearClip.ease = script[2];
             scriptCamera->nearClip.elapsed = 0;
         }
+
         return scriptNext;
-    case 236:
+
+    // Tweens the far clip distance.
+    // [1] = distance (<< 7), 0 = default, [2] = easing, [3] = tween duration, 0 =
+    // immediate.
+    case 0xEC:
         if ((scriptCamera->farClip.duration = script[3]) == 0) {
             scriptCamera->farClip.value = script[1] ? (script[1] << 7) : ONE;
             scriptCamera->farClip.changed = 1;
@@ -5600,13 +5618,24 @@ int vs_battle_script_EA_EB_EC_EE_EF_camera(u_char* script, UNUSED short arg1)
             scriptCamera->farClip.ease = script[2];
             scriptCamera->farClip.elapsed = 0;
         }
+
         return scriptNext;
-    case 239:
+
+    // Starts a camera shake in one of the two slots, or stops all shakes.
+    // [1] = number of oscillations, [2] = amplitude, 0 stops all shakes,
+    // [3] = bit 0 shakes the look-at, bit 1 shakes the eye, bits 2-3, 4-5 and 6-7 are the
+    // x, y and z weights of the shake, minus 1,
+    // [4] = envelope, 0 = constant, 1 = fades out, 2 = swells then fades, 3 = fades in,
+    // [5] = duration.
+    case 0xEF:
         entry = scriptCamera->shakeEntries;
+
         if (script[2] == 0) {
             entry[0].unk9 = entry[1].unk9 = 0;
+
             return scriptNext;
         }
+
         for (i = 0; i < 2; ++i, ++entry) {
             if (entry->unk9 == 0) {
                 entry->unk4 = script[1];
@@ -5618,6 +5647,7 @@ int vs_battle_script_EA_EB_EC_EE_EF_camera(u_char* script, UNUSED short arg1)
                 break;
             }
         }
+
         return scriptNext;
     }
 }

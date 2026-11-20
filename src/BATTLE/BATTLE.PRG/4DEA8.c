@@ -350,7 +350,7 @@ extern char D_800F4B8B;
 extern char cameraFollowsAshley;
 extern ScriptCamera* scriptCamera;
 extern char D_800F4BA8;
-extern void* mpdClearedSection;
+extern void* mpdTriggerSection;
 extern u_short* scriptStrings;
 extern char switchValue;
 extern short cameraReturned;
@@ -359,7 +359,7 @@ extern u_char effectCancelled;
 extern char* vibrationPatterns[];
 extern short D_800F4BE0;
 extern char scanlinesEnabled;
-extern void* mpdRoomDoorSection;
+extern void* mpdTriggeredScripts;
 extern char scriptMenuState;
 extern char loopCounters[];
 extern short D_800F4C22;
@@ -369,7 +369,7 @@ extern char D_800F4C34;
 extern u_char* scriptSlots[];
 extern short particleEffectSoundToRestore;
 extern char weaponAnimating;
-extern short mpdScriptSection;
+extern short mpdEntryScriptPending;
 extern short nextEvtQueued;
 extern char textBoxSelectionPending;
 extern int scriptReturnAddress;
@@ -6046,30 +6046,44 @@ static void normalizeVector(VECTOR* vector, VECTOR* result)
     VectorNormal(&integer, result);
 }
 
-int loadMpdClearedScriptDoorSections(void* clearedSection, u_short clearedSectionLen,
-    void* scriptSection, u_short scriptSectionLen, void* doorSection,
-    u_short doorSectionLen, int startState)
+/**
+ * Loads the event data of a map.
+ * @param triggerSection The map's table of event triggers, see func_800BEC58.
+ * @param triggerSectionLen Size of triggerSection, 0 if there is none.
+ * @param entryScript The script run when the map loads.
+ * @param entryScriptLen Size of entryScript, 0 if there is none.
+ * @param triggeredScripts A table of up to 16 scripts that the triggers can start, those
+ * with bit 15 set in their event id.
+ * @param triggeredScriptsLen Size of triggeredScripts, 0 if there is none.
+ * @param firstLoad 1 for the first map loaded after entering the battle overlay.
+ * @return 1 if the map was loaded by a warp that continues the running script, otherwise
+ * 0.
+ */
+int loadMpdEventSections(void* triggerSection, u_short triggerSectionLen,
+    void* entryScript, u_short entryScriptLen, void* triggeredScripts,
+    u_short triggeredScriptsLen, int firstLoad)
 {
     vs_battle_setStateFlag(0xA9, 0);
-    if (startState == 0) {
+
+    if (firstLoad == 0) {
         short i;
         for (i = 32; i < 64; ++i) {
             vs_battle_setStateFlag(i, 0);
         }
     }
 
-    if (clearedSectionLen != 0) {
-        mpdClearedSection = vs_main_allocHeap(clearedSectionLen);
-        memcpy(mpdClearedSection, clearedSection, clearedSectionLen);
+    if (triggerSectionLen != 0) {
+        mpdTriggerSection = vs_main_allocHeap(triggerSectionLen);
+        memcpy(mpdTriggerSection, triggerSection, triggerSectionLen);
     } else {
-        mpdClearedSection = NULL;
+        mpdTriggerSection = NULL;
     }
 
-    if (doorSectionLen != 0) {
-        mpdRoomDoorSection = vs_main_allocHeap(doorSectionLen);
-        memcpy(mpdRoomDoorSection, doorSection, doorSectionLen);
+    if (triggeredScriptsLen != 0) {
+        mpdTriggeredScripts = vs_main_allocHeap(triggeredScriptsLen);
+        memcpy(mpdTriggeredScripts, triggeredScripts, triggeredScriptsLen);
     } else {
-        mpdRoomDoorSection = NULL;
+        mpdTriggeredScripts = NULL;
     }
 
     if (scriptWarpState == scriptWarpResume) {
@@ -6083,11 +6097,12 @@ int loadMpdClearedScriptDoorSections(void* clearedSection, u_short clearedSectio
         D_800F4BB8 = 0;
     }
 
-    mpdScriptSection = scriptSectionLen != 0;
+    mpdEntryScriptPending = entryScriptLen != 0;
 
-    if (mpdScriptSection != 0) {
-        memcpy(evtBuffer, scriptSection, scriptSectionLen);
+    if (mpdEntryScriptPending != 0) {
+        memcpy(evtBuffer, entryScript, entryScriptLen);
     }
+
     return 0;
 }
 
@@ -6100,11 +6115,11 @@ void func_800BEB34(void)
     if (scriptWarpState == scriptWarpEnd) {
         func_800BFD9C();
     }
-    if (mpdClearedSection != 0) {
-        vs_main_freeHeap(mpdClearedSection);
+    if (mpdTriggerSection != 0) {
+        vs_main_freeHeap(mpdTriggerSection);
     }
-    if (mpdRoomDoorSection != 0) {
-        vs_main_freeHeap(mpdRoomDoorSection);
+    if (mpdTriggeredScripts != 0) {
+        vs_main_freeHeap(mpdTriggeredScripts);
     }
 }
 
@@ -6166,10 +6181,10 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
     }
 
     if (type == 1) {
-        int scriptSection = mpdScriptSection;
+        int pending = mpdEntryScriptPending;
 
-        if (scriptSection & 1) {
-            mpdScriptSection = 0;
+        if (pending & 1) {
+            mpdEntryScriptPending = 0;
             D_800F4C34 = 1;
             D_800F4BE0 = 1;
             D_800F4BA8 = 1;
@@ -6190,13 +6205,13 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
     }
 
     for (i = 0; i < 16; ++i) {
-        u_short offset = ((u_short*)mpdClearedSection)[i];
+        u_short offset = ((u_short*)mpdTriggerSection)[i];
 
         if (offset == 0xFFFF) {
             return 0;
         }
 
-        p = mpdClearedSection + offset;
+        p = mpdTriggerSection + offset;
 
         if (!(*p & type)) {
             continue;
@@ -6577,7 +6592,7 @@ int func_800BF850(void)
             break;
 
         case 2:
-            parseEvt(mpdRoomDoorSection + ((short*)mpdRoomDoorSection)[evtFile]);
+            parseEvt(mpdTriggeredScripts + ((short*)mpdTriggeredScripts)[evtFile]);
             D_800F4C34 = 4;
             break;
 

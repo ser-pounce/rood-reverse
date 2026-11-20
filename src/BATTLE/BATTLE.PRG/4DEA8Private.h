@@ -65,10 +65,10 @@ VS_HIDDEN(func_800BEC30);
 short func_800BEC58(short, int, int, short);
 VS_HIDDEN(func_800BEC58);
 
-int loadMpdClearedScriptDoorSections(void* clearedSection, u_short clearedSectionLen,
-    void* scriptSection, u_short scriptSectionLen, void* doorSection,
-    u_short doorSectionLen, int startState);
-VS_HIDDEN(loadMpdClearedScriptDoorSections);
+int loadMpdEventSections(void* triggerSection, u_short triggerSectionLen,
+    void* entryScript, u_short entryScriptLen, void* triggeredScripts,
+    u_short triggeredScriptsLen, int firstLoad);
+VS_HIDDEN(loadMpdEventSections);
 
 int func_800BF850(void);
 VS_HIDDEN(func_800BF850);

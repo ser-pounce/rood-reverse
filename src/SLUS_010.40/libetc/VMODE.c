@@ -10,4 +10,4 @@ long SetVideoMode(long mode)
     return previousMode;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libetc/VMODE", GetVideoMode);
+long GetVideoMode(void) { return D_80032154; }

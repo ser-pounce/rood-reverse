@@ -4287,7 +4287,7 @@ void func_800CD3E4(int index)
     u_long* ot = D_800F51B8 + index * 4;
     u_int part;
     vs_TextBox* box = &vs_battle_textBoxes[index];
-    u_short* verts = (u_short*)D_800EB588[box->unk0.shape];
+    u_short* verts = (u_short*)textBoxShapes[box->unk0.shape];
     u_char* shape;
     int header;
     int* points = VS_SCRATCH_AT(int*, 0x88);

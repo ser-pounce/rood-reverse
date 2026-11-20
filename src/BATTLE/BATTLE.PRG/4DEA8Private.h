@@ -71,7 +71,7 @@ VS_HIDDEN(resetZoneFlags);
 void zoneUnloadNop(void);
 VS_HIDDEN(zoneUnloadNop);
 
-char getStateFlag(short);
+char getStateFlag(short id);
 VS_HIDDEN(getStateFlag);
 
 int func_800BEC30(void);

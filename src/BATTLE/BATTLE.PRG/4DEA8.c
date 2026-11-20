@@ -425,6 +425,7 @@ int vs_battle_script_0C_waitGimLoad(UNUSED u_char* arg0, UNUSED short arg1)
  * Begins a section of the script that the player can skip with START.
  * @param script Opcode bytes:
  *   - [1] bit 0 = keep the music playing if the section is skipped
+ *   - [2] = unused
  */
 int vs_battle_script_0D_beginSkippable(u_char* script, UNUSED short arg1)
 {
@@ -1487,6 +1488,7 @@ int vs_battle_script_2F_despawnActor(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1-2] = actor selector
  *   - [3-4] = mask of the vs_battle_getActorFlags bits to wait for
+ *   - [5] = unused
  */
 int vs_battle_script_30_waitActorActivity(u_char* script, UNUSED short arg1)
 {
@@ -2280,6 +2282,7 @@ int vs_battle_script_56_setFlagToButtons(u_char* script, UNUSED short arg1)
  * delay to 0, and all status effects removed.
  * @param script Opcode bytes:
  *   - [1-2] = actor selector
+ *   - [3] = unused
  */
 int vs_battle_script_57_fullyRestoreActor(u_char* script, UNUSED short arg1)
 {
@@ -2308,6 +2311,7 @@ int vs_battle_script_58_setUiVisible(u_char* script, UNUSED short arg1)
  * screen with that id.
  * @param script Opcode bytes:
  *   - [1] = menu selector
+ *   - [2-3] = unused
  */
 int vs_battle_script_59_openMenu(u_char* script, UNUSED short arg1)
 {
@@ -2450,7 +2454,9 @@ int vs_battle_script_5B_setTextBoxSpeaker(u_char* script, UNUSED short arg1)
  *   - [1-2] = actor selector
  *   - [3] = blade model id, 0 = none, 0xFF = leave unchanged, 0xFE = take both weapons
  *     from the actor's equipment
+ *   - [4] = unused
  *   - [5] = shield model id, 0 = none, 0xFF = leave unchanged
+ *   - [6] = unused
  */
 int vs_battle_script_5C_setActorWeaponModels(u_char* script, UNUSED short arg1)
 {
@@ -3129,6 +3135,7 @@ int vs_battle_script_7D_adjustGeometryDepth(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = shift for horizontal turning (signed)
  *   - [2] = shift for vertical tilting (signed)
+ *   - [3] = unused
  */
 int vs_battle_script_7E_setBackgroundParallax(u_char* script, UNUSED short arg1)
 {
@@ -3814,6 +3821,7 @@ void setAllActorsEnabledAndAwake(short awake)
  * @param script Opcode bytes:
  *   - [1] = sub-opcode
  *   - [2] = argument, if the sub-opcode takes one
+ *   - [3-5] = unused, the script resumes at [6]
  */
 int vs_battle_script_B7_specialOp(u_char* script, UNUSED short arg1)
 {
@@ -4025,6 +4033,8 @@ int vs_battle_script_BE_unloadScreenEffects(UNUSED u_char* arg0, UNUSED short ar
 /**
  * Interrupts camera movement and drops the momentum carried over from the last move
  * (see opcode DF).
+ * @param script Opcode bytes:
+ *   - [1] = unused
  */
 int vs_battle_script_DE_stopCamera(UNUSED u_char* arg0, UNUSED short arg1)
 {
@@ -4236,6 +4246,8 @@ int vs_battle_script_FE_FF_endScene(UNUSED u_char* script, UNUSED short arg1)
 
 /**
  * Plays the menu select sound effect. Unused.
+ * @param script Opcode bytes:
+ *   - [1-4] = unused
  */
 int vs_battle_script_F2_playMenuSelectSfx(UNUSED u_char* script, UNUSED short arg1)
 {
@@ -5216,6 +5228,7 @@ static int getCameraTerrainHeight(MATRIX* camera)
  *   - [3] = low nibble the easing, high nibble the direction: 0 negative, 1 shortest,
  *     2 positive
  *   - [4] = duration, 0 sets the angle immediately
+ *   - [5] = unused
  */
 int vs_battle_script_E2_E3_camera(u_char* script, UNUSED short arg1)
 {

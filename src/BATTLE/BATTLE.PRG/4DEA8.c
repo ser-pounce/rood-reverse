@@ -5855,44 +5855,37 @@ void sweepCameraToSavedPlayerView(char side)
 }
 
 /**
- * Multiplies a camera move's duration by the distance left to travel, in units per 1000.
+ * Rescales a camera move's duration, which is for a distance of 1000, to the distance
+ * it has left to travel.
  */
 static void scaleMoveDurationByDistance(CameraChannel* channel)
 {
     VECTOR remaining;
 
     vectorSubtract(&remaining, &channel->current, &channel->position);
-    channel->duration = ((vectorMagnitude(&remaining) >> 0xC) * channel->duration) / 1000;
+    channel->duration = ((vectorMagnitude(&remaining) >> 12) * channel->duration) / 1000;
 }
 
 /**
- * Scales the duration of a camera move by the distance it has left to travel, see
- * scaleMoveDurationByDistance.
- * @param target 0 = look-at, 2 = both (taking the average duration), anything else =
- * eye.
+ * Scales the duration of a running camera move by the distance it has left to travel,
+ * see scaleMoveDurationByDistance.
+ * @param target 0 = look-at, 2 = both (taking the average of the two durations),
+ * anything else = eye.
  */
 void scaleCameraMoveDurationByDistance(short target)
 {
-    CameraChannel* temp_s0;
-    CameraChannel* var_a0;
-    CameraChannel* temp_s1;
-
-    temp_s0 = &scriptCamera->lookAt;
-    temp_s1 = &scriptCamera->eye;
+    CameraChannel* lookAt = &scriptCamera->lookAt;
+    CameraChannel* eye = &scriptCamera->eye;
 
     if (target == 2) {
-        scaleMoveDurationByDistance(temp_s0);
-        scaleMoveDurationByDistance(temp_s1);
-        temp_s0->duration = temp_s1->duration =
-            (temp_s0->duration + temp_s1->duration) >> 1;
+        scaleMoveDurationByDistance(lookAt);
+        scaleMoveDurationByDistance(eye);
+        lookAt->duration = eye->duration = (lookAt->duration + eye->duration) >> 1;
 
         return;
     }
-    var_a0 = temp_s0;
-    if (target != 0) {
-        var_a0 = temp_s1;
-    }
-    scaleMoveDurationByDistance(var_a0);
+
+    scaleMoveDurationByDistance(target != 0 ? eye : lookAt);
 }
 
 VECTOR* vectorAdd(VECTOR* arg0, VECTOR* arg1, VECTOR* arg2)

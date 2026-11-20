@@ -119,7 +119,14 @@ int resolveActorId(u_short arg0)
     }
 }
 
-int func_800BFEBC(short mode, short frame, short duration)
+/**
+ * Evaluates an easing curve.
+ * @param mode Easing curve, see Easing.
+ * @param frame Time elapsed, clamped to duration.
+ * @param duration Total time.
+ * @return Progress from 0 to ONE.
+ */
+int evaluateEasing(short mode, short frame, short duration)
 {
     short position = frame;
     int value;
@@ -133,12 +140,16 @@ int func_800BFEBC(short mode, short frame, short duration)
     switch (mode) {
     case easingLinear:
         return position * ONE / duration;
+
     case easingSineOut:
         return rsin(position * (ONE / 4) / duration);
+
     case easingSineInOut:
         return (rcos(position * (ONE / 2) / duration + ONE / 2) + ONE) >> 1;
+
     case easingSineIn:
         return rsin(position * (ONE / 4) / duration - ONE / 4) + ONE;
+
     default:
         mode -= easingCustom0;
         power = customEasings[mode].power;
@@ -163,10 +174,13 @@ int func_800BFEBC(short mode, short frame, short duration)
         switch (customEasings[mode].curve) {
         case easingSineOut:
             return rsin(value / 4);
+
         case easingSineInOut:
             return (rcos(value / 2 + ONE / 2) + ONE) >> 1;
+
         case easingSineIn:
             return rsin(value / 4 - ONE / 4) + ONE;
+
         case easingLinear:
         default:
             return value;

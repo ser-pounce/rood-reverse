@@ -82,8 +82,7 @@ VS_HIDDEN(stopMusicOnSkip);
 extern char scriptSkipMode;
 VS_HIDDEN(scriptSkipMode);
 
-// Easing curves, taken by func_800BFEBC. The first four are built in, the rest are set
-// up with opcode 5F.
+// Easing curves. The first four are built in, the rest are configured with opcode 5F.
 enum Easing {
     easingLinear,
     easingSineOut,

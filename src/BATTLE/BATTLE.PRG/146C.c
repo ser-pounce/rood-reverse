@@ -4444,13 +4444,13 @@ void func_80073718(void)
 
     D_800F196C = 3;
     cameraMode = 2;
-    vs_battle_setStateFlag(0xAC, vs_battle_characterState->weaponDrawn & 1);
+    vs_battle_setStateFlag(savedWeaponDrawn, vs_battle_characterState->weaponDrawn & 1);
     vs_battle_setStateFlag(
-        0xAF, (vs_battle_cameraCurrentSpherical.delta.pitch / 512) & 7);
+        savedCameraFacing, (vs_battle_cameraCurrentSpherical.delta.pitch / 512) & 7);
     if (vs_battle_cameraCurrentSpherical.initialDistance == 0x600) {
-        vs_battle_setStateFlag(0xB0, 0);
+        vs_battle_setStateFlag(savedCameraZoom, 0);
     } else {
-        vs_battle_setStateFlag(0xB0, 1);
+        vs_battle_setStateFlag(savedCameraZoom, 1);
     }
 
     for (i = 0; i < 16; ++i) {
@@ -16105,7 +16105,7 @@ D_800F1D08_t* func_8008BAC8(int arg0, int arg1, int arg2)
         D_800F1D08.count = 0;
         temp_s1 = vs_battle_roomData.header.doorSectionLen / 12;
 
-        vs_main_stateFlags.unkAC[7] = rand();
+        vs_main_stateFlags.unkB2[1] = rand();
 
         for (i = 0; i < temp_s1; ++i, ++var_s0) {
             new_var = var_s0;

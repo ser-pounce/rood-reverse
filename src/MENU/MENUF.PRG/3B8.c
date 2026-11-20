@@ -2359,10 +2359,10 @@ int initCubePuzzleStart(void)
 
 int initCubePuzzleEnd(void)
 {
-    if (vs_main_stateFlags.puzzleSetMaxTimer != 0) {
+    if (vs_main_stateFlags.puzzleTimerHours != 0) {
         vs_main_stateFlags.puzzleTimerMins = 59;
         vs_main_stateFlags.puzzleTimerSeconds = 59;
-        vs_main_stateFlags.puzzleSetMaxTimer = 0;
+        vs_main_stateFlags.puzzleTimerHours = 0;
         vs_main_stateFlags.puzzleTimerHundredths = 99;
     }
 

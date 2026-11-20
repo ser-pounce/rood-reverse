@@ -316,17 +316,17 @@ void setCameraMomentum(int lookAt, int eye);
 static void stopCamera(void);
 void sweepCameraToSavedPlayerView(char side);
 void scaleCameraMoveDurationByDistance(short target);
-VECTOR* vectorAdd(VECTOR* arg0, VECTOR* arg1, VECTOR* arg2);
-VECTOR* vectorSubtract(VECTOR* arg0, VECTOR* arg1, VECTOR* arg2);
-VECTOR* setVectorImm(VECTOR*, u_char*);
-VECTOR* vectorFixedPointMult(VECTOR*, VECTOR*, int);
-void vecToRotMatrix(VECTOR*, MATRIX*);
-int atan2FixedPoint(int arg0, int arg1);
+static VECTOR* vectorAdd(VECTOR* result, VECTOR* a, VECTOR* b);
+static VECTOR* vectorSubtract(VECTOR* result, VECTOR* a, VECTOR* b);
+static VECTOR* readScriptVector(VECTOR* result, u_char* script);
+static VECTOR* vectorFixedPointMult(VECTOR* result, VECTOR* vector, int scalar);
+static void vectorToLookMatrix(VECTOR* direction, MATRIX* matrix);
+static int yawFromOffset(int x, int z);
 static int fixedPointMult(int a, int b);
-static int vectorMagnitude(VECTOR*);
-static VECTOR* vectorCopy(VECTOR* arg0, VECTOR* arg1);
-static VECTOR* sVectorToFixedPointVector(VECTOR* arg0, SVECTOR* arg1);
-static void toNormalIntegerVector(VECTOR*, VECTOR*);
+static int vectorMagnitude(VECTOR* vector);
+static VECTOR* vectorCopy(VECTOR* destination, VECTOR* source);
+static VECTOR* sVectorToFixedPointVector(VECTOR* result, SVECTOR* integer);
+static void normalizeVector(VECTOR* vector, VECTOR* result);
 
 extern int scriptSfxGroups[];
 extern int weaponDrawnModes[];
@@ -1441,7 +1441,7 @@ int vs_battle_script_2D_turnActorToFaceTile(u_char* script, UNUSED short arg1)
  * Sets the scale of an actor, per axis.
  * @param script Opcode bytes:
  *   - [1-2] = actor selector
- *   - [3-4] = x scale (0x1000 = normal size)
+ *   - [3-4] = x scale (ONE = normal size)
  *   - [5-6] = y scale
  *   - [7-8] = z scale
  *   - [9] = frame count to change over, 0 = immediately
@@ -1547,7 +1547,7 @@ int vs_battle_script_32_queueAnimation(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1-2] = actor selector
  *   - [3] = 0: rotate to the given absolute rotation, otherwise rotate by it
- *   - [4-5] = x rotation (1/4096 turn)
+ *   - [4-5] = x rotation (1/ONE turn)
  *   - [6-7] = y rotation (the facing)
  *   - [8-9] = z rotation
  *   - [10] = frame count, 0 = immediately, 0xFF = default (from angle and the actor's
@@ -1578,7 +1578,7 @@ int vs_battle_script_33_rotateActor(u_char* script, UNUSED short arg1)
  * Turns the actor's head to the given angles.
  * @param script Opcode bytes:
  *   - [1-2] = actor selector
- *   - [3-4] = pitch (1/4096 turn)
+ *   - [3-4] = pitch (1/ONE turn)
  *   - [5-6] = yaw
  *   - [7] = speed, 0 = unlimited
  */
@@ -2468,7 +2468,7 @@ int vs_battle_script_5C_setActorWeaponModels(u_char* script, UNUSED short arg1)
  * Gives an actor a slight swaying motion.
  * @param script Opcode bytes:
  *   - [1-2] = actor selector
- *   - [3] = sway angle at its peak, in 1/4096 of a full turn, 0 = stop swaying
+ *   - [3] = sway angle at its peak, in 1/ONE of a full turn, 0 = stop swaying
  */
 int vs_battle_script_5D_setActorSway(u_char* script, UNUSED short arg1)
 {
@@ -4546,8 +4546,8 @@ static void applyCameraState(void)
         sVectorToFixedPointVector(&CAMERA_SCRATCH->v2, (SVECTOR*)scriptCamera->shakeEye);
         CAMERA_SCRATCH->rotation.vz = 0;
         CAMERA_SCRATCH->rotation.vx = 0;
-        CAMERA_SCRATCH->rotation.vy = atan2FixedPoint(
-            cameraLookAt.vx - cameraPos.vx, cameraLookAt.vz - cameraPos.vz);
+        CAMERA_SCRATCH->rotation.vy =
+            yawFromOffset(cameraLookAt.vx - cameraPos.vx, cameraLookAt.vz - cameraPos.vz);
         RotMatrix_gte(&CAMERA_SCRATCH->rotation, &CAMERA_SCRATCH->matrix);
         ApplyMatrixLV(&CAMERA_SCRATCH->matrix, &CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1);
         ApplyMatrixLV(&CAMERA_SCRATCH->matrix, &CAMERA_SCRATCH->v2, &CAMERA_SCRATCH->v2);
@@ -4615,7 +4615,7 @@ void returnToGameplayCamera(short facing, int zoom)
 /**
  * Controls the look-at (opcodes 0xC0 to 0xCB) or eye (0xD0 to 0xDB) camera channel, as
  * chosen by bit 4. The low nibble is the sub-opcode. An easing is a value of enum Easing,
- * a duration is in steps of 1/30 s, and an angle is in 4096 per turn.
+ * a duration is in steps of 1/30 s, and an angle is in ONE per turn.
  * @param script Opcode bytes, which depend on the sub-opcode.
  */
 int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
@@ -4675,7 +4675,7 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
 
     switch (script[0] & 15) {
     case cameraSetDestination:
-        setVectorImm(&channel->position, script + 1);
+        readScriptVector(&channel->position, script + 1);
 
         return scriptNext;
 
@@ -4729,13 +4729,13 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
             channel->current.vz - channel->otherPosition.vz);
 
         channel->value = vectorMagnitude(&CAMERA_SCRATCH->v1);
-        channel->angle = atan2FixedPoint(s->v1.vx, s->v1.vz) & 4095;
+        channel->angle = yawFromOffset(s->v1.vx, s->v1.vz) & 4095;
 
         setVector(&s->v2, channel->position.vx - channel->otherPosition.vx, 0,
             channel->position.vz - channel->otherPosition.vz);
 
         channel->delta = vectorMagnitude(&CAMERA_SCRATCH->v2) - channel->value;
-        s->value = (atan2FixedPoint(s->v2.vx, s->v2.vz) & 4095) - channel->angle;
+        s->value = (yawFromOffset(s->v2.vx, s->v2.vz) & 4095) - channel->angle;
 
         if (s->value < -ONE / 2) {
             s->value += ONE;
@@ -4790,7 +4790,7 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
 
         channel->value = vectorMagnitude(&CAMERA_SCRATCH->v1);
         channel->delta = ((channel->value * script[5]) >> 6) - channel->value;
-        channel->angle = atan2FixedPoint(s->v1.vx, s->v1.vz);
+        channel->angle = yawFromOffset(s->v1.vx, s->v1.vz);
         channel->angleDelta = getShort(script + 1);
 
         height = getShort(script + 3) * ONE;
@@ -4807,7 +4807,7 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
 
         sVectorToFixedPointVector(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->rotation);
 
-        setVectorImm(&CAMERA_SCRATCH->v2, script + 4);
+        readScriptVector(&CAMERA_SCRATCH->v2, script + 4);
         vectorAdd(&channel->position, &CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v2);
 
         if (scriptCamera->attachedActor != 0x2000) {
@@ -4824,7 +4824,7 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
         channel->time = 0;
         channel->duration = script[10];
 
-        setVectorImm(&channel->velocity, script + 4);
+        readScriptVector(&channel->velocity, script + 4);
 
         return scriptNext;
 
@@ -4849,7 +4849,7 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
         CAMERA_SCRATCH->rotation2.vy = scriptCamera->unk1D0.unk0.unk4.pad;
 
         RotMatrix_gte(&CAMERA_SCRATCH->rotation2, &CAMERA_SCRATCH->matrix);
-        setVectorImm(&CAMERA_SCRATCH->v1, script + 4);
+        readScriptVector(&CAMERA_SCRATCH->v1, script + 4);
         ApplyMatrixLV(&CAMERA_SCRATCH->matrix, &CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1);
         func_800A190C(CAMERA_SCRATCH->value, script[3], &CAMERA_SCRATCH->rotation2, 2);
 
@@ -4872,7 +4872,7 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
         channel->duration = script[2];
 
         vectorSubtract(&CAMERA_SCRATCH->v1, &channel->otherPosition, &channel->current);
-        vecToRotMatrix(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->matrix);
+        vectorToLookMatrix(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->matrix);
 
         CAMERA_SCRATCH->matrix.t[0] = channel->current.vx >> 12;
         CAMERA_SCRATCH->matrix.t[1] = channel->current.vy >> 12;
@@ -4945,7 +4945,7 @@ static void stepCameraChannel(CameraChannel* channel, UNUSED CameraChannel* othe
             &CAMERA_SCRATCH->v1, &channel->velocity, CAMERA_SCRATCH->value);
         vectorAdd(&CAMERA_SCRATCH->v2, &channel->start, &CAMERA_SCRATCH->v1);
         vectorSubtract(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v2, &channel->otherPosition);
-        toNormalIntegerVector(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1);
+        normalizeVector(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1);
 
         CAMERA_SCRATCH->distance = vectorMagnitude(vectorSubtract(
             &CAMERA_SCRATCH->v2, &channel->otherPosition, &channel->position));
@@ -5079,7 +5079,7 @@ static void stepCameraTerrainFollow(CameraChannel* channel)
 
     vectorSubtract(
         &CAMERA_MOTION_SCRATCH->delta, &channel->otherPosition, &channel->position);
-    vecToRotMatrix(&CAMERA_MOTION_SCRATCH->delta, &CAMERA_MOTION_SCRATCH->matrix);
+    vectorToLookMatrix(&CAMERA_MOTION_SCRATCH->delta, &CAMERA_MOTION_SCRATCH->matrix);
 
     scratch = CAMERA_MOTION_SCRATCH;
 
@@ -5100,7 +5100,7 @@ static void stepCameraTerrainFollow(CameraChannel* channel)
         scratch->steps = 10;
     }
 
-    toNormalIntegerVector(&CAMERA_MOTION_SCRATCH->delta, &CAMERA_MOTION_SCRATCH->delta);
+    normalizeVector(&CAMERA_MOTION_SCRATCH->delta, &CAMERA_MOTION_SCRATCH->delta);
     vectorFixedPointMult(
         &CAMERA_MOTION_SCRATCH->delta, &CAMERA_MOTION_SCRATCH->delta, channel->value);
     vectorCopy(&CAMERA_MOTION_SCRATCH->candidate, &channel->computed);
@@ -5111,7 +5111,7 @@ static void stepCameraTerrainFollow(CameraChannel* channel)
 
         vectorAdd(&scratch->candidate, &scratch->candidate, &scratch->delta);
         vectorSubtract(&scratch->direction, &channel->otherPosition, &scratch->candidate);
-        vecToRotMatrix(&scratch->direction, &scratch->matrix);
+        vectorToLookMatrix(&scratch->direction, &scratch->matrix);
 
         scratch->matrix.t[0] = scratch->candidate.vx >> 12;
         scratch->matrix.t[1] = scratch->candidate.vy >> 12;
@@ -5123,7 +5123,7 @@ static void stepCameraTerrainFollow(CameraChannel* channel)
             setVector(&scratch->delta, scratch->candidate.vx - channel->computed.vx,
                 height - channel->computed.vy,
                 scratch->candidate.vz - channel->computed.vz);
-            toNormalIntegerVector(&scratch->delta, &scratch->delta);
+            normalizeVector(&scratch->delta, &scratch->delta);
             vectorFixedPointMult(&scratch->delta, &scratch->delta, channel->value);
 
             break;
@@ -5888,99 +5888,162 @@ void scaleCameraMoveDurationByDistance(short target)
     scaleMoveDurationByDistance(target != 0 ? eye : lookAt);
 }
 
-VECTOR* vectorAdd(VECTOR* arg0, VECTOR* arg1, VECTOR* arg2)
+/**
+ * Adds two fixed-point vectors.
+ * @param result Receives the sum, may be one of the operands.
+ * @return result
+ */
+static VECTOR* vectorAdd(VECTOR* result, VECTOR* a, VECTOR* b)
 {
-    setVector(arg0, arg1->vx + arg2->vx, arg1->vy + arg2->vy, arg1->vz + arg2->vz);
-    return arg0;
-}
+    setVector(result, a->vx + b->vx, a->vy + b->vy, a->vz + b->vz);
 
-VECTOR* vectorSubtract(VECTOR* arg0, VECTOR* arg1, VECTOR* arg2)
-{
-    setVector(arg0, arg1->vx - arg2->vx, arg1->vy - arg2->vy, arg1->vz - arg2->vz);
-    return arg0;
-}
-
-VECTOR* vectorFixedPointMult(VECTOR* arg0, VECTOR* arg1, int arg2)
-{
-    setVector(arg0, fixedPointMult(arg1->vx, arg2), fixedPointMult(arg1->vy, arg2),
-        fixedPointMult(arg1->vz, arg2));
-    return arg0;
-}
-
-static VECTOR* vectorCopy(VECTOR* arg0, VECTOR* arg1)
-{
-    copyVector(arg0, arg1);
-    return arg0;
-}
-
-static int vectorMagnitude(VECTOR* arg0)
-{
-    VECTOR sp10;
-    int temp_lo;
-    int temp_lo_2;
-    int temp_v0;
-
-    vectorCopy(&sp10, arg0);
-    temp_lo = (sp10.vx >> 0xC) * (sp10.vx >> 0xC);
-    temp_lo_2 = (sp10.vy >> 0xC) * (sp10.vy >> 0xC);
-    temp_v0 = (sp10.vz >> 0xC) * (sp10.vz >> 0xC);
-    sp10.vx = sp10.vx >> 0xC;
-    sp10.vy = sp10.vy >> 0xC;
-    sp10.vz = sp10.vz >> 0xC;
-    return SquareRoot0(temp_lo + temp_lo_2 + temp_v0) * ONE;
-}
-
-VECTOR* setVectorImm(VECTOR* arg0, u_char* arg1)
-{
-    setVector(
-        arg0, getShort(arg1) * ONE, getShort(arg1 + 2) * ONE, getShort(arg1 + 4) * ONE);
-    return arg0;
-}
-
-static VECTOR* sVectorToFixedPointVector(VECTOR* arg0, SVECTOR* arg1)
-{
-    arg0->vx = arg1->vx * ONE;
-    arg0->vy = arg1->vy * ONE;
-    arg0->vz = arg1->vz * ONE;
-    return arg0;
-}
-
-static int fixedPointMult(int a, int b)
-{
-    int result;
-    __asm__("mult       %1, %2;"
-            "mflo       $t0;"
-            "mfhi       $t1;"
-            "srl        $t0, 12;"
-            "sll        $t1, 20;"
-            "or         %0, $t0, $t1;"
-        : "=r"(result)
-        : "r"(a), "r"(b));
     return result;
 }
 
-int atan2FixedPoint(int arg0, int arg1) { return ratan2(arg0 >> 6, arg1 >> 6); }
-
-void vecToRotMatrix(VECTOR* arg0, MATRIX* arg1)
+/**
+ * Subtracts one fixed-point vector from another.
+ * @param result Receives a - b, may be one of the operands.
+ * @return result
+ */
+static VECTOR* vectorSubtract(VECTOR* result, VECTOR* a, VECTOR* b)
 {
-    SVECTOR sp10;
-    SVECTOR sp18;
+    setVector(result, a->vx - b->vx, a->vy - b->vy, a->vz - b->vz);
 
-    sp18.vx = arg0->vx >> 0xC;
-    sp18.vy = arg0->vy >> 0xC;
-    sp18.vz = arg0->vz >> 0xC;
-    sp10.vy = ratan2(sp18.vx, sp18.vz);
-    sp10.vx = ratan2(sp18.vy, SquareRoot0((sp18.vx * sp18.vx) + (sp18.vz * sp18.vz)));
-    sp10.vz = 0;
-    RotMatrix_gte(&sp10, arg1);
+    return result;
 }
 
-static void toNormalIntegerVector(VECTOR* arg0, VECTOR* arg1)
+/**
+ * Multiplies a fixed-point vector by a fixed-point scalar.
+ * @param result Receives the product, may be the same as vector.
+ * @return result
+ */
+static VECTOR* vectorFixedPointMult(VECTOR* result, VECTOR* vector, int scalar)
 {
-    VECTOR sp10;
+    setVector(result, fixedPointMult(vector->vx, scalar),
+        fixedPointMult(vector->vy, scalar), fixedPointMult(vector->vz, scalar));
 
-    setVector(&sp10, arg0->vx >> 0xC, arg0->vy >> 0xC, arg0->vz >> 0xC);
-    VectorNormal(&sp10, arg1);
+    return result;
+}
+
+/**
+ * Copies a vector.
+ * @return destination
+ */
+static VECTOR* vectorCopy(VECTOR* destination, VECTOR* source)
+{
+    copyVector(destination, source);
+
+    return destination;
+}
+
+/**
+ * Gets the length of a fixed-point vector, as a fixed-point value.
+ */
+static int vectorMagnitude(VECTOR* vector)
+{
+    VECTOR integer;
+
+    vectorCopy(&integer, vector);
+    applyVector(&integer, 12, 12, 12, >>=);
+
+    return SquareRoot0((integer.vx * integer.vx) + (integer.vy * integer.vy)
+                       + (integer.vz * integer.vz))
+         * ONE;
+}
+
+/**
+ * Reads a vector of three 16-bit world coordinates from script bytes into a fixed-point
+ * vector.
+ * @param result Receives the vector.
+ * @param script The six bytes.
+ * @return result
+ */
+static VECTOR* readScriptVector(VECTOR* result, u_char* script)
+{
+    setVector(result, getShort(script) * ONE, getShort(script + 2) * ONE,
+        getShort(script + 4) * ONE);
+
+    return result;
+}
+
+/**
+ * Converts an integer vector to a fixed-point one.
+ * @return result
+ */
+static VECTOR* sVectorToFixedPointVector(VECTOR* result, SVECTOR* integer)
+{
+    result->vx = integer->vx * ONE;
+    result->vy = integer->vy * ONE;
+    result->vz = integer->vz * ONE;
+    return result;
+}
+
+/**
+ * Multiplies two fixed-point values, using a 64-bit intermediate product.
+ */
+static int fixedPointMult(int a, int b)
+{
+#ifdef NON_MATCHING
+#define MULTIPLY_SHIFT_12(result, a, b) result = ((long long)(a) * (b)) >> 12
+#else
+#define MULTIPLY_SHIFT_12(result, a, b)                                                  \
+    __asm__("mult       %1, %2;"                                                         \
+            "mflo       $t0;"                                                            \
+            "mfhi       $t1;"                                                            \
+            "srl        $t0, 12;"                                                        \
+            "sll        $t1, 20;"                                                        \
+            "or         %0, $t0, $t1;"                                                   \
+        : "=r"(result)                                                                   \
+        : "r"(a), "r"(b))
+#endif
+
+    int result;
+    MULTIPLY_SHIFT_12(result, a, b);
+    return result;
+#undef MULTIPLY_SHIFT_12
+}
+
+/**
+ * Gets the angle of a fixed-point offset on the x and z axes, measured from the z axis
+ * towards the x axis. A full turn is ONE.
+ * @param x Offset along x.
+ * @param z Offset along z.
+ */
+static int yawFromOffset(int x, int z) { return ratan2(x >> 6, z >> 6); }
+
+/**
+ * Builds the rotation for looking along a fixed-point vector, from its heading and pitch,
+ * with no roll.
+ * @param direction The vector to point along.
+ * @param matrix Receives the rotation.
+ */
+static void vectorToLookMatrix(VECTOR* direction, MATRIX* matrix)
+{
+    SVECTOR angles;
+    SVECTOR integer;
+
+    integer.vx = direction->vx >> 12;
+    integer.vy = direction->vy >> 12;
+    integer.vz = direction->vz >> 12;
+    angles.vy = ratan2(integer.vx, integer.vz);
+    angles.vx = ratan2(
+        integer.vy, SquareRoot0((integer.vx * integer.vx) + (integer.vz * integer.vz)));
+    angles.vz = 0;
+
+    RotMatrix_gte(&angles, matrix);
+}
+
+/**
+ * Normalises a fixed-point vector, discarding its fractional part first.
+ * @param vector The vector.
+ * @param result Receives a vector of length ONE pointing the same way.
+ */
+static void normalizeVector(VECTOR* vector, VECTOR* result)
+{
+    VECTOR integer;
+
+    setVector(&integer, vector->vx >> 12, vector->vy >> 12, vector->vz >> 12);
+    VectorNormal(&integer, result);
 }
 
 int loadMpdClearedScriptDoorSections(void* clearedSection, u_short clearedSectionLen,

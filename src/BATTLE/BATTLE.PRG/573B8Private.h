@@ -14,8 +14,8 @@ VS_HIDDEN(resolveActorId);
 int evaluateEasing(short mode, short frame, short duration);
 VS_HIDDEN(evaluateEasing);
 
-void func_800C00E8(int, void*);
-VS_HIDDEN(func_800C00E8);
+void loadEvt(int file, void* buffer);
+VS_HIDDEN(loadEvt);
 
 short getShort(u_char* arg0);
 VS_HIDDEN(getShort);

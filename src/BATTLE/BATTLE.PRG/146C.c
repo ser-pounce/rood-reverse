@@ -7804,7 +7804,7 @@ void vs_battle_exec(void)
                         }
                     }
 
-                    func_800BF850();
+                    updateEvent();
 
                     switch (D_800F196C) {
                     case 1:

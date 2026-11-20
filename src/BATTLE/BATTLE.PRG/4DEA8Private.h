@@ -41,7 +41,7 @@ enum ScriptResult {
 void freeScriptCamera(void);
 VS_HIDDEN(freeScriptCamera);
 
-// States of the event that is being started or run, see func_800BF850
+// States of the event that is being started or run, see updateEvent
 enum EventState {
     eventIdle = 0,
     eventRequested = 1, // waiting for the game to be ready to start it
@@ -102,8 +102,8 @@ int loadMpdEventSections(void* triggerSection, u_short triggerSectionLen,
     u_short triggeredScriptsLen, int firstLoad);
 VS_HIDDEN(loadMpdEventSections);
 
-int func_800BF850(void);
-VS_HIDDEN(func_800BF850);
+int updateEvent(void);
+VS_HIDDEN(updateEvent);
 
 extern char textBoxStatuses[];
 VS_HIDDEN(textBoxStatuses);

@@ -185,7 +185,7 @@ loop:
             }
 
             if (drawOp == 26) {
-                if (func_800BEB00() != 4 && !actor->unk0.weaponDrawn) {
+                if (getEventState() != eventRunning && !actor->unk0.weaponDrawn) {
                     break;
                 }
 
@@ -1471,7 +1471,7 @@ void func_800B002C(D_800F4538_t* actor, int arg1)
     if (actor->unk17FC != -2) {
         int track = 0;
 
-        if (func_800BEB00() != 4) {
+        if (getEventState() != eventRunning) {
             if (actor->unk0.unkB_7) {
                 return;
             }

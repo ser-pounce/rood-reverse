@@ -100,8 +100,8 @@ VS_HIDDEN(pauseBattleTimer);
 int cullOccludingGeometry(int);
 VS_HIDDEN(cullOccludingGeometry);
 
-int func_8007BE10(int);
-VS_HIDDEN(func_8007BE10);
+int setSwitchZoneMusic(int enable);
+VS_HIDDEN(setSwitchZoneMusic);
 
 void startEffect(int, int);
 VS_HIDDEN(startEffect);

@@ -416,6 +416,7 @@ vs_battle_cursorBrightnessAnimation = 0x800EC270;
 renderAllGeometry = 0x800F186C;
 D_800F1874 = 0x800F1874;
 zoneContext = 0x800F1880;
+switchZoneMusic = 0x800F18B0; // size:0x4
 cameraMode = 0x800F18F0;
 D_800F18F4 = 0x800F18F4;
 overlayBufferOwner = 0x800F18F8; // size:0x1

@@ -192,12 +192,17 @@ int evaluateEasing(short mode, short frame, short duration)
     }
 }
 
-void func_800C00E8(int arg0, void* arg1)
+/**
+ * Starts loading an EVT file from disc.
+ * @param file Unused, the file is taken from evtFile.
+ * @param buffer Receives the file.
+ */
+void loadEvt(UNUSED int file, void* buffer)
 {
     D_800F4BF0.size = VS_0000_EVT_SIZE;
     D_800F4BF0.lba = (evtFile * 3) + VS_0000_EVT_LBA; // .EVT files must be sequential
     evtCdSlot = vs_main_allocateCdQueueSlot(&D_800F4BF0);
-    vs_main_cdEnqueue(evtCdSlot, arg1);
+    vs_main_cdEnqueue(evtCdSlot, buffer);
 }
 
 void func_800C0150(void)

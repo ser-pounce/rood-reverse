@@ -4201,7 +4201,7 @@ int vs_battle_script_F7_queueNextEvt(u_char* arg0, UNUSED short arg1)
     evtFile = getShort(arg0 + 1);
     nextEvtBuffer = vs_main_allocHeapR(0x1800);
 
-    func_800C00E8(evtFile, nextEvtBuffer);
+    loadEvt(evtFile, nextEvtBuffer);
 
     nextEvtQueued = 1;
 
@@ -4363,68 +4363,82 @@ void drawScanlines(void)
     scratch->nextPrim = tpage;
 }
 
-void func_800BB9B0(void)
+/** Steps the tweens of the GIM images by a frame. */
+static void updateGimTweens(void)
 {
     short i;
-    short temp_a0;
     GimTween* tween = gimTweens;
     Gim* gim = gims;
 
     for (i = 0; i < 3; ++i, ++tween, ++gim) {
-        if (tween->duration != 0) {
-            tween->elapsed += vs_gametime_vblanksPerFrame >> 1;
-            temp_a0 = evaluateEasing(tween->curve, tween->elapsed, tween->duration);
-            if (gims != NULL) {
-                gim->x = (tween->startX + ((tween->deltaX * temp_a0) >> 0xC));
-                gim->y = (tween->startY + ((tween->deltaY * temp_a0) >> 0xC));
-                gim->scale = (tween->startScale + ((tween->deltaScale * temp_a0) >> 0xC));
-                gim->brightness =
-                    tween->startBrightness + ((tween->deltaBrightness * temp_a0) >> 0xC);
-            }
-            if (tween->elapsed >= tween->duration) {
-                tween->duration = 0;
-            }
+        short progress;
+
+        if (tween->duration == 0) {
+            continue;
+        }
+
+        tween->elapsed += vs_gametime_vblanksPerFrame >> 1;
+        progress = evaluateEasing(tween->curve, tween->elapsed, tween->duration);
+
+        if (gims != NULL) {
+            gim->x = (tween->startX + ((tween->deltaX * progress) >> 12));
+            gim->y = (tween->startY + ((tween->deltaY * progress) >> 12));
+            gim->scale = (tween->startScale + ((tween->deltaScale * progress) >> 12));
+            gim->brightness =
+                tween->startBrightness + ((tween->deltaBrightness * progress) >> 12);
+        }
+
+        if (tween->elapsed >= tween->duration) {
+            tween->duration = 0;
         }
     }
 }
 
-void func_800BBAFC(void)
+/** Steps the particle effect tween by a frame. */
+static void updateParticleTween(void)
 {
-    if (particleTween.duration != 0) {
-        short temp_lo = ((++particleTween.elapsed << 0xC) / particleTween.duration);
-        particleTween.direction = (particleTween.startDirection
-                                      + ((particleTween.deltaDirection * temp_lo) >> 0xC))
-                                & 0xFFF;
-        particleTween.fallAngle = particleTween.startFallAngle
-                                + ((particleTween.deltaFallAngle * temp_lo) >> 0xC);
-        particleTween.intensity = (particleTween.startIntensity
-                                   + ((particleTween.deltaIntensity * temp_lo) >> 0xC));
-        setParticleEffectDirection(particleTween.direction, particleTween.fallAngle);
-        setParticleEffectIntensity(particleTween.intensity);
-        if (particleTween.elapsed == particleTween.duration) {
-            particleTween.duration = 0;
-        }
+    short progress;
+
+    if (particleTween.duration == 0) {
+        return;
+    }
+
+    progress = ((++particleTween.elapsed << 12) / particleTween.duration);
+    particleTween.direction =
+        (particleTween.startDirection + ((particleTween.deltaDirection * progress) >> 12))
+        & 0xFFF;
+    particleTween.fallAngle =
+        particleTween.startFallAngle + ((particleTween.deltaFallAngle * progress) >> 12);
+    particleTween.intensity =
+        particleTween.startIntensity + ((particleTween.deltaIntensity * progress) >> 12);
+
+    setParticleEffectDirection(particleTween.direction, particleTween.fallAngle);
+    setParticleEffectIntensity(particleTween.intensity);
+
+    if (particleTween.elapsed == particleTween.duration) {
+        particleTween.duration = 0;
     }
 }
 
 extern CVECTOR D_800E9C08;
 extern VECTOR D_800E9C0C;
 
-void func_800BBBE8(void)
+/** Allocates the scripted camera, starting from the current view. */
+static void initScriptCamera(void)
 {
     UNUSED VECTOR _;
-    VECTOR sp20;
-    VECTOR sp30;
+    VECTOR eye;
+    VECTOR lookAt;
 
     scriptCamera = vs_main_allocHeapR(sizeof *scriptCamera);
     cameraFollowsAshley = 0;
 
-    getCameraPosition(&sp20);
-    getCameraLookAt(&sp30);
-    vectorCopy(&scriptCamera->eye.current, &sp20);
-    vectorCopy(&scriptCamera->lookAt.otherPosition, &sp20);
-    vectorCopy(&scriptCamera->lookAt.current, &sp30);
-    vectorCopy(&scriptCamera->eye.otherPosition, &sp30);
+    getCameraPosition(&eye);
+    getCameraLookAt(&lookAt);
+    vectorCopy(&scriptCamera->eye.current, &eye);
+    vectorCopy(&scriptCamera->lookAt.otherPosition, &eye);
+    vectorCopy(&scriptCamera->lookAt.current, &lookAt);
+    vectorCopy(&scriptCamera->eye.otherPosition, &lookAt);
 
     scriptCamera->lookAt.mode = cameraModeIdle;
     scriptCamera->lookAt.carryMomentum = scriptCamera->lookAt.carrying = 0;
@@ -4465,13 +4479,13 @@ void func_800BBBE8(void)
 
     scriptCamera->lensDistortion.value[0] = ONE;
     scriptCamera->lensDistortion.duration = scriptCamera->lensDistortion.value[1] = 0;
-    scriptCamera->projectionDistance.value = 0x200;
+    scriptCamera->projectionDistance.value = ONE / 8;
     scriptCamera->projectionDistance.duration = 0;
     scriptCamera->projectionDistance.changed = 1;
-    scriptCamera->nearClip.value = 0x40;
+    scriptCamera->nearClip.value = 64;
     scriptCamera->nearClip.duration = 0;
     scriptCamera->nearClip.changed = 1;
-    scriptCamera->farClip.value = 0x1000;
+    scriptCamera->farClip.value = ONE;
     scriptCamera->farClip.duration = 0;
     scriptCamera->farClip.changed = 1;
     scriptCamera->shakeCount = 0;
@@ -6633,30 +6647,35 @@ static void initEvent(u_char* data)
     }
 }
 
-int func_800BF850(void)
+/**
+ * Starts or advances the event system by one frame.
+ * @return eventRequestBusy while an event is starting, loading or running, otherwise
+ * eventRequestNone.
+ */
+int updateEvent(void)
 {
     short i;
     UNUSED int _[2];
 
     if (eventState == eventIdle) {
-        return 0;
+        return eventRequestNone;
     }
 
     if (eventState == eventRequested) {
         if (eventReady != 0) {
             eventState = eventStarting;
             eventReady = 0;
-            func_800BBBE8();
+            initScriptCamera();
             func_8007CEC0();
 
             for (i = 0; i < 17; ++i) {
                 actorMoved[i] = 0;
             }
 
-            return 2;
+            return eventRequestBusy;
         }
 
-        return 0;
+        return eventRequestNone;
     }
 
     if (eventState == eventStarting) {
@@ -6675,29 +6694,32 @@ int func_800BF850(void)
             break;
 
         case eventFromEvt:
-            func_800C00E8(evtFile, evtBuffer);
+            loadEvt(evtFile, evtBuffer);
             eventState = eventLoading;
             break;
         }
 
-        return 2;
+        return eventRequestBusy;
     }
 
     if (eventState == eventLoading) {
         if (evtCdSlot->state == CdQueueStateLoaded) {
+
             vs_main_freeCdQueueSlot(evtCdSlot);
 
             if (nextEvtQueued != 0) {
                 vs_main_memcpy(evtBuffer, nextEvtBuffer, 0x1800);
                 vs_main_freeHeapR(nextEvtBuffer);
+
                 nextEvtQueued = 0;
             }
 
             initEvent(evtBuffer);
+
             eventState = eventRunning;
         }
 
-        return 2;
+        return eventRequestBusy;
     }
 
     updateCameraAttachment();
@@ -6722,8 +6744,8 @@ int func_800BF850(void)
     updateCamera();
     updateScreenEffectTweens();
     applyCameraState();
-    func_800BB9B0();
-    func_800BBAFC();
+    updateGimTweens();
+    updateParticleTween();
 
     if (scanlinesEnabled != 0) {
         drawScanlines();
@@ -6741,5 +6763,5 @@ int func_800BF850(void)
         mainScriptEnded = 0;
     }
 
-    return 2;
+    return eventRequestBusy;
 }

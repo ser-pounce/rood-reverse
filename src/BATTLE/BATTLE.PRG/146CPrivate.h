@@ -133,8 +133,8 @@ VS_HIDDEN(disableAllActors);
 void setWeaponDrawn(int, int);
 VS_HIDDEN(setWeaponDrawn);
 
-int func_8007C218(int);
-VS_HIDDEN(func_8007C218);
+int getActorHpPercent(int);
+VS_HIDDEN(getActorHpPercent);
 
 void fullyRestoreActor(int);
 VS_HIDDEN(fullyRestoreActor);
@@ -216,8 +216,8 @@ VS_HIDDEN(selectEventData);
 int getEmptyObjectDataSlot(void);
 VS_HIDDEN(getEmptyObjectDataSlot);
 
-int func_8007CF18(int);
-VS_HIDDEN(func_8007CF18);
+int getActorSlotById(int);
+VS_HIDDEN(getActorSlotById);
 
 int func_8007CFCC(int);
 VS_HIDDEN(func_8007CFCC);
@@ -252,14 +252,14 @@ VS_HIDDEN(despawnActor);
 int func_8008C458(int, int, CVECTOR*, SVECTOR*);
 VS_HIDDEN(func_8008C458);
 
-void func_8007DE88(VECTOR* arg0);
-VS_HIDDEN(func_8007DE88);
+void getFramebufferEffectScale(VECTOR* arg0);
+VS_HIDDEN(getFramebufferEffectScale);
 
-void func_8007DEA8(CVECTOR* arg0);
-VS_HIDDEN(func_8007DEA8);
+void getFramebufferEffectTint(CVECTOR* arg0);
+VS_HIDDEN(getFramebufferEffectTint);
 
-void func_8007DECC(VECTOR* arg0);
-VS_HIDDEN(func_8007DECC);
+void getFramebufferEffectOffset(VECTOR* arg0);
+VS_HIDDEN(getFramebufferEffectOffset);
 
 int claimOverlayBuffer(int owner);
 VS_HIDDEN(claimOverlayBuffer);

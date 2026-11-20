@@ -872,8 +872,8 @@ void func_800A41D0(D_800F4538_t* actor, int mode)
         object->unk0.position.vx = x * 128 + 64;
         object->unk0.position.vz = z * 128 + 64;
         object->unk0.facing = (object->unk0.facing + step * (ONE / 4)) & 0xFFF;
-        func_800A190C(object->unk0.unk12, 0xF0, &points[0], 1);
-        func_800A190C(object->unk0.unk12, 0xF1, &points[1], 1);
+        getActorPoint(object->unk0.unk12, 0xF0, &points[0], 1);
+        getActorPoint(object->unk0.unk12, 0xF1, &points[1], 1);
         object->unk0.position.vy = (points[0].vy + points[1].vy) / 2 + 60;
         object->unk0.unk1A = 0xFC;
         object->unk0.unk34.vy = 24;

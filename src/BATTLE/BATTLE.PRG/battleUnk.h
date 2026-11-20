@@ -12,13 +12,13 @@ typedef enum {
 
 int setFrameRate(FrameRate rate);
 void setFramebufferEffect(int);
-void func_8007DDAC(int arg0);
-void func_8007DDB8(VECTOR* arg0);
-void func_8007DDD4(CVECTOR* arg0);
-void func_8007DDF8(VECTOR* arg0);
-void func_8007DE2C(int arg0);
-void func_8007DE44(u_int arg0);
-void func_8007DE5C(int arg0);
+void vs_battle_setFramebufferEffectSpin(int angle);
+void vs_battle_setFramebufferEffectScale(VECTOR* scale);
+void vs_battle_setFramebufferEffectTint(CVECTOR* tint);
+void vs_battle_setFramebufferEffectOffset(VECTOR* offset);
+void vs_battle_setFramebufferEffectBlendMode(int blendMode);
+void vs_battle_setFramebufferEffectDepth(u_int depth);
+void vs_battle_setFramebufferEffectUsePreviousFrame(int usePreviousFrame);
 int func_8007DFF0(u_int, u_int, int);
 int func_8007E0A8(u_int, u_int, int);
 

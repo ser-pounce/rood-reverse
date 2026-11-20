@@ -333,13 +333,13 @@ extern int weaponDrawnModes[];
 extern char animationBankBase[];
 extern char skipResetPaletteOp[];
 extern char skipTailMarkerOp[];
-extern u_char D_800E9BEC[];
+extern u_char textBoxPlacementDirections[];
 extern u_char cubePuzzleSubmenus[];
 extern short battleTimerModes[];
 extern short battleTimerLifetimes[];
 extern void sceneResetScript;
-extern short D_800E9C00[];
-extern u_char D_800E9C1C[];
+extern short cameraPitchPresets[];
+extern u_char returnCameraScripts[];
 extern short sweepHeightOffsets[];
 extern u_char sweepEyeScript[];
 extern u_char sweepLookAtScript[];
@@ -457,7 +457,7 @@ static void endScriptSkip(u_char* script)
             vs_battle_setStateFlag(skippingScene, 0);
             return;
         }
-        script = &script[D_800E9C30[*script]];
+        script = &script[opcodeLengths[*script]];
     }
 
     func_80093A70();
@@ -672,7 +672,8 @@ int vs_battle_script_13_initTextBoxNearActor(u_char* script, UNUSED short arg1)
     origin.vz = ((origin.vz - ONE / 4) & 0xC00) >> 10;
 
     for (i = 0; i < 4; ++i) {
-        if (tryTextBoxPlacement(&origin, script, &placements[i], D_800E9BEC[i])) {
+        if (tryTextBoxPlacement(
+                &origin, script, &placements[i], textBoxPlacementDirections[i])) {
             best = &placements[i];
             break;
         }
@@ -961,7 +962,7 @@ int vs_battle_script_1F_getActorTile(u_char* script, UNUSED short arg1)
         }
     } else {
 
-        actor = func_8007CF18(actor);
+        actor = getActorSlotById(actor);
 
         if (actor == 1) {
             vs_battle_setStateFlag(flag, 0xFF);
@@ -3931,7 +3932,7 @@ int vs_battle_script_B7_specialOp(u_char* script, UNUSED short arg1)
         break;
 
     case specialSetCameraPitchPreset:
-        setCameraPitchPreset(D_800E9C00[script[2]]);
+        setCameraPitchPreset(cameraPitchPresets[script[2]]);
         break;
 
     case specialScaleCameraMoveDurationByDistance:
@@ -4420,8 +4421,8 @@ static void updateParticleTween(void)
     }
 }
 
-extern CVECTOR D_800E9C08;
-extern VECTOR D_800E9C0C;
+extern CVECTOR neutralTint;
+extern VECTOR oneVector;
 
 /** Allocates the scripted camera, starting from the current view. */
 static void initScriptCamera(void)
@@ -4453,29 +4454,29 @@ static void initScriptCamera(void)
     scriptCamera->framebufferSpin.duration = 0;
     scriptCamera->framebufferSpin.value = 0;
 
-    func_8007DDAC(0);
+    vs_battle_setFramebufferEffectSpin(0);
 
     scriptCamera->framebufferSpin.changed = 1;
     scriptCamera->framebufferScale.value[1] = ONE;
     scriptCamera->framebufferScale.value[0] = ONE;
 
-    func_8007DDB8(&D_800E9C0C);
+    vs_battle_setFramebufferEffectScale(&oneVector);
 
     scriptCamera->framebufferTint.value[0] = scriptCamera->framebufferTint.value[1] =
         scriptCamera->framebufferTint.value[2] = scriptCamera->framebufferScale.duration =
             0;
 
-    func_8007DDD4(&D_800E9C08);
+    vs_battle_setFramebufferEffectTint(&neutralTint);
 
     scriptCamera->framebufferTint.duration = 0;
     scriptCamera->framebufferOffset.value[1] = ONE;
     scriptCamera->framebufferOffset.value[0] = ONE;
 
-    func_8007DDF8(&D_800E9C0C);
+    vs_battle_setFramebufferEffectOffset(&oneVector);
 
     scriptCamera->framebufferOffset.duration = 0;
 
-    func_8007DE2C(1);
+    vs_battle_setFramebufferEffectBlendMode(1);
 
     scriptCamera->lensDistortion.value[0] = ONE;
     scriptCamera->lensDistortion.duration = scriptCamera->lensDistortion.value[1] = 0;
@@ -4576,7 +4577,7 @@ static void applyCameraState(void)
         scriptCamera->roll.changed = 0;
     }
     if (scriptCamera->framebufferSpin.changed != 0) {
-        func_8007DDAC(scriptCamera->framebufferSpin.value);
+        vs_battle_setFramebufferEffectSpin(scriptCamera->framebufferSpin.value);
         scriptCamera->framebufferSpin.changed = 0;
     }
     if (scriptCamera->projectionDistance.changed != 0) {
@@ -4621,9 +4622,9 @@ void returnToGameplayCamera(short facing, int zoom)
                       &scriptCamera->lookAt.current, &scriptCamera->lookAt.position)))
             / 0x28000;
     if ((temp_v0 << 0x10) != 0) {
-        D_800E9C1C[2] = D_800E9C1C[6] = temp_v0;
-        vs_battle_script_Cx_Dx_camera(D_800E9C1C, 0);
-        vs_battle_script_Cx_Dx_camera(D_800E9C1C + 3, 0);
+        returnCameraScripts[2] = returnCameraScripts[6] = temp_v0;
+        vs_battle_script_Cx_Dx_camera(returnCameraScripts, 0);
+        vs_battle_script_Cx_Dx_camera(returnCameraScripts + 3, 0);
     }
 }
 
@@ -4817,7 +4818,7 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
     }
 
     case cameraSetDestinationToActorOffset:
-        func_800A190C(resolveActorId(getShort(script + 1)), script[3],
+        getActorPoint(resolveActorId(getShort(script + 1)), script[3],
             &CAMERA_SCRATCH->rotation, 2);
 
         sVectorToFixedPointVector(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->rotation);
@@ -4866,7 +4867,7 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
         RotMatrix_gte(&CAMERA_SCRATCH->rotation2, &CAMERA_SCRATCH->matrix);
         readScriptVector(&CAMERA_SCRATCH->v1, script + 4);
         ApplyMatrixLV(&CAMERA_SCRATCH->matrix, &CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1);
-        func_800A190C(CAMERA_SCRATCH->value, script[3], &CAMERA_SCRATCH->rotation2, 2);
+        getActorPoint(CAMERA_SCRATCH->value, script[3], &CAMERA_SCRATCH->rotation2, 2);
 
         vectorAdd(&channel->position,
             sVectorToFixedPointVector(&CAMERA_SCRATCH->v2, &CAMERA_SCRATCH->rotation2),
@@ -5036,7 +5037,7 @@ static void stepCameraChannel(CameraChannel* channel, UNUSED CameraChannel* othe
     }
 
     case cameraModeFollowActor:
-        func_800A190C(channel->value, channel->delta, &CAMERA_SCRATCH->rotation, 2);
+        getActorPoint(channel->value, channel->delta, &CAMERA_SCRATCH->rotation, 2);
         vectorAdd(&channel->computed,
             sVectorToFixedPointVector(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->rotation),
             &channel->velocity);
@@ -5341,14 +5342,14 @@ int vs_battle_script_B9_BA_BF_E4_E5_E6_E7_ED(u_char* script, UNUSED short arg1)
     // Sets the ordering table index the frame buffer effect is drawn at.
     // [1-2] = ordering table index.
     case 0xB9:
-        func_8007DE44(getShort(script + 1));
+        vs_battle_setFramebufferEffectDepth(getShort(script + 1));
 
         return scriptNext;
 
-    // Sets which half of the double buffer the frame buffer effect reads.
-    // [1] = flag selecting the half.
+    // Sets whether the frame buffer effect reads the previous frame.
+    // [1] = 1 for the previous frame, 0 for the current one.
     case 0xBA:
-        func_8007DE5C(script[1]);
+        vs_battle_setFramebufferEffectUsePreviousFrame(script[1]);
 
         return scriptNext;
 
@@ -5362,11 +5363,11 @@ int vs_battle_script_B9_BA_BF_E4_E5_E6_E7_ED(u_char* script, UNUSED short arg1)
             values.vx = (script[1] << 7);
             values.vy = (script[2] << 7);
 
-            func_8007DDB8(&values);
+            vs_battle_setFramebufferEffectScale(&values);
         } else {
             scriptCamera->framebufferScale.elapsed = 0;
 
-            func_8007DE88(&values);
+            getFramebufferEffectScale(&values);
 
             scriptCamera->framebufferScale.delta[0] =
                 (script[1] << 7) - (scriptCamera->framebufferScale.start[0] = values.vx);
@@ -5387,11 +5388,11 @@ int vs_battle_script_B9_BA_BF_E4_E5_E6_E7_ED(u_char* script, UNUSED short arg1)
             color.g = script[2];
             color.b = script[3];
 
-            func_8007DDD4(&color);
+            vs_battle_setFramebufferEffectTint(&color);
         } else {
             scriptCamera->framebufferTint.elapsed = 0;
 
-            func_8007DEA8(&color);
+            getFramebufferEffectTint(&color);
 
             scriptCamera->framebufferTint.delta[0] =
                 script[1] - (scriptCamera->framebufferTint.start[0] = color.r);
@@ -5414,11 +5415,11 @@ int vs_battle_script_B9_BA_BF_E4_E5_E6_E7_ED(u_char* script, UNUSED short arg1)
             values.vx = (signed char)script[1];
             values.vy = (signed char)script[2];
 
-            func_8007DDF8(&values);
+            vs_battle_setFramebufferEffectOffset(&values);
         } else {
             scriptCamera->framebufferOffset.elapsed = 0;
 
-            func_8007DECC(&values);
+            getFramebufferEffectOffset(&values);
 
             scriptCamera->framebufferOffset.delta[0] =
                 (signed char)script[1]
@@ -5434,7 +5435,7 @@ int vs_battle_script_B9_BA_BF_E4_E5_E6_E7_ED(u_char* script, UNUSED short arg1)
     // Sets the blend mode of the frame buffer effect.
     // [1] = blend mode.
     case 0xE7:
-        func_8007DE2C(script[1]);
+        vs_battle_setFramebufferEffectBlendMode(script[1]);
 
         return scriptNext;
 
@@ -5475,40 +5476,40 @@ int vs_battle_script_B9_BA_BF_E4_E5_E6_E7_ED(u_char* script, UNUSED short arg1)
         mode = getShort(script + 1);
 
         if (!mode) {
-            func_8007DE2C(0);
+            vs_battle_setFramebufferEffectBlendMode(0);
 
             values.vx = values.vy = 0;
 
-            func_8007DDF8(&values);
+            vs_battle_setFramebufferEffectOffset(&values);
 
             values.vx = values.vy = ONE;
 
-            func_8007DDB8(&values);
+            vs_battle_setFramebufferEffectScale(&values);
 
             color.r = color.g = color.b = 128;
 
-            func_8007DDD4(&color);
-            func_8007DE44(0);
-            func_8007DE5C(0);
+            vs_battle_setFramebufferEffectTint(&color);
+            vs_battle_setFramebufferEffectDepth(0);
+            vs_battle_setFramebufferEffectUsePreviousFrame(0);
             setFramebufferEffect(0);
         } else {
             setFramebufferEffect(1);
-            func_8007DE2C(0);
+            vs_battle_setFramebufferEffectBlendMode(0);
 
             values.vx = 0;
             values.vy = 2;
 
-            func_8007DDF8(&values);
+            vs_battle_setFramebufferEffectOffset(&values);
 
             values.vx = values.vy = ONE;
 
-            func_8007DDB8(&values);
+            vs_battle_setFramebufferEffectScale(&values);
 
             color.r = color.g = color.b = 144;
 
-            func_8007DE5C(1);
-            func_8007DDD4(&color);
-            func_8007DE44(mode);
+            vs_battle_setFramebufferEffectUsePreviousFrame(1);
+            vs_battle_setFramebufferEffectTint(&color);
+            vs_battle_setFramebufferEffectDepth(mode);
         }
 
         return scriptNext;
@@ -5525,7 +5526,7 @@ static void updateScreenEffectTweens(void)
         vector.vx = scriptCamera->framebufferScale.value[0];
         vector.vy = scriptCamera->framebufferScale.value[1];
 
-        func_8007DDB8(&vector);
+        vs_battle_setFramebufferEffectScale(&vector);
     }
 
     if (stepScreenEffectTween(&scriptCamera->framebufferTint) != 0) {
@@ -5533,14 +5534,14 @@ static void updateScreenEffectTweens(void)
         color.g = scriptCamera->framebufferTint.value[1];
         color.b = scriptCamera->framebufferTint.value[2];
 
-        func_8007DDD4(&color);
+        vs_battle_setFramebufferEffectTint(&color);
     }
 
     if (stepScreenEffectTween(&scriptCamera->framebufferOffset) != 0) {
         vector.vx = scriptCamera->framebufferOffset.value[0];
         vector.vy = scriptCamera->framebufferOffset.value[1];
 
-        func_8007DDF8(&vector);
+        vs_battle_setFramebufferEffectOffset(&vector);
     }
 
     if (stepScreenEffectTween(&scriptCamera->lensDistortion) != 0) {
@@ -6402,7 +6403,7 @@ short requestEvent(short trigger, int arg1, int arg2, short mode)
                     if (getActor(left & 0x1F) != NULL) {
                         conditionMet = 1;
                     }
-                } else if (func_8007CF18(left) != 1) {
+                } else if (getActorSlotById(left) != 1) {
                     conditionMet = 1;
                 }
 
@@ -6445,7 +6446,7 @@ short requestEvent(short trigger, int arg1, int arg2, short mode)
                     break;
                 }
 
-                left = flagValue = func_8007C218(actorId);
+                left = flagValue = getActorHpPercent(actorId);
                 flagId = getShort(data + 3);
 
                 if (flagId != 0) {

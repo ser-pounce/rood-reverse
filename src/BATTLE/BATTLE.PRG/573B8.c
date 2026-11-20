@@ -14,7 +14,7 @@
 extern int (*normalOpcodeTable[])(u_char*, short);
 extern vs_CdFile D_800F4BF0;
 
-int func_800BFE34(u_char*);
+int getOpcodeLength(u_char*);
 void func_800C0150(void);
 
 extern unsigned char actorMoved[17];
@@ -58,7 +58,7 @@ short func_800BFBB8(u_char** arg0, short arg1)
 
         switch (ret) {
         case 0:
-            script += func_800BFE34(script);
+            script += getOpcodeLength(script);
             continue;
 
         case 1:
@@ -72,7 +72,7 @@ short func_800BFBB8(u_char** arg0, short arg1)
             return 1;
 
         case 4:
-            script += func_800BFE34(script);
+            script += getOpcodeLength(script);
             break;
 
         default:
@@ -109,13 +109,13 @@ short getShort(u_char* arg0)
     return arg0[0] | (arg0[1] << 8);
 }
 
-int func_800BFE34(u_char* arg0) { return D_800E9C30[arg0[0]]; }
+int getOpcodeLength(u_char* arg0) { return opcodeLengths[arg0[0]]; }
 
 int resolveActorId(u_short arg0)
 {
     switch (arg0 >> 12) {
     case 0:
-        return func_8007CF18(arg0 & 0xFFF);
+        return getActorSlotById(arg0 & 0xFFF);
     case 1:
         return arg0 & 0x1F;
     case 2:

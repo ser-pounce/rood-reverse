@@ -143,7 +143,7 @@ typedef struct {
     SVECTOR shakeLookAt;
     short shakeEye[3];
     int unk1CC;
-    vs_ActorPosition unk1D0;
+    vs_ActorPosition actorPosition;
     int unk1E0[2];
     u_short attachedActor;
     u_short unk1EA;
@@ -152,7 +152,7 @@ typedef struct {
     ScreenEffectTween framebufferTint;
     ScreenEffectTween framebufferOffset;
     ScreenEffectTween lensDistortion;
-    VECTOR unk27C;
+    VECTOR terrainFollowLast;
 } ScriptCamera;
 
 typedef struct {
@@ -4858,11 +4858,11 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
 
         CAMERA_SCRATCH->value = id;
 
-        vs_battle_getActorPosition(id, &scriptCamera->unk1D0);
+        vs_battle_getActorPosition(id, &scriptCamera->actorPosition);
 
         CAMERA_SCRATCH->rotation2.vz = 0;
         CAMERA_SCRATCH->rotation2.vx = 0;
-        CAMERA_SCRATCH->rotation2.vy = scriptCamera->unk1D0.unk0.unk4.pad;
+        CAMERA_SCRATCH->rotation2.vy = scriptCamera->actorPosition.unk0.unk4.pad;
 
         RotMatrix_gte(&CAMERA_SCRATCH->rotation2, &CAMERA_SCRATCH->matrix);
         readScriptVector(&CAMERA_SCRATCH->v1, script + 4);
@@ -4900,8 +4900,8 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
         channel->delta = vectorMagnitude(
             vectorSubtract(&CAMERA_SCRATCH->v1, &channel->position, &channel->computed));
         channel->value = channel->delta / script[2];
-        scriptCamera->unk27C.vx = scriptCamera->unk27C.vy = scriptCamera->unk27C.vz =
-            0x80000000;
+        scriptCamera->terrainFollowLast.vx = scriptCamera->terrainFollowLast.vy =
+            scriptCamera->terrainFollowLast.vz = 0x80000000;
 
         return scriptNext;
     }
@@ -5149,12 +5149,12 @@ static void stepCameraTerrainFollow(CameraChannel* channel)
     vectorAdd(&CAMERA_MOTION_SCRATCH->candidate, &CAMERA_MOTION_SCRATCH->delta,
         &channel->computed);
 
-    if (CAMERA_MOTION_SCRATCH->candidate.vx == scriptCamera->unk27C.vx
-        && CAMERA_MOTION_SCRATCH->candidate.vy == scriptCamera->unk27C.vy
-        && CAMERA_MOTION_SCRATCH->candidate.vz == scriptCamera->unk27C.vz) {
+    if (CAMERA_MOTION_SCRATCH->candidate.vx == scriptCamera->terrainFollowLast.vx
+        && CAMERA_MOTION_SCRATCH->candidate.vy == scriptCamera->terrainFollowLast.vy
+        && CAMERA_MOTION_SCRATCH->candidate.vz == scriptCamera->terrainFollowLast.vz) {
         channel->time = channel->duration;
     } else {
-        vectorCopy(&scriptCamera->unk27C, &channel->computed);
+        vectorCopy(&scriptCamera->terrainFollowLast, &channel->computed);
         vectorCopy(&channel->computed, &CAMERA_MOTION_SCRATCH->candidate);
     }
 }

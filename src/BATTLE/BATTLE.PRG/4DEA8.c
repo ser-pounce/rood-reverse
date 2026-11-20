@@ -6152,15 +6152,25 @@ void resetZoneFlags(int firstLoad)
 
 void zoneUnloadNop(void) { }
 
-char getStateFlag(short arg0)
+/**
+ * Gets a state flag.
+ * @param id Index of the flag, see vs_Flags.
+ */
+char getStateFlag(short id)
 {
     char* flags = (char*)&vs_main_stateFlags;
-    return flags[arg0];
+
+    return flags[id];
 }
 
+/**
+ * Sets a state flag.
+ * @param id Index of the flag, see vs_Flags.
+ */
 void vs_battle_setStateFlag(short id, char value)
 {
     char* flags = (char*)&vs_main_stateFlags;
+
     flags[id] = value;
 }
 

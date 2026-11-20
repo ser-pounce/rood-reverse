@@ -9253,13 +9253,19 @@ void setActorInactive(int actorId, int inactive)
     }
 }
 
-void func_8007D260(int arg0)
+/**
+ * Returns an actor to normal control: idle, with any movement command cancelled.
+ * @param actorId Actor id.
+ */
+void releaseActorControl(int actorId)
 {
-    Actor* temp_a1 = vs_battle_actors[arg0];
-    if ((temp_a1 != NULL) && (temp_a1->unk8 != 0x20)) {
-        temp_a1->unk8 = 0;
+    Actor* actor = vs_battle_actors[actorId];
+
+    if ((actor != NULL) && (actor->unk8 != 0x20)) {
+        actor->unk8 = 0;
     }
-    func_8009DC38(arg0);
+
+    cancelActorMotion(actorId);
 }
 
 int isActionUnlocked(u_int arg0)

@@ -94,7 +94,7 @@ void releaseScriptControl(void)
 
     for (i = 0; i < 17; i++) {
         if (actorMoved[i] != 0) {
-            func_8007D260(i);
+            releaseActorControl(i);
         }
     }
 

@@ -1023,7 +1023,7 @@ int vs_battle_script_21_walkActorToTile(u_char* script, UNUSED short arg1)
         walkActorToCoordinate(actor, &destination);
     }
 
-    func_8009DC8C(actor);
+    resetActorMotionState(actor);
 
     actorMoved[actor] = 1;
 
@@ -1160,7 +1160,7 @@ int vs_battle_script_25_moveActorToTile(u_char* script, UNUSED short arg1)
             script[8] != 0xFF ? script[8] : -1);
     }
 
-    func_8009DC8C(actor);
+    resetActorMotionState(actor);
 
     actorMoved[actor] = 1;
 
@@ -1208,7 +1208,7 @@ int vs_battle_script_26_moveActorToCoordinate(u_char* arg0, UNUSED short arg1)
             arg0[10] != 0xFF ? arg0[10] : -1, arg0[11] != 0xFF ? arg0[11] : -1);
     }
 
-    func_8009DC8C(actor);
+    resetActorMotionState(actor);
 
     actorMoved[actor] = 1;
 
@@ -1239,7 +1239,7 @@ int vs_battle_script_27_slideActorToTile(u_char* script, UNUSED short arg1)
         slideActorToTile(actor, tile, script[6] != 0xFF ? script[6] : -1);
     }
 
-    func_8009DC8C(actor);
+    resetActorMotionState(actor);
 
     actorMoved[actor] = 1;
 
@@ -1280,7 +1280,7 @@ int vs_battle_script_28_slideActorToCoordinate(u_char* script, UNUSED short arg1
             actor, &position.unk0.unk4, script[9] != 0xFF ? script[9] : -1);
     }
 
-    func_8009DC8C(actor);
+    resetActorMotionState(actor);
 
     actorMoved[actor] = 1;
 
@@ -1332,7 +1332,7 @@ int vs_battle_script_2A_walkActorToCoordinate(u_char* script, UNUSED short arg1)
         walkActorToCoordinate(actor, &destination);
     }
 
-    func_8009DC8C(actor);
+    resetActorMotionState(actor);
 
     actorMoved[actor] = 1;
 

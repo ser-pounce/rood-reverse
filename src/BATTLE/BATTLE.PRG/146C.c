@@ -176,12 +176,12 @@ typedef struct {
 typedef struct {
     int roomSectionOffset;
     u_short roomSectionLen;
-    int clearedSectionOffset;
-    u_short clearedSectionLen;
-    int scriptSectionOffset;
-    u_short scriptSectionLen;
-    int doorSectionOffset;
-    u_short doorSectionLen;
+    int triggerSectionOffset;
+    u_short triggerSectionLen;
+    int entryScriptOffset;
+    u_short entryScriptLen;
+    int triggeredScriptsOffset;
+    u_short triggeredScriptsLen;
     int enemySectionOffset;
     int enemySectionLen;
     int lootSectionOffset;
@@ -15265,17 +15265,17 @@ void func_80089DC0(int arg0)
         int arg2;
         int new_var;
         int arg4;
-        int arg0 = ((MpdHeader*)mpdHeader)->clearedSectionOffset;
+        int arg0 = ((MpdHeader*)mpdHeader)->triggerSectionOffset;
         arg0 += (int)mpdHeader;
-        arg2 = ((MpdHeader*)mpdHeader)->scriptSectionOffset;
+        arg2 = ((MpdHeader*)mpdHeader)->entryScriptOffset;
         arg2 += ((int)mpdHeader);
-        arg4 = ((MpdHeader*)mpdHeader)->doorSectionOffset;
+        arg4 = ((MpdHeader*)mpdHeader)->triggeredScriptsOffset;
         arg4 += ((int)mpdHeader);
-        arg5 = ((MpdHeader*)mpdHeader)->doorSectionLen;
+        arg5 = ((MpdHeader*)mpdHeader)->triggeredScriptsLen;
         new_var = 1;
-        temp_s4 = loadMpdClearedScriptDoorSections((void*)(arg0),
-            ((MpdHeader*)mpdHeader)->clearedSectionLen, (void*)(arg2),
-            ((MpdHeader*)mpdHeader)->scriptSectionLen, (void*)(arg4), arg5,
+        temp_s4 = loadMpdEventSections((void*)(arg0),
+            ((MpdHeader*)mpdHeader)->triggerSectionLen, (void*)(arg2),
+            ((MpdHeader*)mpdHeader)->entryScriptLen, (void*)(arg4), arg5,
             vs_main_startState == new_var);
     }
 

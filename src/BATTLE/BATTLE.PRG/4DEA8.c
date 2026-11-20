@@ -313,7 +313,7 @@ static int stepScreenEffectTween(ScreenEffectTween*);
 static void stepProjectionTween(ProjectionTween*);
 static void updateCameraShake(void);
 void setCameraMomentum(int lookAt, int eye);
-void clearCameraMomentum(void);
+static void stopCamera(void);
 void sweepCameraToSavedPlayerView(char side);
 void scaleCameraMoveDurationByDistance(short target);
 VECTOR* vectorAdd(VECTOR* arg0, VECTOR* arg1, VECTOR* arg2);
@@ -4025,9 +4025,9 @@ int vs_battle_script_BE_unloadScreenEffects(UNUSED u_char* arg0, UNUSED short ar
  * Interrupts camera movement and drops the momentum carried over from the last move
  * (see opcode DF).
  */
-int vs_battle_script_DE_clearCameraMomentum(UNUSED u_char* arg0, UNUSED short arg1)
+int vs_battle_script_DE_stopCamera(UNUSED u_char* arg0, UNUSED short arg1)
 {
-    clearCameraMomentum();
+    stopCamera();
 
     return scriptNext;
 }
@@ -5782,6 +5782,12 @@ static void updateCameraShake(void)
     }
 }
 
+/**
+ * Sets whether the look-at and eye carry their momentum over from the end of a move into
+ * the next one, see opcode DF.
+ * @param lookAt 1 to carry the look-at's momentum.
+ * @param eye 1 to carry the eye's momentum.
+ */
 void setCameraMomentum(int lookAt, int eye)
 {
     scriptCamera->lookAt.carryMomentum = lookAt;
@@ -5790,13 +5796,20 @@ void setCameraMomentum(int lookAt, int eye)
     scriptCamera->eye.carrying = 0;
 }
 
-void clearCameraMomentum(void)
+/**
+ * Stops the look-at and eye wherever they are, cancelling their moves and dropping any
+ * momentum.
+ */
+static void stopCamera(void)
 {
     ScriptCamera* c1 = scriptCamera;
     ScriptCamera* c2;
+
     c1->eye.mode = cameraModeIdle;
     c1->lookAt.mode = cameraModeIdle;
+
     c2 = scriptCamera;
+
     c2->eye.carrying = 0;
     c2->eye.carryMomentum = 0;
     c2->lookAt.carrying = 0;

@@ -95,12 +95,12 @@ typedef struct {
 typedef struct {
     u_char unk0;
     u_char envelope;
-    short unk2;
-    short unk4;
-    short unk6;
-    char unk8;
-    char unk9;
-    char unkA;
+    short offset;
+    short cycles;
+    short amplitude;
+    char elapsed;
+    char duration;
+    char flags;
     char unkB;
 } ShakeEntry;
 
@@ -4475,7 +4475,7 @@ void func_800BBBE8(void)
     scriptCamera->farClip.duration = 0;
     scriptCamera->farClip.changed = 1;
     scriptCamera->shakeCount = 0;
-    scriptCamera->shakeEntries[0].unk9 = scriptCamera->shakeEntries[1].unk9 = 0;
+    scriptCamera->shakeEntries[0].duration = scriptCamera->shakeEntries[1].duration = 0;
     scriptCamera->attachedActor = 0x2000;
 }
 
@@ -5303,7 +5303,8 @@ u_char getCameraIdleFlags(void)
         idle |= cameraIdleLensDistortion;
     }
 
-    if ((scriptCamera->shakeEntries[0].unk9 + scriptCamera->shakeEntries[1].unk9) == 0) {
+    if ((scriptCamera->shakeEntries[0].duration + scriptCamera->shakeEntries[1].duration)
+        == 0) {
         idle |= cameraIdleShake;
     }
 
@@ -5631,19 +5632,19 @@ int vs_battle_script_EA_EB_EC_EE_EF_camera(u_char* script, UNUSED short arg1)
         entry = scriptCamera->shakeEntries;
 
         if (script[2] == 0) {
-            entry[0].unk9 = entry[1].unk9 = 0;
+            entry[0].duration = entry[1].duration = 0;
 
             return scriptNext;
         }
 
         for (i = 0; i < 2; ++i, ++entry) {
-            if (entry->unk9 == 0) {
-                entry->unk4 = script[1];
-                entry->unk6 = script[2];
-                entry->unkA = script[3];
+            if (entry->duration == 0) {
+                entry->cycles = script[1];
+                entry->amplitude = script[2];
+                entry->flags = script[3];
                 entry->envelope = script[4];
-                entry->unk9 = script[5];
-                entry->unk8 = 0;
+                entry->duration = script[5];
+                entry->elapsed = 0;
                 break;
             }
         }
@@ -5676,40 +5677,50 @@ static void stepProjectionTween(ProjectionTween* tween)
     tween->changed = 1;
 }
 
-int func_800BE01C(ShakeEntry* arg0)
+/** Steps a shake entry by one frame, returns whether it is active. */
+static int stepShakeEntry(ShakeEntry* entry)
 {
-    int temp_s1 = arg0->unk4 << 0xC;
+    int angleRange = entry->cycles * ONE;
 
-    if (arg0->unk9 == 0) {
+    if (entry->duration == 0) {
         return 0;
     }
 
-    arg0->unk8 += vs_gametime_vblanksPerFrame >> 1;
+    entry->elapsed += vs_gametime_vblanksPerFrame >> 1;
 
-    if (arg0->unk9 < arg0->unk8) {
-        arg0->unk8 = arg0->unk9;
+    if (entry->duration < entry->elapsed) {
+        entry->elapsed = entry->duration;
     }
 
-    switch (arg0->envelope) {
+    switch (entry->envelope) {
     case 0:
-        CAMERA_SCRATCH->value = 0x1000;
+        CAMERA_SCRATCH->value = ONE;
         break;
+
     case 1:
-        CAMERA_SCRATCH->value = rsin(((arg0->unk8 << 0xA) / arg0->unk9) + 0x400);
+        CAMERA_SCRATCH->value =
+            rsin(entry->elapsed * (ONE / 4) / entry->duration + ONE / 4);
         break;
+
     case 2:
-        CAMERA_SCRATCH->value = rsin((arg0->unk8 << 0xB) / arg0->unk9);
+        CAMERA_SCRATCH->value = rsin(entry->elapsed * (ONE / 2) / entry->duration);
         break;
+
     case 3:
-        CAMERA_SCRATCH->value = rsin((arg0->unk8 << 0xA) / arg0->unk9);
+        CAMERA_SCRATCH->value = rsin(entry->elapsed * (ONE / 4) / entry->duration);
         break;
     }
-    arg0->unk2 = (((rsin((temp_s1 * arg0->unk8) / arg0->unk9) * arg0->unk6) >> 0xC)
-                     * CAMERA_SCRATCH->value)
-              >> 0xC;
-    if (arg0->unk8 == arg0->unk9) {
-        arg0->unk9 = 0;
+
+    entry->offset =
+        (((rsin((angleRange * entry->elapsed) / entry->duration) * entry->amplitude)
+             >> 12)
+            * CAMERA_SCRATCH->value)
+        >> 12;
+
+    if (entry->elapsed == entry->duration) {
+        entry->duration = 0;
     }
+
     return 1;
 }
 
@@ -5732,24 +5743,24 @@ static void updateCameraShake(void)
         int y;
         int z;
 
-        if (!func_800BE01C(entry)) {
+        if (!stepShakeEntry(entry)) {
             continue;
         }
 
-        x = entry->unk2 * (((entry->unkA >> 2) & 3) - 1);
+        x = entry->offset * (((entry->flags >> 2) & 3) - 1);
         scratch->c.vx = x;
 
-        y = entry->unk2 * (((entry->unkA >> 4) & 3) - 1);
+        y = entry->offset * (((entry->flags >> 4) & 3) - 1);
         scratch->c.vy = y;
 
-        z = entry->unk2 * ((entry->unkA >> 6) - 1);
+        z = entry->offset * ((entry->flags >> 6) - 1);
         scratch->c.vz = z;
 
-        if (entry->unkA & 1) {
+        if (entry->flags & 1) {
             applyVector(&scratch->a, x, y, z, +=);
         }
 
-        if (entry->unkA & 2) {
+        if (entry->flags & 2) {
             addVector(&scratch->b, &scratch->c);
         }
 

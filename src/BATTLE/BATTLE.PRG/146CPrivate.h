@@ -243,8 +243,8 @@ VS_HIDDEN(isActionUnlocked);
 void setActionUnlocked(u_int);
 VS_HIDDEN(setActionUnlocked);
 
-void func_8007D260(int arg0);
-VS_HIDDEN(func_8007D260);
+void releaseActorControl(int actorId);
+VS_HIDDEN(releaseActorControl);
 
 void despawnActor(int);
 VS_HIDDEN(despawnActor);

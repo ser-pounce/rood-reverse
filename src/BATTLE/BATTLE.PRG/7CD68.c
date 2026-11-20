@@ -310,7 +310,7 @@ int func_800E5FDC(int arg0, int arg1)
         x = arg0 + D_800F16EC[i * 2].dx;
         z = arg1 + D_800F16EC[i * 2].dz;
         if (x < 32 && z < 32 && !(D_800F58B8[z][x] & 0x70)) {
-            return func_8008DC7C(x << 7 | 0x40, z << 7 | 0x40) >> 6;
+            return getTerrainHeight(x << 7 | 0x40, z << 7 | 0x40) >> 6;
         }
     }
     return -1;

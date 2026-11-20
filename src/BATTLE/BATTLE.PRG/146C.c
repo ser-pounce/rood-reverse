@@ -3449,7 +3449,7 @@ void func_80070CAC(void)
                 list->targets[list->targetCount].unk0.position.vx =
                     room[i].unk0 * 128 + 64;
                 list->targets[list->targetCount].unk0.position.vy =
-                    (func_8008DC7C((room[i].unk0 << 7) | 64, (room[i].unk2 << 7) | 64)
+                    (getTerrainHeight((room[i].unk0 << 7) | 64, (room[i].unk2 << 7) | 64)
                         << 17)
                     >> 17;
                 list->targets[list->targetCount].unk0.position.vz =
@@ -3983,7 +3983,8 @@ void func_80071F68(int arg0)
             D_800F19CC->unk29C0[count].unk0.vx = room[j].unk0 * 128 + 64;
             D_800F19CC->unk29C0[count].unk0.vz = room[j].unk2 * 128 + 64;
             D_800F19CC->unk29C0[count].unk0.vy =
-                (func_8008DC7C((room[j].unk0 << 7) | 64, (room[j].unk2 << 7) | 64) << 17)
+                (getTerrainHeight((room[j].unk0 << 7) | 64, (room[j].unk2 << 7) | 64)
+                    << 17)
                 >> 17;
 
             if (room[j].unk10 < 64
@@ -5001,7 +5002,7 @@ MpdRoomSectionA* func_800748B8(int arg0)
     vs_battle_getActorPosition(arg0, &sp10);
     func_80074798(&sp10, sp20);
     temp_s1 = func_8008BC04(s0[0], s0[2], s0[1]);
-    if (((((func_8008DC7C((s0[0] << 7) | 0x40, (s0[2] << 7) | 0x40) << 0x11) >> 0x11)
+    if (((((getTerrainHeight((s0[0] << 7) | 0x40, (s0[2] << 7) | 0x40) << 0x11) >> 0x11)
              - sp10.unk0.unk4.vy)
             + 0x3F)
         >= 0x7FU) {
@@ -5024,7 +5025,7 @@ MpdRoomSection13* func_80074950(int arg0)
 
     if ((temp_v0 != NULL) && (temp_v0->unk12 == temp_s2)) {
         if (!getStateFlag((temp_v0->unk10 + 0x3C0))) {
-            int v = ((func_8008DC7C((s1[0] << 7) | 0x40, (s1[2] << 7) | 0x40) << 0x11)
+            int v = ((getTerrainHeight((s1[0] << 7) | 0x40, (s1[2] << 7) | 0x40) << 0x11)
                         >> 0x11)
                   + 0x60;
             if (sp10.unk0.unk4.vy == v) {
@@ -16641,7 +16642,7 @@ void func_8008CEB0(void)
             continue;
         }
         coordinate = object->x / ONE;
-        height = func_8008DC7C(coordinate, object->z / ONE);
+        height = getTerrainHeight(coordinate, object->z / ONE);
         height <<= 17;
         height >>= 17;
         coordinate = object->y;
@@ -17017,14 +17018,14 @@ short func_8008DA24(int arg0, int arg1)
     return temp_s6;
 }
 
-short func_8008DC7C(int arg0, int arg1)
+short getTerrainHeight(int x, int z)
 {
     MpdRoomCollisionMapSection* collisionMap = vs_battle_roomData.collisionMapSection;
     int var_a2 = 0x8000;
 
-    if ((collisionMap != NULL) && ((u_int)(arg0 >> 7) < collisionMap->width)
-        && ((u_int)(arg1 >> 7) < collisionMap->height)) {
-        var_a2 = func_80099514(arg0 >> 5, arg1 >> 5, 0);
+    if ((collisionMap != NULL) && ((u_int)(x >> 7) < collisionMap->width)
+        && ((u_int)(z >> 7) < collisionMap->height)) {
+        var_a2 = func_80099514(x >> 5, z >> 5, 0);
         var_a2 = (((collisionMap->unk4 - ((var_a2 & 0x7F) * 2)) * 8) & 0x7FFF)
                | ((var_a2 & 0x80) << 8);
     }
@@ -17143,7 +17144,7 @@ void func_8008DF14(void)
                     }
                     var_s2 = 0;
                 }
-                j = func_8008DC7C(var_s3->unk0 << 7, var_s3->unk2 << 7) << 0x11;
+                j = getTerrainHeight(var_s3->unk0 << 7, var_s3->unk2 << 7) << 0x11;
                 func_8008E19C(
                     var_s3->unk0 << 7, var_s3->unk2 << 7, j >> 0x11, var_s3->unkB);
             }
@@ -17751,10 +17752,10 @@ void func_8008F440(void)
                         particle->position.vx / 128, particle->position.vz / 128, 0);
                     if ((cell != NULL) && (cell->unk0_0 != 31)) {
                         particle->unkC = 1;
-                        projection =
-                            (func_8008DC7C(particle->position.vx, particle->position.vz)
-                                << 17)
-                            >> 17;
+                        projection = (getTerrainHeight(
+                                          particle->position.vx, particle->position.vz)
+                                         << 17)
+                                  >> 17;
                         particle->position.vy = projection;
                     } else {
                         func_80090A1C(particle);
@@ -17972,7 +17973,7 @@ void func_8008FDC4(void)
                     particle->unkC = 1;
                     particle->unkD = 0;
                     projection =
-                        (func_8008DC7C(particle->position.vx, particle->position.vz)
+                        (getTerrainHeight(particle->position.vx, particle->position.vz)
                             << 17)
                         >> 17;
                     particle->position.vy = projection;

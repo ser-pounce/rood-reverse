@@ -5502,25 +5502,31 @@ int vs_battle_script_B9_BA_BF_E4_E5_E6_E7_ED(u_char* script, UNUSED short arg1)
 /** Steps the tweens of the frame buffer effect and the lens distortion. */
 static void updateScreenEffectTweens(void)
 {
-    VECTOR sp10;
-    CVECTOR sp20;
+    VECTOR vector;
+    CVECTOR color;
 
     if (stepScreenEffectTween(&scriptCamera->framebufferScale) != 0) {
-        sp10.vx = scriptCamera->framebufferScale.value[0];
-        sp10.vy = scriptCamera->framebufferScale.value[1];
-        func_8007DDB8(&sp10);
+        vector.vx = scriptCamera->framebufferScale.value[0];
+        vector.vy = scriptCamera->framebufferScale.value[1];
+
+        func_8007DDB8(&vector);
     }
+
     if (stepScreenEffectTween(&scriptCamera->framebufferTint) != 0) {
-        sp20.r = scriptCamera->framebufferTint.value[0];
-        sp20.g = scriptCamera->framebufferTint.value[1];
-        sp20.b = scriptCamera->framebufferTint.value[2];
-        func_8007DDD4(&sp20);
+        color.r = scriptCamera->framebufferTint.value[0];
+        color.g = scriptCamera->framebufferTint.value[1];
+        color.b = scriptCamera->framebufferTint.value[2];
+
+        func_8007DDD4(&color);
     }
+
     if (stepScreenEffectTween(&scriptCamera->framebufferOffset) != 0) {
-        sp10.vx = scriptCamera->framebufferOffset.value[0];
-        sp10.vy = scriptCamera->framebufferOffset.value[1];
-        func_8007DDF8(&sp10);
+        vector.vx = scriptCamera->framebufferOffset.value[0];
+        vector.vy = scriptCamera->framebufferOffset.value[1];
+
+        func_8007DDF8(&vector);
     }
+
     if (stepScreenEffectTween(&scriptCamera->lensDistortion) != 0) {
         setScreenLensDistortion(
             scriptCamera->lensDistortion.value[0], scriptCamera->lensDistortion.value[1]);
@@ -5537,6 +5543,7 @@ static int stepScreenEffectTween(ScreenEffectTween* tween)
     tween->elapsed += vs_gametime_vblanksPerFrame >> 1;
 
     CAMERA_SCRATCH->value = evaluateEasing(tween->ease, tween->elapsed, tween->duration);
+
     tween->value[0] = tween->start[0] + ((tween->delta[0] * CAMERA_SCRATCH->value) >> 12);
     tween->value[1] = tween->start[1] + ((tween->delta[1] * CAMERA_SCRATCH->value) >> 12);
     tween->value[2] = tween->start[2] + ((tween->delta[2] * CAMERA_SCRATCH->value) >> 12);
@@ -5544,6 +5551,7 @@ static int stepScreenEffectTween(ScreenEffectTween* tween)
     if (tween->elapsed == tween->duration) {
         tween->duration = 0;
     }
+
     return 1;
 }
 

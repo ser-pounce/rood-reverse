@@ -340,9 +340,9 @@ extern short battleTimerLifetimes[];
 extern void sceneResetScript;
 extern short D_800E9C00[];
 extern u_char D_800E9C1C[];
-extern short D_800E9C24[];
-extern u_char D_800E9C28;
-extern u_char D_800E9C2C;
+extern short sweepHeightOffsets[];
+extern u_char sweepEyeScript[];
+extern u_char sweepLookAtScript[];
 extern u_short scanlinePhase;
 extern GimTween gimTweens[];
 extern ParticleTween particleTween;
@@ -5818,41 +5818,40 @@ static void stopCamera(void)
 
 /**
  * Sweeps the camera into the view the player had before the scene (the facing and zoom
- * saved in state flags 0xAF and 0xB0), coming in from above and from one side.
+ * saved in state flags 0xAF and 0xB0), coming in from above and from one side: the eye
+ * orbits and the look-at moves to it.
  * @param side 0 or 1, which side the camera comes in from.
  */
 void sweepCameraToSavedPlayerView(char side)
 {
-    VECTOR sp10;
-    VECTOR sp20;
-    VECTOR sp30;
-    VECTOR sp40;
-    u_char temp_s0;
-    u_char temp_s3;
-    int new_var;
+    VECTOR startLookAt;
+    VECTOR endLookAt;
+    VECTOR startEye;
+    VECTOR endEye;
+    u_char facing = getStateFlag(0xAF);
+    u_char zoom = getStateFlag(0xB0);
+    int startFacing = facing - 1;
 
-    temp_s3 = getStateFlag(0xAF);
-    temp_s0 = getStateFlag(0xB0);
-    new_var = temp_s3 - 1;
-    initialiseCameraFromSpherical(&sp30, &sp10, (new_var + (side * 2)) & 7, temp_s0 + 1);
+    initialiseCameraFromSpherical(
+        &startEye, &startLookAt, (startFacing + (side * 2)) & 7, zoom + 1);
 
-    sp30.vy += D_800E9C24[temp_s0] << 0xC;
-    sp10.vy += D_800E9C24[temp_s0] << 0xC;
+    startEye.vy += sweepHeightOffsets[zoom] * ONE;
+    startLookAt.vy += sweepHeightOffsets[zoom] * ONE;
 
-    vectorCopy(&scriptCamera->lookAt.current, &sp10);
-    vectorCopy(&scriptCamera->lookAt.otherPosition, &sp30);
-    vectorCopy(&scriptCamera->eye.otherPosition, &sp10);
-    vectorCopy(&scriptCamera->eye.current, &sp30);
+    vectorCopy(&scriptCamera->lookAt.current, &startLookAt);
+    vectorCopy(&scriptCamera->lookAt.otherPosition, &startEye);
+    vectorCopy(&scriptCamera->eye.otherPosition, &startLookAt);
+    vectorCopy(&scriptCamera->eye.current, &startEye);
 
     scriptCamera->lookAt.mode = cameraModeIdle;
 
-    initialiseCameraFromSpherical(&sp40, &sp20, temp_s3, temp_s0 + 1);
+    initialiseCameraFromSpherical(&endEye, &endLookAt, facing, zoom + 1);
 
-    vectorCopy(&scriptCamera->eye.position, &sp40);
-    vectorCopy(&scriptCamera->lookAt.position, &sp20);
+    vectorCopy(&scriptCamera->eye.position, &endEye);
+    vectorCopy(&scriptCamera->lookAt.position, &endLookAt);
 
-    vs_battle_script_Cx_Dx_camera(&D_800E9C28, 0);
-    vs_battle_script_Cx_Dx_camera(&D_800E9C2C, 0);
+    vs_battle_script_Cx_Dx_camera(sweepEyeScript, 0);
+    vs_battle_script_Cx_Dx_camera(sweepLookAtScript, 0);
 }
 
 /**

@@ -364,7 +364,7 @@ extern char scriptMenuState;
 extern char loopCounters[];
 extern short D_800F4C22;
 extern void* nextEvtBuffer;
-extern char D_800F4C34;
+extern char eventState;
 /** Next opcode of the code running in each script slot, NULL if it isn't running. */
 extern u_char* scriptSlots[];
 extern short particleEffectSoundToRestore;
@@ -6092,7 +6092,7 @@ int loadMpdEventSections(void* triggerSection, u_short triggerSectionLen,
     }
 
     if (scriptWarpState == scriptWarpEnd) {
-        D_800F4C34 = 0;
+        eventState = eventIdle;
         scriptWarpState = scriptWarpIdle;
         D_800F4BB8 = 0;
     }
@@ -6106,7 +6106,11 @@ int loadMpdEventSections(void* triggerSection, u_short triggerSectionLen,
     return 0;
 }
 
-short func_800BEB00(void) { return D_800F4C34; }
+/**
+ * Gets the state of the current event.
+ * @return An EventState value.
+ */
+short getEventState(void) { return eventState; }
 
 short func_800BEB10(void) { return (D_800F4BE0 << 0xC) | evtFile; }
 
@@ -6149,8 +6153,8 @@ void vs_battle_setStateFlag(short id, char value)
 
 int func_800BEC30(void)
 {
-    if (D_800F4C34 == 1) {
-        D_800F4BB8 = D_800F4C34;
+    if (eventState == eventRequested) {
+        D_800F4BB8 = eventRequested;
         return 1;
     }
     return 1;
@@ -6173,7 +6177,7 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
     int right;
 
     if (type == 255) {
-        if (D_800F4C34 == 0) {
+        if (eventState == eventIdle) {
             return 0;
         }
 
@@ -6185,7 +6189,7 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
 
         if (pending & 1) {
             mpdEntryScriptPending = 0;
-            D_800F4C34 = 1;
+            eventState = eventRequested;
             D_800F4BE0 = 1;
             D_800F4BA8 = 1;
             return 1;
@@ -6195,12 +6199,12 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
     if (type == 64) {
         evtFile = arg1;
         D_800F4BE0 = 0;
-        D_800F4C34 = 1;
+        eventState = eventRequested;
         D_800F4BA8 = 1;
         return 1;
     }
 
-    if (D_800F4C34 != 0 && D_800F4BA8 != 0) {
+    if (eventState != eventIdle && D_800F4BA8 != 0) {
         return 2;
     }
 
@@ -6235,7 +6239,7 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
                     D_800F4BE0 = 0;
                 }
 
-                D_800F4C34 = 1;
+                eventState = eventRequested;
                 D_800F4BA8 = 0;
                 return 1;
 
@@ -6560,13 +6564,13 @@ int func_800BF850(void)
     short i;
     UNUSED int _[2];
 
-    if (D_800F4C34 == 0) {
+    if (eventState == eventIdle) {
         return 0;
     }
 
-    if (D_800F4C34 == 1) {
+    if (eventState == eventRequested) {
         if (D_800F4BB8 != 0) {
-            D_800F4C34 = 2;
+            eventState = eventStarting;
             D_800F4BB8 = 0;
             func_800BBBE8();
             func_8007CEC0();
@@ -6581,31 +6585,31 @@ int func_800BF850(void)
         return 0;
     }
 
-    if (D_800F4C34 == 2) {
+    if (eventState == eventStarting) {
         fogDepthOverridden = 0;
         nextEvtQueued = 0;
 
         switch (D_800F4BE0) {
         case 1:
             parseEvt(evtBuffer);
-            D_800F4C34 = 4;
+            eventState = eventRunning;
             break;
 
         case 2:
             parseEvt(mpdTriggeredScripts + ((short*)mpdTriggeredScripts)[evtFile]);
-            D_800F4C34 = 4;
+            eventState = eventRunning;
             break;
 
         case 0:
             func_800C00E8(evtFile, evtBuffer);
-            D_800F4C34 = 3;
+            eventState = eventLoading;
             break;
         }
 
         return 2;
     }
 
-    if (D_800F4C34 == 3) {
+    if (eventState == eventLoading) {
         if (evtCdSlot->state == CdQueueStateLoaded) {
             vs_main_freeCdQueueSlot(evtCdSlot);
 
@@ -6616,7 +6620,7 @@ int func_800BF850(void)
             }
 
             parseEvt(evtBuffer);
-            D_800F4C34 = 4;
+            eventState = eventRunning;
         }
 
         return 2;
@@ -6653,11 +6657,11 @@ int func_800BF850(void)
 
     if (D_800F4C22 != 0 && getCameraIdleFlags() == cameraIdleAll) {
         if (nextEvtQueued != 0) {
-            D_800F4C34 = 3;
+            eventState = eventLoading;
             D_800F4BE0 = 0;
         } else {
             func_800BFD9C();
-            D_800F4C34 = 0;
+            eventState = eventIdle;
         }
 
         D_800F4C22 = 0;

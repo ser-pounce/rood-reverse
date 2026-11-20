@@ -185,7 +185,7 @@ void func_800B217C(vs_WepModels* weapon, MATRIX* source)
 
     if (!actor->unk0.visible
         || (actor->unk0.position.vy >= 256
-            && (actor->unk0.unkF == 0 || func_800BEB00() != 4))) {
+            && (actor->unk0.unkF == 0 || getEventState() != eventRunning))) {
         return;
     }
 

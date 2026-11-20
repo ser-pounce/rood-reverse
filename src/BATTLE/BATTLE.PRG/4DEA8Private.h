@@ -41,8 +41,17 @@ enum ScriptResult {
 void func_800BBDDC(void);
 VS_HIDDEN(func_800BBDDC);
 
-short func_800BEB00(void);
-VS_HIDDEN(func_800BEB00);
+// States of the event that is being started or run, see func_800BF850
+enum EventState {
+    eventIdle = 0,
+    eventRequested = 1, // waiting for the game to be ready to start it
+    eventStarting = 2,
+    eventLoading = 3, // waiting for the EVT file to load from disc
+    eventRunning = 4, // the scripts are running
+};
+
+short getEventState(void);
+VS_HIDDEN(getEventState);
 
 short func_800BEB10(void);
 VS_HIDDEN(func_800BEB10);

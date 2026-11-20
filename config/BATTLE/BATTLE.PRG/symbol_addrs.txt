@@ -497,6 +497,7 @@ nextEvtBuffer = 0x800F4C24; // size:0x4
 vs_battle_skipOpcodeTable = 0x800F4C28;
 scriptSkipMode = 0x800F4C2C;
 evtBuffer = 0x800F4C30; // size:0x4
+eventState = 0x800F4C34;
 scriptSlots = 0x800F4C38; // size:0x10
 vibrationPatternCopy = 0x800F4C48; // size:0x4
 particleEffectSoundToRestore = 0x800F4C4C; // size:0x2

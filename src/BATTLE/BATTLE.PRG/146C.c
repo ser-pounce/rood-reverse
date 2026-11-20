@@ -15833,12 +15833,12 @@ void func_8008AC78(void)
 
 void func_8008B1FC(void* arg0)
 {
-    SetRotMatrix(&VS_SCRATCH->viewMatrix); // camera.viewMatrix
-    SetTransMatrix(&VS_SCRATCH->viewMatrix); // camera.viewMatrix
+    SetRotMatrix(&VS_SCRATCH->viewMatrix);
+    SetTransMatrix(&VS_SCRATCH->viewMatrix);
     func_800983F8(arg0);
-    D_800F1CC0 = VS_SCRATCH->nextPrim; // camera.unk0
+    D_800F1CC0 = VS_SCRATCH->nextPrim;
     func_8009723C(arg0, firstPersonRendering);
-    D_800F1BB8 = VS_SCRATCH->nextPrim; // camera.unk0
+    D_800F1BB8 = VS_SCRATCH->nextPrim;
     if (D_800F1BB0.unk6 != 0) {
         func_80098D6C(D_800F1CC0, D_800F1BB8, &D_800F1BB0, 0);
     }

@@ -215,10 +215,10 @@ int func_800DA1D4(func_800E78F4_t* arg0)
         }
 
         for (actor = vs_battle_actors[0]; actor != NULL; actor = actor->next) {
-            if (arg0->unk1A4[actor->id].unk0_6 == 3
-                && arg0->unk1E4[actor->id] < nearest) {
-                nearest = arg0->unk1E4[actor->id];
-                id = actor->id;
+            if (arg0->unk1A4[actor->slot].unk0_6 == 3
+                && arg0->unk1E4[actor->slot] < nearest) {
+                nearest = arg0->unk1E4[actor->slot];
+                id = actor->slot;
             }
         }
 
@@ -443,15 +443,15 @@ int func_800DAAD8(func_800E78F4_t* arg0)
     }
 
     for (actor = vs_battle_actors[0]; actor != NULL; actor = actor->next) {
-        if (arg0->unk1A4[actor->id].unk0_6 != 3 && arg0->unk1A4[actor->id].unk0_20) {
-            arg0->unk1A4[actor->id].unk0_6 = 3;
+        if (arg0->unk1A4[actor->slot].unk0_6 != 3 && arg0->unk1A4[actor->slot].unk0_20) {
+            arg0->unk1A4[actor->slot].unk0_6 = 3;
 
             if (func_800DB61C(arg0, 0)) {
-                arg0->unk1A4[actor->id].unk0_6 = arg0->unk1A4[actor->id].unk0_28;
+                arg0->unk1A4[actor->slot].unk0_6 = arg0->unk1A4[actor->slot].unk0_28;
                 return 1;
             }
 
-            arg0->unk1A4[actor->id].unk0_6 = arg0->unk1A4[actor->id].unk0_28;
+            arg0->unk1A4[actor->slot].unk0_6 = arg0->unk1A4[actor->slot].unk0_28;
         }
     }
 
@@ -513,8 +513,8 @@ int func_800DAD9C(func_800E78F4_t* arg0)
             if (actor != NULL) {
                 D_800F45E0_t* model;
 
-                entry->unkC_0 = actor->id;
-                model = D_800F45E0[actor->id];
+                entry->unkC_0 = actor->slot;
+                model = D_800F45E0[actor->slot];
 
                 if (model->unk0.unk12 && model->unk0.unk1A == 0
                     && func_800DAC80(arg0, entry)) {
@@ -532,7 +532,7 @@ void func_800DAED0(void)
     Actor* actor;
 
     for (actor = vs_battle_actors[0]->next; actor != NULL; actor = actor->next) {
-        func_800E78F4_t* state = VS_SCRATCH_AT(func_800E78F4_t**, 0x37C)[actor->id];
+        func_800E78F4_t* state = VS_SCRATCH_AT(func_800E78F4_t**, 0x37C)[actor->slot];
         int distance;
         int tile;
 

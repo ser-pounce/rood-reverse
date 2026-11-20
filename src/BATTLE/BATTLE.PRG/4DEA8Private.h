@@ -23,7 +23,7 @@ enum ScriptWarpState {
 // Actor selectors, as taken by many script opcodes: the top nibble is the kind, the rest
 // the operand (see resolveActorId and expandActorSelector)
 enum ActorSelector {
-    actorSelectorById = 0x0000, // | id of the actor to find (Actor.unk18)
+    actorSelectorById = 0x0000, // | id of the actor to find (Actor.id)
     actorSelectorSlot = 0x1000, // | slot in vs_battle_actors
     actorSelectorNone = 0x2000, // where a single actor is expected: no actor
     actorSelectorAll = 0x2000, // where a list of actors is expected: every actor
@@ -140,8 +140,8 @@ VS_HIDDEN(scriptWaitFrames);
 extern char skipRequested;
 VS_HIDDEN(skipRequested);
 
-extern u_char D_800E9C30[];
-VS_HIDDEN(D_800E9C30);
+extern u_char opcodeLengths[];
+VS_HIDDEN(opcodeLengths);
 
 extern u_char* textBoxShapes[];
 VS_HIDDEN(textBoxShapes);

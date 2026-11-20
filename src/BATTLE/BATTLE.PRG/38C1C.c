@@ -222,53 +222,60 @@ int func_800A17BC(int arg0, int arg1, void* arg2, int* arg3)
     return 0;
 }
 
-int func_800A190C(int arg0, int arg1, SVECTOR* arg2, int arg3)
+/**
+ * Gets the position of a point on an actor.
+ * @param actorId Actor id.
+ * @param point An ActorPoint, or the id of a bone, see findBoneIndex.
+ * @param position Receives the position.
+ * @return 0, or a negative value if the actor or bone isn't found.
+ */
+int getActorPoint(int actorId, int point, SVECTOR* position, int mode)
 {
     D_800F4538_t* var_a2;
     D_800F45E0_t* object;
     int var_v0;
 
-    if (arg1 == actorPointAboveHead) {
-        var_a2 = D_800F4538[arg0];
+    if (point == actorPointAboveHead) {
+        var_a2 = D_800F4538[actorId];
 
         if (var_a2 == NULL) {
-            object = D_800F45E0[arg0];
+            object = D_800F45E0[actorId];
             if (object == NULL) {
                 return -1;
             }
 
-            *arg2 = object->unk0.position;
-            arg2->vy -= 0xC0;
+            *position = object->unk0.position;
+            position->vy -= 0xC0;
         } else {
-            *arg2 = var_a2->unk0.position;
-            arg2->vy -= var_a2->unk646;
+            *position = var_a2->unk0.position;
+            position->vy -= var_a2->unk646;
         }
 
         return 0;
     }
 
-    if (arg1 == actorPointPosition) {
-        *arg2 = D_800F4538[arg0]->unk0.position;
+    if (point == actorPointPosition) {
+        *position = D_800F4538[actorId]->unk0.position;
         return 0;
     }
 
-    if ((arg1 & 0xF0) == 0x40) {
-        var_v0 = arg1;
-    } else if (arg1 == actorPointRaised) {
-        var_a2 = D_800F4538[arg0];
-        *arg2 = var_a2->unk0.position;
+    if ((point & 0xF0) == 0x40) {
+        var_v0 = point;
+    } else if (point == actorPointRaised) {
+        var_a2 = D_800F4538[actorId];
+        *position = var_a2->unk0.position;
         var_v0 = var_a2->unk65A * var_a2->unk183C / ONE;
-        arg2->vy += var_v0;
+        position->vy += var_v0;
         return 0;
     } else {
-        var_v0 = findBoneIndex(arg0, arg1, 0);
+        var_v0 = findBoneIndex(actorId, point, 0);
 
         if (var_v0 < 0) {
             return var_v0;
         }
     }
 
-    var_v0 = func_800A1C10(arg0, var_v0, arg2, arg3);
+    var_v0 = func_800A1C10(actorId, var_v0, position, mode);
 
     if (var_v0 < 0) {
         return var_v0;

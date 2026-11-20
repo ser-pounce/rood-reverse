@@ -386,7 +386,7 @@ int func_800E02B4(func_800E78F4_t* arg0, int arg1, int arg2)
     }
 
     for (actor = vs_battle_actors[0]; actor != NULL; actor = actor->next) {
-        func_800E78F4_t* other = VS_SCRATCH_AT(func_800E78F4_t**, 0x37C)[actor->id];
+        func_800E78F4_t* other = VS_SCRATCH_AT(func_800E78F4_t**, 0x37C)[actor->slot];
         D_800F4538_t* model = other->unk58;
 
         if (other->unk88 == arg0->unk88 || other->unk88 == 0) {
@@ -415,8 +415,8 @@ int func_800E02B4(func_800E78F4_t* arg0, int arg1, int arg2)
 
         if (ABS(dx) <= radius && ABS(dz) <= radius && ABS(dy) <= height) {
             VS_SCRATCH_AT(D_1F8003D0_t*, 0x3D0)->unk2 |= 1 << arg1;
-            VS_SCRATCH_AT(D_1F8003D0_t*, 0x3D0)->unk4[arg1] = actor->id + 1;
-            return actor->id + 1;
+            VS_SCRATCH_AT(D_1F8003D0_t*, 0x3D0)->unk4[arg1] = actor->slot + 1;
+            return actor->slot + 1;
         }
     }
 

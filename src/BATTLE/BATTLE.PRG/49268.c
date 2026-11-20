@@ -38,8 +38,8 @@ void func_800B1A68(D_800F45E0_t* object, MATRIX* camera)
         }
 
         holder = D_800F4538[object->unk0.unk12];
-        func_800A190C(object->unk0.unk12, 0xF0, &anchors[0], 1);
-        func_800A190C(object->unk0.unk12, 0xF1, &anchors[1], 1);
+        getActorPoint(object->unk0.unk12, 0xF0, &anchors[0], 1);
+        getActorPoint(object->unk0.unk12, 0xF1, &anchors[1], 1);
         gte_SetRotMatrix(camera);
         gte_SetTransMatrix(camera);
         setVector(&scratch->position, (anchors[0].vx + anchors[1].vx) / 2,

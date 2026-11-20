@@ -298,7 +298,7 @@ void attachCameraToActor(u_short actor);
 void setCameraFollowsAshley(int follows);
 void updateCameraAttachment(void);
 static void stepCameraChannel(CameraChannel*, CameraChannel*);
-void func_800BCFB4(CameraChannel*);
+static void stepCameraTerrainFollow(CameraChannel*);
 void returnToGameplayCamera(short facing, int zoom);
 int func_800BD2B8(MATRIX*);
 static void stepAngleTween(AngleTween*);
@@ -5025,7 +5025,7 @@ static void stepCameraChannel(CameraChannel* channel, UNUSED CameraChannel* othe
         break;
 
     case cameraModeTerrainFollow:
-        func_800BCFB4(channel);
+        stepCameraTerrainFollow(channel);
         break;
     }
 
@@ -5062,61 +5062,77 @@ static void stepCameraChannel(CameraChannel* channel, UNUSED CameraChannel* othe
     }
 }
 
-void func_800BCFB4(CameraChannel* c)
+/**
+ * Steps a terrain-following channel, keeping its position above the ground.
+ */
+static void stepCameraTerrainFollow(CameraChannel* channel)
 {
     CameraMotionScratch* scratch;
     short i;
-    int height;
-    vectorSubtract(&CAMERA_MOTION_SCRATCH->delta, &c->otherPosition, &c->position);
+
+    vectorSubtract(
+        &CAMERA_MOTION_SCRATCH->delta, &channel->otherPosition, &channel->position);
     vecToRotMatrix(&CAMERA_MOTION_SCRATCH->delta, &CAMERA_MOTION_SCRATCH->matrix);
+
     scratch = CAMERA_MOTION_SCRATCH;
-    scratch->matrix.t[0] = c->position.vx >> 12;
-    scratch->matrix.t[1] = c->position.vy >> 12;
-    scratch->matrix.t[2] = c->position.vz >> 12;
-    setVector(&scratch->delta, c->position.vx - c->computed.vx,
-        func_800BD2B8(&CAMERA_MOTION_SCRATCH->matrix) - c->computed.vy,
-        c->position.vz - c->computed.vz);
-    scratch->distance = vectorMagnitude(&CAMERA_MOTION_SCRATCH->delta);
-    scratch->steps = scratch->distance / c->value;
+
+    scratch->matrix.t[0] = channel->position.vx >> 12;
+    scratch->matrix.t[1] = channel->position.vy >> 12;
+    scratch->matrix.t[2] = channel->position.vz >> 12;
+
+    setVector(&scratch->delta, channel->position.vx - channel->computed.vx,
+        func_800BD2B8(&scratch->matrix) - channel->computed.vy,
+        channel->position.vz - channel->computed.vz);
+
+    scratch->distance = vectorMagnitude(&scratch->delta);
+    scratch->steps = scratch->distance / channel->value;
+
     if (scratch->steps < 2) {
-        c->time = c->duration;
+        channel->time = channel->duration;
     } else if (scratch->steps > 10) {
         scratch->steps = 10;
     }
+
     toNormalIntegerVector(&CAMERA_MOTION_SCRATCH->delta, &CAMERA_MOTION_SCRATCH->delta);
     vectorFixedPointMult(
-        &CAMERA_MOTION_SCRATCH->delta, &CAMERA_MOTION_SCRATCH->delta, c->value);
-    vectorCopy(&CAMERA_MOTION_SCRATCH->candidate, &c->computed);
+        &CAMERA_MOTION_SCRATCH->delta, &CAMERA_MOTION_SCRATCH->delta, channel->value);
+    vectorCopy(&CAMERA_MOTION_SCRATCH->candidate, &channel->computed);
+
     for (i = 1; i <= CAMERA_MOTION_SCRATCH->steps; ++i) {
+        int height;
         scratch = CAMERA_MOTION_SCRATCH;
-        vectorAdd(&CAMERA_MOTION_SCRATCH->candidate, &CAMERA_MOTION_SCRATCH->candidate,
-            &CAMERA_MOTION_SCRATCH->delta);
-        vectorSubtract(&CAMERA_MOTION_SCRATCH->direction, &c->otherPosition,
-            &CAMERA_MOTION_SCRATCH->candidate);
-        vecToRotMatrix(&CAMERA_MOTION_SCRATCH->direction, &CAMERA_MOTION_SCRATCH->matrix);
+
+        vectorAdd(&scratch->candidate, &scratch->candidate, &scratch->delta);
+        vectorSubtract(&scratch->direction, &channel->otherPosition, &scratch->candidate);
+        vecToRotMatrix(&scratch->direction, &scratch->matrix);
+
         scratch->matrix.t[0] = scratch->candidate.vx >> 12;
         scratch->matrix.t[1] = scratch->candidate.vy >> 12;
         scratch->matrix.t[2] = scratch->candidate.vz >> 12;
-        height = func_800BD2B8(&CAMERA_MOTION_SCRATCH->matrix);
+
+        height = func_800BD2B8(&scratch->matrix);
+
         if (height < scratch->candidate.vy) {
-            setVector(&scratch->delta, scratch->candidate.vx - c->computed.vx,
-                height - c->computed.vy, scratch->candidate.vz - c->computed.vz);
-            toNormalIntegerVector(
-                &CAMERA_MOTION_SCRATCH->delta, &CAMERA_MOTION_SCRATCH->delta);
-            vectorFixedPointMult(
-                &CAMERA_MOTION_SCRATCH->delta, &CAMERA_MOTION_SCRATCH->delta, c->value);
+            setVector(&scratch->delta, scratch->candidate.vx - channel->computed.vx,
+                height - channel->computed.vy,
+                scratch->candidate.vz - channel->computed.vz);
+            toNormalIntegerVector(&scratch->delta, &scratch->delta);
+            vectorFixedPointMult(&scratch->delta, &scratch->delta, channel->value);
+
             break;
         }
     }
-    vectorAdd(
-        &CAMERA_MOTION_SCRATCH->candidate, &CAMERA_MOTION_SCRATCH->delta, &c->computed);
+
+    vectorAdd(&CAMERA_MOTION_SCRATCH->candidate, &CAMERA_MOTION_SCRATCH->delta,
+        &channel->computed);
+
     if (CAMERA_MOTION_SCRATCH->candidate.vx == scriptCamera->unk27C.vx
         && CAMERA_MOTION_SCRATCH->candidate.vy == scriptCamera->unk27C.vy
         && CAMERA_MOTION_SCRATCH->candidate.vz == scriptCamera->unk27C.vz) {
-        c->time = c->duration;
+        channel->time = channel->duration;
     } else {
-        vectorCopy(&scriptCamera->unk27C, &c->computed);
-        vectorCopy(&c->computed, &CAMERA_MOTION_SCRATCH->candidate);
+        vectorCopy(&scriptCamera->unk27C, &channel->computed);
+        vectorCopy(&channel->computed, &CAMERA_MOTION_SCRATCH->candidate);
     }
 }
 

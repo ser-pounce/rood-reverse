@@ -16,7 +16,7 @@ extern vs_CdFile D_800F4BF0;
 int func_800BFE34(u_char*);
 void func_800C0150(void);
 
-extern unsigned char D_800F4B70[17];
+extern unsigned char actorMoved[17];
 
 short func_800BFBB8(u_char** arg0, short arg1)
 {
@@ -84,17 +84,20 @@ short func_800BFBB8(u_char** arg0, short arg1)
     }
 }
 
-void func_800BFD9C(void)
+/**
+ * Returns the actors and the camera that scripts have been controlling to the game.
+ */
+void releaseScriptControl(void)
 {
     int i;
 
     for (i = 0; i < 17; i++) {
-        if (D_800F4B70[i] != 0) {
+        if (actorMoved[i] != 0) {
             func_8007D260(i);
         }
     }
 
-    func_800BBDDC();
+    freeScriptCamera();
 }
 
 short getShort(u_char* arg0)

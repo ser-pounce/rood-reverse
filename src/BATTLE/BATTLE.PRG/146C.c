@@ -14768,9 +14768,9 @@ void finishLoadZnd(int id)
     zoneContext.zndData = NULL;
 
     if (vs_main_startState == 1) {
-        func_800BEB9C(1);
+        resetZoneFlags(1);
     } else {
-        func_800BEB9C(0);
+        resetZoneFlags(0);
     }
 
     if (vs_main_getCurrentMusicId() != musicId) {
@@ -14796,7 +14796,7 @@ void finishLoadZnd(int id)
 
 void func_80089098(void)
 {
-    func_800BEBEC();
+    zoneUnloadNop();
     vsBattleNop2(0);
     if (zoneContext.zndEnemies != NULL) {
         vs_main_freeHeap(zoneContext.zndEnemies);
@@ -15410,7 +15410,7 @@ void func_8008A3A0(void)
 
     DrawSync(0);
     vs_main_gametimeUpdate(0);
-    func_800BEB34();
+    unloadMpdEventSections();
     setRoomSeen();
     func_8008ABF0(0);
     if (D_800F18E4 != NULL) {

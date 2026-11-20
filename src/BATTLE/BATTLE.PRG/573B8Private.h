@@ -5,8 +5,8 @@
 short func_800BFBB8(u_char**, short);
 VS_HIDDEN(func_800BFBB8);
 
-void func_800BFD9C(void);
-VS_HIDDEN(func_800BFD9C);
+void releaseScriptControl(void);
+VS_HIDDEN(releaseScriptControl);
 
 int resolveActorId(u_short);
 VS_HIDDEN(resolveActorId);

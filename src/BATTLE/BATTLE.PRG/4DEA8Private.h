@@ -38,8 +38,8 @@ enum ScriptResult {
     scriptYield = 4, // advance past this opcode, resume next frame
 };
 
-void func_800BBDDC(void);
-VS_HIDDEN(func_800BBDDC);
+void freeScriptCamera(void);
+VS_HIDDEN(freeScriptCamera);
 
 // States of the event that is being started or run, see func_800BF850
 enum EventState {
@@ -62,14 +62,14 @@ enum EventSource {
 short getEventId(void);
 VS_HIDDEN(getEventId);
 
-void func_800BEB34(void);
-VS_HIDDEN(func_800BEB34);
+void unloadMpdEventSections(void);
+VS_HIDDEN(unloadMpdEventSections);
 
-void func_800BEB9C(int);
-VS_HIDDEN(func_800BEB9C);
+void resetZoneFlags(int firstLoad);
+VS_HIDDEN(resetZoneFlags);
 
-void func_800BEBEC(void);
-VS_HIDDEN(func_800BEBEC);
+void zoneUnloadNop(void);
+VS_HIDDEN(zoneUnloadNop);
 
 char getStateFlag(short);
 VS_HIDDEN(getStateFlag);

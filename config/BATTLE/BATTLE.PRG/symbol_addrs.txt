@@ -475,6 +475,7 @@ vs_battle_wepTextures = 0x800F4770;
 scanlinePhase = 0x800F4B20; // size:0x2
 customEasings = 0x800F4B28; // size:0x8
 gimTweens = 0x800F4B30;
+actorMoved = 0x800F4B70; // size:0x11
 particleTween = 0x800F4B88;
 cameraFollowsAshley = 0x800F4BA0; // size:0x1
 scriptCamera = 0x800F4BA4;

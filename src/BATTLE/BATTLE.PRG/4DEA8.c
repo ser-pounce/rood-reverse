@@ -5186,50 +5186,60 @@ static int getCameraTerrainHeight(MATRIX* camera)
 #undef SAMPLE_HEIGHT
 }
 
-
-int vs_battle_script_E2_E3_camera(u_char* arg0, UNUSED short arg1)
+/**
+ * Tweens an angle: the camera roll for E2, an angle of the framebuffer effect for E3.
+ * @param script Opcode bytes:
+ *   - [1..2] = target angle
+ *   - [3] = low nibble the easing, high nibble the direction: 0 negative, 1 shortest,
+ *     2 positive
+ *   - [4] = duration, 0 sets the angle immediately
+ */
+int vs_battle_script_E2_E3_camera(u_char* script, UNUSED short arg1)
 {
-    AngleTween* var_s0;
+    AngleTween* tween;
 
-    switch (arg0[0]) {
+    switch (script[0]) {
     case 0xE2:
-        var_s0 = &scriptCamera->roll;
+        tween = &scriptCamera->roll;
         break;
     case 0xE3:
-        var_s0 = &scriptCamera->unk174;
+        tween = &scriptCamera->unk174;
         break;
     }
 
-    var_s0->duration = arg0[4];
+    tween->duration = script[4];
 
-    if (var_s0->duration == 0) {
-        var_s0->value = getShort(arg0 + 1);
-        var_s0->changed = 1;
+    if (tween->duration == 0) {
+        tween->value = getShort(script + 1);
+        tween->changed = 1;
     } else {
-        var_s0->start = var_s0->value;
-        var_s0->delta = getShort(arg0 + 1) - var_s0->value;
-        if (var_s0->delta < -(ONE / 2)) {
-            var_s0->delta += ONE;
-        } else if (var_s0->delta > (ONE / 2)) {
-            var_s0->delta -= ONE;
+
+        tween->start = tween->value;
+        tween->delta = getShort(script + 1) - tween->value;
+
+        if (tween->delta < -(ONE / 2)) {
+            tween->delta += ONE;
+        } else if (tween->delta > (ONE / 2)) {
+            tween->delta -= ONE;
         }
 
-        switch (arg0[3] >> 4) {
+        switch (script[3] >> 4) {
         case 0:
-            if (var_s0->delta > 0) {
-                var_s0->delta -= ONE;
+            if (tween->delta > 0) {
+                tween->delta -= ONE;
             }
             break;
         case 2:
-            if (var_s0->delta < 0) {
-                var_s0->delta += ONE;
+            if (tween->delta < 0) {
+                tween->delta += ONE;
             }
             break;
         }
 
-        var_s0->ease = arg0[3] & 0xF;
-        var_s0->elapsed = 0;
+        tween->ease = script[3] & 0xF;
+        tween->elapsed = 0;
     }
+
     return scriptNext;
 }
 

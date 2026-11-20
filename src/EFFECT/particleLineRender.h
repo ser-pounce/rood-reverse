@@ -117,15 +117,15 @@ void VS_PARTICLE_RENDER_FUNCTION(func_800FA098_arg0* effect, func_800FA098_arg1*
                 break;
             }
 
-            prim = vs_scratch.unk0;
-            vs_scratch.unk0 = prim + 1;
+            prim = vs_scratch.nextPrim;
+            vs_scratch.nextPrim = prim + 1;
             setlen(prim, 5);
             prim->line.code = primLineF2SemiTrans;
             prim->line.tag = _get_mode(0, 0, blendMode << 5);
             prim->drawMode = _get_mode(0, 1, 0);
-            prim->tag = (((u_long*)vs_scratch.unk4)[depth] & 0xFFFFFF) | 0x05000000;
-            ((u_long*)vs_scratch.unk4)[depth] =
-                (((u_long*)vs_scratch.unk4)[depth] & 0xFF000000)
+            prim->tag = (((u_long*)vs_scratch.depthOt)[depth] & 0xFFFFFF) | 0x05000000;
+            ((u_long*)vs_scratch.depthOt)[depth] =
+                (((u_long*)vs_scratch.depthOt)[depth] & 0xFF000000)
                 | ((u_long)prim & 0xFFFFFF);
             *(int*)&prim->line.r0 = *(int*)&color;
             *(int*)&prim->line.x0 = screen[segment];

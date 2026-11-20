@@ -78,7 +78,7 @@ int VS_CLOSED_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
     MATRIX _;
     func_800D2904_t child;
     vs_RingState* state = arg0->unk8;
-    func_800FA098_arg1* scratch = (func_800FA098_arg1*)0x1F8001D0;
+    func_800FA098_arg1* scratch = VS_SCRATCH_AT(func_800FA098_arg1*, 0x1D0);
     func_800FA098_arg0* effect;
     D_800F53B8_t* battle = D_800F53BC;
     int alive = 1;
@@ -285,8 +285,8 @@ int VS_CLOSED_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
                     continue;
                 }
 
-                prim = vs_scratch.unk0;
-                vs_scratch.unk0 = prim + 1;
+                prim = vs_scratch.nextPrim;
+                vs_scratch.nextPrim = prim + 1;
                 prim->poly.tag = _get_mode(0, 0, 0);
                 prim->drawMode = _get_mode(0, 1, 0);
                 *(int*)&prim->poly.x0 = screen[drawRow][drawColumn];
@@ -309,10 +309,10 @@ int VS_CLOSED_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
                 prim->poly.tpage = texture->tpage;
                 prim->poly.clut = texture->clut;
                 prim->tag =
-                    (((u_long*)vs_scratch.unk4)[VS_CLOSED_RING_OT_SLOT] & 0xFFFFFF)
+                    (((u_long*)vs_scratch.depthOt)[VS_CLOSED_RING_OT_SLOT] & 0xFFFFFF)
                     | 0x0E000000;
-                ((u_long*)vs_scratch.unk4)[VS_CLOSED_RING_OT_SLOT] =
-                    (((u_long*)vs_scratch.unk4)[VS_CLOSED_RING_OT_SLOT] & 0xFF000000)
+                ((u_long*)vs_scratch.depthOt)[VS_CLOSED_RING_OT_SLOT] =
+                    (((u_long*)vs_scratch.depthOt)[VS_CLOSED_RING_OT_SLOT] & 0xFF000000)
                     | (((u_long)prim) & 0xFFFFFF);
             }
 
@@ -324,8 +324,8 @@ int VS_CLOSED_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
                 continue;
             }
 
-            prim = vs_scratch.unk0;
-            vs_scratch.unk0 = prim + 1;
+            prim = vs_scratch.nextPrim;
+            vs_scratch.nextPrim = prim + 1;
             prim->poly.tag = _get_mode(0, 0, 0);
             prim->drawMode = _get_mode(0, 1, 0);
             *(int*)&prim->poly.x0 = screen[drawRow][15];
@@ -345,10 +345,10 @@ int VS_CLOSED_RING_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
             VS_CLOSED_RING_UV(drawRow, drawColumn)
             prim->poly.tpage = texture->tpage;
             prim->poly.clut = texture->clut;
-            prim->tag = (((u_long*)vs_scratch.unk4)[VS_CLOSED_RING_OT_SLOT] & 0xFFFFFF)
+            prim->tag = (((u_long*)vs_scratch.depthOt)[VS_CLOSED_RING_OT_SLOT] & 0xFFFFFF)
                       | 0x0E000000;
-            ((u_long*)vs_scratch.unk4)[VS_CLOSED_RING_OT_SLOT] =
-                (((u_long*)vs_scratch.unk4)[VS_CLOSED_RING_OT_SLOT] & 0xFF000000)
+            ((u_long*)vs_scratch.depthOt)[VS_CLOSED_RING_OT_SLOT] =
+                (((u_long*)vs_scratch.depthOt)[VS_CLOSED_RING_OT_SLOT] & 0xFF000000)
                 | (((u_long)prim) & 0xFFFFFF);
         }
 

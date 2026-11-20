@@ -7,6 +7,7 @@
 #include "actor.h"
 #include "entity.h"
 #include "src/SLUS_010.40/31724.h"
+#include "scratch.h"
 #include "vs_inline_c.h"
 #include <libgpu.h>
 #include <inline_c.h>
@@ -29,97 +30,107 @@ extern u_char D_800E90B4[];
 
 SVECTOR* func_800A4A24(int);
 
-int func_800A141C(int arg0, int arg1, int* arg2, int arg3)
+/**
+ * Gets the position on the screen of a point along one of an actor's bones.
+ * @param actorId Actor id.
+ * @param bone Bone index, see findBoneIndex.
+ * @param screenXyz Receives the screen x and y as two shorts, then the depth.
+ * @param point 0 for the start of the bone, 1 for its end, anything else for the middle.
+ * @return 0, or -1 if there is no such actor.
+ */
+int getBoneScreenPosition(int actorId, int bone, int* screenXyz, int point)
 {
-    SVECTOR sp0;
-    MATRIX* v0;
-    D_800F4538_unk68* temp_v1;
-    D_800F4538_t* var_v1 = D_800F4538[arg0];
+    SVECTOR offset;
+    MATRIX* matrix;
+    D_800F4538_unk68* model;
+    EntityBase* actor = getEntityBase(actorId);
 
-    if (var_v1 == NULL) {
-        var_v1 = (D_800F4538_t*)D_800F45E0[arg0];
-        if (var_v1 == NULL) {
-            return -1;
-        }
+    if (actor == NULL) {
+        return -1;
     }
 
-    v0 = &var_v1->bones[arg1];
-    temp_v1 = var_v1->unk0.unk68;
+    matrix = &getEntityBones(actor)[bone];
+    model = actor->unk68;
 
-    gte_SetRotMatrix(v0);
-    gte_SetTransMatrix(v0);
+    gte_SetRotMatrix(matrix);
+    gte_SetTransMatrix(matrix);
 
-    if (arg3 == 0) {
-        sp0.vx = 0;
+    if (point == 0) {
+        offset.vx = 0;
     } else {
-        if (arg3 == 1) {
-            sp0.vx = -(u_short)temp_v1->armatures[arg1].unk0;
+        if (point == 1) {
+            offset.vx = -(u_short)model->armatures[bone].unk0;
         } else {
-            sp0.vx = -temp_v1->armatures[arg1].unk0 / 2;
+            offset.vx = -model->armatures[bone].unk0 / 2;
         }
     }
 
-    sp0.vy = 0;
-    sp0.vz = 0;
-    sp0.pad = 0;
+    offset.vy = 0;
+    offset.vz = 0;
+    offset.pad = 0;
 
-    gte_ldv0(&sp0);
+    gte_ldv0(&offset);
     gte_rtps2();
-    gte_stsxy(arg2);
-    gte_stsz(arg2 + 1);
+    gte_stsxy(screenXyz);
+    gte_stsz(screenXyz + 1);
 
     return 0;
 }
 
-int func_800A152C(int arg0, int arg1, int arg2)
+/**
+ * Finds the bone of an actor's model that has a given id.
+ * @param actorId Actor id.
+ * @param id Id to look for, 0xFF for the first bone.
+ * @param lookup Which of the bone's ids to compare with: 0 for `unk6`, 1 for the high
+ * nibble of `unk7`, 2 for its low nibble, 3 for `unk8`.
+ * @return The bone index, -1 if there is no such actor, or -4 if no bone has the id.
+ */
+int findBoneIndex(int actorId, int id, int lookup)
 {
-    D_800F4538_t* var_v0_2;
-    D_800F4538_unk68* var_v1;
+    EntityBase* actor;
+    D_800F4538_unk68* model;
     int i;
     int nBones;
-    int new_var;
+    int matches;
 
-    var_v0_2 = D_800F4538[arg0];
+    actor = getEntityBase(actorId);
 
-    if (var_v0_2 == NULL) {
-        var_v0_2 = (D_800F4538_t*)D_800F45E0[arg0];
-        if (var_v0_2 == NULL) {
-            return -1;
-        }
+    if (actor == NULL) {
+        return -1;
     }
 
-    nBones = var_v0_2->unk0.nBones;
-    var_v1 = var_v0_2->unk0.unk68;
+    nBones = actor->nBones;
+    model = actor->unk68;
 
     do {
-        if (arg1 == 0xFF) {
+        if (id == 0xFF) {
             return 0;
         }
     } while (0);
 
     for (i = 0; i < nBones; ++i) {
-        switch (arg2) {
+        switch (lookup) {
         case 0:
-            if (var_v1->armatures[i].unk6 == (arg1 & 0xFF)) {
+            if (model->armatures[i].unk6 == (id & 0xFF)) {
                 return i;
             }
             break;
 
         case 1:
-            new_var = (var_v1->armatures[i].unk7 >> 4) == ((arg1 & 0xFF) + 1);
-            if (new_var) {
+            matches = (model->armatures[i].unk7 >> 4) == ((id & 0xFF) + 1);
+            if (matches) {
                 return i;
             }
             break;
 
         case 2:
-            if ((var_v1->armatures[i].unk7 & 0xF) == ((arg1 & 0xFF) + 1)) {
+            if ((model->armatures[i].unk7 & 0xF) == ((id & 0xFF) + 1)) {
                 return i;
             }
             break;
 
         case 3:
-            if (var_v1->armatures[i].unk8 == (arg1 & 0xFF)) {
+            if (model->armatures[i].unk8 == (id & 0xFF)) {
                 return i;
             }
             break;
@@ -131,18 +142,15 @@ int func_800A152C(int arg0, int arg1, int arg2)
 
 int func_800A1648(int arg0, int arg1, int arg2)
 {
-    D_800F4538_t* actor;
+    EntityBase* actor;
     D_800F4538_unk68* model;
     u_int v;
 
-    actor = D_800F4538[arg0];
+    actor = getEntityBase(arg0);
     if (actor == NULL) {
-        actor = (D_800F4538_t*)D_800F45E0[arg0];
-        if (actor == NULL) {
-            return -1;
-        }
+        return -1;
     }
-    model = actor->unk0.unk68;
+    model = actor->unk68;
     switch (arg2) {
     case 0:
         v = model->armatures[arg1].unk6;
@@ -167,7 +175,7 @@ int func_800A1720(int arg0, int arg1, MATRIX* arg2, int* arg3)
 {
     int var_v0 = arg1;
 
-    if (arg1 == 0xFD) {
+    if (arg1 == actorPointPosition) {
         var_v0 = 0;
     }
 
@@ -177,7 +185,7 @@ int func_800A1720(int arg0, int arg1, MATRIX* arg2, int* arg3)
         return var_v0;
     }
 
-    if (arg1 == 0xFD) {
+    if (arg1 == actorPointPosition) {
         arg2->t[1] = D_800F4538[arg0]->unk0.position.vy;
     }
 
@@ -187,7 +195,7 @@ int func_800A1720(int arg0, int arg1, MATRIX* arg2, int* arg3)
 int func_800A17BC(int arg0, int arg1, void* arg2, int* arg3)
 {
     D_800F4538_t* actor;
-    D_800F4538_t* obj;
+    D_800F45E0_t* obj;
     vs_WepModels* model;
     UNUSED int _[22];
 
@@ -195,7 +203,7 @@ int func_800A17BC(int arg0, int arg1, void* arg2, int* arg3)
 
     actor = D_800F4538[arg0];
     if (actor == NULL) {
-        obj = (D_800F4538_t*)D_800F45E0[arg0];
+        obj = D_800F45E0[arg0];
         if (obj == NULL) {
             return 0;
         }
@@ -217,18 +225,19 @@ int func_800A17BC(int arg0, int arg1, void* arg2, int* arg3)
 int func_800A190C(int arg0, int arg1, SVECTOR* arg2, int arg3)
 {
     D_800F4538_t* var_a2;
+    D_800F45E0_t* object;
     int var_v0;
 
-    if (arg1 == 0xFB) {
+    if (arg1 == actorPointAboveHead) {
         var_a2 = D_800F4538[arg0];
 
         if (var_a2 == NULL) {
-            var_a2 = (D_800F4538_t*)D_800F45E0[arg0];
-            if (var_a2 == NULL) {
+            object = D_800F45E0[arg0];
+            if (object == NULL) {
                 return -1;
             }
 
-            *arg2 = var_a2->unk0.position;
+            *arg2 = object->unk0.position;
             arg2->vy -= 0xC0;
         } else {
             *arg2 = var_a2->unk0.position;
@@ -238,21 +247,21 @@ int func_800A190C(int arg0, int arg1, SVECTOR* arg2, int arg3)
         return 0;
     }
 
-    if (arg1 == 0xFD) {
+    if (arg1 == actorPointPosition) {
         *arg2 = D_800F4538[arg0]->unk0.position;
         return 0;
     }
 
     if ((arg1 & 0xF0) == 0x40) {
         var_v0 = arg1;
-    } else if (arg1 == 0xFA) {
+    } else if (arg1 == actorPointRaised) {
         var_a2 = D_800F4538[arg0];
         *arg2 = var_a2->unk0.position;
         var_v0 = var_a2->unk65A * var_a2->unk183C / ONE;
         arg2->vy += var_v0;
         return 0;
     } else {
-        var_v0 = func_800A152C(arg0, arg1, 0);
+        var_v0 = findBoneIndex(arg0, arg1, 0);
 
         if (var_v0 < 0) {
             return var_v0;
@@ -281,7 +290,7 @@ int func_800A1AF8(int arg0, int arg1, SVECTOR* arg2, int arg3)
 
 int func_800A1B28(int arg0, int arg1, SVECTOR* arg2, int arg3)
 {
-    int var_v0 = func_800A152C(arg0, arg1, 1);
+    int var_v0 = findBoneIndex(arg0, arg1, 1);
 
     if (var_v0 < 0) {
         return var_v0;
@@ -298,7 +307,7 @@ int func_800A1B28(int arg0, int arg1, SVECTOR* arg2, int arg3)
 
 int func_800A1B9C(int arg0, int arg1, SVECTOR* arg2, int arg3)
 {
-    int var_v0 = func_800A152C(arg0, arg1, 2);
+    int var_v0 = findBoneIndex(arg0, arg1, 2);
 
     if (var_v0 < 0) {
         return var_v0;
@@ -322,13 +331,13 @@ int func_800A1C10(int actorId, int bone, SVECTOR* result, int endpoint)
     MATRIX* matrix;
 
     if (actor == NULL) {
-        actor = (D_800F4538_t*)D_800F45E0[actorId];
+        D_800F45E0_t* object = D_800F45E0[actorId];
 
-        if (actor == NULL) {
+        if (object == NULL) {
             return -1;
         }
 
-        model = actor->unk0.unk68;
+        model = object->unk0.unk68;
     }
 
     matrix = func_800A1DE8(actorId, bone, &D_800F49B8);
@@ -372,11 +381,11 @@ MATRIX* func_800A1DE8(int actorId, int bone, MATRIX* unused)
 {
     MATRIX zeroTranslation;
     long flag;
-    func_800A1DE8_t* scratch = (void*)0x1F80035C;
+    func_800A1DE8_t* scratch = VS_SCRATCH_AT(func_800A1DE8_t*, 0x35C);
     D_800F4538_t* actor = D_800F4538[actorId];
 
     if (actor == NULL) {
-        D_800F4538_t* object = (D_800F4538_t*)D_800F45E0[actorId];
+        D_800F45E0_t* object = D_800F45E0[actorId];
 
         if (object == NULL) {
             return NULL;

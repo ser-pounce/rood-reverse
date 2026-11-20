@@ -146,8 +146,8 @@ void func_800C0738(void)
 
 int func_800C0758(int phase, int segments, int index)
 {
-    short* sine = (void*)0x1F8003B0;
-    short (*basis)[4] = (void*)0x1F800398;
+    short* sine = VS_SCRATCH_AT(void*, 0x3B0);
+    short (*basis)[4] = VS_SCRATCH_AT(void*, 0x398);
     int i;
     int component;
     MenuShapeVertex* vertex = &D_800EB9B8->unk48[index];
@@ -174,8 +174,8 @@ int func_800C0758(int phase, int segments, int index)
 
 MATRIX* func_800C085C(u_char* scale, int angle)
 {
-    short* scratch = (void*)0x1F800350;
-    MATRIX* rotation = (void*)0x1F800330;
+    short* scratch = VS_SCRATCH_AT(void*, 0x350);
+    MATRIX* rotation = VS_SCRATCH_AT(void*, 0x330);
     int axis;
     int component;
 
@@ -271,8 +271,8 @@ void func_800C0990(SVECTOR* start, SVECTOR* end, u_int color, int intensity)
         intensity = 63;
     }
 
-    primitive = vs_scratch.unk0;
-    orderingTable = vs_scratch.unk4;
+    primitive = vs_scratch.nextPrim;
+    orderingTable = vs_scratch.depthOt;
     orderingTable += depth;
     link = *orderingTable & 0xFFFFFF;
     primitive[1] = _get_mode(0, 1, 0);
@@ -281,7 +281,7 @@ void func_800C0990(SVECTOR* start, SVECTOR* end, u_int color, int intensity)
     primitive[2] = (((color << 8) >> 8) * intensity) | ((color >> 24) << 24);
     primitive[4] = *(u_long*)end;
     *orderingTable = ((u_long)primitive << 8) >> 8;
-    vs_scratch.unk0 = primitive + 5;
+    vs_scratch.nextPrim = primitive + 5;
 }
 
 // Registers needed for a match; plain locals when NON_MATCHING is defined
@@ -307,14 +307,14 @@ void func_800C0B50(func_800C1564_t* arg0, int arg1)
     vertex = D_800EB9B8->unk48;
     matrix = func_800C085C(&arg0->unk4.values[0], arg0->unk2);
 
-    RotMatrixYXZ_gte(&D_800EB9B8->unk24, (MATRIX*)0x1F800398);
+    RotMatrixYXZ_gte(&D_800EB9B8->unk24, VS_SCRATCH_AT(MATRIX*, 0x398));
 
-    scratch = (int*)0x1F800398;
+    scratch = VS_SCRATCH_AT(int*, 0x398);
     x = rcos(D_800EB9B8->unk24.pad << 6);
     scale.vz = scale.vy = scale.vx = x;
 
-    ScaleMatrix((MATRIX*)0x1F800398, &scale);
-    func_80041C68(matrix, (MATRIX*)0x1F800398);
+    ScaleMatrix(VS_SCRATCH_AT(MATRIX*, 0x398), &scale);
+    func_80041C68(matrix, VS_SCRATCH_AT(MATRIX*, 0x398));
     func_800C02A8();
 
     y = scratch[1];

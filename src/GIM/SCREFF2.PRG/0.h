@@ -3,20 +3,20 @@
 #include <sys/types.h>
 
 typedef struct {
-    u_char unk0;
-    u_char unk1;
-    u_short unk2;
-    short unk4;
-    short unk6;
-    int unk8;
+    u_char loading;
+    u_char blurActive;
+    u_short blurDepth;
+    short lensZoom; // ONE = normal
+    short lensDistortion; // negative = barrel, positive = pincushion
+    int edgeGlow;
     vs_CdQueueSlot* slot;
-} D_800EB9B4_t;
+} ScreenEffects;
 
-void func_800F9800(int);
-void func_800F986C(void);
-void func_800F9BC0(short, short);
-void func_800F9BD8(void);
-void func_800F9DE8(int);
-void func_800F9FB8(void);
+void setScreenBlurDepth(int);
+void drawScreenBlur(void);
+void setScreenLensDistortion(short, short);
+void applyScreenLensDistortion(void);
+void setScreenEdgeGlow(int);
+void drawScreenEdgeGlow(void);
 
-extern D_800EB9B4_t* D_800EB9B4;
+extern ScreenEffects* screenEffects;

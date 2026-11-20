@@ -239,7 +239,7 @@ loop:
         } else {
             if (target5->unk0.unk9_0 || target5->unk0.unk9_4 || !target5->unk0.unk9_7
                 || target5->unk0.unkA_0 || target5->unk0.unkA_3 || target5->unk0.unkA_5) {
-                func_800A1280(id, 0xFF, &target5->unk6FC, 0);
+                getActorScreenPoint(id, 0xFF, &target5->unk6FC, 0);
             }
 
             sfx[0] =
@@ -267,7 +267,7 @@ loop:
 
             if (target7->unk0.unk9_0 || target7->unk0.unk9_4 || !target7->unk0.unk9_7
                 || target7->unk0.unkA_0 || target7->unk0.unkA_3 || target7->unk0.unkA_5) {
-                func_800A1280(id, 0xFF, &target7->unk6FC, 0);
+                getActorScreenPoint(id, 0xFF, &target7->unk6FC, 0);
             }
 
             value = vs_main_computeSfxPan(*(int*)&target7->unk6FC, target7->unk6FC.vz);
@@ -299,7 +299,7 @@ loop:
         } else {
             if (target8->unk0.unk9_0 || target8->unk0.unk9_4 || !target8->unk0.unk9_7
                 || target8->unk0.unkA_0 || target8->unk0.unkA_3 || target8->unk0.unkA_5) {
-                func_800A1280(id, 0xFF, &target8->unk6FC, 0);
+                getActorScreenPoint(id, 0xFF, &target8->unk6FC, 0);
             }
 
             sfx[0] =
@@ -633,7 +633,7 @@ void func_800AE4FC(D_800F4538_t* arg0, int arg1)
         sp[1] = 0;
     } else {
         if ((*((int*)&actor->unk0.nQuads + 1) & 0x3F9F00) != 0x8000) {
-            func_800A1280(arg0->unk0.unkF, 0xFF, &actor->unk6FC, 0);
+            getActorScreenPoint(arg0->unk0.unkF, 0xFF, &actor->unk6FC, 0);
         }
 
         temp = vs_main_computeSfxPan(*(int*)&actor->unk6FC, actor->unk6FC.vz);
@@ -679,7 +679,7 @@ void func_800AE6C0(D_800F4538_t* arg0, int arg1, int arg2)
 
         if (temp_s0->unk0.unk9_0 || temp_s0->unk0.unk9_4 || !temp_s0->unk0.unk9_7
             || temp_s0->unk0.unkA_0 || temp_s0->unk0.unkA_3 || temp_s0->unk0.unkA_5) {
-            func_800A1280(arg0->unk0.unkF, 0xFF, &temp_s0->unk6FC, 0);
+            getActorScreenPoint(arg0->unk0.unkF, 0xFF, &temp_s0->unk6FC, 0);
         }
 
         temp_v0 = vs_main_computeSfxPan(*(int*)&temp_s0->unk6FC, temp_s0->unk6FC.vz);
@@ -804,7 +804,7 @@ void func_800AE980(D_800F4538_unkC54* dst, D_800F4538_unkC54* src, int count)
 
 void func_800AEAE8(D_800F4538_t* actor)
 {
-    D_1F80035C_t* scratch = (void*)0x1F80035C;
+    D_1F80035C_t* scratch = VS_SCRATCH_AT(D_1F80035C_t*, 0x35C);
 
     D_800F2458.unk1FD0[0] = 64;
     D_800F2458.unk1FD0[1] = 64;
@@ -832,8 +832,8 @@ void func_800AEAE8(D_800F4538_t* actor)
 void func_800AECA0(MATRIX* source)
 {
     MATRIX roll;
-    D_1F80035C_t* scratch = (void*)0x1F80035C;
-    vs_Scratch* view = (void*)0x1F800000;
+    D_1F80035C_t* scratch = VS_SCRATCH_AT(D_1F80035C_t*, 0x35C);
+    vs_Scratch* view = VS_SCRATCH;
     int i;
 
     for (i = 0; i < 3; ++i) {
@@ -872,7 +872,7 @@ inline void func_800AEEC4(D_800F4538_t* actor)
         return;
     }
 
-    step = vs_gametime_tickspeed / 2;
+    step = vs_gametime_vblanksPerFrame / 2;
 
     if (actor->unk17E4.duration < step) {
         step = actor->unk17E4.duration;
@@ -943,7 +943,7 @@ void func_800AEF94(MATRIX* camera)
                 processActorMove(i, actor);
             }
 
-            if (vs_gametime_tickspeed == 4) {
+            if (vs_gametime_vblanksPerFrame == 4) {
                 actor->unk5B2 *= 2;
             }
 
@@ -988,13 +988,13 @@ void func_800AEF94(MATRIX* camera)
                     }
                 }
 
-                view = (void*)0x1F800000;
-                view->unk4 += actor->unk6F4.otDepth * 4;
+                view = VS_SCRATCH;
+                view->depthOt += actor->unk6F4.otDepth * 4;
                 applyVector(&actor->unk0.position, actor->unk6F4.x, actor->unk6F4.y,
                     actor->unk6F4.z, +=);
                 func_800B002C(actor, actor->unk17FD);
                 func_800B28A8(actor, camera, actor->unk17FD);
-                view->unk4 -= actor->unk6F4.otDepth * 4;
+                view->depthOt -= actor->unk6F4.otDepth * 4;
                 applyVector(&actor->unk0.position, actor->unk6F4.x, actor->unk6F4.y,
                     actor->unk6F4.z, -=);
             }
@@ -1029,9 +1029,9 @@ void func_800AEF94(MATRIX* camera)
         func_800B217C(weapon, &actor->bones[weapon->unkD]);
     }
 
-    scratch = (void*)0x1F80035C;
-    view = (void*)0x1F800000;
-    view->unk4 += 16;
+    scratch = VS_SCRATCH_AT(D_1F80035C_t*, 0x35C);
+    view = VS_SCRATCH;
+    view->depthOt += 16;
 
     for (i = 0; i < 16; ++i) {
         D_800F45E0_t* object = D_800F45E0[i];
@@ -1043,7 +1043,7 @@ void func_800AEF94(MATRIX* camera)
         }
 
         if ((i == D_800F4B19 && D_800F4B18 == 0) || object->unk0.unk1A == 247) {
-            func_800B0908(object, vs_gametime_tickspeed / 2);
+            func_800B0908(object, vs_gametime_vblanksPerFrame / 2);
         }
 
         position = *(int*)&object->unk0.position.vx;
@@ -1064,7 +1064,7 @@ void func_800AEF94(MATRIX* camera)
     }
 
     D_800F4B18 = 0;
-    view->unk4 -= 16;
+    view->depthOt -= 16;
     ++D_800E9308;
 }
 
@@ -1176,7 +1176,7 @@ inline void func_800AF960(D_800F4538_t* arg0)
 void func_800AFA28(D_800F4538_t* actor, D_800F4538_unkC54* state, int mode)
 {
     u_short* header;
-    D_1F8003EC_t* scratch = (void*)0x1F8003EC;
+    D_1F8003EC_t* scratch = VS_SCRATCH_AT(void*, 0x3EC);
     int first;
     int last;
     int i;
@@ -1261,7 +1261,7 @@ void func_800AFA28(D_800F4538_t* actor, D_800F4538_unkC54* state, int mode)
 
 void func_800AFDE8(int offset, SVECTOR* value, int rotation)
 {
-    D_1F8003EC_t* scratch = (void*)0x1F8003EC;
+    D_1F8003EC_t* scratch = VS_SCRATCH_AT(void*, 0x3EC);
     SVECTOR* delta = &value[84];
     u_char* data = (u_char*)(u_int)(u_short)value->pad;
     int nextFrame = (u_short)delta->pad;
@@ -1374,7 +1374,7 @@ void func_800AFDE8(int offset, SVECTOR* value, int rotation)
 
 void func_800B002C(D_800F4538_t* actor, int arg1)
 {
-    D_1F80035C_t* scratch = (void*)0x1F80035C;
+    D_1F80035C_t* scratch = VS_SCRATCH_AT(D_1F80035C_t*, 0x35C);
     int dx;
     int yaw;
     int pitch;
@@ -1622,7 +1622,7 @@ void func_800B002C(D_800F4538_t* actor, int arg1)
 
 void func_800B07DC(D_800F4538_t* actor)
 {
-    D_1F80035C_t* scratch = (void*)0x1F80035C;
+    D_1F80035C_t* scratch = VS_SCRATCH_AT(D_1F80035C_t*, 0x35C);
 
     setVector(
         &scratch->rotation, actor->unk0.unk24, actor->unk0.facing, actor->unk0.unk28);
@@ -1644,7 +1644,7 @@ void func_800B07DC(D_800F4538_t* actor)
 
 void func_800B0908(D_800F45E0_t* object, UNUSED int arg1)
 {
-    D_1F80035C_t* scratch = (void*)0x1F80035C;
+    D_1F80035C_t* scratch = VS_SCRATCH_AT(D_1F80035C_t*, 0x35C);
     int step;
     int mode;
     int other;

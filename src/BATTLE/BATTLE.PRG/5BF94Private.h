@@ -65,11 +65,11 @@ VS_HIDDEN(func_800CB550);
 void func_800CB560(void);
 VS_HIDDEN(func_800CB560);
 
-void func_800CB79C(void);
-VS_HIDDEN(func_800CB79C);
+void loadScreenEffects(void);
+VS_HIDDEN(loadScreenEffects);
 
-void func_800CB7DC(void);
-VS_HIDDEN(func_800CB7DC);
+void unloadScreenEffects(void);
+VS_HIDDEN(unloadScreenEffects);
 
 TextOffset func_800CCE10(int arg0, int arg1, int arg2, int arg3);
 VS_HIDDEN(func_800CCE10);

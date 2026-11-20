@@ -145,7 +145,7 @@ typedef struct {
 // Avoids breaking .bss order
 #ifndef VS_MAIN_INCLUDE
 extern vs_BattleTimer vs_main_battleTimer;
-extern int vs_gametime_tickspeed;
+extern int vs_gametime_vblanksPerFrame;
 extern vs_Scoredata vs_main_scoredata;
 extern char vs_main_actionsLearned[32];
 extern vs_MapStatus vs_main_mapStatus;

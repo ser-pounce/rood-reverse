@@ -7,6 +7,7 @@
 #include "4B16C.h"
 #include "4DEA8Private.h"
 #include "src/SLUS_010.40/graphics.h"
+#include "scratch.h"
 #include "vs_inline_c.h"
 #include <inline_c.h>
 
@@ -14,7 +15,7 @@ extern MATRIX D_800F3C78;
 
 void func_800B1A68(D_800F45E0_t* object, MATRIX* camera)
 {
-    D_1F80035C_t* scratch = (void*)0x1F80035C;
+    D_1F80035C_t* scratch = VS_SCRATCH_AT(D_1F80035C_t*, 0x35C);
     u_int attachment;
     int value;
 
@@ -128,7 +129,7 @@ composed:
 void func_800B217C(vs_WepModels* weapon, MATRIX* source)
 {
     CVECTOR color;
-    D_1F80035C_t* scratch = (void*)0x1F80035C;
+    D_1F80035C_t* scratch = VS_SCRATCH_AT(D_1F80035C_t*, 0x35C);
     D_800F4538_t* actor = D_800F4538[weapon->actorId];
     int value;
     int i;

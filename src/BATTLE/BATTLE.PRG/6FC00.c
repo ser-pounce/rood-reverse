@@ -7,6 +7,7 @@
 #include "src/SLUS_010.40/32154.h"
 #include "src/SLUS_010.40/overlay.h"
 #include "build/src/include/lbas.h"
+#include "scratch.h"
 #include "tilePosition.h"
 #include <abs.h>
 #include <rand.h>
@@ -58,8 +59,8 @@ u_int func_800D8400(func_800E78F4_t* arg0, int arg1, int arg2, int arg3)
 
     for (i = 0; i < count; ++i) {
         arg3 = (directions >> (i * 16)) & 0xFFFF;
-        pos.fields.x = source.x + ((D_800F16EC_t*)0x1F8003EC)[arg3].dx;
-        pos.fields.z = source.z + ((D_800F16EC_t*)0x1F8003EC)[arg3].dz;
+        pos.fields.x = source.x + VS_SCRATCH_AT(D_800F16EC_t*, 0x3EC)[arg3].dx;
+        pos.fields.z = source.z + VS_SCRATCH_AT(D_800F16EC_t*, 0x3EC)[arg3].dz;
 
         result = func_800D96C8(arg0, source, pos.fields, arg3);
 
@@ -145,7 +146,7 @@ done:
 
 static inline int checkExtent(SVECTOR* from, SVECTOR* to, func_800E78F4_t* state, int id)
 {
-    func_800E78F4_t* other = ((func_800E78F4_t**)0x1F80037C)[id];
+    func_800E78F4_t* other = VS_SCRATCH_AT(func_800E78F4_t**, 0x37C)[id];
     int extent = other != NULL ? other->unkB8 : 128;
 
     return func_800E44E8(from, to, extent, state->unkB8);
@@ -153,7 +154,7 @@ static inline int checkExtent(SVECTOR* from, SVECTOR* to, func_800E78F4_t* state
 
 static inline int checkHeight(SVECTOR* from, SVECTOR* to, func_800E78F4_t* state, int id)
 {
-    func_800E78F4_t* other = ((func_800E78F4_t**)0x1F80037C)[id];
+    func_800E78F4_t* other = VS_SCRATCH_AT(func_800E78F4_t**, 0x37C)[id];
     int height = other != NULL ? ABS(other->unk82) : 64;
 
     return func_800E44E8(from, to, height, ABS(state->unk82));
@@ -164,7 +165,7 @@ void func_800D87E8(func_800E78F4_t* arg0, int id)
     int height;
     func_800DA1D4_t relation;
     func_800DA1D4_t final;
-    D_800F4538_t* object;
+    EntityBase* object;
     func_800E78F4_t* other;
     Actor* actor;
     int owner;
@@ -188,24 +189,24 @@ void func_800D87E8(func_800E78F4_t* arg0, int id)
     }
 
     arg0->unk1E4[id] = func_800E4624(
-        &arg0->unk4C, &vs_battle_actors[id]->unk44->unk0.position, arg0->unk82, height);
+        &arg0->unk4C, &vs_battle_actors[id]->unk44->position, arg0->unk82, height);
 
     if (D_800F45E0[id]
         || ((object = vs_battle_actors[id]->unk44),
-            ((object->unk0.currentTile.x == arg0->unk34.x)
-                && (object->unk0.currentTile.z == arg0->unk34.z)))
-        || ((object->unk0.unkA_3 << 19)
-            && ((object->unk0.lastTouchedTile.x == arg0->unk34.x)
-                && (object->unk0.lastTouchedTile.z == arg0->unk34.z)))) {
+            ((object->currentTile.x == arg0->unk34.x)
+                && (object->currentTile.z == arg0->unk34.z)))
+        || ((object->unkA_3 << 19)
+            && ((object->lastTouchedTile.x == arg0->unk34.x)
+                && (object->lastTouchedTile.z == arg0->unk34.z)))) {
         arg0->unk1A4[id].unk0_2 = 1;
         arg0->unk1A4[id].unk0_30 = 1;
     } else {
         if (++arg0->unk12B & 1) {
             arg0->unk1A4[id].unk0_30 =
-                !checkExtent(&object->unk0.position, &arg0->unk4C, arg0, id);
+                !checkExtent(&object->position, &arg0->unk4C, arg0, id);
         } else {
             arg0->unk1A4[id].unk0_2 =
-                !checkHeight(&object->unk0.position, &arg0->unk4C, arg0, id);
+                !checkHeight(&object->position, &arg0->unk4C, arg0, id);
         }
 
         if (arg0->unk1A4[id].unk0_2) {
@@ -214,7 +215,7 @@ void func_800D87E8(func_800E78F4_t* arg0, int id)
     }
 
     arg0->unk1A4[id].unk0_3 =
-        func_800E437C(&arg0->unk4C, &vs_battle_actors[id]->unk44->unk0.position,
+        func_800E437C(&arg0->unk4C, &vs_battle_actors[id]->unk44->position,
             arg0->unk58->unk0.facing + arg0->unk58->unk0.unk14, arg0->unk1E4[id])
         >= arg0->unkA8;
 
@@ -238,8 +239,9 @@ void func_800D87E8(func_800E78F4_t* arg0, int id)
             relation.unk0_0 || ((arg0->unk1E4[id] < arg0->unkA4) && relation.unk0_30);
     }
 
-    if ((*(u_short(**)[32])0x1F8003C0)[vs_battle_actors[id]->unk44->unk0.currentTile.z]
-                                      [vs_battle_actors[id]->unk44->unk0.currentTile.x]
+    if ((*VS_SCRATCH_AT(
+            u_short(**)[32], 0x3C0))[vs_battle_actors[id]->unk44->currentTile.z]
+                                    [vs_battle_actors[id]->unk44->currentTile.x]
         & 0x2000) {
         relation.unk0_31 = 1;
     } else {
@@ -255,9 +257,9 @@ void func_800D87E8(func_800E78F4_t* arg0, int id)
 
     owner = arg0->unk88;
     targetDistance = arg0->unk1E4[id];
-    heading = ratan2(vs_battle_actors[id]->unk44->unk0.position.vx - x,
-        vs_battle_actors[id]->unk44->unk0.position.vz - z);
-    other = ((func_800E78F4_t**)0x1F80037C)[id];
+    heading = ratan2(vs_battle_actors[id]->unk44->position.vx - x,
+        vs_battle_actors[id]->unk44->position.vz - z);
+    other = VS_SCRATCH_AT(func_800E78F4_t**, 0x37C)[id];
 
     if (other != NULL) {
         radius = other->unk92;
@@ -292,7 +294,7 @@ void func_800D87E8(func_800E78F4_t* arg0, int id)
 
     arg0->unk1A4[id].unk0_27 = blocked;
 
-    if (arg0->unk88 == id || ((func_800E78F4_t**)0x1F80037C)[id] == NULL) {
+    if (arg0->unk88 == id || VS_SCRATCH_AT(func_800E78F4_t**, 0x37C)[id] == NULL) {
         return;
     }
 
@@ -348,7 +350,7 @@ void func_800D8EF4(void)
 
         actor->unkB_0 = 0;
         id = actor->id;
-        state = ((func_800E78F4_t**)0x1F80037C)[id];
+        state = VS_SCRATCH_AT(func_800E78F4_t**, 0x37C)[id];
         state->unk1D[0] = 0;
         object = state->unk58;
         state->unk90 = actor->stats->actionDelay;
@@ -395,7 +397,7 @@ void func_800D8EF4(void)
             continue;
         }
 
-        *(int*)0x1F8003FC = arg;
+        *VS_SCRATCH_AT(int*, 0x3FC) = arg;
 
         if (state->unk18 != 0) {
             if ((state->unk12A != 0) && (state->unk138 == 6)) {
@@ -546,4 +548,4 @@ void func_800D8EF4(void)
     }
 }
 
-void func_800D9538(void) { D_800F58C4 = *(int*)0x1F8003F8; }
+void func_800D9538(void) { D_800F58C4 = *VS_SCRATCH_AT(int*, 0x3F8); }

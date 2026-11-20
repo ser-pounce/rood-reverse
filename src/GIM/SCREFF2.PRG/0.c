@@ -11,21 +11,27 @@
 #include <libgte.h>
 #include <inline_c.h>
 
-void func_800F9800(int arg0)
+/**
+ * Sets the depth the screen blur applies from, 0 turns it off. Reserves the VRAM
+ * pages the blur draws into while it is on.
+ * @param depth Depth in the ordering table.
+ */
+void setScreenBlurDepth(int arg0)
 {
-    D_800EB9B4->unk2 = arg0;
-    if (D_800EB9B4->unk1 == 0) {
+    screenEffects->blurDepth = arg0;
+    if (screenEffects->blurActive == 0) {
         if (arg0 != 0) {
-            D_800EB9B4->unk1 = 1U;
+            screenEffects->blurActive = 1U;
             func_8007DFF0(0x1B, 5, 6);
         }
     } else if (arg0 == 0) {
-        D_800EB9B4->unk1 = 0U;
+        screenEffects->blurActive = 0U;
         func_8007E0A8(0x1B, 5, 6);
     }
 }
 
-void func_800F986C(void)
+/** Draws the blur: the screen is redrawn over itself, shifted by 2 pixels. */
+void drawScreenBlur(void)
 {
     int temp_v0;
     int var_s0;
@@ -35,7 +41,7 @@ void func_800F986C(void)
     u_long* temp_s4;
     u_long* var_t2;
 
-    temp_s4 = vs_scratch.unk4;
+    temp_s4 = vs_scratch.depthOt;
 
     for (y = 192; y >= 0; y -= 32) {
         for (var_s2 = 0x100; var_s2 >= 0; var_s2 -= 64) {
@@ -92,8 +98,8 @@ void func_800F986C(void)
         }
     }
 
-    var_s0 = D_800EB9B4->unk2 - 3;
-    var_t2 = vs_scratch.unk0;
+    var_s0 = screenEffects->blurDepth - 3;
+    var_t2 = vs_scratch.nextPrim;
     var_t2[0] = ((temp_s4[var_s0] & 0xFFFFFF) | 0x07000000);
     var_t2[1] = 0xE30402C0;
     var_t2[2] = 0xE4077FFF;
@@ -114,20 +120,28 @@ void func_800F986C(void)
     var_t2[4] = 0xE6000000;
 
     *temp_s4 = ((u_long)var_t2 << 8) >> 8;
-    vs_scratch.unk0 = var_t2 + 5;
+    vs_scratch.nextPrim = var_t2 + 5;
 }
 
-void func_800F9BC0(short arg0, short arg1)
+/**
+ * Sets the lens distortion applied to the screen. A zoom of 0x1000 with no distortion
+ * turns it off.
+ * @param zoom Scale at the centre of the screen, 0x1000 = normal.
+ * @param distortion Negative squeezes the edges towards the centre (barrel, down to a
+ *   fisheye ball), positive stretches them outward (pincushion).
+ */
+void setScreenLensDistortion(short zoom, short distortion)
 {
-    D_800EB9B4->unk4 = arg0;
-    D_800EB9B4->unk6 = arg1;
+    screenEffects->lensZoom = zoom;
+    screenEffects->lensDistortion = distortion;
 }
 
-void func_800F9BD8(void)
+/** Warps the vertices of everything drawn so far by the lens distortion. */
+void applyScreenLensDistortion(void)
 {
-    u_long* ot = vs_scratch.unk4;
+    u_long* ot = vs_scratch.depthOt;
     u_long saved = *ot;
-    u_short* table = (u_short*)0x1F800088;
+    u_short* table = VS_SCRATCH_AT(u_short*, 0x88);
     int count = 0;
     u_long* packet;
     int temp;
@@ -138,8 +152,8 @@ void func_800F9BD8(void)
     *ot = -1;
     packet = ot + 0x7FE;
 
-    temp = (u_short)D_800EB9B4->unk4 * 16;
-    value = D_800EB9B4->unk6 + 0x1000;
+    temp = (u_short)screenEffects->lensZoom * 16;
+    value = screenEffects->lensDistortion + 0x1000;
 
     for (i = 0; i < 0x1BC; ++i) {
         table[i] = temp >> 3;
@@ -218,7 +232,11 @@ void func_800F9BD8(void)
     *ot = saved;
 }
 
-void func_800F9DE8(int arg0) { D_800EB9B4->unk8 = arg0; }
+/**
+ * Turns the bright haze around the edges of the screen on or off.
+ * @param enabled Nonzero = on.
+ */
+void setScreenEdgeGlow(int enabled) { screenEffects->edgeGlow = enabled; }
 
 static int func_800F9DF8(int arg0, int arg1)
 {
@@ -251,14 +269,15 @@ static int* func_800F9EBC(int arg0, int arg1, int* arg2, void** arg3)
     return arg2;
 }
 
-void func_800F9FB8(void)
+/** Draws the edge glow: additive white fading to black towards the screen centre. */
+void drawScreenEdgeGlow(void)
 {
     int* var_s2;
     int i;
     void** temp_s4;
 
-    temp_s4 = vs_scratch.unk8;
-    var_s2 = func_800F9EBC(0xE00140, 6, vs_scratch.unk0, temp_s4);
+    temp_s4 = vs_scratch.frontOt;
+    var_s2 = func_800F9EBC(0xE00140, 6, vs_scratch.nextPrim, temp_s4);
     var_s2 = func_800F9EBC(0xE00000, 0x16, var_s2, temp_s4);
     var_s2 = func_800F9EBC(0, 0x26, var_s2, temp_s4);
     var_s2 = func_800F9EBC(0x140, 0x36, var_s2, temp_s4);
@@ -277,5 +296,5 @@ void func_800F9FB8(void)
         *temp_s4 = (void*)(((u_long)var_s2 << 8) >> 8);
         var_s2 += 10;
     }
-    vs_scratch.unk0 = var_s2;
+    vs_scratch.nextPrim = var_s2;
 }

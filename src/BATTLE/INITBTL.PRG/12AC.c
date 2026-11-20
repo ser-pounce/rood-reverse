@@ -89,44 +89,48 @@ static int (*skipOpcodeTableInit[])(u_char*, short) = { vs_battle_script_invalid
     vs_battle_script_B2_setFlagsToActorDistanceAndAngle,
     vs_battle_script_B3_setActorAwake, vs_battle_script_invalidOpcode,
     vs_battle_script_B5_removeMiscItem, vs_battle_script_B6_setFlagToActorDistance,
-    vs_battle_script_B7_specialOp, vs_battle_script_B8,
+    vs_battle_script_B7_specialOp, vs_battle_script_B8_waitScreenEffectsLoaded,
     vs_battle_script_B9_BA_BF_E4_E5_E6_E7_ED, vs_battle_script_B9_BA_BF_E4_E5_E6_E7_ED,
-    vs_battle_script_nop, vs_battle_script_BC, vs_battle_script_BD, vs_battle_script_BE,
-    vs_battle_script_B9_BA_BF_E4_E5_E6_E7_ED, vs_battle_script_Cx_Dx_camera,
+    vs_battle_script_nop, vs_battle_script_BC_loadScreenEffects, vs_battle_script_BD_nop,
+    vs_battle_script_BE_unloadScreenEffects, vs_battle_script_B9_BA_BF_E4_E5_E6_E7_ED,
     vs_battle_script_Cx_Dx_camera, vs_battle_script_Cx_Dx_camera,
     vs_battle_script_Cx_Dx_camera, vs_battle_script_Cx_Dx_camera,
-    vs_battle_script_Cx_Dx_camera, vs_battle_script_invalidOpcode,
     vs_battle_script_Cx_Dx_camera, vs_battle_script_Cx_Dx_camera,
-    vs_battle_script_Cx_Dx_camera, vs_battle_script_Cx_Dx_camera,
-    vs_battle_script_Cx_Dx_camera, vs_battle_script_invalidOpcode,
-    vs_battle_script_invalidOpcode, vs_battle_script_invalidOpcode,
     vs_battle_script_invalidOpcode, vs_battle_script_Cx_Dx_camera,
     vs_battle_script_Cx_Dx_camera, vs_battle_script_Cx_Dx_camera,
     vs_battle_script_Cx_Dx_camera, vs_battle_script_Cx_Dx_camera,
-    vs_battle_script_Cx_Dx_camera, vs_battle_script_invalidOpcode,
+    vs_battle_script_invalidOpcode, vs_battle_script_invalidOpcode,
+    vs_battle_script_invalidOpcode, vs_battle_script_invalidOpcode,
     vs_battle_script_Cx_Dx_camera, vs_battle_script_Cx_Dx_camera,
     vs_battle_script_Cx_Dx_camera, vs_battle_script_Cx_Dx_camera,
-    vs_battle_script_Cx_Dx_camera, vs_battle_script_invalidOpcode,
-    vs_battle_script_invalidOpcode, vs_battle_script_DE, vs_battle_script_DF,
-    vs_battle_script_yield, vs_battle_script_E1, vs_battle_script_E2_E3_camera,
-    vs_battle_script_E2_E3_camera, vs_battle_script_B9_BA_BF_E4_E5_E6_E7_ED,
+    vs_battle_script_Cx_Dx_camera, vs_battle_script_Cx_Dx_camera,
+    vs_battle_script_invalidOpcode, vs_battle_script_Cx_Dx_camera,
+    vs_battle_script_Cx_Dx_camera, vs_battle_script_Cx_Dx_camera,
+    vs_battle_script_Cx_Dx_camera, vs_battle_script_Cx_Dx_camera,
+    vs_battle_script_invalidOpcode, vs_battle_script_invalidOpcode,
+    vs_battle_script_DE_clearCameraMomentum, vs_battle_script_DF_setCameraMomentum,
+    vs_battle_script_yield, vs_battle_script_E1_setFramebufferEffect,
+    vs_battle_script_E2_E3_camera, vs_battle_script_E2_E3_camera,
     vs_battle_script_B9_BA_BF_E4_E5_E6_E7_ED, vs_battle_script_B9_BA_BF_E4_E5_E6_E7_ED,
-    vs_battle_script_B9_BA_BF_E4_E5_E6_E7_ED, vs_battle_script_E8, vs_battle_script_E9,
+    vs_battle_script_B9_BA_BF_E4_E5_E6_E7_ED, vs_battle_script_B9_BA_BF_E4_E5_E6_E7_ED,
+    vs_battle_script_E8_attachCameraToActor, vs_battle_script_E9_returnToGameplayCamera,
     vs_battle_script_EA_EB_EC_EE_EF_camera, vs_battle_script_EA_EB_EC_EE_EF_camera,
     vs_battle_script_EA_EB_EC_EE_EF_camera, vs_battle_script_B9_BA_BF_E4_E5_E6_E7_ED,
     vs_battle_script_EA_EB_EC_EE_EF_camera, vs_battle_script_EA_EB_EC_EE_EF_camera,
-    vs_battle_script_yield, vs_battle_script_F1, vs_battle_script_F2_playMenuSelectSfx,
-    vs_battle_script_F3, vs_battle_script_F4, vs_battle_script_F5, vs_battle_script_F6,
-    vs_battle_script_F7, vs_battle_script_invalidOpcode, vs_battle_script_invalidOpcode,
+    vs_battle_script_yield, vs_battle_script_F1_setFrameRate,
+    vs_battle_script_F2_playMenuSelectSfx, vs_battle_script_F3_setScanlines,
+    vs_battle_script_F4_joinScript, vs_battle_script_F5_forkAndJump,
+    vs_battle_script_F6_endScript, vs_battle_script_F7_queueNextEvt,
     vs_battle_script_invalidOpcode, vs_battle_script_invalidOpcode,
     vs_battle_script_invalidOpcode, vs_battle_script_invalidOpcode,
-    vs_battle_script_FE_FF, vs_battle_script_FE_FF };
+    vs_battle_script_invalidOpcode, vs_battle_script_invalidOpcode,
+    vs_battle_script_FE_FF_endScene, vs_battle_script_FE_FF_endScene };
 
 void initScriptFunctionTable(void)
 {
     particleEffectSoundScripted = 0;
     scriptWarpState = 0;
-    D_800F4C30 = vs_main_allocHeap(0x1800);
+    evtBuffer = vs_main_allocHeap(0x1800);
     vibrationPatternCopy = vs_main_allocHeap(0x80);
     vs_battle_skipOpcodeTable = vs_main_allocHeap(0x400);
     vs_main_memcpy(vs_battle_skipOpcodeTable, skipOpcodeTableInit, 0x400);

@@ -16,6 +16,7 @@
 #include "gpu.h"
 #include "insertTPage.h"
 #include "lbaMacros.h"
+#include "scratch.h"
 #include "vs_string.h"
 #include <libetc.h>
 #include <stdio.h>
@@ -265,7 +266,7 @@ static int showMenu(void)
     int lastPage;
     int selectedRow;
     int currentPage;
-    u_long** s0;
+    vs_Scratch* s0;
     int cdState;
 
     switch (showMenuState) {
@@ -387,18 +388,23 @@ static int showMenu(void)
                 vs_main_playSfxDefault(0x7E, VS_SFX_MENUCHANGE);
             }
         }
-        s0 = (u_long**)getScratchAddr(0);
-        vs_mainmenu_renderButton(buttonIdSquare, 8, 16, s0[1] + 6);
-        vs_battle_renderTextRawColor("TURN    PAGE", 0x12001C, 0x808080, s0[1] + 6);
+        s0 = VS_SCRATCH;
+        vs_mainmenu_renderButton(buttonIdSquare, 8, 16, ((u_long*)s0->depthOt) + 6);
+        vs_battle_renderTextRawColor(
+            "TURN    PAGE", 0x12001C, 0x808080, ((u_long*)s0->depthOt) + 6);
         drawControlsBg(0x10, 0x12, 0x60, 0xC);
-        vs_mainmenu_renderButton(buttonIdCircle, 8, 34, s0[1] + 6);
-        vs_battle_renderTextRawColor("MENU", 0x24001C, 0x808080, s0[1] + 6);
+        vs_mainmenu_renderButton(buttonIdCircle, 8, 34, ((u_long*)s0->depthOt) + 6);
+        vs_battle_renderTextRawColor(
+            "MENU", 0x24001C, 0x808080, ((u_long*)s0->depthOt) + 6);
         drawControlsBg(0x10, 0x24, 0x40, 0xC);
-        vs_battle_renderTextRawColor("PAGE", 0xC400D8, 0x808080, s0[1] + 7);
+        vs_battle_renderTextRawColor(
+            "PAGE", 0xC400D8, 0x808080, ((u_long*)s0->depthOt) + 7);
         sprintf(charBuf, "#%d/", currentPage + 1);
-        vs_battle_renderTextRawColor(charBuf, 0xC40118, 0x808080, s0[1] + 7);
+        vs_battle_renderTextRawColor(
+            charBuf, 0xC40118, 0x808080, ((u_long*)s0->depthOt) + 7);
         sprintf(charBuf, "#%d", lastPage + 1);
-        vs_battle_renderTextRawColor(charBuf, 0xC40130, 0x808080, s0[1] + 7);
+        vs_battle_renderTextRawColor(
+            charBuf, 0xC40130, 0x808080, ((u_long*)s0->depthOt) + 7);
         vs_battle_manualDisplayState
             .scrollPositions[vs_battle_manualDisplayState.currentManual] = scrollPosition;
         if (showMenuState != showSubMenu) {
@@ -585,13 +591,13 @@ static void drawContent(void)
     int i;
     int spriteOffset;
     u_short* spriteData;
-    void** q;
-    void** p = (void**)getScratchAddr(0);
+    vs_Scratch* q;
+    vs_Scratch* p = VS_SCRATCH;
 
-    area = p[0];
+    area = p->nextPrim;
     SetDrawArea(area, &vs_main_drawEnv[(vs_main_frameBuf + 1) & 1].clip);
-    AddPrim(p[1], area++);
-    p[0] = area;
+    AddPrim(p->depthOt, area++);
+    p->nextPrim = area;
 
     drawContentLines();
 
@@ -613,11 +619,11 @@ static void drawContent(void)
     rect.y = 55;
     rect.h = 130;
 
-    q = (void**)getScratchAddr(0);
-    area = q[0];
+    q = VS_SCRATCH;
+    area = q->nextPrim;
     SetDrawArea(area, &rect);
-    AddPrim(q[1], area++);
-    q[0] = area;
+    AddPrim(q->depthOt, area++);
+    q->nextPrim = area;
 }
 
 static inline int minimum(int arg0, int arg1)
@@ -646,7 +652,7 @@ static void drawSprite(short* data)
     int j;
     int i;
     SPRT* sprite;
-    u_long** scratch;
+    vs_Scratch* scratch;
     short tPage;
 
     if ((*data != 0) && ((getAnimationState((AnimationState*)data) << 0x10) != 0)) {
@@ -688,7 +694,7 @@ static void drawSprite(short* data)
                 continue;
             }
 
-            sprite = *((void**)0x1F800000);
+            sprite = VS_SCRATCH->nextPrim;
             setSprt(sprite);
             setShadeTex(sprite, 1);
             sprite->clut = clutPacked;
@@ -709,9 +715,9 @@ static void drawSprite(short* data)
             sprite->v0 = (spriteV0 << 4);
             setWH(sprite, spriteW, spriteH);
 
-            scratch = (void*)getScratchAddr(0);
-            AddPrim(scratch[1], sprite++);
-            scratch[0] = (void*)sprite;
+            scratch = VS_SCRATCH;
+            AddPrim(((u_long*)scratch->depthOt), sprite++);
+            ((u_long*)scratch->nextPrim) = (void*)sprite;
             insertTPage(0, tPage);
         }
     }
@@ -720,9 +726,9 @@ static void drawSprite(short* data)
 static void setPageBg(int x, int y, int w, int h, int color)
 {
     POLY_G4* poly;
-    u_long** p;
+    vs_Scratch* p;
 
-    poly = *(POLY_G4**)getScratchAddr(0);
+    poly = VS_SCRATCH->nextPrim;
     setPolyG4(poly);
     setXY4(poly, x, y, (x + w) - 1, y, x, (y + h) - 1, (x + w) - 1, (y + h) - 1);
     setRGB0(poly, colorStops0[color].r, colorStops0[color].g, colorStops0[color].b);
@@ -730,9 +736,9 @@ static void setPageBg(int x, int y, int w, int h, int color)
     setRGB2(poly, colorStops0[color].r, colorStops0[color].g, colorStops0[color].b);
     setRGB3(poly, colorStops1[color].r, colorStops1[color].g, colorStops1[color].b);
 
-    p = (u_long**)getScratchAddr(0);
-    AddPrim(p[1] + 7, poly++);
-    p[0] = (u_long*)poly;
+    p = VS_SCRATCH;
+    AddPrim(((u_long*)p->depthOt) + 7, poly++);
+    ((u_long*)p->nextPrim) = (u_long*)poly;
     insertTPage(7, getTPage(0, 3, 0, 0));
 }
 
@@ -762,7 +768,7 @@ static void fadeMenuUpper(void)
     } while (var_v0 != (menuBgTransparencies + 4));
 
     drawPaginationArrow(arrowTypeUp);
-    poly = *(void**)getScratchAddr(0);
+    poly = VS_SCRATCH->nextPrim;
 
     for (i = 0; i < 16; ++i) {
         for (j = 0; j < 3; ++j) {
@@ -774,7 +780,7 @@ static void fadeMenuUpper(void)
             poly->tpage = (j + 32) | 128 | (640 >> 6) | (256 >> 4);
             setSemiTrans(poly, 1);
             setRGB0(poly, transparency[i], transparency[i], transparency[i]);
-            AddPrim(*(u_long**)getScratchAddr(1) - 7, poly++);
+            AddPrim((u_long*)VS_SCRATCH->depthOt - 7, poly++);
         }
     }
 
@@ -785,10 +791,10 @@ static void fadeMenuUpper(void)
         setXY0(&tile[i], 0, i + 52);
         setWH(&tile[i], 320, 1);
         setRGB0(&tile[i], transparency[i], transparency[i], transparency[i]);
-        AddPrim(*(u_long**)getScratchAddr(1) - 7, &tile[i]);
+        AddPrim((u_long*)VS_SCRATCH->depthOt - 7, &tile[i]);
     }
 
-    *(void**)getScratchAddr(0) = (void*)poly + 16 * sizeof(TILE);
+    VS_SCRATCH->nextPrim = (void*)poly + 16 * sizeof(TILE);
     insertTPage(-7, getTPage(0, 2, 0, 0));
 }
 
@@ -814,7 +820,7 @@ static void fadeMenuLower(void)
 
     drawPaginationArrow(arrowTypeDown);
 
-    poly = *(void**)getScratchAddr(0);
+    poly = VS_SCRATCH->nextPrim;
 
     for (i = 0; i < 16; ++i) {
         for (j = 0; j < 3; ++j) {
@@ -826,7 +832,7 @@ static void fadeMenuLower(void)
             poly->tpage = (j + 32) | 128 | (640 >> 6) | (256 >> 4);
             setSemiTrans(poly, 1);
             setRGB0(poly, transparency[i], transparency[i], transparency[i]);
-            AddPrim(*(u_long**)getScratchAddr(1) - 7, poly++);
+            AddPrim((u_long*)VS_SCRATCH->depthOt - 7, poly++);
         }
     }
 
@@ -838,10 +844,10 @@ static void fadeMenuLower(void)
         setXY0(&tile[i], 0, 0xBB - i);
         setWH(&tile[i], 320, 1);
         setRGB0(&tile[i], transparency[i], transparency[i], transparency[i]);
-        AddPrim(*(u_long**)getScratchAddr(1) - 7, &tile[i]);
+        AddPrim((u_long*)VS_SCRATCH->depthOt - 7, &tile[i]);
     }
 
-    *(void**)getScratchAddr(0) = (void*)poly + 16 * sizeof(TILE);
+    VS_SCRATCH->nextPrim = (void*)poly + 16 * sizeof(TILE);
     insertTPage(-7, getTPage(0, 2, 0, 0));
 }
 
@@ -849,7 +855,7 @@ static void drawPaginationArrow(enum arrowType_e arrowType)
 {
     int y;
     POLY_FT4* poly;
-    u_long** p;
+    vs_Scratch* p;
 
     if (arrowType != arrowTypeUp) {
         if (pageArrowAnimState < 9) {
@@ -866,7 +872,7 @@ static void drawPaginationArrow(enum arrowType_e arrowType)
         }
     }
 
-    poly = (POLY_FT4*)*getScratchAddr(0);
+    poly = (POLY_FT4*)VS_SCRATCH->nextPrim;
     setPolyFT4(poly);
     setShadeTex(poly, 1);
     setXY4(poly, 152, y, 168, y, 152, y + 16, 168, y + 16);
@@ -879,9 +885,9 @@ static void drawPaginationArrow(enum arrowType_e arrowType)
     } else {
         setClut(poly, 912, 223);
     }
-    p = (u_long**)getScratchAddr(0);
-    AddPrim(p[1] - 7, poly++);
-    p[0] = (void*)poly;
+    p = VS_SCRATCH;
+    AddPrim(((u_long*)p->depthOt) - 7, poly++);
+    ((u_long*)p->nextPrim) = (void*)poly;
 }
 
 static void drawContentLines(void)
@@ -899,7 +905,7 @@ static void drawContentLines(void)
         return;
     }
 
-    line = *(LINE_F2**)getScratchAddr(0);
+    line = VS_SCRATCH->nextPrim;
 
     spriteOffset = helpText[0];
     if (spriteOffset < 0) {
@@ -935,10 +941,10 @@ static void drawContentLines(void)
             continue;
         }
         if (((line->y0 < 186) || (line->y1 < 186)) && ((animationState << 16) == 0)) {
-            AddPrim(*(void**)getScratchAddr(1), line++);
+            AddPrim(VS_SCRATCH->depthOt, line++);
         }
     }
-    *(void**)getScratchAddr(0) = line;
+    VS_SCRATCH->nextPrim = line;
 }
 
 static short getAnimationState(AnimationState* state)
@@ -969,15 +975,15 @@ static void drawControlsBg(int x, int y, int w, int h)
     int j;
     LINE_G2* line;
     POLY_F4* poly;
-    u_long** p;
+    vs_Scratch* p;
 
-    line = (LINE_G2*)*getScratchAddr(0);
+    line = (LINE_G2*)VS_SCRATCH->nextPrim;
     for (i = y, j = w; i < (y + h) - 1; ++i, --j) {
         setLineG2(line);
         setXY2(line, x, i, (x + j) - 1, i);
         setRGB0(line, 64, 56, 32);
         setRGB1(line, 16, 16, 8);
-        AddPrim(*(u_long**)getScratchAddr(1) + 7, line++);
+        AddPrim((u_long*)VS_SCRATCH->depthOt + 7, line++);
     }
     x += 2;
     y += 2;
@@ -986,7 +992,7 @@ static void drawControlsBg(int x, int y, int w, int h)
     setXY4(poly, x, y, (x + w) - 1, y, x, (y + h) - 1, (x + w) - h, (y + h) - 1);
     setRGB0(poly, 0, 0, 0);
 
-    p = (u_long**)getScratchAddr(0);
-    AddPrim(p[1] + 7, poly);
-    p[0] = (u_long*)(poly + 1);
+    p = VS_SCRATCH;
+    AddPrim((u_long*)p->depthOt + 7, poly);
+    p->nextPrim = poly + 1;
 }

@@ -71,7 +71,7 @@ static void renderItemCategory(int animationStep, int highlightSelected)
 
         } else {
             texPage = vs_battle_setSpriteDefaultTexPage(
-                128, x | (animationStep << 0x10), vs_getWH(16, 16), vs_scratch.unk4);
+                128, x | (animationStep << 0x10), vs_getWH(16, 16), vs_scratch.depthOt);
         }
 
         texPage[4] = (120 + i * 16) | (128 << 8)

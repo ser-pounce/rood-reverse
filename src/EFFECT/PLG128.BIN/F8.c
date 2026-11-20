@@ -1,4 +1,5 @@
 #include "F8.h"
+#include "scratch.h"
 
 #define VS_EFFECT_NAME vs_effect_bloodySin
 
@@ -121,7 +122,7 @@ int VS_ENTRY_FUNCTION(func_800D4910_t* arg0, u_int arg1, int arg2)
 {
     func_800FD9A4_t* state = arg0->unk8;
     D_800F53B8_t* battle = D_800F53BC;
-    func_800FA098_arg1* scratch = (void*)0x1F8001D0;
+    func_800FA098_arg1* scratch = VS_SCRATCH_AT(void*, 0x1D0);
     func_800FA098_arg0* effect;
     int alive = 1;
     int curve;

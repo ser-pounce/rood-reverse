@@ -124,6 +124,10 @@ typedef struct {
     u_char unk40[0x7C0];
 } WepModelOffsets;
 
+/**
+ * The start of an actor, D_800F4538_t. An object, D_800F45E0_t, starts with a copy of
+ * this, and code that handles both kinds reads the object's through this type.
+ */
 typedef struct {
     u_char nBones;
     u_char nVertexGroups;
@@ -184,7 +188,7 @@ typedef struct {
     vs_TilePosition lastTouchedTile;
     D_800F4538_unk64 unk64;
     D_800F4538_unk68* unk68;
-} D_800F4538_unk0;
+} EntityBase;
 
 typedef struct {
     u_char nBones;
@@ -301,10 +305,8 @@ typedef struct {
 } D_800F4538_unk181C;
 
 typedef struct {
-    D_800F4538_unk0 unk0;
-    MATRIX bones[8];
-    D_800F4538_t2 unk16C;
-    u_char unk178[0x434];
+    EntityBase unk0;
+    MATRIX bones[42];
     u_char unk5AC_0 : 2;
     u_char unk5AC_2 : 1;
     u_char unk5AC_3 : 1;
@@ -524,3 +526,11 @@ typedef struct {
 extern D_800F4538_t* D_800F4538[17];
 extern vs_WepModels* vs_battle_wepModels[20];
 extern D_800F45E0_t* D_800F45E0[16];
+
+/** Gets the start of the actor or object with the given id, or NULL if there is none. */
+#define getEntityBase(actorId)                                                         \
+    (D_800F4538[actorId] ? &D_800F4538[actorId]->unk0                                  \
+                         : (EntityBase*)&D_800F45E0[actorId]->unk0)
+
+/** Gets the bones, which follow the start in both an actor and an object. */
+#define getEntityBones(base) ((MATRIX*)((base) + 1))

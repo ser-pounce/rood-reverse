@@ -114,14 +114,14 @@ typedef struct {
 } vs_Scene;
 
 typedef struct {
-    u_short unk0_0 : 5;
-    u_short unk0_5 : 5;
-    u_short unk0_10 : 1;
-    u_short unk0_11 : 3;
-    u_short unk0_14 : 1;
+    u_short x : 5;
+    u_short z : 5;
+    u_short surface : 1;
+    u_short viewSector : 3; // camera yaw, 8 directions
+    u_short zoom : 1;
     u_short unk0_15 : 1;
-    u_short unk2;
-    char unk4[0];
+    u_short count;
+    char geometryIds[0]; // geometry objects hidden from this tile and view
 } MpdRoomSection11;
 
 typedef struct {

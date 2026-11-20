@@ -10,6 +10,7 @@
 #include "src/BATTLE/BATTLE.PRG/battleUnk.h"
 #include "src/BATTLE/BATTLE.PRG/entity.h"
 #include "src/BATTLE/BATTLE.PRG/objectData.h"
+#include "scratch.h"
 
 void func_800F9A24(int arg0)
 {
@@ -193,8 +194,9 @@ int func_800F9EB8(MATRIX* arg0)
 
     func_800AECA0(arg0);
 
-    temp_s1->unk5B2 =
-        ((int)(vs_gametime_tickspeed + (((u_int)vs_gametime_tickspeed) >> 0x1F))) >> 1;
+    temp_s1->unk5B2 = ((int)(vs_gametime_vblanksPerFrame
+                             + (((u_int)vs_gametime_vblanksPerFrame) >> 0x1F)))
+                   >> 1;
 
     if (temp_s1->unk0.freeze) {
         func_800AB4F0(temp_s1);
@@ -210,9 +212,9 @@ int func_800F9EB8(MATRIX* arg0)
     }
 
     if (temp_s1->unk17FD != 0) {
-        int* p = (int*)0x1F800000;
+        vs_Scratch* p = VS_SCRATCH;
         new_var2 = (temp_s1->unk6F4.otDepth * 4) + 0xC0;
-        p[1] += new_var2;
+        p->depthOt += new_var2;
 
         applyVector(&temp_s1->unk0.position, temp_s1->unk6F4.x, temp_s1->unk6F4.y,
             temp_s1->unk6F4.z, +=);
@@ -220,9 +222,9 @@ int func_800F9EB8(MATRIX* arg0)
         func_800B002C(temp_s1, temp_s1->unk17FD);
         func_800B28A8(temp_s1, arg0, temp_s1->unk17FD);
 
-        p = (int*)0x1F800000;
+        p = VS_SCRATCH;
         new_var3 = (temp_s1->unk6F4.otDepth * 4) + 0xC0;
-        p[1] -= new_var3;
+        p->depthOt -= new_var3;
 
         applyVector(&temp_s1->unk0.position, temp_s1->unk6F4.x, temp_s1->unk6F4.y,
             temp_s1->unk6F4.z, -=);

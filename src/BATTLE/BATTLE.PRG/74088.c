@@ -10,6 +10,7 @@
 #include "src/SLUS_010.40/modifiers.h"
 #include "src/SLUS_010.40/overlay.h"
 #include "build/src/include/lbas.h"
+#include "scratch.h"
 #include "tilePosition.h"
 #include <abs.h>
 #include <rand.h>
@@ -180,7 +181,7 @@ void func_800DCC94(
 
     arg1->unk0 = 0;
     arg1->unkC_19 = 128;
-    stats = (func_800DC888_t*)0x1F80018C;
+    stats = VS_SCRATCH_AT(func_800DC888_t*, 0x18C);
     func_800DC424(stats);
 
     if (arg0->unk2B && flags.unk4) {
@@ -408,9 +409,9 @@ void func_800DD7CC(func_800E78F4_t* arg0, vs_TilePosition* arg1)
 {
     int i;
     u_int nearest = -1;
-    u_short(*map)[32] = *(u_short(**)[32])0x1F8003BC;
+    u_short(*map)[32] = *VS_SCRATCH_AT(u_short(**)[32], 0x3BC);
 
-    *(u_short(**)[32])0x1F8003BC = D_800F58D0;
+    *VS_SCRATCH_AT(u_short(**)[32], 0x3BC) = D_800F58D0;
 
     for (i = 0; i < 8; ++i) {
         int x;
@@ -436,12 +437,12 @@ void func_800DD7CC(func_800E78F4_t* arg0, vs_TilePosition* arg1)
         }
     }
 
-    *(u_short(**)[32])0x1F8003BC = map;
+    *VS_SCRATCH_AT(u_short(**)[32], 0x3BC) = map;
 }
 
 void func_800DD918(func_800E78F4_t* arg0, int arg1)
 {
-    func_800DCAA0_t* list = (func_800DCAA0_t*)0x1F80030C;
+    func_800DCAA0_t* list = VS_SCRATCH_AT(func_800DCAA0_t*, 0x30C);
     func_800DCAA0_t* candidate;
     int pass;
     int row;

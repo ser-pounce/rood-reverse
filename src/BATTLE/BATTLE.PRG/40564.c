@@ -52,14 +52,8 @@ extern func_800AAE9C_t D_800E909C[][28];
 extern short D_800E8F30[];
 extern u_char D_800E8F2C;
 
-static inline DR_MOVE* vs_battlePacketBegin(void)
-{
-    return ((vs_Scratch*)0x1F800000)->unk0;
-}
-static inline void vs_battlePacketEnd(DR_MOVE* p)
-{
-    ((vs_Scratch*)0x1F800000)->unk0 = p + 1;
-}
+static inline DR_MOVE* vs_battlePacketBegin(void) { return VS_SCRATCH->nextPrim; }
+static inline void vs_battlePacketEnd(DR_MOVE* p) { VS_SCRATCH->nextPrim = p + 1; }
 
 // Inlined copy of 3A1A0 func_800A4A24
 static inline SVECTOR* func_800A4A24(int id)
@@ -132,7 +126,7 @@ MpdTile* func_800A8D64(SVECTOR* arg0, int arg1)
 
 int func_800A8E84(D_800F4538_t* actor, SVECTOR* position)
 {
-    D_1F8003BC_t* scratch = (D_1F8003BC_t*)0x1F8003BC;
+    D_1F8003BC_t* scratch = VS_SCRATCH_AT(D_1F8003BC_t*, 0x3BC);
     int i;
 
     if (actor->unk0.unkF != 0) {
@@ -179,7 +173,7 @@ int func_800A8E84(D_800F4538_t* actor, SVECTOR* position)
 
 int func_800A8FD4(D_800F4538_t* actor, SVECTOR* motion)
 {
-    D_1F8003BC_t* scratch = (D_1F8003BC_t*)0x1F8003BC;
+    D_1F8003BC_t* scratch = VS_SCRATCH_AT(D_1F8003BC_t*, 0x3BC);
     D_1F8003BC_t* clear;
     D_800F4538_t** entry;
     int i;
@@ -1217,10 +1211,10 @@ void setActorScale(int arg0, SVECTOR* arg1, int arg2)
 
 void func_800AAC80(RECT* arg0, int arg1, int arg2)
 {
-    DR_MOVE* drMove = *(DR_MOVE**)0x1F800000;
+    DR_MOVE* drMove = VS_SCRATCH->nextPrim;
     SetDrawMove(drMove, arg0, arg1, arg2);
     func_8007A824(drMove);
-    *(DR_MOVE**)0x1F800000 = drMove + 1;
+    VS_SCRATCH->nextPrim = drMove + 1;
 }
 
 void func_800AACDC(void)
@@ -1234,14 +1228,14 @@ void func_800AACDC(void)
     sp10.w = 18;
     sp10.h = 36;
 
-    new_var = (void*)0x1F800000;
-    temp_s0 = *((DR_MOVE**)0x1F800000);
+    new_var = VS_SCRATCH;
+    temp_s0 = VS_SCRATCH->nextPrim;
     new_var = (void*)0x10;
 
     SetDrawMove(temp_s0, &sp10, 16, 400);
     func_8007A824(temp_s0);
 
-    *((void**)0x1F800000) = (DR_MOVE*)(temp_s0 + 1);
+    VS_SCRATCH->nextPrim = temp_s0 + 1;
 }
 
 int func_800AAD4C(int actorId, int index, int value, int mode)
@@ -1526,7 +1520,7 @@ void func_800AB4F0(D_800F4538_t* actor)
         }
 
         scroll = &actor->unk181C[i];
-        scroll->timer += vs_gametime_tickspeed / 2;
+        scroll->timer += vs_gametime_vblanksPerFrame / 2;
 
         if (scroll->timer <= scroll->interval) {
             continue;
@@ -1617,7 +1611,7 @@ void func_800AB788(D_800F4538_t* actor, D_800F45E0_t* object, int arg2)
 
     value = state->unk1;
 
-    if (vs_gametime_tickspeed == 4) {
+    if (vs_gametime_vblanksPerFrame == 4) {
         if (!(state->unk2 & 2)) {
             value += 2;
 
@@ -1761,7 +1755,7 @@ void func_800AB9A4(void* arg)
         }
     }
     flags = *(u_int*)((char*)arg0 + 8);
-    speed = vs_gametime_tickspeed / 2;
+    speed = vs_gametime_vblanksPerFrame / 2;
     skip = 0;
     if (flags & 0x80) {
         skip = 1;
@@ -2268,7 +2262,7 @@ void func_800AC690(int arg0, D_800F4538_t* actor)
     switch (state) {
     case 2:
         if ((signed char)actor->unk0.unk11 > 0) {
-            timer = actor->unk0.unk11 - vs_gametime_tickspeed / 2;
+            timer = actor->unk0.unk11 - vs_gametime_vblanksPerFrame / 2;
             actor->unk0.unk11 = timer;
             if (timer < 2) {
                 vs_battle_setActorAnimation(arg0, D_800E92E8[profile], 0, 8);
@@ -2288,7 +2282,7 @@ void func_800AC690(int arg0, D_800F4538_t* actor)
         break;
     case 3:
         if ((signed char)actor->unk0.unk11 > 0) {
-            timer = actor->unk0.unk11 - vs_gametime_tickspeed / 2;
+            timer = actor->unk0.unk11 - vs_gametime_vblanksPerFrame / 2;
             actor->unk0.unk11 = timer;
             if (timer > 0) {
                 break;
@@ -2297,14 +2291,14 @@ void func_800AC690(int arg0, D_800F4538_t* actor)
             actor->unk0.unk11 = 0;
         }
         if (actor->unk0.unkA_6) {
-            y = vs_gametime_tickspeed / 2;
+            y = vs_gametime_vblanksPerFrame / 2;
             ((func_800AC690_timer_t*)&actor->unk5B4)->timer += y;
             limit = 7;
             y = ((func_800AC690_timer_t*)&actor->unk5B4)->timer >> 1;
             ((func_800AC690_timer_t*)&actor->unk5B4)->timer -= y * 2;
         } else {
             limit = 9;
-            y = (vs_gametime_tickspeed / 2) * state;
+            y = (vs_gametime_vblanksPerFrame / 2) * state;
         }
         velocity = actor->unk0.unk34.vy + y;
         actor->unk0.unk34.vy = velocity;
@@ -2464,7 +2458,7 @@ void func_800AC690(int arg0, D_800F4538_t* actor)
             actor->unk0.unkA_6 = 0;
         }
         func_800ACF54(actor);
-        actor->unk0.unk11 -= vs_gametime_tickspeed / 2;
+        actor->unk0.unk11 -= vs_gametime_vblanksPerFrame / 2;
         if ((signed char)actor->unk0.unk11 < 0) {
             actor->unk0.unk11 = 0;
         }
@@ -2726,7 +2720,7 @@ void func_800AD62C(int arg0, int* arg1, int* arg2, UNUSED int arg3)
     } else {
         if (temp_s0->unk0.unk9_0 || temp_s0->unk0.unk9_4 || !temp_s0->unk0.unk9_7
             || temp_s0->unk0.unkA_0 || temp_s0->unk0.unkA_3 || temp_s0->unk0.unkA_5) {
-            func_800A1280(arg0, 0xFF, &temp_s0->unk6FC, 0);
+            getActorScreenPoint(arg0, 0xFF, &temp_s0->unk6FC, 0);
         }
 
         temp_v0 = vs_main_computeSfxPan(*(int*)&temp_s0->unk6FC, temp_s0->unk6FC.vz);

@@ -10,6 +10,7 @@
 #include "battleUnk.h"
 #include "entity.h"
 #include "src/SLUS_010.40/gameState.h"
+#include "scratch.h"
 #include "tilePosition.h"
 #include <abs.h>
 
@@ -51,7 +52,9 @@ extern u_char D_800E90C4;
 extern u_char D_800E90C6;
 extern int D_800E90BC;
 extern u_char D_800E91AC[];
-extern u_char D_800F1D6E[];
+// Indexed from the address of cloudstonesPaused; the table it belongs to is not yet
+// identified.
+extern u_char cloudstonesPaused[];
 extern short D_800F4B0A;
 extern MpdTile* D_800F49F0;
 extern SVECTOR D_800F4B08;
@@ -995,7 +998,7 @@ int func_800A4494(int contact, SVECTOR* point)
 
 int func_800A46A4(D_800F4538_t* actor)
 {
-    D_1F8003BC_t* scratch = (D_1F8003BC_t*)0x1F8003BC;
+    D_1F8003BC_t* scratch = VS_SCRATCH_AT(D_1F8003BC_t*, 0x3BC);
     int saved = actor->unk0.unkC_0;
     int radius = actor->unk63C;
     int direction;
@@ -1190,7 +1193,7 @@ void func_800A4D8C(void)
 
     for (i = 0; i < 16; ++i) {
         if ((D_800F45E0[i] != NULL) && (D_800F45E0[i]->unk0.nBones != 0)) {
-            func_800B0908(D_800F45E0[i], vs_gametime_tickspeed / 2);
+            func_800B0908(D_800F45E0[i], vs_gametime_vblanksPerFrame / 2);
         }
     }
     for (i = 0; i < 17; ++i) {
@@ -1393,7 +1396,7 @@ int func_800A5280(int index, int direction, int distance, SVECTOR* input)
     if (actor->unk0.unkA_3 == 2) {
         if (actor->unk0.unkC_0) {
             func_800ACF54(actor);
-            if (D_800F1D6E[actor->unk0.unkC_0] == 7
+            if (cloudstonesPaused[actor->unk0.unkC_0] == 7
                 && func_800A6EE8(&actor->unk0.position, 0, 0, 1)
                        <= actor->unk0.position.vy) {
             fall:
@@ -1490,7 +1493,7 @@ int func_800A5280(int index, int direction, int distance, SVECTOR* input)
         coast:
             distance = actor->unk1840;
             direction = actor->unk1842;
-            distance -= vs_gametime_tickspeed;
+            distance -= vs_gametime_vblanksPerFrame;
             actor->unk1840 = distance;
             if (distance <= 0) {
                 actor->unk5AC_15 = 0;
@@ -1545,7 +1548,7 @@ int func_800A5280(int index, int direction, int distance, SVECTOR* input)
     actor->unk1840 = distance / ONE;
     if (distance >= actor->unk5B9 << 12) {
         i = actor->unk1846;
-        i += vs_gametime_tickspeed / 2;
+        i += vs_gametime_vblanksPerFrame / 2;
         actor->unk1842 = direction;
         if (i >= 0x100) {
             i = 0xFF;
@@ -1554,7 +1557,7 @@ int func_800A5280(int index, int direction, int distance, SVECTOR* input)
         actor->unk1847 = 0;
     } else {
         i = actor->unk1847;
-        i += vs_gametime_tickspeed / 2;
+        i += vs_gametime_vblanksPerFrame / 2;
         if (i >= 0x100) {
             i = 0xFF;
         }
@@ -2188,7 +2191,7 @@ int func_800A6AA0(D_800F4538_t* actor, int speed)
             actor->unk5B3 = 0;
         }
 
-        actor->unk5B3 += vs_gametime_tickspeed / 2;
+        actor->unk5B3 += vs_gametime_vblanksPerFrame / 2;
 
         if (actor->unk5B3 >= 250) {
             actor->unk5B3 = 250;
@@ -2279,7 +2282,7 @@ int func_800A6EE8(SVECTOR* arg0, int arg1, int arg2, int arg3)
 
 void func_800A70DC(D_800F4538_t* actor, int diagonal)
 {
-    D_1F8003BC_t* samples = (D_1F8003BC_t*)0x1F8003BC;
+    D_1F8003BC_t* samples = VS_SCRATCH_AT(D_1F8003BC_t*, 0x3BC);
     int i;
     int j;
     int delta;
@@ -2386,7 +2389,7 @@ void func_800A7524(D_800F4538_t* actor, SVECTOR* motion)
         return;
     }
 
-    scratch = (D_1F8003BC_t*)0x1F8003BC;
+    scratch = VS_SCRATCH_AT(D_1F8003BC_t*, 0x3BC);
     x = 0;
     z = (scratch->blocked[0] != 0) * 16;
 
@@ -3042,7 +3045,7 @@ int func_800A8B34(SVECTOR* arg0, int arg1)
     int los;
     int diff;
     int q;
-    D_1F8003BC_t* sb = (D_1F8003BC_t*)0x1F8003BC;
+    D_1F8003BC_t* sb = VS_SCRATCH_AT(D_1F8003BC_t*, 0x3BC);
     D_800F4538_t* actor = sb->unk18;
     int limit = sb->unk1C[arg1 & 7];
 

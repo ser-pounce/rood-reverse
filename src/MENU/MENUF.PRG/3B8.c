@@ -14,6 +14,7 @@
 #include "src/BATTLE/BATTLE.PRG/mpd.h"
 #include "build/src/include/lbas.h"
 #include "gpu.h"
+#include "scratch.h"
 #include "texture.h"
 #include <stdio.h>
 #include <libetc.h>
@@ -1069,7 +1070,7 @@ int renderTimeAttackStart(void)
         }
 
     } else if (screenState == 2) {
-        func_8007C36C(4);
+        setFrameRate(frameRateHalf);
         func_8007DDAC(0);
         func_8007DDB8(&D_801096F0[0]);
         func_8007DDD4(&colors[1]);
@@ -1077,7 +1078,7 @@ int renderTimeAttackStart(void)
         func_8007DE2C(0);
         func_8007DE44(0U);
         func_8007DE5C(0);
-        func_8007DD50(1);
+        setFramebufferEffect(1);
 
         ++screenState;
 
@@ -1145,9 +1146,9 @@ int renderTimeAttackStart(void)
         }
 
     } else if (screenState == 4) {
-        func_8007C36C(2);
+        setFrameRate(frameRateFull);
         func_8007DDB8(&D_801096F0[2]);
-        func_8007DD50(0);
+        setFramebufferEffect(0);
         func_8007E0A8(0x1D, 2, 5);
 
         return 1;
@@ -1890,13 +1891,13 @@ void renderTextureFadeIn(int x, int y, int texIndex, int brightness)
 {
     vs_Texture* texture;
     POLY_FT4* poly;
-    void** scratch;
+    vs_Scratch* scratch;
 
     if (brightness <= 0) {
         return;
     }
 
-    poly = *(void**)getScratchAddr(0);
+    poly = VS_SCRATCH->nextPrim;
     texture = &disMap[texIndex];
 
     setPolyFT4(poly);
@@ -1916,24 +1917,24 @@ void renderTextureFadeIn(int x, int y, int texIndex, int brightness)
         poly->clut = texture->clut;
     }
 
-    scratch = (void**)getScratchAddr(0);
+    scratch = VS_SCRATCH;
 
-    AddPrim(scratch[1] - 0x1C, poly++);
+    AddPrim(scratch->depthOt - 0x1C, poly++);
 
-    scratch[0] = poly;
+    scratch->nextPrim = poly;
 }
 
 void renderTextureFadeInClut(int x, int y, int texIndex, int brightness, int clut)
 {
     vs_Texture* texture;
     POLY_FT4* poly;
-    void** scratch;
+    vs_Scratch* scratch;
 
     if (brightness <= 0) {
         return;
     }
 
-    poly = *(void**)getScratchAddr(0);
+    poly = VS_SCRATCH->nextPrim;
     texture = &disMap[texIndex];
 
     setPolyFT4(poly);
@@ -1953,11 +1954,11 @@ void renderTextureFadeInClut(int x, int y, int texIndex, int brightness, int clu
         poly->clut = clut;
     }
 
-    scratch = (void**)getScratchAddr(0);
+    scratch = VS_SCRATCH;
 
-    AddPrim(scratch[1] - 0x1C, poly++);
+    AddPrim(scratch->depthOt - 0x1C, poly++);
 
-    scratch[0] = poly;
+    scratch->nextPrim = poly;
 }
 
 void renderTime(int x, int y, int timer, int time, int isNewRecord)
@@ -2014,8 +2015,8 @@ static void renderStatWheel(int x, int y, int timer, int arg3)
     DR_AREA* area;
     int i;
     int j;
-    void** p;
-    void** q;
+    vs_Scratch* p;
+    vs_Scratch* q;
     int new_var2;
     int v1;
     int len;
@@ -2041,13 +2042,13 @@ static void renderStatWheel(int x, int y, int timer, int arg3)
 
         x += 2 + disMap[26].w;
         new_var2 = 16;
-        p = (void**)0x1F800000;
-        area = p[0];
+        p = VS_SCRATCH;
+        area = p->nextPrim;
 
         SetDrawArea(area, &vs_main_drawEnv[(vs_main_frameBuf + 1) & 1].clip);
-        AddPrim(p[1] - 0x1C, area++);
+        AddPrim(p->depthOt - 0x1C, area++);
 
-        p[0] = area;
+        p->nextPrim = area;
 
         if (vs_main_drawEnv[(vs_main_frameBuf + 1) & 1].clip.x >= 320) {
             sp18.x = 320;
@@ -2115,20 +2116,20 @@ static void renderStatWheel(int x, int y, int timer, int arg3)
             }
         }
 
-        q = (void**)0x1F800000;
-        area = q[0];
+        q = VS_SCRATCH;
+        area = q->nextPrim;
 
         SetDrawArea(area, &sp18);
-        AddPrim(q[1] - 0x1C, area++);
+        AddPrim(q->depthOt - 0x1C, area++);
 
-        q[0] = area;
+        q->nextPrim = area;
     }
 }
 
 void renderPressButtonPrompt(int x, int y, int arg2, int arg3)
 {
     POLY_FT4* poly;
-    void** p;
+    vs_Scratch* p;
     int v1;
 
     if (arg2 < 0) {
@@ -2158,7 +2159,7 @@ void renderPressButtonPrompt(int x, int y, int arg2, int arg3)
         y = v1 - ((arg3 & 0xF) >> 2);
     }
 
-    poly = *(void**)0x1F800000;
+    poly = VS_SCRATCH->nextPrim;
 
     setPolyFT4(poly);
     setShadeTex(poly, 1);
@@ -2167,11 +2168,11 @@ void renderPressButtonPrompt(int x, int y, int arg2, int arg3)
     setTPage(poly, 0, 0, 768, 0);
     setClut(poly, 944, 223);
 
-    p = (void**)0x1F800000;
+    p = VS_SCRATCH;
 
-    AddPrim(p[1] - 0x1C, poly++);
+    AddPrim(p->depthOt - 0x1C, poly++);
 
-    p[0] = poly;
+    p->nextPrim = poly;
 }
 
 #include "src/renderTextures.h"
@@ -2180,8 +2181,8 @@ static void renderAnimatedStatWheel(int x, int y, int texId)
 {
     int i;
     int brightness;
-    void** p = (void**)0x1F800000;
-    POLY_FT4* poly = p[0];
+    vs_Scratch* p = VS_SCRATCH;
+    POLY_FT4* poly = p->nextPrim;
     int texY = disMap[texId].y;
 
     for (i = 0; i < disMap[texId].h; ++i, ++y, ++texY) {
@@ -2203,7 +2204,7 @@ static void renderAnimatedStatWheel(int x, int y, int texId)
             setClut(poly, 816, 511);
             poly->tpage = disMap[texId].tpage | getTPage(0, semiTransparencyFull, 0, 0);
 
-            AddPrim(p[1] - 0x1C, poly++);
+            AddPrim(p->depthOt - 0x1C, poly++);
 
             setPolyFT4(poly);
             setXY4(
@@ -2217,7 +2218,7 @@ static void renderAnimatedStatWheel(int x, int y, int texId)
             poly->tpage =
                 disMap[texId].tpage | getTPage(0, semiTransparencySubtract, 0, 0);
 
-            AddPrim(p[1] - 0x1C, poly++);
+            AddPrim(p->depthOt - 0x1C, poly++);
 
         } else if (y >= 206) {
 
@@ -2232,7 +2233,7 @@ static void renderAnimatedStatWheel(int x, int y, int texId)
             setClut(poly, 816, 511);
             poly->tpage = disMap[texId].tpage | getTPage(0, semiTransparencyFull, 0, 0);
 
-            AddPrim(p[1] - 0x1C, poly++);
+            AddPrim(p->depthOt - 0x1C, poly++);
 
             setPolyFT4(poly);
             setXY4(
@@ -2245,7 +2246,7 @@ static void renderAnimatedStatWheel(int x, int y, int texId)
             poly->tpage =
                 disMap[texId].tpage | getTPage(0, semiTransparencySubtract, 0, 0);
 
-            AddPrim(p[1] - 0x1C, poly++);
+            AddPrim(p->depthOt - 0x1C, poly++);
 
         } else {
             setRGB0(poly, 128, 128, 128);
@@ -2253,11 +2254,11 @@ static void renderAnimatedStatWheel(int x, int y, int texId)
             setClut(poly, 800, 511);
             poly->tpage = disMap[texId].tpage;
 
-            AddPrim(p[1] - 0x1C, poly++);
+            AddPrim(p->depthOt - 0x1C, poly++);
         }
     }
 
-    p[0] = poly;
+    p->nextPrim = poly;
 }
 
 static void nop0(void);

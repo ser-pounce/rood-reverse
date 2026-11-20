@@ -141,13 +141,6 @@ typedef struct {
 } ZudHeader;
 
 typedef struct {
-    Actor_dat2 unk0;
-    char unkB2C[0x1788];
-    ActorSubModel unk22B4;
-    char unk289C[0x1318];
-} func_800775C0_t;
-
-typedef struct {
     int count;
     vs_Warp* values[0];
 } D_800F1D08_t;
@@ -257,7 +250,7 @@ int func_8008BF48(MpdRoomSectionA*);
 void func_8008C0C0(void);
 void func_8008C070(int arg0, MpdRoomSectionA* arg1);
 int func_8008C1C8(MpdRoomSectionA* arg0);
-int func_8008C2C0(int arg0, int arg1, int arg2, int arg3);
+int cullGeometryForView(int tileX, int tileZ, int surface, int zoom);
 void func_8008C538(void);
 void func_8008C6B4(int, int);
 int func_8008C8A8(void);
@@ -277,7 +270,7 @@ MpdRoomSectionA* func_8008E3B8(int* arg0);
 MpdRoomSection9* func_8008E400(int*);
 void func_8008E480(int arg0);
 void func_800E4C64(int);
-void func_8008E4DC(int);
+void setCloudstonePalette(int);
 void loadMpdLootSection(void* arg0);
 void func_8008E6DC(int);
 void func_8008E8F8(void);
@@ -325,12 +318,12 @@ extern D_800F18C8_t D_800F18C8;
 extern int D_800F18E0;
 extern void* D_800F18E4;
 extern u_int cameraMode;
-extern char D_800F18F8;
+extern char overlayBufferOwner;
 extern int D_800F18FC;
 extern int D_800F1908;
 extern D_800F1910_t D_800F1910;
 extern Actor* D_800F192C;
-extern int D_800F19A0;
+extern int recordRoomSeen;
 extern u_char D_800F19A8[];
 extern D_800F19CC_t* D_800F19CC;
 extern int D_800F19D8;
@@ -365,9 +358,9 @@ extern short D_800F1D6A;
 extern u_short D_800F1D6C;
 extern int D_800F1D78[5];
 extern char D_800F1DC7;
-extern short D_800F1D68;
-extern u_char D_800F1D6E;
-extern char D_800F1D6F;
+extern short cloudstoneFreezeTimer;
+extern u_char cloudstonesPaused;
+extern char cloudstonesAltPalette;
 extern u_char D_800F1D70[];
 extern vs_CdQueueSlot* backgroundImageCdSlot;
 extern vs_CdQueueSlot* backgroundLayoutCdSlot;
@@ -406,7 +399,7 @@ void func_80069C6C(int arg0)
 
     if ((D_800F19CC->battleAbilityTargetWindow == 0) && (func_80078828(0) != 0)) {
         D_800F19CC->battleAbilityTargetWindow =
-            D_800F19CC->battleAbilityTimer + vs_gametime_tickspeed * 2;
+            D_800F19CC->battleAbilityTimer + vs_gametime_vblanksPerFrame * 2;
     }
 }
 
@@ -537,10 +530,10 @@ void vs_battle_saveEnemyState(int actorId, int arg1)
     temp_v0->tile = sp10.unk0.unk0;
 }
 
-int insertActor(Actor* actor)
+int insertCombatant(Actor* actor)
 {
 
-    if ((actor->unk1C & 7) && (actor->id != 0)) {
+    if ((actor->role & actorRoleCombatant) && (actor->id != 0)) {
         int i;
 
         for (i = 0; i < 16; ++i) {
@@ -562,7 +555,7 @@ int insertActor(Actor* actor)
     return 0;
 }
 
-int removeActor(Actor* actor)
+int removeCombatant(Actor* actor)
 {
     if (actor->id != 0) {
         int i;
@@ -591,7 +584,7 @@ int removeActorById(u_int actorId, int arg1)
 
             vs_battle_saveEnemyState(actorId, arg1);
 
-            if (actor->unk1C == 0x10) {
+            if (actor->role == actorRoleModelOnly) {
                 func_8009F530(actorId);
                 func_80099D6C(actorId);
             } else {
@@ -1415,7 +1408,7 @@ void updateEnemyKills(Actor* enemy)
 {
     u_int subType = enemy->subType;
 
-    if ((enemy->stats != NULL) && (enemy->unk1C == 4)) {
+    if ((enemy->stats != NULL) && (enemy->role == actorRoleEngagedEnemy)) {
 
         vs_ActorStats* stats = enemy->stats;
 
@@ -1538,7 +1531,7 @@ void func_8006C39C(void)
     vs_main_setClutState(0);
     func_8006C2A0();
     func_8008B4BC(1);
-    func_8008D594(1);
+    setCloudstonesPaused(1);
     func_8008B4C8(0);
     func_8008E480(1);
     func_80095B70(1);
@@ -1552,7 +1545,7 @@ void func_8006C40C(void)
     transformSceneColors(8, 4, 0, 0, 0);
     func_8006C250();
     func_8008B4BC(0);
-    func_8008D594(0);
+    setCloudstonesPaused(0);
     func_8008B4C8(1);
     func_8008E480(0);
     func_80095B70(0);
@@ -1583,7 +1576,7 @@ void func_8006C4C4(int effectId, HitEntity* arg1, int targetLimb)
         sp10.targets[0].value.actor.actor = arg1->unk0.hit.targetActor;
         sp10.targets[0].value.actor.unk1 = targetLimb;
         sp10.targets[0].value.actor.part =
-            func_800A152C(arg1->unk0.hit.targetActor, arg1->unk0.hit.targetLimb, 2);
+            findBoneIndex(arg1->unk0.hit.targetActor, arg1->unk0.hit.targetLimb, 2);
     } else {
         sp10.targets[0].type = 5;
         sp10.targets[0].value.position = arg1->unk0.position;
@@ -1860,7 +1853,7 @@ void func_8006CDD8(SVECTOR* arg0)
     }
 }
 
-void func_8006CE50(void) { func_8008D5A0(0xB4); }
+void func_8006CE50(void) { setCloudstoneFreezeTimer(0xB4); }
 
 void func_8006CE70(SVECTOR* arg0)
 {
@@ -2910,14 +2903,14 @@ void setRoomSeen(void)
     u_int scene;
     u_int room;
 
-    if (D_800F19A0 == 0) {
+    if (recordRoomSeen == 0) {
         return;
     }
 
     scene = vs_battle_getCurrentSceneId();
     vs_main_mapStatus.areaFlags[scene >> 5] |= 1 << (scene & 0x1F);
     room = vs_battle_getCurrentRoomId();
-    D_800F19A0 = 0;
+    recordRoomSeen = 0;
     vs_main_mapStatus.roomFlags[room >> 5] |= 1 << (room & 0x1F);
 }
 
@@ -3024,7 +3017,7 @@ void func_8006F89C(void)
             cameraMode = 0xD;
             func_8009E070(0, NULL, 6);
             func_8006F848();
-            func_8008D594(1);
+            setCloudstonesPaused(1);
         } else if ((D_800F19CC->unk8.actionIndex != 0)
                    && !(vs_main_actions[D_800F19CC->unk8.actionIndex].unlocked)
                    && (D_800F19CC->unk8.unk4.kind == 0) && (D_800F19CC->unk2C07 == 0)
@@ -3032,7 +3025,7 @@ void func_8006F89C(void)
             cameraMode = 0xD;
             func_8009E070(0, NULL, 6);
             func_8006F848();
-            func_8008D594(1);
+            setCloudstonesPaused(1);
         } else {
             func_8006F5FC();
         }
@@ -3045,7 +3038,7 @@ void func_8006F89C(void)
             cameraMode = 0xD;
             func_8009E070(0, NULL, 6);
             func_8006F848();
-            func_8008D594(1);
+            setCloudstonesPaused(1);
         } else {
             func_8006F5FC();
         }
@@ -3106,7 +3099,7 @@ void func_8006FBCC(int arg0)
     func_8008B4BC(0);
     func_80095B70(0);
     D_800F18FC = arg0;
-    vs_gametime_tickspeed = 2;
+    vs_gametime_vblanksPerFrame = 2;
     cameraMode = 0xB;
 }
 
@@ -3117,7 +3110,7 @@ void func_8006FCBC(void)
     cameraMode = 10;
     temp_s0 = &D_800F19CC->unk854[0];
     stopActorTrails(temp_s0->unk4.unk0.hit.targetActor,
-        func_800A152C(temp_s0->unk4.unk0.hit.targetActor, 0xF0, 0));
+        findBoneIndex(temp_s0->unk4.unk0.hit.targetActor, 0xF0, 0));
 }
 
 void func_8006FD0C(void) { cameraMode = 9; }
@@ -3130,7 +3123,7 @@ void func_8006FD1C(void)
     int i;
     int found;
 
-    vs_gametime_tickspeed = 2;
+    vs_gametime_vblanksPerFrame = 2;
     action = &D_800F19CC->unk854[D_800F19CC->unk0 & 3];
     if ((action->actionIndex >= 0x8D) && (action->actionIndex < 0xB8)) {
         func_8009CC20(action->unk4.unk0.hit.targetActor, 5);
@@ -3255,7 +3248,7 @@ void func_80070278(void)
                     temp_s0->unk4.unk0.hit.targetActor, &D_800F19CC->unk8.unk844, 1);
             }
             D_800F19CC->battleAbilityTargetWindow = 0;
-            vs_gametime_tickspeed = 4;
+            vs_gametime_vblanksPerFrame = 4;
         }
     } else {
         if (temp_s0->actionIndex < 0x28) {
@@ -3682,7 +3675,7 @@ void func_8007138C(void)
     request.source.value.actor.actor = action->unk4.unk0.hit.targetActor;
     request.source.value.actor.unk1 = 0;
     request.source.value.actor.part =
-        func_800A152C(action->unk4.unk0.hit.targetActor, 255, 2);
+        findBoneIndex(action->unk4.unk0.hit.targetActor, 255, 2);
 
     count = 0;
 
@@ -3707,18 +3700,18 @@ void func_8007138C(void)
                 action->targets[i].unk0.hit.targetActor;
             request.targets[count].value.actor.unk1 = 0;
             request.targets[count].value.actor.part =
-                func_800A152C(action->targets[i].unk0.hit.targetActor,
+                findBoneIndex(action->targets[i].unk0.hit.targetActor,
                     action->targets[i].unk0.hit.targetLimb, 2);
             // BUG: tests the limb of the entry at the output index
             if (action->targets[count].unk0.hit.targetLimb == -1) {
                 request.targets[count].value.actor.part =
-                    func_800A152C(action->targets[i].unk0.hit.targetActor,
+                    findBoneIndex(action->targets[i].unk0.hit.targetActor,
                         vs_battle_actors[action->targets[i].unk0.hit.targetActor]
                             ->stats->unk36,
                         2);
             } else {
                 request.targets[count].value.actor.part =
-                    func_800A152C(action->targets[i].unk0.hit.targetActor,
+                    findBoneIndex(action->targets[i].unk0.hit.targetActor,
                         action->targets[i].unk0.hit.targetLimb, 2);
             }
 
@@ -3849,13 +3842,13 @@ void func_800719FC(UNUSED int arg0)
             && (i != D_800F19CC->unk8.unk4.unk0.hit.targetActor
                 || D_800E81B4[vs_main_actions[action].unk2_4])
             && (status & 0x3000001) == 1
-            && (vs_battle_actors[i]->unk1C & D_800E81D4[vs_main_actions[action].unk2_4])
-            && !(vs_battle_actors[i]->unk1C & 0x8000)) {
+            && (vs_battle_actors[i]->role & D_800E81D4[vs_main_actions[action].unk2_4])
+            && !(vs_battle_actors[i]->role & 0x8000)) {
             if (D_800E81C4[vs_main_actions[action].unk2_4]) {
                 int limb;
 
                 for (limb = 0; limb < 6; ++limb) {
-                    int part = func_800A152C(i, limb, 2);
+                    int part = findBoneIndex(i, limb, 2);
 
                     if (part >= 0) {
                         func_800A1B9C(i, limb, &D_800F19CC->unk29C0[count].unk0, 0);
@@ -3942,11 +3935,11 @@ void func_80071F68(int arg0)
             && (i != D_800F19CC->unk8.unk4.unk0.hit.targetActor
                 || D_800E81B4[vs_main_actions[action].unk2_4])
             && (status & 0x3000001) == 1
-            && (vs_battle_actors[i]->unk1C & D_800E81D4[vs_main_actions[action].unk2_4])
-            && !(vs_battle_actors[i]->unk1C & 0x8000)) {
+            && (vs_battle_actors[i]->role & D_800E81D4[vs_main_actions[action].unk2_4])
+            && !(vs_battle_actors[i]->role & 0x8000)) {
             if (D_800E81C4[vs_main_actions[action].unk2_4]) {
                 for (j = 0; j < 6; ++j) {
-                    int part = func_800A152C(i, j, 2);
+                    int part = findBoneIndex(i, j, 2);
 
                     if (part >= 0) {
                         func_800A1B9C(i, j, &D_800F19CC->unk29C0[count].unk0, 0);
@@ -4093,14 +4086,14 @@ void func_80072734(int arg0)
             if (vs_battle_actors[i] && (status & 0x3000001) == 1
                 && (i != D_800F19CC->unk8.unk4.unk0.hit.targetActor
                     || D_800E81B4[vs_main_actions[action].unk2_4])
-                && (vs_battle_actors[i]->unk1C
+                && (vs_battle_actors[i]->role
                     & D_800E81D4[vs_main_actions[action].unk2_4])
-                && !(vs_battle_actors[i]->unk1C & 0x8000)) {
+                && !(vs_battle_actors[i]->role & 0x8000)) {
                 if (D_800E81C4[vs_main_actions[action].unk2_4]) {
                     int limb;
 
                     for (limb = 0; limb < 6; ++limb) {
-                        int part = func_800A152C(i, limb, 2);
+                        int part = findBoneIndex(i, limb, 2);
 
                         if (part >= 0) {
                             func_800A1B9C(i, limb, &D_800F19CC->unk29C0[count].unk0, 0);
@@ -4178,7 +4171,7 @@ void func_80072BA8(int action)
         func_800C0700(&D_800F19CC->unk29B0);
 
         for (limb = 0, count = 0; limb < 6; ++limb) {
-            part = func_800A152C(1, limb, 2);
+            part = findBoneIndex(1, limb, 2);
             if (part >= 0) {
                 func_800A1B9C(1, limb, &D_800F19CC->unk29C0[count].unk0, 0);
                 D_800F19CC->unk29C0[count].unk8 = func_800A1648(1, part, 0);
@@ -4260,7 +4253,7 @@ void func_80072EC4(int arg0, int arg1)
         func_8008B4C8(0);
     }
     func_8008B4BC(1);
-    func_8008D594(1);
+    setCloudstonesPaused(1);
     if (D_800F19CC->unk2984 != 0) {
         func_80095B70(1);
     }
@@ -4310,7 +4303,7 @@ void initBattleCameraTransition(void)
     }
 
     func_8008B4C8(0);
-    func_8008D594(1);
+    setCloudstonesPaused(1);
     func_80095B70(1);
     func_800A0870(1);
 }
@@ -4331,7 +4324,7 @@ void endBattleCameraTransition(void)
     }
     func_800CB654(0);
     func_8008B4C8(1);
-    func_8008D594(0);
+    setCloudstonesPaused(0);
     func_80095B70(0);
     func_800A0870(0);
     func_8006F5CC();
@@ -4357,7 +4350,7 @@ void func_800733F8(int arg0)
     request.position.vy = 0;
     request.position.vx = 0;
     func_800CF0E8(&request, 0, 0);
-    vs_gametime_tickspeed = 4;
+    vs_gametime_vblanksPerFrame = 4;
     func_800CB654(1);
     func_8008B4C8(0);
 }
@@ -4365,7 +4358,7 @@ void func_800733F8(int arg0)
 void func_80073484(void)
 {
     func_8006F5CC();
-    vs_gametime_tickspeed = 2;
+    vs_gametime_vblanksPerFrame = 2;
     func_800CB654(0);
     func_8008B4C8(1);
 }
@@ -4482,7 +4475,7 @@ void func_80073718(void)
 
     func_80095B70(1);
     D_800F1858 = 0;
-    func_8008D594(1);
+    setCloudstonesPaused(1);
 }
 
 void func_80073870(void)
@@ -4506,7 +4499,7 @@ void func_800738E4(void)
     SfxOverride sp10;
     int i;
 
-    func_8008D594(0);
+    setCloudstonesPaused(0);
     func_80095B70(0);
     renderAllGeometry = 0;
 
@@ -4775,7 +4768,7 @@ void func_800741D4(void)
 {
     cameraMode = 2;
     if (D_800F196C == 8) {
-        vs_gametime_tickspeed = 4;
+        vs_gametime_vblanksPerFrame = 4;
         func_80073D30(D_800F1910.unk0, &D_800F1910.unk4, D_800F1910.unk4.unkC);
         return;
     }
@@ -4799,7 +4792,7 @@ void func_800742A4(void)
     int v;
 
     cameraMode = 4;
-    vs_gametime_tickspeed = 2;
+    vs_gametime_vblanksPerFrame = 2;
     v = 7;
     sp10.vx = (D_800F1910.unk0->unk0.unk0 << v) + 0x40;
     sp10.vz = (D_800F1910.unk0->unk0.unk2 << v) + 0x40;
@@ -4810,7 +4803,7 @@ void func_800742A4(void)
 void func_80074314(void)
 {
     cameraMode = 4;
-    vs_gametime_tickspeed = 2;
+    vs_gametime_vblanksPerFrame = 2;
     func_800CB50C();
     func_8008DEAC(&D_800F1910.unk0->unk0, 1);
     func_800E68EC(D_800F1910.unk0->unk0.unk0, D_800F1910.unk0->unk0.unk2);
@@ -4902,7 +4895,7 @@ void func_80074580(void)
         cameraMode = 1;
         renderAllGeometry = 1;
         firstPersonRendering = 1;
-        func_8008C40C();
+        clearCulledGeometry();
     }
 }
 
@@ -5084,11 +5077,11 @@ void func_80074B14(int arg0, vs_TilePosition* arg1)
         var_a2 = arg1->surface;
     }
     if (func_8008B764(var_a0, var_a1, var_a2)->unk0_18 & 1) {
-        func_8008C2C0(arg1->x, arg1->z, arg1->surface,
+        cullGeometryForView(arg1->x, arg1->z, arg1->surface,
             vs_battle_cameraCurrentSpherical.initialDistance == 0x900);
         return;
     }
-    func_8008C40C();
+    clearCulledGeometry();
 }
 
 int func_80074BAC(int actorIndex, ActorLocation* position)
@@ -5392,7 +5385,8 @@ int func_80075554(void)
             continue;
         }
 
-        if (actor->unk1C != 4 && actor->unk1C != 2 && D_800F196C != 3) {
+        if (actor->role != actorRoleEngagedEnemy && actor->role != actorRoleFriendly
+            && D_800F196C != 3) {
             continue;
         }
 
@@ -5455,7 +5449,7 @@ int func_80075554(void)
         vs_battle_getActorPosition(i, &position);
 
         if (actor->unkB_0) {
-            func_800AE4FC(actor->unk44, actor->unkB_0);
+            func_800AE4FC((D_800F4538_t*)actor->unk44, actor->unkB_0);
         }
 
         switch (actor->unkB_2) {
@@ -5798,7 +5792,7 @@ int func_8007629C(u_long* otag)
     SetGeomOffset(160, 112);
     DrawSync(0);
 
-    ret = vs_main_gametimeUpdate(vs_gametime_tickspeed);
+    ret = vs_main_gametimeUpdate(vs_gametime_vblanksPerFrame);
 
     if (vs_main_debugPause != 0) {
         while (1) {
@@ -5880,7 +5874,7 @@ Actor* func_800765B0(
     vs_ObjectData objData;
     int i;
     int var_v1_2;
-    Actor_dat2* temp_v0;
+    ObjectActor_dat* temp_v0;
 
     if (index == 0xFF) {
         for (i = 2; i < 16; ++i) {
@@ -5899,9 +5893,9 @@ Actor* func_800765B0(
         temp_v0 = vs_main_allocHeap(sizeof *temp_v0);
         vs_main_bzero(temp_v0, sizeof temp_v0->unk0);
         temp_v0->unk0.unk0.stats = &temp_v0->unk0.unk50;
-        temp_v0->unk0.unk0.unk44 = (D_800F4538_t*)&temp_v0->unk9B4;
+        temp_v0->unk0.unk0.unk44 = (EntityBase*)&temp_v0->unk9B4.unk0;
         temp_v0->unk0.unk0.unk18 = 0xFE;
-        temp_v0->unk0.unk0.unk1C = 0x10;
+        temp_v0->unk0.unk0.role = actorRoleModelOnly;
         temp_v0->unk0.unk0.unk40 = 0;
         temp_v0->unk0.unk0.id = index;
         temp_v0->unk0.unk0.next = NULL;
@@ -6042,7 +6036,7 @@ void func_80076784(int arg0, vs_ActorStats* stats, vs_CharInitData* init, int ar
         stats->limbs[i].hp = stats->limbs[i].maxHp = init->limbs[i].hp;
         stats->limbs[i].agilityDefenseBonus = init->limbs[i].agilityDefenseBonus;
 
-        j = func_800A152C(arg0, i, 2);
+        j = findBoneIndex(arg0, i, 2);
 
         if (j >= 0) {
             stats->limbs[i].unk5 = j;
@@ -6115,24 +6109,24 @@ void func_80076D50(u_int id, int arg1, int arg2, int arg3, int arg4)
 
     switch (id) {
     case 0:
-        temp_s1->unk1C = 1;
+        temp_s1->role = actorRoleAshley;
         break;
     case 1:
-        temp_s1->unk1C = 2;
+        temp_s1->role = actorRoleFriendly;
         break;
     default:
         switch (arg4 & 3) {
         case 1:
-            temp_s1->unk1C = 4;
+            temp_s1->role = actorRoleEngagedEnemy;
             temp_s1->weaponDrawn |= 1;
             func_8009D934(id, 1, 0);
             break;
         case 0:
-            temp_s1->unk1C = 2;
+            temp_s1->role = actorRoleFriendly;
             break;
         case 2:
         case 3:
-            temp_s1->unk1C = 8;
+            temp_s1->role = actorRoleDisengagedEnemy;
             break;
         }
     }
@@ -6193,25 +6187,25 @@ void func_80076F24(int id, vs_CharInitData* arg1, int arg2, int arg3, int arg4, 
 
     switch (id) {
     case 0:
-        temp_s0->unk1C = 1;
+        temp_s0->role = actorRoleAshley;
         break;
     case 1:
         temp_v1 = 2;
-        temp_s0->unk1C = temp_v1;
+        temp_s0->role = temp_v1;
         break;
     default:
         switch (arg4 & 3) {
         case 1:
-            temp_s0->unk1C = 4;
+            temp_s0->role = actorRoleEngagedEnemy;
             temp_s0->weaponDrawn |= 1;
             func_8009D934(id, 1, 0);
             break;
         case 2:
         case 3:
-            temp_s0->unk1C = 8;
+            temp_s0->role = actorRoleDisengagedEnemy;
             break;
         case 0:
-            temp_s0->unk1C = 2;
+            temp_s0->role = actorRoleFriendly;
             break;
         }
     }
@@ -6316,13 +6310,13 @@ Actor_dat* func_80077240(int arg0, int arg1, int bladeWepId, int bladeMaterial,
     }
     if (arg0 < 0xA) {
         temp_v0 = vs_main_allocHeap(sizeof *temp_v0);
-        vs_main_bzero(temp_v0, sizeof temp_v0->unk0.unk0);
+        vs_main_bzero(temp_v0, sizeof temp_v0->unk0);
         i = 0xA;
-        temp_v0->unk0.unk0.unk0.stats = &temp_v0->unk0.unk0.unk50;
-        temp_v0->unk0.unk0.unk0.unk40 = 1;
-        temp_v0->unk0.unk0.unk0.unk44 = (D_800F4538_t*)&temp_v0->unk0.unk9B4;
-        temp_v0->unk0.unk0.unk0.unk48[0] = &temp_v0->unk22B4[0];
-        temp_v0->unk0.unk0.unk0.unk48[1] = &temp_v0->unk22B4[1];
+        temp_v0->unk0.unk0.stats = &temp_v0->unk0.unk50;
+        temp_v0->unk0.unk0.unk40 = 1;
+        temp_v0->unk0.unk0.unk44 = &temp_v0->unk9B4.unk0;
+        temp_v0->unk0.unk0.unk48[0] = &temp_v0->unk22B4[0];
+        temp_v0->unk0.unk0.unk48[1] = &temp_v0->unk22B4[1];
 
         if (bladeWepId != 0) {
             for (i = 1; i < 11; ++i) {
@@ -6332,17 +6326,16 @@ Actor_dat* func_80077240(int arg0, int arg1, int bladeWepId, int bladeMaterial,
             }
         }
 
-        temp_v0->unk0.unk0.unk0.equippedWeaponCategory = i;
+        temp_v0->unk0.unk0.equippedWeaponCategory = i;
 
-        func_80077078(&temp_v0->unk0.unk0.unk0, arg0, arg1, arg6, arg7);
+        func_80077078(&temp_v0->unk0.unk0, arg0, arg1, arg6, arg7);
         if (arg1 != 0x7F) {
-            func_800770FC(&temp_v0->unk0.unk0.unk0, arg0);
+            func_800770FC(&temp_v0->unk0.unk0, arg0);
+            setActorWeaponModel(&temp_v0->unk0.unk0, arg0, bladeWepId, 0, bladeMaterial);
             setActorWeaponModel(
-                &temp_v0->unk0.unk0.unk0, arg0, bladeWepId, 0, bladeMaterial);
-            setActorWeaponModel(
-                &temp_v0->unk0.unk0.unk0, arg0, shieldWepId, 1, shieldMaterial);
+                &temp_v0->unk0.unk0, arg0, shieldWepId, 1, shieldMaterial);
             func_800771E0((char*)&temp_v0->unk0, arg0,
-                temp_v0->unk0.unk0.unk0.equippedWeaponCategory, arg7);
+                temp_v0->unk0.unk0.equippedWeaponCategory, arg7);
         }
         return temp_v0;
     }
@@ -6357,7 +6350,7 @@ void func_800773BC(Actor* arg0, int arg1, int arg2, int arg3, int arg4, int arg5
     func_80076D50(arg1, arg2, arg3, arg4, arg5);
     func_800A0AFC(arg1, 0x9000, 0x12000);
     func_8009DF3C(arg1, 0);
-    if (arg0->unk1C & 7) {
+    if (arg0->role & actorRoleCombatant) {
         if (arg1 != 0) {
             arg0->next = vs_battle_actors[0]->next;
             vs_battle_actors[0]->next = arg0;
@@ -6411,22 +6404,22 @@ Actor* func_800775C0(int id, MpdEnemy* spawn, vs_CharInitData* init, int flags)
         shieldId = (u_char)init->shield.base.wepId;
 
         if (vs_main_actorExtraShp[init->unk2]) {
-            func_800775C0_t* data = vs_main_allocHeap(sizeof *data);
+            ActorExtraShp_dat* data = vs_main_allocHeap(sizeof *data);
 
-            data->unk0.unk0.unk0.stats = &data->unk0.unk0.unk50;
-            data->unk0.unk0.unk0.unk40 = 2;
-            data->unk0.unk0.unk0.unk44 = (D_800F4538_t*)&data->unk0.unk9B4;
-            data->unk0.unk0.unk0.unk48[0] = &data->unk22B4;
-            actor = &data->unk0.unk0.unk0;
+            data->unk0.unk0.stats = &data->unk0.unk50;
+            data->unk0.unk0.unk40 = 2;
+            data->unk0.unk0.unk44 = &data->unk9B4.unk0;
+            data->unk0.unk0.unk48[0] = &data->unk22B4;
+            actor = &data->unk0.unk0;
         } else {
             Actor_dat* data = vs_main_allocHeap(sizeof *data);
 
-            data->unk0.unk0.unk0.stats = &data->unk0.unk0.unk50;
-            data->unk0.unk0.unk0.unk40 = 1;
-            data->unk0.unk0.unk0.unk44 = (D_800F4538_t*)&data->unk0.unk9B4;
-            data->unk0.unk0.unk0.unk48[0] = &data->unk22B4[0];
-            data->unk0.unk0.unk0.unk48[1] = &data->unk22B4[1];
-            actor = &data->unk0.unk0.unk0;
+            data->unk0.unk0.stats = &data->unk0.unk50;
+            data->unk0.unk0.unk40 = 1;
+            data->unk0.unk0.unk44 = &data->unk9B4.unk0;
+            data->unk0.unk0.unk48[0] = &data->unk22B4[0];
+            data->unk0.unk0.unk48[1] = &data->unk22B4[1];
+            actor = &data->unk0.unk0;
         }
 
         category = 10;
@@ -6573,12 +6566,12 @@ Actor* func_800775C0(int id, MpdEnemy* spawn, vs_CharInitData* init, int flags)
         vs_battle_setActorAnimation(id, 0, 0, 0);
         func_800A0AFC(id, actor->stats->unk31 * ONE, actor->stats->unk33 * ONE);
 
-        if (actor->unk1C & 7) {
+        if (actor->role & actorRoleCombatant) {
             actor->next = vs_battle_actors[0]->next;
             vs_battle_actors[0]->next = actor;
         }
 
-        actor->unk1E = spawn->facing;
+        actor->unk1E = spawn->disposition;
         actor->unk1F = spawn->unk26;
         actor->unk27 = spawn->index;
         actor->unk29 = 0;
@@ -6672,7 +6665,7 @@ void func_80077F14(int arg0, int arg1, SVECTOR* arg2)
     if (arg1 == -1) {
         var_v0 = 0;
     } else {
-        var_v0 = func_800A152C(arg0, arg1, 2);
+        var_v0 = findBoneIndex(arg0, arg1, 2);
     }
     func_800A1AF8(arg0, var_v0, arg2, 0);
 }
@@ -7025,16 +7018,17 @@ void func_80078AB4(void)
 
     if (D_800F19CC->battleAbilityTargetWindow != 0) {
         if (abilityTimer
-            == (D_800F19CC->battleAbilityTargetWindow - (vs_gametime_tickspeed * 2))) {
+            == (D_800F19CC->battleAbilityTargetWindow
+                - (vs_gametime_vblanksPerFrame * 2))) {
             if (func_80078828(0) != 0) {
                 do {
-                    func_80096FF0((margin * 2) / vs_gametime_tickspeed);
+                    func_80096FF0((margin * 2) / vs_gametime_vblanksPerFrame);
                 } while (0);
             }
         }
     }
 
-    D_800F19CC->battleAbilityTimer += vs_gametime_tickspeed;
+    D_800F19CC->battleAbilityTimer += vs_gametime_vblanksPerFrame;
 
     new_var = &vs_main_buttonsPressed.all;
 
@@ -7435,10 +7429,10 @@ void vs_battle_exec(void)
 
                     ot = vs_main_ot[vs_main_frameBuf];
                     D_800F1870 = ot;
-                    vs_scratch.unk8 = ot + 2;
-                    vs_scratch.unk4 = ot + 18;
+                    vs_scratch.frontOt = ot + 2;
+                    vs_scratch.depthOt = ot + 18;
                     ClearOTagR(ot, 2082);
-                    vs_scratch.unk0 = vs_main_prims[vs_main_frameBuf];
+                    vs_scratch.nextPrim = vs_main_prims[vs_main_frameBuf];
                     AddPrim(ot, &D_800F1970[vs_main_frameBuf]);
 
                     if (((vs_main_startState == 3) || (vs_main_startState == 4))
@@ -7943,7 +7937,7 @@ void vs_battle_exec(void)
                     func_800CA2DC();
                     func_800CB83C();
 
-                    for (i = 0; i < vs_gametime_tickspeed / 2; ++i) {
+                    for (i = 0; i < vs_gametime_vblanksPerFrame / 2; ++i) {
                         vs_main_setVibrateParams();
                         vs_main_updateBgColors();
                         vs_main_updateColorSlots();
@@ -8253,7 +8247,7 @@ void func_8007B508(void)
                 func_8009E070(0, NULL, 6);
                 func_8006F848();
             }
-            func_8008D594(1);
+            setCloudstonesPaused(1);
             return;
         }
     }
@@ -8266,7 +8260,7 @@ void func_8007B508(void)
             func_8009E070(0, NULL, 6);
             func_8006F848();
         }
-        func_8008D594(1);
+        setCloudstonesPaused(1);
         return;
     }
     func_8007B4C4();
@@ -8481,7 +8475,7 @@ void stopBattleTimer(void)
     func_800CB560();
 }
 
-void func_8007BD3C(int arg0)
+void pauseBattleTimer(int arg0)
 {
     if (arg0 != 0) {
         int temp_v1 = vs_main_battleTimer.mode;
@@ -8515,7 +8509,7 @@ int setUiHidden(int hidden)
 
 int cullOccludingGeometry(int cull)
 {
-    func_8008C40C();
+    clearCulledGeometry();
     return renderAllGeometry = ~cull & 1;
 }
 
@@ -8608,12 +8602,12 @@ void setWeaponDrawn(int arg0, int arg1)
             func_8009D934(arg0, 0, 0);
         }
     } else if (arg0 != 0) {
-        if ((vs_battle_actors[arg0]->unk1C == 4)
-            || (vs_battle_actors[arg0]->unk1C == 8)) {
+        if ((vs_battle_actors[arg0]->role == actorRoleEngagedEnemy)
+            || (vs_battle_actors[arg0]->role == actorRoleDisengagedEnemy)) {
             if (arg1 != 0) {
-                vs_battle_actors[arg0]->unk1C = 4;
+                vs_battle_actors[arg0]->role = actorRoleEngagedEnemy;
             } else {
-                vs_battle_actors[arg0]->unk1C = 8;
+                vs_battle_actors[arg0]->role = actorRoleDisengagedEnemy;
             }
         }
     } else {
@@ -8630,10 +8624,10 @@ void func_8007C1D8(int arg0, int arg1)
 {
     if (vs_battle_actors[arg0] != 0) {
         if (arg1 != 0) {
-            vs_battle_actors[arg0]->unk1C = 4;
+            vs_battle_actors[arg0]->role = actorRoleEngagedEnemy;
             return;
         }
-        vs_battle_actors[arg0]->unk1C = 8;
+        vs_battle_actors[arg0]->role = actorRoleDisengagedEnemy;
     }
 }
 
@@ -8691,12 +8685,17 @@ void triggerActorDeath(int actorId, int animate)
     startActorDeath(actorId, NULL, animate);
 }
 
-int func_8007C36C(int arg0)
+/**
+ * Sets the frame rate, the frame loop waits the matching number of vblanks.
+ * @return The number of vblanks each frame lasts.
+ */
+int setFrameRate(FrameRate rate)
 {
-    if ((arg0 == 2) || (arg0 == 4)) {
-        vs_gametime_tickspeed = arg0;
+    if ((rate == frameRateFull) || (rate == frameRateHalf)) {
+        vs_gametime_vblanksPerFrame = rate;
     }
-    return vs_gametime_tickspeed;
+
+    return vs_gametime_vblanksPerFrame;
 }
 
 int getScreenTransitionPhase(void)
@@ -8757,7 +8756,7 @@ void startScreenTransitionIn(int effect, int speed, int angle)
     vs_battle_screenTransitionWipeAngle = angle;
 }
 
-void func_8007C4D4(void) { D_800F19A0 = 0; }
+void skipRoomSeen(void) { recordRoomSeen = 0; }
 
 /** Starts a warp to a map in the current zone, with a screen transition. */
 int warpToMap(vs_Warp* warp, int effect, int speed)
@@ -8877,20 +8876,26 @@ int vs_battle_getCurrentRoomId(void)
 void playActorSfx(int arg0, int arg1)
 {
     if ((vs_battle_actors[arg0] != 0) && (arg0 < 16)) {
-        func_800AE4FC(vs_battle_actors[arg0]->unk44, arg1);
+        func_800AE4FC((D_800F4538_t*)vs_battle_actors[arg0]->unk44, arg1);
     }
 }
 
 int func_8007C8F0(void) { return 0; }
 
-int func_8007C8F8(int arg0)
+/**
+ * Queues the loading of an SHP model file.
+ * @param modelId SHP model id.
+ * @return The slot used plus one, or 0 if no slot was free.
+ */
+int queueShpLoad(int modelId)
 {
-    vs_ObjectData sp10;
+    vs_ObjectData objectData;
 
-    sp10.modelId = arg0;
-    sp10.dataType = 1;
-    sp10.index = 0;
-    return vs_battle_populateDataSlot(&sp10) + 1;
+    objectData.modelId = modelId;
+    objectData.dataType = 1;
+    objectData.index = 0;
+
+    return vs_battle_populateDataSlot(&objectData) + 1;
 }
 
 int spawnModelActor(u_int slot, int modelId, vs_TilePosition* tile)
@@ -8904,14 +8909,14 @@ int spawnModelActor(u_int slot, int modelId, vs_TilePosition* tile)
         if (vs_battle_actors[slot] == NULL) {
             temp_s1 = &vs_battle_actors[slot];
             temp_v0 = vs_main_allocHeap(sizeof *temp_v0);
-            *temp_s1 = &temp_v0->unk0.unk0.unk0;
-            temp_v0->unk0.unk0.unk0.stats = &temp_v0->unk0.unk0.unk50;
-            temp_v0->unk0.unk0.unk0.unk40 = 1;
-            temp_v0->unk0.unk0.unk0.unk44 = (D_800F4538_t*)&temp_v0->unk0.unk9B4;
-            temp_v0->unk0.unk0.unk0.unk48[0] = &temp_v0->unk22B4[0];
-            temp_v0->unk0.unk0.unk0.unk48[1] = &temp_v0->unk22B4[1];
+            *temp_s1 = &temp_v0->unk0.unk0;
+            temp_v0->unk0.unk0.stats = &temp_v0->unk0.unk50;
+            temp_v0->unk0.unk0.unk40 = 1;
+            temp_v0->unk0.unk0.unk44 = &temp_v0->unk9B4.unk0;
+            temp_v0->unk0.unk0.unk48[0] = &temp_v0->unk22B4[0];
+            temp_v0->unk0.unk0.unk48[1] = &temp_v0->unk22B4[1];
             func_80076D50(slot, modelId, 0, 0, 6);
-            s0 = func_80077078(&temp_v0->unk0.unk0.unk0, slot, modelId, tile, 0);
+            s0 = func_80077078(&temp_v0->unk0.unk0, slot, modelId, tile, 0);
             func_800E6178(*temp_s1, -1);
             return s0 + 1;
         }
@@ -9074,10 +9079,14 @@ void initialiseCameraFromSpherical(
         outputPos, outputLookAt, &vs_battle_cameraCurrentSpherical.values);
 }
 
-void func_8007CE74(int arg0)
+/**
+ * Sets the camera's pitch to one of three presets, running from a shallow view to a
+ * steep one. Any value other than the two non-default presets selects the default.
+ */
+void setCameraPitchPreset(int pitch)
 {
-    if ((arg0 == -0x300) || (arg0 == -0x80)) {
-        vs_battle_cameraCurrentSpherical.values.pitch = arg0;
+    if ((pitch == -0x300) || (pitch == -0x80)) {
+        vs_battle_cameraCurrentSpherical.values.pitch = pitch;
         return;
     }
     vs_battle_cameraCurrentSpherical.values.pitch = -0x180;
@@ -9109,18 +9118,18 @@ int func_8007CF18(int arg0)
 
 Actor* getActor(int actorId) { return vs_battle_actors[actorId]; }
 
-int func_8007CF80(int arg0)
+int countActorsByRole(enum ActorRole role)
 {
     u_int i;
-    u_int var_a2;
+    u_int count = 0;
 
-    var_a2 = 0;
     for (i = 0; i < 16; ++i) {
-        if ((vs_battle_actors[i] != 0) && (vs_battle_actors[i]->unk1C == arg0)) {
-            ++var_a2;
+        if ((vs_battle_actors[i] != 0) && (vs_battle_actors[i]->role == role)) {
+            ++count;
         }
     }
-    return var_a2;
+
+    return count;
 }
 
 int func_8007CFCC(int arg0)
@@ -9150,7 +9159,7 @@ int isActorWalkDone(int arg0)
 /**
  * Wakes an actor, or puts it into a dormant state. A dormant actor is in state 0x20
  * (also used for dead actors), so the enemy AI skips it (and drops it from its alert
- * list), is skipped by target selection (unk1C bit 0x8000) and loses its target marker.
+ * list), is skipped by target selection (role bit 0x8000) and loses its target marker.
  * The model is not affected (see vs_battle_setActorFlags).
  * @param awake 0 = make dormant, nonzero = wake (only if currently in state 0x20).
  * @return awake
@@ -9161,13 +9170,13 @@ int setActorAwake(int actorId, int awake)
         if (vs_battle_actors[actorId] != NULL) {
             if (vs_battle_actors[actorId]->unk8 == 0x20) {
                 vs_battle_actors[actorId]->unk8 = 0;
-                vs_battle_actors[actorId]->unk1C &= 0x7FFF;
+                vs_battle_actors[actorId]->role &= 0x7FFF;
             }
         }
     } else {
         if (vs_battle_actors[actorId] != NULL) {
             vs_battle_actors[actorId]->unk8 = 0x20;
-            vs_battle_actors[actorId]->unk1C |= 0x8000;
+            vs_battle_actors[actorId]->role |= 0x8000;
             func_80095B7C(actorId, 0);
             func_80095B7C(actorId, 0x40);
         }
@@ -9204,7 +9213,7 @@ void setActorInactive(int actorId, int inactive)
 
     if (actor != NULL) {
         if (inactive != 0) {
-            listChanged = removeActor(actor);
+            listChanged = removeCombatant(actor);
 
             setActorInactiveFlag(actorId, inactive);
 
@@ -9213,7 +9222,7 @@ void setActorInactive(int actorId, int inactive)
                 func_800DEC88(NULL);
             }
         } else {
-            listChanged = insertActor(actor);
+            listChanged = insertCombatant(actor);
 
             setActorInactiveFlag(actorId, 0);
 
@@ -9409,9 +9418,15 @@ void func_8007D734(void* arg0)
     }
 }
 
-void func_8007DD50(int arg0)
+/**
+ * Turns the frame buffer effect on or off. The effect draws the contents of the frame
+ * buffer back over the screen, offset, scaled, rotated, tinted and blended, which makes
+ * ghosting and zoom or spin echoes of the scene.
+ * @param enable 1 to turn on, 0 to turn off.
+ */
+void setFramebufferEffect(int enable)
 {
-    if (arg0 != 0) {
+    if (enable != 0) {
         D_800F1B98 = 1;
         if (D_800F1ABC == NULL) {
             D_800F1ABC = vs_main_allocHeapR(sizeof *D_800F1ABC);
@@ -9484,7 +9499,7 @@ void func_8007DF48(void)
         D_800F19A8[i] = 0xFF;
     }
 
-    D_800F18F8 = 0;
+    overlayBufferOwner = 0;
 }
 
 void func_8007DF98(void)
@@ -9554,23 +9569,42 @@ int func_8007E0A8(u_int arg0, u_int arg1, int arg2)
     return 0;
 }
 
-int func_8007E180(int arg0)
+/**
+ * Records which overlay is using the shared overlay buffer at 0x800F9800 (overlay slots
+ * 1, 3 and 4). The effect overlays use owner 2, the item menu and the screen effects
+ * use owner 6. A conflict is only reported through a debug hook that does nothing here
+ * and callers ignore the result.
+ * @param owner Id of the overlay using the buffer.
+ * @return 1 if the buffer was free.
+ */
+int claimOverlayBuffer(int owner)
 {
-    if (D_800F18F8 == 0) {
-        D_800F18F8 = arg0;
+    if (overlayBufferOwner == 0) {
+        overlayBufferOwner = owner;
+
         return 1;
     }
+
     vs_main_nop9(0x66, 0);
+
     return 0;
 }
 
-int func_8007E1C0(int arg0)
+/**
+ * Releases ownership of the shared overlay buffer.
+ * @param owner Id the buffer was claimed with.
+ * @return 1 if the buffer was freed.
+ */
+int freeOverlayBuffer(int owner)
 {
-    if (D_800F18F8 == arg0) {
-        D_800F18F8 = 0;
+    if (overlayBufferOwner == owner) {
+        overlayBufferOwner = 0;
+
         return 1;
     }
+
     vs_main_nop9(0x67, 0);
+
     return 0;
 }
 
@@ -14381,7 +14415,7 @@ int updateBattleTimer(void)
 
     if (vs_main_battleTimer.mode == battleTimerCountUp) {
         if (vs_main_battleTimer.time.t.h <= 0) {
-            vs_main_battleTimer.time.t.f += vs_gametime_tickspeed;
+            vs_main_battleTimer.time.t.f += vs_gametime_vblanksPerFrame;
             if (vs_main_battleTimer.time.t.f > 59) {
                 vs_main_battleTimer.time.t.f = 0;
                 if (++vs_main_battleTimer.time.t.s > 59) {
@@ -14410,7 +14444,7 @@ int updateBattleTimer(void)
             }
         }
 
-        vs_main_battleTimer.time.t.f -= vs_gametime_tickspeed;
+        vs_main_battleTimer.time.t.f -= vs_gametime_vblanksPerFrame;
     }
 
     if (vs_main_battleTimer.time.t.f != 0) {
@@ -14601,7 +14635,7 @@ int func_80088554(void)
         }
     }
 
-    D_800E8490 = (D_800E8490 + vs_gametime_tickspeed) % 720;
+    D_800E8490 = (D_800E8490 + vs_gametime_vblanksPerFrame) % 720;
 
     if (D_800E8490 % 240 == 0) {
         D_800E8494 = (D_800E8494 + 1) % 6;
@@ -14633,7 +14667,7 @@ void func_80088B8C(void)
                 }
             }
         }
-        D_800E8498 = (D_800E8498 + vs_gametime_tickspeed) % 30;
+        D_800E8498 = (D_800E8498 + vs_gametime_vblanksPerFrame) % 30;
     }
 }
 
@@ -14888,7 +14922,7 @@ void func_80089114(void)
 
             id = enemy->id;
 
-            switch (enemy->facing) {
+            switch (enemy->disposition) {
             case 0:
             case 3:
                 param = 6;
@@ -15189,7 +15223,7 @@ void func_80089DC0(int arg0)
         stopBattleTimer();
     }
 
-    D_800F19A0 = 1;
+    recordRoomSeen = 1;
     var_a0 = getCollisionMapDimensions(0);
     zoneContext.unk3C = (var_a0 & 0xFFFF) / 16;
 
@@ -15366,11 +15400,11 @@ void func_8008A3A0(void)
     int i;
 
     for (i = 0; i < 2; ++i) {
-        vs_scratch.unk4 = vs_main_ot[vs_main_frameBuf] + 0x10;
-        ClearOTagR(vs_scratch.unk4, 0x800);
+        vs_scratch.depthOt = vs_main_ot[vs_main_frameBuf] + 0x10;
+        ClearOTagR(vs_scratch.depthOt, 0x800);
         func_8007DF40();
-        drawScreenTransition(vs_scratch.unk4);
-        func_8007629C(vs_scratch.unk4 + 0x1FFC);
+        drawScreenTransition(vs_scratch.depthOt);
+        func_8007629C(vs_scratch.depthOt + 0x1FFC);
     }
 
     DrawSync(0);
@@ -15674,8 +15708,8 @@ void func_8008AC78(void)
     LINE_G2* edge;
     LINE_G2* nextLine;
 
-    SetRotMatrix(&((vs_Scratch*)0x1F800000)->viewMatrix);
-    SetTransMatrix(&((vs_Scratch*)0x1F800000)->viewMatrix);
+    SetRotMatrix(&VS_SCRATCH->viewMatrix);
+    SetTransMatrix(&VS_SCRATCH->viewMatrix);
     func_8008DF14();
     func_8009627C();
     func_8008C0C0();
@@ -15683,7 +15717,7 @@ void func_8008AC78(void)
     if (D_800F1BA4 == 0) {
         int i;
 
-        for (i = 0; i < (vs_gametime_tickspeed >> 1); ++i) {
+        for (i = 0; i < (vs_gametime_vblanksPerFrame >> 1); ++i) {
             func_80091B04();
         }
     }
@@ -15696,13 +15730,12 @@ void func_8008AC78(void)
     }
 
     if (vs_battle_roomData.geometrySection != NULL) {
-        int facing = ((vs_Scratch*)0x1F800000)->camera.angles.vy;
+        int facing = VS_SCRATCH->camera.angles.vy;
         int facing0 = 1 << (((0x9C0 - facing) & 0xFFF) >> 9);
         int facing1 = 1 << (((0x840 - facing) & 0xFFF) >> 9);
         int facing2 = 1 << (((0x900 - facing) & 0xFFF) >> 9);
-        ((vs_Scratch*)0x1F800000)->firstPersonViewFacing =
-            (((vs_Scratch*)0x1F800000)->firstPersonViewFacing & ~0xFF) | facing0 | facing1
-            | facing2;
+        VS_SCRATCH->firstPersonViewFacing =
+            (VS_SCRATCH->firstPersonViewFacing & ~0xFF) | facing0 | facing1 | facing2;
         func_8008B1FC(vs_battle_roomData.geometrySection);
     }
 
@@ -15727,13 +15760,13 @@ void func_8008AC78(void)
         return;
     }
 
-    func_8008B590(&mapMatrix, 0x800 - ((vs_Scratch*)0x1F800000)->camera.angles.vy);
+    func_8008B590(&mapMatrix, 0x800 - VS_SCRATCH->camera.angles.vy);
     SetRotMatrix(&mapMatrix);
-    drawArea = ((vs_Scratch*)0x1F800000)->unk0;
+    drawArea = VS_SCRATCH->nextPrim;
     SetDrawArea(drawArea, &vs_main_drawEnv[(vs_main_frameBuf + 1) & 1].clip);
-    AddPrim((u_long*)((vs_Scratch*)0x1F800000)->unk4 + 5, drawArea);
+    AddPrim((u_long*)VS_SCRATCH->depthOt + 5, drawArea);
     ++drawArea;
-    ((vs_Scratch*)0x1F800000)->unk0 = drawArea;
+    VS_SCRATCH->nextPrim = drawArea;
 
     if (vs_main_drawEnv[(vs_main_frameBuf + 1) & 1].clip.x < 320) {
         mapArea.x = 216;
@@ -15750,12 +15783,12 @@ void func_8008AC78(void)
     vs_battle_setGeomOffset(&mapOffset);
     func_80098F8C(vs_battle_roomData.sectionF);
     vs_battle_setGeomOffset(&originalOffset);
-    SetRotMatrix(&((vs_Scratch*)0x1F800000)->viewMatrix);
-    drawArea = ((vs_Scratch*)0x1F800000)->unk0;
+    SetRotMatrix(&VS_SCRATCH->viewMatrix);
+    drawArea = VS_SCRATCH->nextPrim;
     SetDrawArea(drawArea, &mapArea);
-    AddPrim((u_long*)((vs_Scratch*)0x1F800000)->unk4 + 5, drawArea);
+    AddPrim((u_long*)VS_SCRATCH->depthOt + 5, drawArea);
     ++drawArea;
-    ((vs_Scratch*)0x1F800000)->unk0 = drawArea;
+    VS_SCRATCH->nextPrim = drawArea;
 
     if (!(vs_main_settings.simpleMap & 2)) {
         return;
@@ -15765,21 +15798,21 @@ void func_8008AC78(void)
     setLineG4(border);
     setXY4(border, 215, 155, 313, 155, 313, 220, 215, 220);
     setSemiTrans(border, 1);
-    AddPrim((u_long*)((vs_Scratch*)0x1F800000)->unk4 + 5, border++);
+    AddPrim((u_long*)VS_SCRATCH->depthOt + 5, border++);
     // Retain the frame pointer for the color update below.
     nextLine = (LINE_G2*)border--;
     setLineG2(nextLine);
     setSemiTrans(nextLine, 1);
     setXY2(nextLine, 215, 220, 215, 155);
     edge = nextLine++;
-    AddPrim((u_long*)((vs_Scratch*)0x1F800000)->unk4 + 5, edge);
-    ((vs_Scratch*)0x1F800000)->unk0 = nextLine;
+    AddPrim((u_long*)VS_SCRATCH->depthOt + 5, edge);
+    VS_SCRATCH->nextPrim = nextLine;
     insertTPage(5, getTPage(0, 3, 0, 0));
 
     if (vs_battle_characterState->weaponDrawn == 1) {
         int pulse = rsin(D_800F1BA0 << 8) / 64;
         int shade;
-        D_800F1BA0 += vs_gametime_tickspeed / 2;
+        D_800F1BA0 += vs_gametime_vblanksPerFrame / 2;
         shade = 128 - pulse;
         setRGB0(border, shade, 0, 0);
         setRGB1(border, shade + 32, 0, 0);
@@ -15800,12 +15833,12 @@ void func_8008AC78(void)
 
 void func_8008B1FC(void* arg0)
 {
-    SetRotMatrix((MATRIX*)0x1F800014); // camera.viewMatrix
-    SetTransMatrix((MATRIX*)0x1F800014); // camera.viewMatrix
+    SetRotMatrix(&VS_SCRATCH->viewMatrix);
+    SetTransMatrix(&VS_SCRATCH->viewMatrix);
     func_800983F8(arg0);
-    D_800F1CC0 = *(void**)0x1F800000; // camera.unk0
+    D_800F1CC0 = VS_SCRATCH->nextPrim;
     func_8009723C(arg0, firstPersonRendering);
-    D_800F1BB8 = *(void**)0x1F800000; // camera.unk0
+    D_800F1BB8 = VS_SCRATCH->nextPrim;
     if (D_800F1BB0.unk6 != 0) {
         func_80098D6C(D_800F1CC0, D_800F1BB8, &D_800F1BB0, 0);
     }
@@ -15814,7 +15847,7 @@ void func_8008B1FC(void* arg0)
 void func_8008B28C(void)
 {
     if (D_800F1BA4 == 0) {
-        D_800F1CDC += vs_gametime_tickspeed;
+        D_800F1CDC += vs_gametime_vblanksPerFrame;
     }
 }
 
@@ -16285,10 +16318,19 @@ int func_8008C1C8(MpdRoomSectionA* arg0)
     return 1;
 }
 
-int func_8008C2C0(int arg0, int arg1, int arg2, int arg3)
+/**
+ * Hides the geometry listed for a particular tile and camera view. Clears the previous
+ * culling first.
+ * @param tileX Tile x.
+ * @param tileZ Tile z.
+ * @param surface Tile surface.
+ * @param zoom 1 if the camera is zoomed out (distance 0x900).
+ * @return 1 if a matching record was found.
+ */
+int cullGeometryForView(int tileX, int tileZ, int surface, int zoom)
 {
     MpdRoomSection11* var_a1;
-    MpdRoomSection11* new_var;
+    MpdRoomSection11* record;
     int i;
     int j;
     int len;
@@ -16296,25 +16338,25 @@ int func_8008C2C0(int arg0, int arg1, int arg2, int arg3)
     char* s1;
 
     if (vs_battle_roomData.section11 != 0) {
-        func_8008C40C();
+        clearCulledGeometry();
         v = ((vs_scratch.camera.angles.vy + 0x900) & 0xFFF) >> 9;
         var_a1 = vs_battle_roomData.section11;
         len = vs_battle_roomData.header.section11Len;
         for (i = 0; i < len;) {
-            new_var = var_a1;
-            if (new_var->unk0_0 == arg0) {
-                if ((((new_var->unk0_5)) == arg1) && (((new_var->unk0_10)) == arg2)
-                    && (((new_var->unk0_14)) == arg3)
-                    && (((new_var->unk0_11)) == (((v))))) {
+            record = var_a1;
+            if (record->x == tileX) {
+                if ((((record->z)) == tileZ) && (((record->surface)) == surface)
+                    && (((record->zoom)) == zoom)
+                    && (((record->viewSector)) == (((v))))) {
 
-                    s1 = new_var->unk4;
-                    for (j = 0; j < new_var->unk2; ++j, ++s1) {
-                        func_80091AC0(*s1);
+                    s1 = record->geometryIds;
+                    for (j = 0; j < record->count; ++j, ++s1) {
+                        cullGeometryObject(*s1);
                     }
                     return 1;
                 }
             }
-            j = new_var->unk2 + ((4 - (new_var->unk2 & 3)) & 3) + 4;
+            j = record->count + ((4 - (record->count & 3)) & 3) + 4;
             i += j;
             var_a1 = (MpdRoomSection11*)((char*)var_a1 + j);
         }
@@ -16322,7 +16364,8 @@ int func_8008C2C0(int arg0, int arg1, int arg2, int arg3)
     return 0;
 }
 
-void func_8008C40C(void)
+/** Shows all geometry hidden by the culling, leaving objects hidden by scripts. */
+void clearCulledGeometry(void)
 {
     int temp_a1;
     int i;
@@ -16355,7 +16398,7 @@ int func_8008C49C(int arg0, int arg1)
 {
     if (vs_battle_roomData.cloudstoneSection != NULL) {
         vs_battle_roomData.cloudstoneSection[arg0].rider = arg1;
-        if ((arg1 >= 0) && (D_800F1D68 == 0)) {
+        if ((arg1 >= 0) && (cloudstoneFreezeTimer == 0)) {
             D_800F1D70[arg0] = 0;
         }
         return 1;
@@ -16373,16 +16416,16 @@ void func_8008C538(void)
     int* temp_v0;
     u_int temp_a0;
 
-    D_800F1D6E = 0;
-    D_800F1D68 = 0;
-    D_800F1D6F = 0;
+    cloudstonesPaused = 0;
+    cloudstoneFreezeTimer = 0;
+    cloudstonesAltPalette = 0;
 
     for (i = 0; i < 4; ++i) {
         D_800F1D70[i] = 7;
     }
 
     if (vs_battle_roomData.cloudstoneSection != NULL) {
-        temp_s3 = vs_battle_roomData.header.cloudstoneSectionLen / 184;
+        temp_s3 = vs_battle_roomData.header.cloudstoneSectionLen / sizeof(MpdCloudstone);
         var_s2 = vs_battle_roomData.cloudstoneSection;
         for (i = 0; i < temp_s3; ++i, ++var_s2) {
             temp_v0 = func_8009195C(var_s2->geometryId);
@@ -16456,18 +16499,18 @@ int func_8008C8A8(void)
     int* scene;
     u_int temp;
 
-    if (D_800F1BA4 || vs_battle_roomData.cloudstoneSection == NULL || D_800F1D6E) {
+    if (D_800F1BA4 || vs_battle_roomData.cloudstoneSection == NULL || cloudstonesPaused) {
         return;
     }
-    if (D_800F1D68 > 0) {
-        D_800F1D68 -= vs_gametime_tickspeed >> 1;
+    if (cloudstoneFreezeTimer > 0) {
+        cloudstoneFreezeTimer -= vs_gametime_vblanksPerFrame >> 1;
 
-        if (D_800F1D68 < 30 && vs_main_frameBuf) {
-            func_8008E4DC(D_800F1D6F == 0);
+        if (cloudstoneFreezeTimer < 30 && vs_main_frameBuf) {
+            setCloudstonePalette(cloudstonesAltPalette == 0);
         }
-        if (D_800F1D68 <= 0) {
-            func_8008E4DC(0);
-            D_800F1D68 = 0;
+        if (cloudstoneFreezeTimer <= 0) {
+            setCloudstonePalette(0);
+            cloudstoneFreezeTimer = 0;
         }
 
         return;
@@ -16479,11 +16522,11 @@ int func_8008C8A8(void)
     for (i = 0; i < count; ++i, ++object) {
         if (!object->stopped) {
             if (!object->needsRider || (*(u_int*)((char*)object + 4) & 0xFE) != 0xFE) {
-                for (tick = 0; tick < (vs_gametime_tickspeed >> 1); ++tick) {
+                for (tick = 0; tick < (vs_gametime_vblanksPerFrame >> 1); ++tick) {
                     temp = D_800F1D70[i];
 
                     if (temp < 7) {
-                        D_800F1D70[i] = temp + (vs_gametime_tickspeed >> 1);
+                        D_800F1D70[i] = temp + (vs_gametime_vblanksPerFrame >> 1);
 
                         if (D_800F1D70[i] >= 8) {
                             D_800F1D70[i] = 7;
@@ -16570,8 +16613,8 @@ void func_8008CEB0(void)
     int i;
     int count;
 
-    SetRotMatrix(&((vs_Scratch*)0x1F800000)->viewMatrix);
-    SetTransMatrix(&((vs_Scratch*)0x1F800000)->viewMatrix);
+    SetRotMatrix(&VS_SCRATCH->viewMatrix);
+    SetTransMatrix(&VS_SCRATCH->viewMatrix);
     if (vs_battle_roomData.cloudstoneSection == NULL) {
         return;
     }
@@ -16611,7 +16654,7 @@ void func_8008CEB0(void)
             shade = 223;
         }
         shade = 255 - shade;
-        polygon = ((vs_Scratch*)0x1F800000)->unk0;
+        polygon = VS_SCRATCH->nextPrim;
         vertices[0].vx = (short)(object->x / ONE - 32) - shade / 8;
         vertices[0].vy = height;
         vertices[0].vz = (short)(object->z / ONE - 32) - shade / 8;
@@ -16633,8 +16676,8 @@ void func_8008CEB0(void)
         setPolyF4(polygon);
         setSemiTrans(polygon, 1);
         setRGB0(polygon, shade / 2 + 16, shade / 2 + 16, shade / 2 + 16);
-        AddPrim((u_long*)((vs_Scratch*)0x1F800000)->unk4 + depth, polygon++);
-        ((vs_Scratch*)0x1F800000)->unk0 = polygon;
+        AddPrim((u_long*)VS_SCRATCH->depthOt + depth, polygon++);
+        VS_SCRATCH->nextPrim = polygon;
         insertTPage(depth, getTPage(0, 2, 0, 0));
     }
 }
@@ -16651,7 +16694,8 @@ int func_8008D2C0(SVECTOR arg0[])
     do {
         if (vs_battle_roomData.cloudstoneSection != NULL) {
             var_t0 = vs_battle_roomData.cloudstoneSection;
-            temp_t3 = vs_battle_roomData.header.cloudstoneSectionLen / 184;
+            temp_t3 =
+                vs_battle_roomData.header.cloudstoneSectionLen / sizeof(MpdCloudstone);
             var_t1 = 0;
 
             for (i = 0; i < temp_t3; ++i, ++var_t0) {
@@ -16731,18 +16775,25 @@ MpdRoomSection13* func_8008D508(int arg0, int arg1, int arg2)
     return NULL;
 }
 
-void func_8008D594(int arg0) { D_800F1D6E = arg0; }
+/** Stops the moving platforms from updating at all, or lets them resume. */
+void setCloudstonesPaused(int paused) { cloudstonesPaused = paused; }
 
-void func_8008D5A0(int arg0)
+/**
+ * Sets how long the moving platforms (cloudstones) stay frozen, shown in an alternate
+ * palette. For the last 30 ticks the palette flashes, then they thaw. Zero thaws them
+ * at once.
+ * @param ticks Time left frozen.
+ */
+void setCloudstoneFreezeTimer(int ticks)
 {
 
-    if ((vs_battle_roomData.header.cloudstoneSectionLen / 184) != 0) {
-        if (arg0 != 0) {
-            func_8008E4DC(1);
+    if ((vs_battle_roomData.header.cloudstoneSectionLen / sizeof(MpdCloudstone)) != 0) {
+        if (ticks != 0) {
+            setCloudstonePalette(1);
         } else {
-            func_8008E4DC(0);
+            setCloudstonePalette(0);
         }
-        D_800F1D68 = arg0;
+        cloudstoneFreezeTimer = ticks;
     }
 }
 
@@ -17064,13 +17115,13 @@ void func_8008DF14(void)
         for (i = 0; i < count; ++i, ++var_s3) {
             if ((vs_main_stateFlags.unk20 == 0) && (vs_main_stateFlags.unk40 == 0)
                 && (var_s3->unkA != 0)) {
-                for (j = 0; j < (vs_gametime_tickspeed * 2); ++j) {
+                for (j = 0; j < (vs_gametime_vblanksPerFrame * 2); ++j) {
                     if ((signed char)var_s3->unkB >= 0) {
                         ++var_s3->unkB;
                     }
                 }
             } else {
-                for (j = 0; j < vs_gametime_tickspeed; ++j) {
+                for (j = 0; j < vs_gametime_vblanksPerFrame; ++j) {
                     if (var_s3->unkB != 0) {
                         --var_s3->unkB;
                     }
@@ -17079,8 +17130,9 @@ void func_8008DF14(void)
 
             if ((var_s3->unkB != 0) && (var_s3->unk6 < 0x10)) {
                 if (var_s2 != 0) {
-                    vs_main_memcpy(&D_800E856C, (void*)0x1F800014, sizeof D_800E856C);
-                    D_800F1D6C += vs_gametime_tickspeed;
+                    vs_main_memcpy(
+                        &D_800E856C, &VS_SCRATCH->viewMatrix, sizeof D_800E856C);
+                    D_800F1D6C += vs_gametime_vblanksPerFrame;
                     if (D_800F1D6C >= 8) {
                         D_800F1D6C -= 8;
                         var_s2 = (D_800F1CDC >> 3) % 5;
@@ -17221,7 +17273,7 @@ short func_8008E4AC(void) { return vs_battle_roomData.sectionB->unk56; }
 
 static int getRoomTrapLevel(void) { return vs_battle_roomData.sectionB->trapLevel; }
 
-void func_8008E4DC(int arg0)
+void setCloudstonePalette(int alternate)
 {
     static u_short const D_80068BFC[0x10] = { 0x10, 1, 0x865, 0xC66, 0x869, 0xCA9, 0x88D,
         0x10AD, 0xCB1, 0x14D1, 0xCD5, 0x14F5, 0xCF9, 0x113A, 0x199B, 0x21FC };
@@ -17230,15 +17282,15 @@ void func_8008E4DC(int arg0)
     int temp_s2;
     int i;
 
-    if (D_800F1D6F != arg0) {
-        if (arg0 != 0) {
+    if (cloudstonesAltPalette != alternate) {
+        if (alternate != 0) {
             vs_main_loadClut(D_80068BFC, 2, 0x30, 0x10);
         } else {
             vs_main_loadClut(D_800F1BA8 + 0x230, 2, 0x30, 0x10);
         }
 
         var_s0 = vs_battle_roomData.cloudstoneSection;
-        temp_s2 = vs_battle_roomData.header.cloudstoneSectionLen / 184;
+        temp_s2 = vs_battle_roomData.header.cloudstoneSectionLen / sizeof(MpdCloudstone);
 
         for (i = 0; i < temp_s2; ++i) {
             if (var_s0->unk0_12) {
@@ -17251,7 +17303,7 @@ void func_8008E4DC(int arg0)
                 toggleRoomTaskPaused(vs_battle_roomData.sectionB->unk2C);
             }
         }
-        D_800F1D6F = !D_800F1D6F;
+        cloudstonesAltPalette = !cloudstonesAltPalette;
     }
 }
 
@@ -17470,16 +17522,14 @@ void func_8008EC48(VECTOR* arg0)
     if ((backgroundVisible != 0) && (backgroundLayout != NULL)) {
         if (((backgroundLayout->width - 1) < 31u)
             && ((backgroundLayout->height - 1) < 31u)) {
-            int x =
-                (((vs_Scratch*)0x1F800000)->camera.angles.vy * backgroundParallaxX) / ONE
-                - backgroundOffsetX;
-            int y =
-                (((vs_Scratch*)0x1F800000)->camera.angles.vx * backgroundParallaxY) / ONE;
+            int x = (VS_SCRATCH->camera.angles.vy * backgroundParallaxX) / ONE
+                  - backgroundOffsetX;
+            int y = (VS_SCRATCH->camera.angles.vx * backgroundParallaxY) / ONE;
             y = backgroundOffsetY - y;
             func_8009147C(backgroundLayout, x, y, backgroundTexturePage);
         }
     } else if (D_800F1DC6 != 0) {
-        prim = ((vs_Scratch*)0x1F800000)->unk0;
+        prim = VS_SCRATCH->nextPrim;
         setPolyFT4(prim);
         setXY4(prim, 0, 0, 320, 0, 0, 240, 320, 240);
         setUV4(prim, 248, 248, 249, 248, 248, 249, 249, 249);
@@ -17496,8 +17546,8 @@ void func_8008EC48(VECTOR* arg0)
         }
         setTPage(prim, 0, 0, 64, 256);
         setClut(prim, 784, 226);
-        AddPrim(((vs_Scratch*)0x1F800000)->unk4 + 0x1FFC, prim++);
-        ((vs_Scratch*)0x1F800000)->unk0 = prim;
+        AddPrim(VS_SCRATCH->depthOt + 0x1FFC, prim++);
+        VS_SCRATCH->nextPrim = prim;
     } else {
         angles = arg0;
         if (angles == NULL) {
@@ -17507,16 +17557,14 @@ void func_8008EC48(VECTOR* arg0)
                 angles = D_800F1CE0;
             }
         }
-        setVector(&position, ((vs_Scratch*)0x1F800000)->camera.position.vx / ONE,
-            ((vs_Scratch*)0x1F800000)->camera.position.vy / ONE,
-            ((vs_Scratch*)0x1F800000)->camera.position.vz / ONE);
-        applyVector(&position, ((vs_Scratch*)0x1F800000)->camera.farClip,
-            ((vs_Scratch*)0x1F800000)->camera.farClip,
-            ((vs_Scratch*)0x1F800000)->camera.farClip, *=);
+        setVector(&position, VS_SCRATCH->camera.position.vx / ONE,
+            VS_SCRATCH->camera.position.vy / ONE, VS_SCRATCH->camera.position.vz / ONE);
+        applyVector(&position, VS_SCRATCH->camera.farClip, VS_SCRATCH->camera.farClip,
+            VS_SCRATCH->camera.farClip, *=);
         applyVector(&position, ONE, ONE, ONE, /=);
-        SetRotMatrix(&((vs_Scratch*)0x1F800000)->viewMatrix);
-        SetTransMatrix(&((vs_Scratch*)0x1F800000)->viewMatrix);
-        if (((vs_Scratch*)0x1F800000)->camera.farClip != ONE) {
+        SetRotMatrix(&VS_SCRATCH->viewMatrix);
+        SetTransMatrix(&VS_SCRATCH->viewMatrix);
+        if (VS_SCRATCH->camera.farClip != ONE) {
             func_80098648(&position, angles, &matrix);
         } else {
             func_800985AC(&position, angles, &matrix);
@@ -17660,13 +17708,13 @@ void func_8008F440(void)
     int j;
     MpdTile* cell;
 
-    SetRotMatrix(&((vs_Scratch*)0x1F800000)->viewMatrix);
-    SetTransMatrix(&((vs_Scratch*)0x1F800000)->viewMatrix);
+    SetRotMatrix(&VS_SCRATCH->viewMatrix);
+    SetTransMatrix(&VS_SCRATCH->viewMatrix);
     particle = D_800F1DD4;
     for (i = 0; i < D_800F1DC0; ++i, ++particle) {
         if (particle->unkC == 0) {
             if (D_800F1BA4 == 0) {
-                for (j = 0; j < (vs_gametime_tickspeed >> 1); ++j) {
+                for (j = 0; j < (vs_gametime_vblanksPerFrame >> 1); ++j) {
                     particle->position.vy += D_800F1D98[1] << particle->unkE;
                     if (particle->unkE == 0) {
                         particle->position.vx += D_800F1D98[0];
@@ -17675,7 +17723,7 @@ void func_8008F440(void)
                 }
             }
             particle->unkE = 2;
-            line = ((vs_Scratch*)0x1F800000)->unk0;
+            line = VS_SCRATCH->nextPrim;
             depth =
                 RotTransPers(&particle->position, (long*)&line->x0, &projection, &flags);
             if ((line->x0 >= -639) && (line->x0 < 960) && (depth < 2048)) {
@@ -17689,8 +17737,8 @@ void func_8008F440(void)
                     setSemiTrans(line, 1);
                     setRGB0(line, 96, 96, 128);
                     setRGB1(line, 32, 32, 100);
-                    AddPrim((u_long*)((vs_Scratch*)0x1F800000)->unk4 + depth, line++);
-                    ((vs_Scratch*)0x1F800000)->unk0 = line;
+                    AddPrim((u_long*)VS_SCRATCH->depthOt + depth, line++);
+                    VS_SCRATCH->nextPrim = line;
                     insertTPage(depth, getTPage(0, 3, 0, 0));
                     particle->unkE = 0;
                 }
@@ -17724,7 +17772,7 @@ void func_8008F440(void)
                 particle->position.vz + 24);
             setVector(&vertices[3], particle->position.vx + 24, particle->position.vy,
                 particle->position.vz + 24);
-            splash = ((vs_Scratch*)0x1F800000)->unk0;
+            splash = VS_SCRATCH->nextPrim;
             depth = RotTransPers4(&vertices[0], &vertices[1], &vertices[2], &vertices[3],
                 (long*)&splash->x0, (long*)&splash->x1, (long*)&splash->x2,
                 (long*)&splash->x3, &projection, &flags);
@@ -17738,10 +17786,10 @@ void func_8008F440(void)
                 setRGB0(splash, 128, 128, 128);
                 setTPage(splash, 0, 3, 64, 256);
                 setClut(splash, 1008, 226);
-                AddPrim((u_long*)((vs_Scratch*)0x1F800000)->unk4 + depth, splash++);
-                ((vs_Scratch*)0x1F800000)->unk0 = splash;
+                AddPrim((u_long*)VS_SCRATCH->depthOt + depth, splash++);
+                VS_SCRATCH->nextPrim = splash;
                 if (D_800F1BA4 == 0) {
-                    particle->unkD += vs_gametime_tickspeed >> 1;
+                    particle->unkD += vs_gametime_vblanksPerFrame >> 1;
                 }
                 if (particle->unkD >= 8) {
                     func_80090A1C(particle);
@@ -17787,20 +17835,20 @@ void func_8008FAC8(void)
     D_800F1DD4_t* particle;
     int i;
 
-    SetRotMatrix(&((vs_Scratch*)0x1F800000)->viewMatrix);
-    SetTransMatrix(&((vs_Scratch*)0x1F800000)->viewMatrix);
+    SetRotMatrix(&VS_SCRATCH->viewMatrix);
+    SetTransMatrix(&VS_SCRATCH->viewMatrix);
     particle = D_800F1DD4;
     for (i = 0; i < D_800F1DC0; ++i, ++particle) {
         if (particle->unkC != 0) {
             continue;
         }
         if (D_800F1BA4 == 0) {
-            particle->position.vy -= particle->unkF * vs_gametime_tickspeed;
+            particle->position.vy -= particle->unkF * vs_gametime_vblanksPerFrame;
             if (particle->position.vy < -1024) {
                 func_8008FA14(particle);
             }
         }
-        prim = ((vs_Scratch*)0x1F800000)->unk0;
+        prim = VS_SCRATCH->nextPrim;
         depth = RotTransPers(&particle->position, (long*)&prim->x1, &dx, &dy);
         if ((prim->y1 <= 0) || (prim->y1 >= 240) || (prim->x1 <= 0) || (prim->x1 >= 320)
             || (depth <= 64) || (depth >= 2048)) {
@@ -17821,8 +17869,8 @@ void func_8008FAC8(void)
         setRGB0(prim, 32, 8, 32);
         setRGB3(prim, 32, 8, 32);
         setRGB2(prim, 0, 0, 0);
-        AddPrim((u_long*)((vs_Scratch*)0x1F800000)->unk4 + depth, prim++);
-        ((vs_Scratch*)0x1F800000)->unk0 = prim;
+        AddPrim((u_long*)VS_SCRATCH->depthOt + depth, prim++);
+        VS_SCRATCH->nextPrim = prim;
         insertTPage(depth, getTPage(0, 1, 0, 0));
     }
 }
@@ -17840,13 +17888,13 @@ void func_8008FDC4(void)
     int i;
     int j;
 
-    SetRotMatrix(&((vs_Scratch*)0x1F800000)->viewMatrix);
-    SetTransMatrix(&((vs_Scratch*)0x1F800000)->viewMatrix);
+    SetRotMatrix(&VS_SCRATCH->viewMatrix);
+    SetTransMatrix(&VS_SCRATCH->viewMatrix);
     particle = D_800F1DD4;
     for (i = 0; i < D_800F1DC0; ++i, ++particle) {
         if (particle->unkC == 0) {
             if (D_800F1BA4 == 0) {
-                for (j = 0; j < (vs_gametime_tickspeed >> 1); ++j) {
+                for (j = 0; j < (vs_gametime_vblanksPerFrame >> 1); ++j) {
                     if (particle->unkE != 0) {
                         particle->position.vy += D_800F1D98[1] << particle->unkE;
                     } else {
@@ -17876,7 +17924,7 @@ void func_8008FDC4(void)
                 }
             }
             particle->unkE = 2;
-            prim = ((vs_Scratch*)0x1F800000)->unk0;
+            prim = VS_SCRATCH->nextPrim;
             depth =
                 RotTransPers(&particle->position, (long*)&prim->x0, &projection, &flags);
             if ((prim->x0 >= -639) && (prim->x0 < 960) && (depth < 2048)) {
@@ -17892,7 +17940,7 @@ void func_8008FDC4(void)
                             setWH(prim, 1, 1);
                         }
                         setRGB0(prim, 255, 255, 255);
-                        AddPrim((u_long*)((vs_Scratch*)0x1F800000)->unk4 + depth, prim++);
+                        AddPrim((u_long*)VS_SCRATCH->depthOt + depth, prim++);
                         particle->unkE = 0;
                     }
                     projection = x + (rsin(i << 5) >> 6);
@@ -17908,11 +17956,11 @@ void func_8008FDC4(void)
                             setWH(prim, 1, 1);
                         }
                         setRGB0(prim, 255, 255, 255);
-                        AddPrim((u_long*)((vs_Scratch*)0x1F800000)->unk4 + depth, prim++);
+                        AddPrim((u_long*)VS_SCRATCH->depthOt + depth, prim++);
                         particle->unkE = 0;
                     }
                     if (particle->unkE == 0) {
-                        ((vs_Scratch*)0x1F800000)->unk0 = prim;
+                        VS_SCRATCH->nextPrim = prim;
                         insertTPage(depth, getTPage(0, 3, 64, 256));
                     }
                 }
@@ -17933,7 +17981,7 @@ void func_8008FDC4(void)
                 }
             }
         } else {
-            prim = ((vs_Scratch*)0x1F800000)->unk0;
+            prim = VS_SCRATCH->nextPrim;
             depth =
                 RotTransPers(&particle->position, (long*)&prim->x0, &projection, &flags);
             if ((prim->y0 > 0) && (prim->y0 < 240) && (prim->x0 > 0) && (prim->x0 < 320)
@@ -17943,11 +17991,11 @@ void func_8008FDC4(void)
                 setWH(prim, 2, 2);
                 setRGB0(prim, 128 - (particle->unkD << 4), 128 - (particle->unkD << 4),
                     128 - (particle->unkD << 4));
-                AddPrim((u_long*)((vs_Scratch*)0x1F800000)->unk4 + depth, prim++);
-                ((vs_Scratch*)0x1F800000)->unk0 = prim;
+                AddPrim((u_long*)VS_SCRATCH->depthOt + depth, prim++);
+                VS_SCRATCH->nextPrim = prim;
                 insertTPage(depth, getTPage(0, 3, 0, 0));
                 if (D_800F1BA4 == 0) {
-                    particle->unkD += vs_gametime_tickspeed >> 1;
+                    particle->unkD += vs_gametime_vblanksPerFrame >> 1;
                 }
                 if (particle->unkD >= 8) {
                     func_80090A1C(particle);
@@ -17975,11 +18023,11 @@ void func_80090434(void)
     int fade;
     int j;
 
-    SetRotMatrix(&((vs_Scratch*)0x1F800000)->viewMatrix);
-    SetTransMatrix(&((vs_Scratch*)0x1F800000)->viewMatrix);
+    SetRotMatrix(&VS_SCRATCH->viewMatrix);
+    SetTransMatrix(&VS_SCRATCH->viewMatrix);
     RotTrans((SVECTOR*)D_800F1CE0, &origin, &flags);
     RotTrans((SVECTOR*)D_800F1D98, &velocity, &flags);
-    cursor = ((vs_Scratch*)0x1F800000)->unk0;
+    cursor = VS_SCRATCH->nextPrim;
     setVector(&origin, (velocity.vx - origin.vx) >> 3, (velocity.vy - origin.vy) >> 3,
         (velocity.vz - origin.vz) >> 3);
     if (D_800F1BA4 == 0) {
@@ -17993,7 +18041,7 @@ void func_80090434(void)
     prim = cursor;
     for (flags = 0; flags < D_800F1DC0; ++flags, ++particle) {
         if (D_800F1BA4 == 0) {
-            for (j = 0; j < (vs_gametime_tickspeed >> 1); ++j) {
+            for (j = 0; j < (vs_gametime_vblanksPerFrame >> 1); ++j) {
                 particle->unkF += (rand() & 15) - 7;
                 particle->unkF &= 127;
                 if (particle->unkD != 0) {
@@ -18049,7 +18097,7 @@ void func_80090434(void)
                 setWH(prim, 1, 1);
             }
             setRGB0(prim, color, color, color);
-            AddPrim((u_long*)((vs_Scratch*)0x1F800000)->unk4 + 4, prim++);
+            AddPrim((u_long*)VS_SCRATCH->depthOt + 4, prim++);
             cursor += sizeof(TILE);
         }
         if (((u_short)particle->unk8 < 320) && ((u_short)particle->unkA < 240)) {
@@ -18063,7 +18111,7 @@ void func_80090434(void)
                 setWH(prim, 1, 1);
             }
             setRGB0(prim, color, color, color);
-            AddPrim((u_long*)((vs_Scratch*)0x1F800000)->unk4 + 4, prim++);
+            AddPrim((u_long*)VS_SCRATCH->depthOt + 4, prim++);
             cursor += sizeof(TILE);
             setTile(prim);
             setXY0(prim, x - ((x - particle->unk8) * 2), y - ((y - particle->unkA) * 2));
@@ -18075,7 +18123,7 @@ void func_80090434(void)
                 setWH(prim, 1, 1);
             }
             setRGB0(prim, color, color, color);
-            AddPrim((u_long*)((vs_Scratch*)0x1F800000)->unk4 + 4, prim++);
+            AddPrim((u_long*)VS_SCRATCH->depthOt + 4, prim++);
             cursor += sizeof(TILE);
         }
         if (D_800F1BA4 == 0) {
@@ -18083,7 +18131,7 @@ void func_80090434(void)
             particle->unkA = y;
         }
     }
-    ((vs_Scratch*)0x1F800000)->unk0 = cursor;
+    VS_SCRATCH->nextPrim = cursor;
     insertTPage(4, getTPage(0, 1, 64, 256));
 }
 

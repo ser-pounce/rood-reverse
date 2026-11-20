@@ -7,6 +7,7 @@
 #include "src/SLUS_010.40/32154.h"
 #include "src/SLUS_010.40/overlay.h"
 #include "build/src/include/lbas.h"
+#include "scratch.h"
 #include "tilePosition.h"
 #include <abs.h>
 #include <rand.h>
@@ -31,7 +32,7 @@ int func_800D9E18(func_800E78F4_t* arg0, func_800DCAA0_t* arg1)
 
     id = arg1->unkC_0;
 
-    if (id == 16 || !((func_800E78F4_t**)0x1F80037C)[id]) {
+    if (id == 16 || !VS_SCRATCH_AT(func_800E78F4_t**, 0x37C)[id]) {
         return 0;
     }
 
@@ -319,7 +320,8 @@ int func_800DA738(func_800E78F4_t* arg0)
     int target = arg0->unk16;
     int valid = candidate >= 0;
 
-    if (arg0->unk88 != target && target != 16 && ((func_800E78F4_t**)0x1F80037C)[target]
+    if (arg0->unk88 != target && target != 16
+        && VS_SCRATCH_AT(func_800E78F4_t**, 0x37C)[target]
         && arg0->unk1A4[target].unk0_6 == 2) {
         active = 1;
     }
@@ -362,7 +364,8 @@ int func_800DA738(func_800E78F4_t* arg0)
 
     if (active) {
         if (valid
-            && ((func_800E78F4_t**)0x1F80037C)[target]->unk1E4[candidate] < 384 * 384) {
+            && VS_SCRATCH_AT(func_800E78F4_t**, 0x37C)[target]->unk1E4[candidate]
+                   < 384 * 384) {
             arg0->unk15C = target;
             func_800E2CCC(arg0);
             return 1;
@@ -529,7 +532,7 @@ void func_800DAED0(void)
     Actor* actor;
 
     for (actor = vs_battle_actors[0]->next; actor != NULL; actor = actor->next) {
-        func_800E78F4_t* state = ((func_800E78F4_t**)0x1F80037C)[actor->id];
+        func_800E78F4_t* state = VS_SCRATCH_AT(func_800E78F4_t**, 0x37C)[actor->id];
         int distance;
         int tile;
 
@@ -544,7 +547,7 @@ void func_800DAED0(void)
             continue;
         }
 
-        *(int*)0x1F8003FC = distance;
+        *VS_SCRATCH_AT(int*, 0x3FC) = distance;
 
         if (state->unk14[0] != 0 && state->unk1D[0] != 0) {
             func_800E78F4_t* player = D_800F5878[0];
@@ -562,7 +565,7 @@ void func_800DAED0(void)
             }
 
             state->unk1E4[0] = func_800E4624(&state->unk4C,
-                &vs_battle_actors[0]->unk44->unk0.position, state->unk82, offset);
+                &vs_battle_actors[0]->unk44->position, state->unk82, offset);
             func_800DAD9C(state);
         } else {
             ((VECTOR*)state)->vx = 0;
@@ -571,10 +574,12 @@ void func_800DAED0(void)
             *(short*)&state->unkA[2] = 0;
             state->unk15C = 0x10;
             VS_TILE_CLEAR(state->unk48);
-            tile = (*(u_short(**)[32])0x1F8003C0)[state->unk34.z][state->unk34.x] & 15;
+            tile =
+                (*VS_SCRATCH_AT(u_short(**)[32], 0x3C0))[state->unk34.z][state->unk34.x]
+                & 15;
             state->unk154[0] = tile;
             state->unk132[0] = tile;
-            *(int*)0x1F8003D0 = 0;
+            *VS_SCRATCH_AT(int*, 0x3D0) = 0;
             func_800DB820(state);
             func_800DB7B4(state);
         }
@@ -626,8 +631,10 @@ int func_800DB0BC(func_800E78F4_t* arg0)
             *(u_int*)&probe = 0;
 
             for (i = 0; i < 4; ++i) {
-                probe.x = arg0->unk34.x + ((D_800F16EC_t*)0x1F8003EC)[directions[i]].dx;
-                probe.z = arg0->unk34.z + ((D_800F16EC_t*)0x1F8003EC)[directions[i]].dz;
+                probe.x =
+                    arg0->unk34.x + VS_SCRATCH_AT(D_800F16EC_t*, 0x3EC)[directions[i]].dx;
+                probe.z =
+                    arg0->unk34.z + VS_SCRATCH_AT(D_800F16EC_t*, 0x3EC)[directions[i]].dz;
 
                 if (func_800D954C(arg0, probe) > 0) {
                     arg0->unkFA = i;
@@ -646,9 +653,11 @@ int func_800DB0BC(func_800E78F4_t* arg0)
         }
 
         arg0->unk168.x =
-            arg0->unk34.x + ((D_800F16EC_t*)0x1F8003EC)[arg0->unk118[arg0->unkFA - 1]].dx;
+            arg0->unk34.x
+            + VS_SCRATCH_AT(D_800F16EC_t*, 0x3EC)[arg0->unk118[arg0->unkFA - 1]].dx;
         arg0->unk168.z =
-            arg0->unk34.z + ((D_800F16EC_t*)0x1F8003EC)[arg0->unk118[arg0->unkFA - 1]].dz;
+            arg0->unk34.z
+            + VS_SCRATCH_AT(D_800F16EC_t*, 0x3EC)[arg0->unk118[arg0->unkFA - 1]].dz;
         arg0->unk15C = arg0->unkFB;
 
         if (func_800D954C(arg0, arg0->unk168) > 0) {

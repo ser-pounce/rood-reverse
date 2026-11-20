@@ -19,6 +19,7 @@
 #include "src/SLUS_010.40/sound.h"
 #include "build/src/include/lbas.h"
 #include "gpu.h"
+#include "scratch.h"
 #include "tilePosition.h"
 #include <libgte.h>
 #include <libetc.h>
@@ -54,7 +55,7 @@ int func_8009F794(D_800F45E0_t* arg0);
 void setActorSfxOverride(int, SfxOverride*);
 void func_8009FD38(D_800F4538_t* arg0);
 void func_800A06B8(D_800F4538_t*, int);
-void func_800A11D8(int, int, MATRIX*, u_long*);
+void getBoneMatrix(int actorId, int bone, MATRIX* matrix, u_long* length);
 
 extern u_short shpLbaOffsets[];
 extern u_char shpFileSectorSizes[];
@@ -664,7 +665,7 @@ int parseWep(vs_ObjectData* objectData)
             model->unk13 = 0;
             model->actorId = objectData->actorId;
             model->unkC = objectData->unk11;
-            model->unkD = func_800A152C(objectData->actorId, objectData->unk11, 0);
+            model->unkD = findBoneIndex(objectData->actorId, objectData->unk11, 0);
             D_800E8F29 = 0;
 
             return 0;
@@ -834,7 +835,7 @@ fixPrims:
     model->unk13 = 0;
     model->actorId = objectData->actorId;
     model->unkC = objectData->unk11;
-    model->unkD = func_800A152C(objectData->actorId, objectData->unk11, 0);
+    model->unkD = findBoneIndex(objectData->actorId, objectData->unk11, 0);
     D_800E8F29 = 0;
 
     return 0;
@@ -3618,7 +3619,7 @@ int setActorLook(int arg0, int arg1, SVECTOR* arg2, int arg3)
         return -1;
     }
 
-    if (func_800A152C(arg0, 2, 3) < 0) {
+    if (findBoneIndex(arg0, 2, 3) < 0) {
         return -2;
     }
 
@@ -3798,10 +3799,12 @@ int func_800A0104(int index, int material)
 
     obj->unk16C.unk2 = material;
     material *= 4;
-    ((D_1F80035C_t*)0x1F80035C)->rotation.vx = D_800E9030[material] * (ONE / 4);
-    ((D_1F80035C_t*)0x1F80035C)->rotation.vy = D_800E9030[material + 1] * (ONE / 4);
-    ((D_1F80035C_t*)0x1F80035C)->rotation.vz = D_800E9030[material + 2] * (ONE / 4);
-    RotMatrixYXZ_gte(&((D_1F80035C_t*)0x1F80035C)->rotation, &obj->bones[4]);
+    VS_SCRATCH_AT(D_1F80035C_t*, 0x35C)->rotation.vx = D_800E9030[material] * (ONE / 4);
+    VS_SCRATCH_AT(D_1F80035C_t*, 0x35C)->rotation.vy =
+        D_800E9030[material + 1] * (ONE / 4);
+    VS_SCRATCH_AT(D_1F80035C_t*, 0x35C)->rotation.vz =
+        D_800E9030[material + 2] * (ONE / 4);
+    RotMatrixYXZ_gte(&VS_SCRATCH_AT(D_1F80035C_t*, 0x35C)->rotation, &obj->bones[4]);
     obj->unk0.unk18 = 0;
     *(int*)&obj->unk0.unk24 = 0;
     *(int*)&obj->unk0.unk28 = 0;
@@ -3980,7 +3983,7 @@ int setActorAnimationFromFrame(int arg0, int arg1, int arg2, int arg3)
         return 0;
     }
 
-    arg3 -= vs_gametime_tickspeed / 2;
+    arg3 -= vs_gametime_vblanksPerFrame / 2;
     temp_s0 = D_800F4538[arg0];
 
     if (arg3 > 0) {
@@ -4298,105 +4301,128 @@ u_int vs_battle_getActorFlags(int actorId)
 
 int vs_battle_getActorPosition(int actorId, vs_ActorPosition* position)
 {
-    D_800F4538_t* var_v1 = D_800F4538[actorId];
+    EntityBase* var_v1 = getEntityBase(actorId);
 
     if (var_v1 == NULL) {
-        var_v1 = (D_800F4538_t*)D_800F45E0[actorId];
-        if (var_v1 == NULL) {
-            return -1;
-        }
+        return -1;
     }
 
-    position->unk0.unk0 = var_v1->unk0.currentTile;
-    memcpy(&position->unk0.unk4.vx, &var_v1->unk0.position.vx, 4);
-    memcpy(&position->unk0.unk4.vz, &var_v1->unk0.position.vz, 4);
-    position->unk0.unk4.pad = var_v1->unk0.facing;
+    position->unk0.unk0 = var_v1->currentTile;
+    memcpy(&position->unk0.unk4.vx, &var_v1->position.vx, 4);
+    memcpy(&position->unk0.unk4.vz, &var_v1->position.vz, 4);
+    position->unk0.unk4.pad = var_v1->facing;
     return 0;
 }
 
-int func_800A1178(int arg0, int arg1, MATRIX* arg2, u_long* arg3)
+/**
+ * Gets the matrix and length of one of an actor's bones, by bone id.
+ * @param actorId Actor id.
+ * @param id Bone id, see findBoneIndex.
+ * @param matrix Receives the bone's matrix.
+ * @param length Receives the bone's length.
+ * @return 0, or a negative value if the bone isn't found.
+ */
+int getBoneMatrixById(int actorId, int id, MATRIX* matrix, u_long* length)
 {
-    int temp_v0 = func_800A152C(arg0, arg1, 0);
-    if (temp_v0 < 0) {
-        return temp_v0;
+    int bone = findBoneIndex(actorId, id, 0);
+
+    if (bone < 0) {
+        return bone;
     }
-    func_800A11D8(arg0, temp_v0, arg2, arg3);
+
+    getBoneMatrix(actorId, bone, matrix, length);
+
     return 0;
 }
 
-void func_800A11D8(int arg0, int arg1, MATRIX* arg2, u_long* arg3)
+/**
+ * Gets the matrix and length of one of an actor's bones, by bone index.
+ * @param actorId Actor id.
+ * @param bone Bone index.
+ * @param matrix Receives the bone's matrix.
+ * @param length Receives the bone's length.
+ */
+void getBoneMatrix(int actorId, int bone, MATRIX* matrix, u_long* length)
 {
-    D_800F4538_t* var_t0 = D_800F4538[arg0];
+    EntityBase* actor = getEntityBase(actorId);
 
-    if (var_t0 == NULL) {
-        var_t0 = (D_800F4538_t*)D_800F45E0[arg0];
-        if (var_t0 == NULL) {
-            return;
-        }
+    if (actor == NULL) {
+        return;
     }
-    *arg2 = var_t0->bones[arg1];
-    *arg3 = var_t0->unk0.unk68->armatures[arg1].unk0;
+
+    *matrix = getEntityBones(actor)[bone];
+    *length = actor->unk68->armatures[bone].unk0;
 }
 
-int func_800A1280(int arg0, int arg1, SVECTOR* arg2, int arg3)
+/**
+ * Gets the position on the screen of a point on an actor.
+ * @param actorId Actor id.
+ * @param id Bone id, see findBoneIndex, or actorPointAboveHead.
+ * @param screenXyz Receives the screen x, y and depth.
+ * @param point Which point along the bone, see getBoneScreenPosition. Not used for
+ * actorPointAboveHead.
+ * @return 0, or a negative value if there is no such actor or bone, or if the actor is
+ * hidden and the point is actorPointAboveHead.
+ */
+int getActorScreenPoint(int actorId, int id, SVECTOR* screenXyz, int point)
 {
-    long sp10;
-    long sp14;
-    long sp18;
-    int var_v0;
-    int v1;
+    long screenXy;
+    long p;
+    long flag;
+    int bone;
+    int result;
 
-    if (arg1 == 0xFB) {
+    if (id == actorPointAboveHead) {
         short* new_var;
         unsigned int new_var2;
-        D_800F4538_t* temp_a1 = D_800F4538[arg0];
+        D_800F4538_t* actor = D_800F4538[actorId];
 
-        if (temp_a1 == NULL) {
-            D_800F45E0_t* temp_v1 = D_800F45E0[arg0];
-            if (temp_v1 == NULL) {
+        if (actor == NULL) {
+            D_800F45E0_t* object = D_800F45E0[actorId];
+            if (object == NULL) {
                 return -1;
             }
-            arg2->vx = temp_v1->unk0.position.vx;
-            arg2->vz = temp_v1->unk0.position.vz;
-            arg2->vy = temp_v1->unk0.position.vy - 0xC0;
+            screenXyz->vx = object->unk0.position.vx;
+            screenXyz->vz = object->unk0.position.vz;
+            screenXyz->vy = object->unk0.position.vy - 0xC0;
         } else {
-            if (temp_a1->unk0.unkB_0) {
+            if (actor->unk0.unkB_0) {
                 return -1;
             }
-            arg2->vx = temp_a1->unk0.position.vx;
-            arg2->vz = temp_a1->unk0.position.vz;
-            arg2->vy = temp_a1->unk0.position.vy - temp_a1->unk646;
+            screenXyz->vx = actor->unk0.position.vx;
+            screenXyz->vz = actor->unk0.position.vz;
+            screenXyz->vy = actor->unk0.position.vy - actor->unk646;
         }
 
-        SetRotMatrix((MATRIX*)0x1F800014);
-        SetTransMatrix((MATRIX*)0x1F800014);
-        arg2->vz = RotTransPers(arg2, &sp10, &sp14, &sp18);
-        arg2->vx = sp10;
-        new_var = &((short*)(&sp10))[1];
+        SetRotMatrix(&VS_SCRATCH->viewMatrix);
+        SetTransMatrix(&VS_SCRATCH->viewMatrix);
+        screenXyz->vz = RotTransPers(screenXyz, &screenXy, &p, &flag);
+        screenXyz->vx = screenXy;
+        new_var = &((short*)(&screenXy))[1];
         new_var2 = *new_var;
-        arg2->vy = new_var2;
+        screenXyz->vy = new_var2;
 
         return 0;
     }
 
-    var_v0 = func_800A152C(arg0, arg1, 0);
-    sp14 = var_v0;
+    bone = findBoneIndex(actorId, id, 0);
+    p = bone;
 
-    if (var_v0 < 0) {
-        return var_v0;
+    if (bone < 0) {
+        return bone;
     }
 
-    v1 = func_800A141C(arg0, var_v0, (int*)arg2, arg3);
-    sp14 = v1;
-    if (v1 < 0) {
-        return v1;
+    result = getBoneScreenPosition(actorId, bone, (int*)screenXyz, point);
+    p = result;
+    if (result < 0) {
+        return result;
     }
     return 0;
 }
 
 int func_800A13EC(int arg0, int arg1, int* arg2, int arg3)
 {
-    int var_v0 = func_800A141C(arg0, arg1, arg2, arg3);
+    int var_v0 = getBoneScreenPosition(arg0, arg1, arg2, arg3);
 
     if (var_v0 < 0) {
         return var_v0;

@@ -559,7 +559,7 @@ static int getNextValidActor(int currentActor, int targetActor)
         temp_a0 = vs_battle_getActorFlags(currentActor);
 
         if ((vs_battle_actors[currentActor] != NULL)
-            && (vs_battle_actors[currentActor]->unk1C < 5)
+            && (vs_battle_actors[currentActor]->role < 5)
             && (temp_a0 & 0x01000001) == 1) {
             break;
         }
@@ -736,7 +736,7 @@ static void renderStatBar(int colorIndex, int current, int max, int xy)
     current <<= 6;
 
     vs_battle_renderStatBar(
-        colorIndex & 0xFF, ((current + max) - 1) / max, vs_scratch.unk4 - 0xC, xy);
+        colorIndex & 0xFF, ((current + max) - 1) / max, vs_scratch.depthOt - 0xC, xy);
 }
 
 /**
@@ -747,7 +747,7 @@ static void renderBasicStats(void)
     int i;
     int y;
     vs_ActorStats* stats = vs_battle_actors[selectedActor - 1]->stats;
-    u_long* insertBefore = vs_scratch.unk4 - 0xC;
+    u_long* insertBefore = vs_scratch.depthOt - 0xC;
 
     switch (renderBasicStatsState) {
     case 0:
@@ -854,8 +854,8 @@ static void drawStatusIndicator(int colorIndex, int xy, int subdued)
     u_long* prim;
     u_long* temp_t1;
 
-    temp_t1 = vs_scratch.unk8;
-    prim = vs_scratch.unk0;
+    temp_t1 = vs_scratch.frontOt;
+    prim = vs_scratch.nextPrim;
     color = D_800EBC54[colorIndex] >> subdued;
     prim[0] = (*temp_t1 & 0xFFFFFF) | 0x06000000;
     prim[1] = color | (primTile << 24);
@@ -865,7 +865,7 @@ static void drawStatusIndicator(int colorIndex, int xy, int subdued)
     prim[5] = xy + vs_getXY(1, 1);
     prim[6] = vs_getWH(5, 5);
     *temp_t1 = ((u_long)prim << 8) >> 8;
-    vs_scratch.unk0 = prim + 7;
+    vs_scratch.nextPrim = prim + 7;
 }
 
 /**
@@ -883,8 +883,8 @@ static void drawLimbLeaderLine(int limb, int xy, UNUSED int arg2, int opaque)
     temp_t2 = limb * 16 + 42;
     limb = ((xy >> 16) - temp_t2);
 
-    prim = vs_scratch.unk0;
-    temp_t0 = vs_scratch.unk4;
+    prim = vs_scratch.nextPrim;
+    temp_t0 = vs_scratch.depthOt;
 
     x = (short)xy;
 
@@ -906,7 +906,7 @@ static void drawLimbLeaderLine(int limb, int xy, UNUSED int arg2, int opaque)
     prim[8] = (temp_t2 << 0x10) | 216;
     temp_t0[-1] = (((u_long)prim << 8) >> 8);
     prim += 9;
-    vs_scratch.unk0 = prim;
+    vs_scratch.nextPrim = prim;
 }
 
 /**
@@ -936,14 +936,14 @@ static void renderStatusIcons(vs_ActorStats* stats, int animationStep)
 
             if (i >= new_var) {
                 // Element indicator
-                vs_battle_setSpriteDefaultTexPage(
-                    128, ((x + 8) & 0xFFFF) | y, vs_getWH(8, 8), vs_scratch.unk4 - 8)[4] =
+                vs_battle_setSpriteDefaultTexPage(128, ((x + 8) & 0xFFFF) | y,
+                    vs_getWH(8, 8), vs_scratch.depthOt - 8)[4] =
                     ((((i & 3) * 8) + 0x3068) | (getClut(1008, 223) << 16));
             }
 
             // Nasty match hack
             stats = (vs_ActorStats*)vs_battle_setSpriteDefaultTexPage(
-                128, (x & 0xFFFF) | y, vs_getWH(16, 16), vs_scratch.unk4 - 8);
+                128, (x & 0xFFFF) | y, vs_getWH(16, 16), vs_scratch.depthOt - 8);
 
             // 0x0F0F906A = Flags for toggling the icon palette
             ((u_long*)stats)[4] =
@@ -2083,8 +2083,8 @@ static int equipmentScreen(int element)
 static void fadeScreenLeft(void)
 {
     int uv1Tpage;
-    u_long* prim = vs_scratch.unk0;
-    u_long* temp_t1 = vs_scratch.unk4;
+    u_long* prim = vs_scratch.nextPrim;
+    u_long* temp_t1 = vs_scratch.depthOt;
 
     if (fadeScreen == 0) {
         return;
@@ -2114,7 +2114,7 @@ static void fadeScreenLeft(void)
 
     temp_t1[-1] = (((u_long)prim << 8) >> 8);
 
-    vs_scratch.unk0 = prim + 14;
+    vs_scratch.nextPrim = prim + 14;
 }
 
 /**
@@ -2124,8 +2124,8 @@ static void drawMenuBackground(void)
 {
     int uv1Tpage;
 
-    u_long* prim = vs_scratch.unk0;
-    void* temp_a0 = vs_scratch.unk4;
+    u_long* prim = vs_scratch.nextPrim;
+    void* temp_a0 = vs_scratch.depthOt;
     u_int* var_t9 = temp_a0 + 0x1FF4;
 
     if (drawBackgroundFirst != 0) {
@@ -2183,7 +2183,7 @@ static void drawMenuBackground(void)
     prim[13] = vs_getUV(160, 240);
     *var_t9 = ((u_long)prim << 8) >> 8;
 
-    vs_scratch.unk0 = prim + 14;
+    vs_scratch.nextPrim = prim + 14;
 }
 
 /**

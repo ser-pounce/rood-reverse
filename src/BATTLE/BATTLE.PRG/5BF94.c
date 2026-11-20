@@ -285,7 +285,7 @@ typedef struct {
 void renderDigit(int, int, int, u_long*);
 void func_800C51B4(int);
 void func_800C7EBC(u_short*, u_int, int, u_int);
-void func_800CA97C(void);
+void resetScreenEffects(void);
 int func_800CABE0(int);
 void func_800CCA90(int);
 void func_800CBBCC(Gim* arg0, int arg1, u_long* arg2);
@@ -436,7 +436,7 @@ extern char D_800F4E68;
 extern char D_800F4E69;
 extern TextBoxSelector textBoxSelector;
 extern int D_800F4ED4;
-extern short D_800F4ED8[8];
+extern ScreenEffects screenEffectsData;
 extern u_long* D_800F51B8;
 extern char D_800F51C8;
 extern vs_CdQueueSlot* D_800F5218;
@@ -1106,7 +1106,8 @@ int func_800C58F8(u_char* target)
                 vs_battle_printfArgs.strings[value] = D_800EAA54;
             }
             value = entry->effect;
-            if ((type == 16) && !(i >> 4) && (vs_battle_actors[i]->unk1C & 0x10)) {
+            if ((type == 16) && !(i >> 4)
+                && (vs_battle_actors[i]->role & actorRoleModelOnly)) {
                 value = 5;
                 vs_battle_printfArgs
                     .strings[1] = (char*)&vs_battle_statusStrings[vs_battle_statusStrings
@@ -1176,14 +1177,14 @@ void func_800C64D0(u_long* arg0, int* arg1)
 
 void vs_battle_renderTextRawColor(char const* text, int x, int color, u_long* nextPrim)
 {
-    u_long* prim = vs_scratch.unk0;
+    u_long* prim = vs_scratch.nextPrim;
     int y = x >> 16;
     u_char c;
 
     x = (short)x;
 
     if (nextPrim == NULL) {
-        nextPrim = vs_scratch.unk8;
+        nextPrim = vs_scratch.frontOt;
     }
 
     prim[0] = (((u_long)(prim + 2) << 8) >> 8) | 0x01000000;
@@ -1261,8 +1262,8 @@ void vs_battle_renderTextRawColor(char const* text, int x, int color, u_long* ne
     }
 
     *prim = *nextPrim & 0xFFFFFF;
-    *nextPrim = ((u_long)vs_scratch.unk0 << 8) >> 8;
-    vs_scratch.unk0 = prim + 1;
+    *nextPrim = ((u_long)vs_scratch.nextPrim << 8) >> 8;
+    vs_scratch.nextPrim = prim + 1;
 }
 
 void vs_battle_renderTextRaw(char const* text, int xy, void* nextPrim)
@@ -1606,7 +1607,8 @@ void printVariableWidthFont(vs_TextBox* arg0)
                             charsRemaining = 0;
                         } else {
                             done =
-                                (arg0->unk0.arrowAnimFrame + vs_gametime_tickspeed) % 24;
+                                (arg0->unk0.arrowAnimFrame + vs_gametime_vblanksPerFrame)
+                                % 24;
                             printX = vs_battle_printVariableWidthFontChar(
                                 0xBC - (done >> 3), printX, printY, sp20);
                             arg0->unk0.arrowAnimFrame = done;
@@ -1785,7 +1787,7 @@ void printVariableWidthFont(vs_TextBox* arg0)
         }
 
         if (charsRemaining <= 0) {
-            arg0->speed += vs_gametime_tickspeed >> 1;
+            arg0->speed += vs_gametime_vblanksPerFrame >> 1;
         }
 
         if ((arg0->prevChunksPrinted != chunksPrinted) && (sfx != 0)) {
@@ -2575,7 +2577,7 @@ void vs_battle_renderMenuItem(vs_MenuItem* menuItem)
 {
 
     int y = menuItem->gradientState;
-    u_long* scratch = *(void**)0x1F800008 + 8;
+    u_long* scratch = vs_scratch.frontOt + 8;
     int w = menuItem->w;
     int bgWidth = menuItem->backgroundWidth;
     char* text = menuItem->text;
@@ -2639,7 +2641,7 @@ void vs_battle_renderMenuItem(vs_MenuItem* menuItem)
 
         vs_battle_addTile(scratch + 1, 0x60000000, vs_getXY_2(x + 2, y + 2), w | 0xC0000);
 
-        prim = *(void**)0x1F800000;
+        prim = vs_scratch.nextPrim;
 
         prim[0] = ((*scratch & 0xFFFFFF) | 0x0A000000);
         prim[1] = vs_getTpage(0, 0, clut4Bit, semiTransparencyHalf, ditheringOn);
@@ -2654,7 +2656,7 @@ void vs_battle_renderMenuItem(vs_MenuItem* menuItem)
         prim[10] = vs_getTpage(0, 0, clut4Bit, semiTransparencyHalf, ditheringOff);
 
         *scratch = (u_int)((u_long)prim << 8) >> 8;
-        *(void**)0x1F800000 = prim + 11;
+        vs_scratch.nextPrim = prim + 11;
 
         v = &menuItem->subText;
         if (*v != NULL) {
@@ -2872,7 +2874,7 @@ int vs_battle_renderValue(int font, int xy, int value, u_long* before)
     int new_var;
 
     if (before == NULL) {
-        before = vs_scratch.unk4 - 0x10;
+        before = vs_scratch.depthOt - 0x10;
     }
 
     do {
@@ -2895,7 +2897,7 @@ void vs_battle_renderStatBar(int colorIndex, int w, u_long* before, int xy)
     u_long* primBuf;
 
     rgb1 = D_800EBC04[colorIndex];
-    primBuf = vs_scratch.unk0;
+    primBuf = vs_scratch.nextPrim;
 
     rgb0 = (((w * 0xFF) + ((rgb1 & 0xFF) * (0x40 - w))) >> 6)
          | ((((w * 0xF0) + (((rgb1 >> 8) & 0xFF) * (0x40 - w))) >> 6) << 8)
@@ -2919,12 +2921,12 @@ void vs_battle_renderStatBar(int colorIndex, int w, u_long* before, int xy)
     primBuf[12] = xy + rgb1;
     primBuf[13] = vs_getTpage(0, 0, 0, 0, 0);
     *before = ((u_long)primBuf << 8) >> 8;
-    vs_scratch.unk0 = primBuf + 14;
+    vs_scratch.nextPrim = primBuf + 14;
 }
 
 void renderStatBar(int colorIndex, int current, int max)
 {
-    u_long* prim = vs_scratch.unk4 - 0xC;
+    u_long* prim = vs_scratch.depthOt - 0xC;
     int xy = D_800EBBDC[colorIndex] - D_800EB9B0;
 
     if (max != 0) {
@@ -2966,7 +2968,7 @@ void func_800C9CB4(int arg0, int arg1, int arg2)
         }
 
         temp_a0 = vs_battle_setSpriteDefaultTexPage(
-            0x80, arg2 | 0x80000, var_s1 | 0x100000, vs_scratch.unk4 - 4);
+            0x80, arg2 | 0x80000, var_s1 | 0x100000, vs_scratch.depthOt - 4);
 
         temp_a0[4] = (var_s2 | (((0x0F0F906A >> arg0) & 1) ? 0x37F90000 : 0x37F80000));
 
@@ -2987,7 +2989,7 @@ void func_800C9CB4(int arg0, int arg1, int arg2)
             }
 
             vs_battle_setSpriteDefaultTexPage(0x80, arg2 | 0x80000, var_s1 | 0x80000,
-                vs_scratch.unk4 - 4)[4] = var_s2 | 0x37FF0000;
+                vs_scratch.depthOt - 4)[4] = var_s2 | 0x37FF0000;
         }
     }
 }
@@ -3078,7 +3080,7 @@ void func_800C9F88(void) { D_800EBC78 = 1; }
 void func_800C9F98(int arg0, int arg1)
 {
     u_long* temp_v0 =
-        vs_battle_setSpriteDefaultTexPage(arg1, arg0, 0x60006, vs_scratch.unk8);
+        vs_battle_setSpriteDefaultTexPage(arg1, arg0, 0x60006, vs_scratch.frontOt);
     temp_v0[1] = 0xE1000017;
     temp_v0[4] = 0x373D80C0;
 }
@@ -3110,14 +3112,14 @@ void func_800C9FE8(void)
                     temp_v0);
                 temp_v0_2 = vs_battle_setSpriteDefaultTexPage(temp_v0,
                     ((temp_s3 + D_800EBCA0[i]) & 0xFFFF) | (D_800EBCA0[i + 4] << 0x10),
-                    D_800EBCA8[i], vs_scratch.unk8);
+                    D_800EBCA8[i], vs_scratch.frontOt);
                 temp_v0_2[1] = 0xE1000017;
                 temp_v0_2[4] = (*((i) + D_800EBCB8) | 0x373D0000);
             }
         }
 
         vs_battle_setSpriteDefaultTexPage(0x180, ((temp_s3 + 0x48) & 0xFFFF) | 0x660000,
-            0x1E001E, vs_scratch.unk8)[4] = 0x37FBA0B8;
+            0x1E001E, vs_scratch.frontOt)[4] = 0x37FBA0B8;
         temp_s3 = (0xA0 - temp_s3);
 
         for (i = 0; i < 4; ++i) {
@@ -3129,12 +3131,12 @@ void func_800C9FE8(void)
                 temp_v0_2 = vs_battle_setSpriteDefaultTexPage(temp_v0,
                     (((temp_s3 + D_800EBCC8[i]) - 2) & 0xFFFF)
                         | (D_800EBCC8[i + 4] << 0x10),
-                    D_800EBCD0[i], vs_scratch.unk8);
+                    D_800EBCD0[i], vs_scratch.frontOt);
                 temp_v0_2[1] = 0xE1000017;
                 temp_v0_2[4] = D_800EBCE0[i] | 0x373D0000;
             }
             vs_battle_setSpriteDefaultTexPage(0x80, temp_s3 + D_800EBC88[3 - i], 0x100010,
-                vs_scratch.unk8)[4] = (((3 - i) * 0x10) | 0x37FB8000);
+                vs_scratch.frontOt)[4] = (((3 - i) * 0x10) | 0x37FB8000);
         }
     }
     D_800EBC78 = 0;
@@ -3152,7 +3154,7 @@ void func_800CA2DC(void)
     u_char icon;
     u_long* prim;
     vs_ActorStats* stats = vs_battle_characterState->stats;
-    void* nextPrim = vs_scratch.unk4 - 4;
+    void* nextPrim = vs_scratch.depthOt - 4;
 
     func_800C9FE8();
 
@@ -3168,11 +3170,11 @@ void func_800CA2DC(void)
     if (D_800EB9CD != 0) {
         prim = vs_battle_setSprite(0x140,
             ((((D_800EB9CD * 3) - 4) << 16) - D_800EB9B0) | 0xEC, 0xA0049,
-            vs_scratch.unk4 - 0xC);
+            vs_scratch.depthOt - 0xC);
         prim[1] = 0xE1000017;
         prim[2] += rsin(D_800EBD64 & 0x7FF) >> 5;
         prim[4] = 0x373D0040;
-        D_800EBD64 += vs_gametime_tickspeed * 64;
+        D_800EBD64 += vs_gametime_vblanksPerFrame * 64;
     }
 
     if (D_800EB9AF != 0) {
@@ -3214,7 +3216,7 @@ void func_800CA2DC(void)
 
     if (risk == 0) {
         vs_battle_renderTextRaw(
-            "RISK  ZERO", 0x16000C - D_800EB9B0, vs_scratch.unk4 - 0xC);
+            "RISK  ZERO", 0x16000C - D_800EB9B0, vs_scratch.depthOt - 0xC);
     }
 
     if (D_800EB9AE != 0) {
@@ -3283,7 +3285,7 @@ void func_800CA2DC(void)
 
     ++j;
 
-    if ((j != D_800EB9D0[3]) && (vs_gametime_tickspeed == 4)) {
+    if ((j != D_800EB9D0[3]) && (vs_gametime_vblanksPerFrame == 4)) {
         j = (j + 1) & 0xE;
     }
 
@@ -3326,11 +3328,11 @@ void func_800CA2DC(void)
         0x37F40C00;
 }
 
-void func_800CA97C(void)
+void resetScreenEffects(void)
 {
-    D_800EB9B4 = NULL;
-    memset(&D_800F4ED8, 0, sizeof D_800F4ED8);
-    D_800F4ED8[2] = 0x1000;
+    screenEffects = NULL;
+    memset(&screenEffectsData, 0, sizeof screenEffectsData);
+    screenEffectsData.lensZoom = 0x1000;
 }
 
 void vs_battle_initUi(void* fontData)
@@ -3340,7 +3342,7 @@ void vs_battle_initUi(void* fontData)
     D_800EB9AE = 0;
     D_800EB9B0 = 0;
     D_800F4ED4 = 0;
-    D_800EB9B4 = NULL;
+    screenEffects = NULL;
     D_800EB9B8 = NULL;
     gims = NULL;
     vs_battle_menuItems = 0;
@@ -3352,7 +3354,7 @@ void vs_battle_initUi(void* fontData)
     *(int*)D_800EB9D0 = 0xFFFFFF;
     menuBgUnpackedBuf = NULL;
     D_800EB9D8 = 0;
-    func_800CA97C();
+    resetScreenEffects();
     vs_battle_rMemzero(&vs_battle_menuState, 8);
     vs_battle_menuState.currentMenu = 0x3F;
     vs_battle_rMemzero(&D_800F4E98, sizeof D_800F4E98);
@@ -3395,7 +3397,7 @@ int func_800CABE0(int arg0)
         var_a0 |= 4;
     }
 
-    if (!(vs_battle_characterState->unk44->unk0.weaponDrawn)) {
+    if (!(vs_battle_characterState->unk44->weaponDrawn)) {
         var_a0 |= 8;
     }
 
@@ -3446,7 +3448,7 @@ int openMenu(int menuId, int mode)
         if (vs_battle_menuItems == 0) {
             loadedSubMenu = -1;
 
-            func_8007E180(6);
+            claimOverlayBuffer(6);
 
             miscIndex = vs_main_allocHeapR(0xB24);
             var_a1 = vs_main_settings.menuFlags;
@@ -3566,7 +3568,7 @@ int validateShortcutSelection(int shortcut)
 void freeMenuItems(void)
 {
     if (vs_battle_menuItems != 0) {
-        func_8007E1C0(6);
+        freeOverlayBuffer(6);
         vs_main_freeHeapR(vs_battle_menuItems);
         vs_battle_menuItems = 0;
     }
@@ -3664,7 +3666,7 @@ int func_800CB45C(void)
             if (D_800F4E68 < 4) {
                 D_800F4E68 = 0;
             } else {
-                D_800F4E68 -= vs_gametime_tickspeed;
+                D_800F4E68 -= vs_gametime_vblanksPerFrame;
             }
 
             if (D_800F4E68 != 0) {
@@ -3713,7 +3715,7 @@ void renderTimer(vs_Gametime* value)
         D_800EC258[7 - i * 3] = (bcd & 0xF) + '0';
     }
 
-    vs_battle_renderTextRaw(D_800EC258, vs_getXY(128, 200), vs_scratch.unk4 - 4);
+    vs_battle_renderTextRaw(D_800EC258, vs_getXY(128, 200), vs_scratch.depthOt - 4);
 }
 
 void func_800CB654(int arg0) { D_800EB9AF = arg0; }
@@ -3725,11 +3727,11 @@ D_800F18EC_t* func_800CB66C(void) { return &D_800F4E98; }
 void loadScreff2(int arg0)
 {
     vs_CdFile file;
-    D_800EB9B4_t* p = D_800EB9B4;
+    ScreenEffects* p = screenEffects;
     void* const* new_var;
 
     if (arg0 != 0) {
-        p->unk0 = 1;
+        p->loading = 1;
         file.lba = VS_SCREFF2_PRG_LBA;
         file.size = VS_SCREFF2_PRG_SIZE;
         p->slot = vs_main_allocateCdQueueSlot(&file);
@@ -3740,48 +3742,48 @@ void loadScreff2(int arg0)
 
     if (p->slot->state == 4) {
         vs_main_freeCdQueueSlot(p->slot);
-        p->unk0 = 0;
+        p->loading = 0;
         vs_main_wait();
     }
 }
 
 void func_800CB708(void)
 {
-    D_800EB9B4_t* temp_s0 = D_800EB9B4;
+    ScreenEffects* temp_s0 = screenEffects;
     if (temp_s0 != NULL) {
-        if (temp_s0->unk0 != 0) {
+        if (temp_s0->loading != 0) {
             loadScreff2(0);
             return;
         }
-        if (*(int*)&temp_s0->unk4 != 0x1000) {
-            func_800F9BD8();
+        if (*(int*)&temp_s0->lensZoom != 0x1000) {
+            applyScreenLensDistortion();
         }
-        if (temp_s0->unk2 != 0) {
-            func_800F986C();
+        if (temp_s0->blurDepth != 0) {
+            drawScreenBlur();
         }
-        if (temp_s0->unk8 != 0) {
-            func_800F9FB8();
+        if (temp_s0->edgeGlow != 0) {
+            drawScreenEdgeGlow();
         }
     }
 }
 
-void func_800CB79C(void)
+void loadScreenEffects(void)
 {
-    if (D_800EB9B4 == NULL) {
-        D_800EB9B4 = (D_800EB9B4_t*)D_800F4ED8;
-        func_8007E180(6);
+    if (screenEffects == NULL) {
+        screenEffects = &screenEffectsData;
+        claimOverlayBuffer(6);
         loadScreff2(1);
     }
 }
 
-void func_800CB7DC(void)
+void unloadScreenEffects(void)
 {
-    if (D_800EB9B4 != NULL) {
-        func_8007E1C0(6);
-        if (D_800EB9B4->unk1 == 1) {
+    if (screenEffects != NULL) {
+        freeOverlayBuffer(6);
+        if (screenEffects->blurActive == 1) {
             func_8007E0A8(0x1B, 5, 6);
         }
-        func_800CA97C();
+        resetScreenEffects();
     }
 }
 
@@ -3806,7 +3808,7 @@ void func_800CB83C(void)
         }
 
         duration = box->animationDuration;
-        scale = vs_gametime_tickspeed >> 1;
+        scale = vs_gametime_vblanksPerFrame >> 1;
 
         if (state < 0) {
             state -= scale;
@@ -3892,7 +3894,7 @@ void func_800CB83C(void)
         }
     }
 
-    AddPrims(vs_scratch.unk4 - 24, D_800F51B8, D_800F51B8 + 33);
+    AddPrims(vs_scratch.depthOt - 24, D_800F51B8, D_800F51B8 + 33);
     D_800EB9CE = D_800EB9CE == 2 ? 0 : D_800EB9CE + 1;
     D_800F51B8 = &D_800F4CD0 + D_800EB9CE * 34;
     ClearOTag(D_800F51B8, 34);
@@ -4017,7 +4019,7 @@ void func_800CBBCC(Gim* image, int clut, u_long* ot)
                     int u1 = u + 64;
 
                     u1 -= u1 >> 8;
-                    prim = vs_scratch.unk0;
+                    prim = vs_scratch.nextPrim;
                     prim[0] = (*ot & 0xFFFFFF) | 0xA000000;
                     prim[2] = quadColor;
                     prim[3] = x0 | (top << 16);
@@ -4028,7 +4030,7 @@ void func_800CBBCC(Gim* image, int clut, u_long* ot)
                     prim[9] = right | (bottom << 16);
                     prim[10] = u1 | (v + 0xF00);
                     *ot = ((u_long)prim << 8) >> 8;
-                    vs_scratch.unk0 = prim + 11;
+                    vs_scratch.nextPrim = prim + 11;
                 }
 
                 prim[1] = tpage | _get_mode(0, 0, 0);
@@ -4299,8 +4301,8 @@ void func_800CCA90(int arg0)
 
     D_800F51C8 = 0;
     D_800EC25C[gim->drawMode](gim, clut << 16,
-        gim->scale & 0x4000 ? vs_scratch.unk4 + 0x1FF8 - arg0 * 4
-                            : vs_scratch.unk8 + 0x18 - arg0 * 8);
+        gim->scale & 0x4000 ? vs_scratch.depthOt + 0x1FF8 - arg0 * 4
+                            : vs_scratch.frontOt + 0x18 - arg0 * 8);
 }
 
 /**
@@ -4358,28 +4360,28 @@ u_int vs_battle_getRandBits(int value)
 
 void vs_battle_addTile(u_long* before, int rgb0, int xy, int wh)
 {
-    u_long* prim = vs_scratch.unk0;
+    u_long* prim = vs_scratch.nextPrim;
     prim[0] = (int)((*before & 0xFFFFFF) | 0x03000000);
     prim[1] = rgb0;
     prim[2] = xy;
     prim[3] = wh;
     *before = ((u_long)prim << 8) >> 8;
-    vs_scratch.unk0 = prim + 4;
+    vs_scratch.nextPrim = prim + 4;
 }
 
 void vs_battle_insertTpage(int tpage, u_long* before)
 {
-    u_long* prim = vs_scratch.unk0;
+    u_long* prim = vs_scratch.nextPrim;
     prim[0] = vs_getTag(sizeof(int), *before);
     prim[1] = tpage;
     *before = ((u_long)prim << 8) >> 8;
-    vs_scratch.unk0 = prim + 2;
+    vs_scratch.nextPrim = prim + 2;
 }
 
 int vs_battle_drawCursor(int animStep, int position)
 {
     vs_battle_setSpriteDefaultTexPage(vs_battle_cursorBrightnessAnimation[animStep],
-        (((position * 0x10) + 0xA) << 0x10) | 0xB4, 0x100010, vs_scratch.unk8)[4] =
+        (((position * 0x10) + 0xA) << 0x10) | 0xB4, 0x100010, vs_scratch.frontOt)[4] =
         0x37F83020;
     return (animStep + 1) & 0xF;
 }
@@ -4575,7 +4577,7 @@ void func_800CD3E4(int index)
     u_short* verts = (u_short*)D_800EB588[box->unk0.shape];
     u_char* shape;
     int header;
-    int* points = (int*)0x1F800088;
+    int* points = VS_SCRATCH_AT(int*, 0x88);
     short* out;
     u_long* prim;
     int x = box->unk24;
@@ -4593,7 +4595,7 @@ void func_800CD3E4(int index)
         return;
     }
 
-    out = (short*)0x1F800088;
+    out = VS_SCRATCH_AT(short*, 0x88);
     flip = box->unk0.flip;
     shape = (u_char*)verts;
     part = ((int*)shape)[box->unk0.tail];
@@ -4658,7 +4660,7 @@ void func_800CD3E4(int index)
 
     vs_battle_insertTpage(0xE2000000, ot + 2);
 
-    prim = vs_scratch.unk0;
+    prim = vs_scratch.nextPrim;
     flip = box->brightness;
     flip = flip | (flip << 8) | (flip << 16);
 
@@ -4743,7 +4745,7 @@ void func_800CD3E4(int index)
         }
     }
 
-    vs_scratch.unk0 = prim;
+    vs_scratch.nextPrim = prim;
     vs_battle_addTile(ot + 2, _get_mode(0, 0, getTPage(0, 0, 448, 256)), 0xE2000318, 0);
 }
 
@@ -4763,8 +4765,8 @@ void func_800CDCBC(EffectTrailState* t, int head, int tail)
         return;
     }
 
-    p = vs_scratch.unk0;
-    vs_scratch.unk0 = p + 1;
+    p = vs_scratch.nextPrim;
+    vs_scratch.nextPrim = p + 1;
     setlen(p, 14);
     p->code = primPolyGT4;
     p->mode = _get_mode(0, 0, 0);
@@ -4782,7 +4784,7 @@ void func_800CDCBC(EffectTrailState* t, int head, int tail)
         p->g2 = p->g3 = D_800EC308[t->config.color].g * tail - 128;
         p->b2 = p->b3 = D_800EC308[t->config.color].b * tail - 128;
         func_800CF988(p, head, head, 0);
-        addPrim(vs_scratch.unk4 + depth * 4, p);
+        addPrim(vs_scratch.depthOt + depth * 4, p);
     } else {
         u_char column;
         u_char row;
@@ -4806,7 +4808,7 @@ void func_800CDCBC(EffectTrailState* t, int head, int tail)
         p->r2 = p->r3 = (D_800EC2E8[t->config.color].r * tail) / 8;
         p->g2 = p->g3 = (D_800EC2E8[t->config.color].g * tail) / 8;
         p->b2 = p->b3 = (D_800EC2E8[t->config.color].b * tail) / 8;
-        addPrim(vs_scratch.unk4 + depth * 4, p);
+        addPrim(vs_scratch.depthOt + depth * 4, p);
     }
 }
 
@@ -5051,7 +5053,7 @@ int func_800CE9B0(void)
                 func_800CF478(2);
             }
             if (D_800F5684 != 0) {
-                func_8007E1C0(2);
+                freeOverlayBuffer(2);
                 D_800F5684 = 0;
             }
         }
@@ -5137,7 +5139,7 @@ int func_800CE9B0(void)
             D_800F5318 = 0;
 
             if (D_800F5684 != 0) {
-                func_8007E1C0(2);
+                freeOverlayBuffer(2);
                 D_800F5684 = 0;
             }
 
@@ -6088,7 +6090,7 @@ void func_800D0C60(D_800F53B8_t* arg0, func_800D0548_arg1* arg1)
 void func_800D0D08(D_800F53B8_t* arg0)
 {
     int i;
-    func_800D0B30_t2* scratch = (func_800D0B30_t2*)0x1F8002C8;
+    func_800D0B30_t2* scratch = VS_SCRATCH_AT(func_800D0B30_t2*, 0x2C8);
 
     for (i = 0; i < D_800F569C->block9Data->unk15; ++i) {
         func_800D0B30_t* definition = &D_800F569C->block10Data[i];
@@ -7527,7 +7529,7 @@ int func_800D4C18(D_800F53B8_t* arg0)
     func_800D2904_t* node;
 
     func_800D52A4(next);
-    func_800D6E24(arg0->unk18, (void*)0x1F80015C);
+    func_800D6E24(arg0->unk18, VS_SCRATCH_AT(void*, 0x15C));
 
     for (node = next; next != NULL; node = next) {
         next = node->next;

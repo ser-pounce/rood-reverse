@@ -41,8 +41,8 @@ typedef struct {
     u_char ease3;
     u_char time;
     u_char duration;
-    u_char follow;
-    u_char following;
+    u_char carryMomentum;
+    u_char carrying;
     int value;
     int delta;
     short angle;
@@ -51,13 +51,13 @@ typedef struct {
     VECTOR position;
     VECTOR velocity;
     VECTOR aux;
-    VECTOR followDelta;
-    VECTOR followPosition;
+    VECTOR momentumStep;
+    VECTOR momentumPosition;
     VECTOR previousCamera;
     VECTOR computed;
     VECTOR current;
-    VECTOR target;
-} D_800F4BA4_t2;
+    VECTOR otherPosition;
+} CameraChannel;
 
 typedef struct {
     char unk0;
@@ -116,8 +116,8 @@ typedef struct {
 } func_800BDBB4_t;
 
 typedef struct {
-    D_800F4BA4_t2 lookAt;
-    D_800F4BA4_t2 eye;
+    CameraChannel lookAt;
+    CameraChannel eye;
     func_800BD57C_t unk168;
     func_800BD57C_t unk174;
     func_800BDF6C_unk180_t projectionDistance;
@@ -136,9 +136,9 @@ typedef struct {
     int unk1CC;
     vs_ActorPosition unk1D0;
     int unk1E0[2];
-    u_short unk1E8;
+    u_short attachedActor;
     u_short unk1EA;
-    VECTOR unk1EC;
+    VECTOR attachedPosition;
     func_800BDBB4_t unk1FC;
     func_800BDBB4_t unk21C;
     func_800BDBB4_t unk23C;
@@ -192,10 +192,6 @@ typedef struct {
 } ParticleTween;
 
 typedef struct {
-    int unk0;
-} func_800BDBB4_t2;
-
-typedef struct {
     char remaining;
     char next;
     char actors[17];
@@ -218,9 +214,16 @@ typedef struct {
     char unk40[16];
     SVECTOR rotation;
     SVECTOR rotation2;
-    char unk60[16];
+    SVECTOR unk60;
+    char unk68[8];
     MATRIX matrix;
 } CameraScratch;
+
+/**
+ * The camera code's workspace in the scratchpad. The three structs overlay each other,
+ * and are three names for the same slots.
+ */
+#define CAMERA_SCRATCH VS_SCRATCH_AT(CameraScratch*, 0x88)
 
 typedef struct {
     int distance;
@@ -229,16 +232,32 @@ typedef struct {
     VECTOR delta;
     VECTOR candidate;
     VECTOR direction;
-    char unk40[0x30];
+    char unk40[16];
+    SVECTOR unk50;
+    SVECTOR unk58;
+    SVECTOR unk60;
+    char unk68[8];
     MATRIX matrix;
 } CameraMotionScratch;
 
+#define CAMERA_MOTION_SCRATCH VS_SCRATCH_AT(CameraMotionScratch*, 0x88)
+
 typedef struct {
-    char unk0[0x50];
+    int unk0;
+    int unk4;
+    char unk8[8];
+    VECTOR unk10;
+    VECTOR unk20;
+    VECTOR unk30;
+    char unk40[16];
     SVECTOR a;
     SVECTOR b;
     SVECTOR c;
+    char unk68[8];
+    MATRIX unk70;
 } CameraShakeScratch;
+
+#define CAMERA_SHAKE_SCRATCH VS_SCRATCH_AT(CameraShakeScratch*, 0x88)
 
 // Comparison selected by the high nibble of a conditional opcode's second byte, applied
 // as `flag <op> operand`
@@ -270,24 +289,24 @@ enum flagOperation {
 static int tryTextBoxPlacement(
     SVECTOR* origin, u_char* script, TextPlacement* result, u_char direction);
 void expandActorSelector(u_short, ActorList*);
-u_short nextActor(ActorList* arg0);
-int getActorScreenPosition(int arg0, SVECTOR* arg1);
-void func_800BBE10(u_short);
-void func_800BBE04(int arg0);
-void func_800BBE94(void);
-void func_800BCA8C(D_800F4BA4_t2*, D_800F4BA4_t2*);
-void func_800BCFB4(D_800F4BA4_t2*);
-void func_800BC1CC(short, int);
+u_short nextActor(ActorList*);
+int getActorScreenPositionAndUpAngle(int actorId, SVECTOR* position);
+void attachCameraToActor(u_short actor);
+void setCameraFollowsAshley(int follows);
+void updateCameraAttachment(void);
+void func_800BCA8C(CameraChannel*, CameraChannel*);
+void func_800BCFB4(CameraChannel*);
+void returnToGameplayCamera(short facing, int zoom);
 int func_800BD2B8(MATRIX*);
 void func_800BD57C(func_800BD57C_t* arg0);
-int func_800BD610(void);
+u_char getCameraIdleFlags(void);
 int func_800BDBB4(func_800BDBB4_t* arg0);
 void func_800BDF6C(func_800BDF6C_unk180_t* arg0);
 void func_800BE180(void);
-void func_800BE36C(int, int);
-void func_800BE3A0(void);
-void func_800BE3D0(char arg0);
-void func_800BE5A4(short arg0);
+void setCameraMomentum(int lookAt, int eye);
+void clearCameraMomentum(void);
+void sweepCameraToSavedPlayerView(char side);
+void scaleCameraMoveDurationByDistance(short target);
 VECTOR* vectorAdd(VECTOR* arg0, VECTOR* arg1, VECTOR* arg2);
 VECTOR* vectorSubtract(VECTOR* arg0, VECTOR* arg1, VECTOR* arg2);
 VECTOR* setVectorImm(VECTOR*, u_char*);
@@ -315,33 +334,34 @@ extern u_char D_800E9C1C[];
 extern short D_800E9C24[];
 extern u_char D_800E9C28;
 extern u_char D_800E9C2C;
-extern u_short D_800F4B20;
+extern u_short scanlinePhase;
 extern GimTween gimTweens[];
 extern ParticleTween particleTween;
 extern char D_800F4B8B;
-extern char D_800F4BA0;
+extern char cameraFollowsAshley;
 extern D_800F4BA4_t* D_800F4BA4;
 extern char D_800F4BA8;
 extern void* mpdClearedSection;
 extern u_short* scriptStrings;
 extern char switchValue;
-extern short D_800F4BB6;
+extern short cameraReturned;
 extern char D_800F4BB8;
 extern u_char effectCancelled;
 extern char* vibrationPatterns[];
 extern short D_800F4BE0;
-extern char D_800F4BE4;
+extern char scanlinesEnabled;
 extern void* mpdRoomDoorSection;
 extern char scriptMenuState;
 extern char loopCounters[];
 extern short D_800F4C22;
-extern void* D_800F4C24;
+extern void* nextEvtBuffer;
 extern char D_800F4C34;
-extern u_char* D_800F4C38[];
+/** Next opcode of the code running in each script slot, NULL if it isn't running. */
+extern u_char* scriptSlots[];
 extern short particleEffectSoundToRestore;
 extern char weaponAnimating;
 extern short mpdScriptSection;
-extern short D_800F4C54;
+extern short nextEvtQueued;
 extern char textBoxSelectionPending;
 extern int scriptReturnAddress;
 extern char scriptMusicSlot;
@@ -638,7 +658,7 @@ int vs_battle_script_13_initTextBoxNearActor(u_char* script, UNUSED short arg1)
     int speakerActor;
     short i;
 
-    getActorScreenPosition(resolveActorId(getShort(script + 2)), &origin);
+    getActorScreenPositionAndUpAngle(resolveActorId(getShort(script + 2)), &origin);
 
     origin.vz = ((origin.vz - ONE / 4) & 0xC00) >> 10;
 
@@ -3758,13 +3778,17 @@ int vs_battle_script_B6_setFlagToActorDistance(u_char* script, UNUSED short arg1
     return scriptNext;
 }
 
-void func_800BAF6C(short arg0)
+/**
+ * Enables and wakes every actor except Ashley, or disables them and makes them dormant.
+ * @param awake Nonzero = enable and wake, 0 = disable and make dormant.
+ */
+void setAllActorsEnabledAndAwake(short awake)
 {
     short actorId;
 
     for (actorId = 1; actorId < 17; ++actorId) {
         if (getActor(actorId) != NULL) {
-            if (arg0 != 0) {
+            if (awake != 0) {
                 vs_battle_setActorFlags(actorId, vs_battle_getActorFlags(actorId) | 1);
             } else {
                 vs_battle_setActorFlags(actorId, vs_battle_getActorFlags(actorId) & ~1);
@@ -3772,327 +3796,562 @@ void func_800BAF6C(short arg0)
         }
     }
 
-    setActorsAwake(arg0);
+    setActorsAwake(awake);
 }
 
-int vs_battle_script_B7_specialOp(u_char* arg0, UNUSED short arg1)
+/**
+ * Runs one of a set of miscellaneous scene commands, chosen by the sub-opcode.
+ * @param script Opcode bytes:
+ *   - [1] = sub-opcode
+ *   - [2] = argument, if the sub-opcode takes one
+ */
+int vs_battle_script_B7_specialOp(u_char* script, UNUSED short arg1)
 {
-    char sp10[32];
+    enum {
+        // Starts loading an SHP model. [2] = model id. Unused.
+        specialLoadShp = 0,
+        // Shows the ending, and returns to the title.
+        specialShowEnding = 1,
+        // Skips the scene as if the player had pushed start.
+        specialSkipScene = 2,
+        // Unlocks an action and sets flag 0xB1 to 1 if it was locked, else 0. [2] =
+        // action.
+        specialUnlockAction = 3,
+        // Sets flag 0xB1 to the number of engaged enemies.
+        specialCountEngagedEnemies = 4,
+        // Enables and wakes every actor except Ashley, or disables them and makes them
+        // dormant. [2] = 1 to enable, 0 to disable.
+        specialSetAllActorsEnabledAndAwake = 5,
+        // Frees the next EVT file queued by opcode F7 without running it.
+        specialDiscardNextEvt = 6,
+        // Makes the scripted camera follow Ashley with the gameplay camera's view. [2] =
+        // 1 to follow, 0 to stop.
+        specialSetCameraFollowsAshley = 7,
+        // Pauses or resumes the battle timer. [2] = 1 to pause, 0 to resume.
+        specialPauseBattleTimer = 8,
+        // Sweeps the camera into the player view saved before the scene.
+        // [2] = sweep from left or right.
+        specialSweepCameraToSavedPlayerView = 9,
+        // Sets the pitch of the gameplay camera. [2] = 1 shallow, 2 steep, else the
+        // default.
+        specialSetCameraPitchPreset = 10,
+        // Scales the duration of a running camera move by the distance it has left.
+        // [2] = the move to scale: 0 look-at, 1 eye, 2 both. Unused.
+        specialScaleCameraMoveDurationByDistance = 11,
+        // Freezes the cloudstones, then thaws them. [2] = ticks, 0 thaws
+        // immediately (scripts only seem to use 0).
+        specialSetCloudstoneFreezeTimer = 12,
+        // Shows the geometry hidden by the view culling. Unused.
+        specialClearCulledGeometry = 13,
+        // Stops the cloudstones indefintely. [2] = 1 to stop, 0 to resume.
+        specialSetCloudstonesPaused = 14,
+        // Toggles the bright haze around the edges of the screen.
+        // [2] = 1 for on, 0 for off.
+        specialSetScreenEdgeGlow = 15,
+        // Runs the scene reset script, then continues with the next opcode.
+        specialRunSceneReset = 16,
+        // Stops the room being marked as seen on the map.
+        specialSkipRoomSeen = 17,
+    };
 
-    switch (arg0[1]) {
-    case 0:
-        func_8007C8F8(arg0[2]);
+    char message[32];
+
+    switch (script[1]) {
+    case specialLoadShp:
+        queueShpLoad(script[2]);
         break;
-    case 1:
+
+    case specialShowEnding:
         if (scriptMenuState != scriptMenuClosed) {
+
             if (updateScriptMenu() != 0) {
                 return scriptRepeat;
             }
+
             vs_battle_setStateFlag(menuFSubmenu, 0);
+
             scriptMenuState = scriptMenuClosed;
+
             vs_main_showEndingAndReturnToTitle();
+
             break;
         }
+
         vs_battle_setStateFlag(menuFSubmenu, menuFHealBonus);
         func_8007B9A0();
+
         scriptMenuState = scriptMenuOpen;
+
         return scriptRepeat;
-    case 2:
+
+    case specialSkipScene:
         skipRequested = 1;
         break;
-    case 3:
-        if (isActionUnlocked(arg0[2]) != 0) {
+
+    case specialUnlockAction:
+        if (isActionUnlocked(script[2]) != 0) {
             vs_battle_setStateFlag(0xB1, 0);
         } else {
-            setActionUnlocked(arg0[2]);
+            setActionUnlocked(script[2]);
             vs_battle_setStateFlag(0xB1, 1);
         }
         break;
-    case 4:
-        vs_battle_setStateFlag(0xB1, func_8007CF80(4));
+
+    case specialCountEngagedEnemies:
+        vs_battle_setStateFlag(0xB1, countActorsByRole(actorRoleEngagedEnemy));
         break;
-    case 5:
-        func_800BAF6C(arg0[2]);
+
+    case specialSetAllActorsEnabledAndAwake:
+        setAllActorsEnabledAndAwake(script[2]);
         break;
-    case 6:
-        vs_main_freeHeapR(D_800F4C24);
+
+    case specialDiscardNextEvt:
+        vs_main_freeHeapR(nextEvtBuffer);
         break;
-    case 7:
-        func_800BBE04(arg0[2]);
+
+    case specialSetCameraFollowsAshley:
+        setCameraFollowsAshley(script[2]);
         break;
-    case 8:
-        func_8007BD3C(arg0[2]);
+
+    case specialPauseBattleTimer:
+        pauseBattleTimer(script[2]);
         break;
-    case 9:
-        func_800BE3D0(arg0[2]);
+
+    case specialSweepCameraToSavedPlayerView:
+        sweepCameraToSavedPlayerView(script[2]);
         break;
-    case 10:
-        func_8007CE74(D_800E9C00[arg0[2]]);
+
+    case specialSetCameraPitchPreset:
+        setCameraPitchPreset(D_800E9C00[script[2]]);
         break;
-    case 11:
-        func_800BE5A4(arg0[2]);
+
+    case specialScaleCameraMoveDurationByDistance:
+        scaleCameraMoveDurationByDistance(script[2]);
         break;
-    case 12:
-        func_8008D5A0(arg0[2]);
+
+    case specialSetCloudstoneFreezeTimer:
+        setCloudstoneFreezeTimer(script[2]);
         break;
-    case 13:
-        func_8008C40C();
+
+    case specialClearCulledGeometry:
+        clearCulledGeometry();
         break;
-    case 14:
-        func_8008D594(arg0[2]);
+
+    case specialSetCloudstonesPaused:
+        setCloudstonesPaused(script[2]);
         break;
-    case 15:
-        func_800F9DE8(arg0[2]);
+
+    case specialSetScreenEdgeGlow:
+        setScreenEdgeGlow(script[2]);
         break;
-    case 16:
-        scriptReturnAddress = (long)(arg0 + 6);
+
+    case specialRunSceneReset:
+        scriptReturnAddress = (long)(script + 6);
         return (long)&sceneResetScript;
-    case 17:
-        func_8007C4D4();
+
+    case specialSkipRoomSeen:
+        skipRoomSeen();
         break;
+
     default:
-        sprintf(sp10, "<SPECIAL=%d> IS UNDEFINED!", arg0[1]);
+        sprintf(message, "<SPECIAL=%d> IS UNDEFINED!", script[1]);
         break;
     }
+
     return scriptNext;
 }
 
-int vs_battle_script_B8(UNUSED u_char* arg0, UNUSED short arg1)
+/**
+ * Waits until the screen effects overlay, started by opcode BC, has finished loading.
+ */
+int vs_battle_script_B8_waitScreenEffectsLoaded(UNUSED u_char* arg0, UNUSED short arg1)
 {
-    if ((D_800EB9B4 != NULL) && (D_800EB9B4->unk0 != 0)) {
+    if ((screenEffects != NULL) && (screenEffects->loading != 0)) {
         return scriptRepeat;
     }
+
     return scriptNext;
 }
 
-int vs_battle_script_BB(u_char* arg0, UNUSED short arg1)
+/**
+ * Blurs the screen from a given depth in the drawing order, or turns the blur off.
+ * Needs the screen effects overlay loaded by opcode BC.
+ * @param script Opcode bytes:
+ *   - [1-2] = depth in the ordering table, 0 = off
+ */
+int vs_battle_script_BB_setScreenBlur(u_char* script, UNUSED short arg1)
 {
-    func_800F9800(getShort(arg0 + 1));
+    setScreenBlurDepth(getShort(script + 1));
+
     return scriptNext;
 }
 
-int vs_battle_script_BC(UNUSED u_char* arg0, UNUSED short arg1)
+/**
+ * Starts loading the screen effects overlay (SCREFF2.PRG).
+ */
+int vs_battle_script_BC_loadScreenEffects(UNUSED u_char* arg0, UNUSED short arg1)
 {
-    func_800CB79C();
+    loadScreenEffects();
+
     return scriptNext;
 }
 
-int vs_battle_script_BD(UNUSED u_char* arg0, UNUSED short arg1) { return scriptNext; }
+/**
+ * Does nothing. Only the room scripts of MAP101 and MAP213 use it, with the byte 0x0C,
+ * right after setEnteredDoor.
+ */
+int vs_battle_script_BD_nop(UNUSED u_char* arg0, UNUSED short arg1) { return scriptNext; }
 
-int vs_battle_script_BE(UNUSED u_char* arg0, UNUSED short arg1)
+/**
+ * Releases the screen effects overlay.
+ */
+int vs_battle_script_BE_unloadScreenEffects(UNUSED u_char* arg0, UNUSED short arg1)
 {
-    func_800CB7DC();
+    unloadScreenEffects();
+
     return (scriptSkipMode == scriptSkipping) ? scriptYield : scriptNext;
 }
 
-int vs_battle_script_DE(UNUSED u_char* arg0, UNUSED short arg1)
+/**
+ * Interrupts camera movement and drops the momentum carried over from the last move
+ * (see opcode DF).
+ */
+int vs_battle_script_DE_clearCameraMomentum(UNUSED u_char* arg0, UNUSED short arg1)
 {
-    func_800BE3A0();
+    clearCameraMomentum();
+
     return scriptNext;
 }
 
-int vs_battle_script_DF(u_char* arg0, UNUSED short arg1)
+/**
+ * Chooses whether the camera carries its speed over from the end of a move into the
+ * next one: it keeps going past the target and curves into the next move instead of
+ * stopping first.
+ * @param script Opcode bytes:
+ *   - [1] = bit 0 for the look-at, bit 1 for the eye
+ */
+int vs_battle_script_DF_setCameraMomentum(u_char* script, UNUSED short arg1)
 {
-    int new_var = arg0[1] & 2;
-    func_800BE36C(arg0[1] & 1, new_var != 0);
+    int eye = script[1] & 2;
+    setCameraMomentum(script[1] & 1, eye != 0);
+
     return scriptNext;
 }
 
-int vs_battle_script_E8(u_char* arg0, UNUSED short arg1)
+/**
+ * Attaches the camera to an actor.
+ * @param script Opcode bytes:
+ *   - [1-2] = actor id, 0x2000 = detach
+ */
+int vs_battle_script_E8_attachCameraToActor(u_char* script, UNUSED short arg1)
 {
-    func_800BBE10(resolveActorId(getShort(arg0 + 1)));
+    attachCameraToActor(resolveActorId(getShort(script + 1)));
+
     return scriptNext;
 }
 
-int vs_battle_script_E9(u_char* arg0, UNUSED short arg1)
+/**
+ * Moves the camera back to the gameplay view of Ashley, optionally turning it to a new
+ * facing and zoom. To restore the view saved before the scene, see
+ * sweepCameraToSavedPlayerView (special opcode B7, sub-opcode 9).
+ * @param script Opcode bytes:
+ *   - [1] = facing of the camera in 45 degree steps, 0xFF = unchanged
+ *   - [2] = zoom, 1 = normal, 2 = zoomed out, 0 = unchanged
+ */
+int vs_battle_script_E9_returnToGameplayCamera(u_char* script, UNUSED short arg1)
 {
-    func_800BC1CC(
-        arg0[1] != 0xFF ? ((arg0[1] + 4) & 7) : -1, arg0[2] != 0 ? arg0[2] : -1);
-    D_800F4BB6 = 1;
+    returnToGameplayCamera(
+        script[1] != 0xFF ? ((script[1] + 4) & 7) : -1, script[2] != 0 ? script[2] : -1);
+
+    cameraReturned = 1;
+
     return scriptNext;
 }
 
-int vs_battle_script_E0(u_char* arg0, UNUSED short arg1)
+/**
+ * Waits until the camera channels in a mask have finished moving, see getCameraIdleFlags.
+ * The look-at and eye moves are started by vs_battle_script_Cx_Dx_camera.
+ * @param script Opcode bytes:
+ *   - [1] = mask of the channels to wait for
+ */
+int vs_battle_script_E0_waitCameraIdle(u_char* script, UNUSED short arg1)
 {
-    return arg0[1] != (arg0[1] & func_800BD610()) ? scriptRepeat : scriptNext;
+    return script[1] != (script[1] & getCameraIdleFlags()) ? scriptRepeat : scriptNext;
 }
 
-int vs_battle_script_E1(u_char* arg0, UNUSED short arg1)
+/**
+ * Turns the frame buffer effect on or off.
+ * @param script Opcode bytes:
+ *   - [1] = 1 for on, 0 for off
+ */
+int vs_battle_script_E1_setFramebufferEffect(u_char* script, UNUSED short arg1)
 {
-    func_8007DD50(arg0[1]);
+    setFramebufferEffect(script[1]);
+
     return scriptNext;
 }
 
-int vs_battle_script_F0(u_char* arg0, short arg1)
+/**
+ * Waits for a number of frames.
+ * @param script Opcode bytes:
+ *   - [1] = frames to wait, must not be 0
+ * @param slot Script slot running the opcode.
+ */
+int vs_battle_script_F0_waitFrames(u_char* script, short slot)
 {
-    if (scriptWaitFrames[arg1] == 0) {
-        scriptWaitFrames[arg1] = arg0[1];
+    if (scriptWaitFrames[slot] == 0) {
+        scriptWaitFrames[slot] = script[1];
+
         return scriptRepeat;
     }
 
-    --scriptWaitFrames[arg1];
+    --scriptWaitFrames[slot];
 
-    if ((scriptWaitFrames[arg1] << 0x10) <= 0) {
-        scriptWaitFrames[arg1] = 0;
+    if ((scriptWaitFrames[slot] << 0x10) <= 0) {
+        scriptWaitFrames[slot] = 0;
+
         return scriptNext;
     }
+
     return scriptRepeat;
 }
 
-int vs_battle_script_F1(u_char* arg0, UNUSED short arg1)
+/**
+ * Sets the frame rate, see setFrameRate.
+ * @param script Opcode bytes:
+ *   - [1] = 2 for full rate, 4 for half, else ignored
+ */
+int vs_battle_script_F1_setFrameRate(u_char* script, UNUSED short arg1)
 {
-    func_8007C36C(arg0[1]);
+    setFrameRate(script[1]);
+
     return scriptNext;
 }
 
-int vs_battle_script_F3(u_char* arg0, UNUSED short arg1)
+/**
+ * Toggles the scanline effect, see drawScanlines.
+ * @param script Opcode bytes:
+ *   - [1] = 1 for on, 0 for off
+ */
+int vs_battle_script_F3_setScanlines(u_char* script, UNUSED short arg1)
 {
-    D_800F4BE4 = arg0[1];
+    scanlinesEnabled = script[1];
+
     return scriptNext;
 }
 
-int vs_battle_script_F4(u_char* arg0, UNUSED short arg1)
+/**
+ * Joins the code forked into a script slot by opcode F5.
+ * @param script Opcode bytes:
+ *   - [1] = slot in the low 2 bits, bit 7 set to stop the slot instead of waiting
+ */
+int vs_battle_script_F4_joinScript(u_char* script, UNUSED short arg1)
 {
-    u_short temp_a0 = arg0[1] & 3;
-    if ((arg0[1] & 0x80)) {
-        D_800F4C38[temp_a0] = 0;
+    u_short slot = script[1] & 3;
+
+    if ((script[1] & 0x80)) {
+        scriptSlots[slot] = 0;
+
         return scriptNext;
     }
-    return D_800F4C38[temp_a0] != 0 ? scriptRepeat : scriptNext;
+
+    return scriptSlots[slot] != 0 ? scriptRepeat : scriptNext;
 }
 
-int vs_battle_script_F5(u_char* arg0, UNUSED short arg1)
+/**
+ * Starts the script immediately following this opcode in a separate script slot,
+ * and jumps the current script ahead.
+ * @param script Opcode bytes:
+ *   - [1] = slot to run the forked script in, 1 to 3
+ *   - [2-3] = Current script continues from this offset
+ */
+int vs_battle_script_F5_forkAndJump(u_char* script, UNUSED short arg1)
 {
-    D_800F4C38[arg0[1]] = arg0 + 4;
-    return (int)&arg0[getShort(arg0 + 2)];
+    scriptSlots[script[1]] = script + 4;
+
+    return (long)&script[getShort(script + 2)];
 }
 
-int vs_battle_script_F6(UNUSED u_char* arg0, UNUSED short arg1) { return scriptEnd; }
+/**
+ * Ends the current script. In practice only used by forked scripts.
+ * @param script Opcode bytes:
+ *   - [1] = slot identifier, unused
+ */
+int vs_battle_script_F6_endScript(UNUSED u_char* script, UNUSED short arg1)
+{
+    return scriptEnd;
+}
 
-int vs_battle_script_F7(u_char* arg0, UNUSED short arg1)
+/**
+ * Starts loading an EVT file to continue into once the running script ends.
+ * @param script Opcode bytes:
+ *   - [1-2] = EVT file number
+ */
+int vs_battle_script_F7_queueNextEvt(u_char* arg0, UNUSED short arg1)
 {
     evtFile = getShort(arg0 + 1);
-    D_800F4C24 = vs_main_allocHeapR(0x1800);
-    func_800C00E8(evtFile, D_800F4C24);
-    D_800F4C54 = 1;
+    nextEvtBuffer = vs_main_allocHeapR(0x1800);
+
+    func_800C00E8(evtFile, nextEvtBuffer);
+
+    nextEvtQueued = 1;
+
     return scriptNext;
 }
 
-int vs_battle_script_FE_FF(UNUSED u_char* arg0, UNUSED short arg1)
+/**
+ * Waits until every text box has closed, then ends the scene.
+ * Restores the full frame rate. No discernable difference in usage
+ * between 0xFE and 0xFF.
+ */
+int vs_battle_script_FE_FF_endScene(UNUSED u_char* script, UNUSED short arg1)
 {
     int i;
-    int var_s1;
-
-    var_s1 = 0;
+    int boxesClosing = 0;
 
     for (i = 0; i < 8; ++i) {
         if (vs_battle_dismissTextBox(i) != 0) {
-            ++var_s1;
+            ++boxesClosing;
         }
     }
 
-    if (var_s1 == 0) {
-        func_8007C36C(2);
-        return 2;
+    if (boxesClosing == 0) {
+        setFrameRate(frameRateFull);
+
+        return scriptFinish;
     }
+
     return scriptRepeat;
 }
 
-int vs_battle_script_F2_playMenuSelectSfx(UNUSED u_char* arg0, UNUSED short arg1)
+/**
+ * Plays the menu select sound effect. Unused.
+ */
+int vs_battle_script_F2_playMenuSelectSfx(UNUSED u_char* script, UNUSED short arg1)
 {
     vs_main_playSfxDefault(0x7E, VS_SFX_MENUSELECT);
     return scriptNext;
 }
 
-void expandActorSelector(u_short arg0, ActorList* arg1)
+/**
+ * 0x2001 selects every actor and 0x2003 selects only the engaged enemies. Any other
+ * selector < 0x2000 is a single actor, see resolveActorId.
+ * @param selector Actor selector.
+ * @param list List to fill in, to be read with nextActor.
+ */
+void expandActorSelector(u_short selector, ActorList* list)
 {
-    Actor* temp_v0;
-    short var_s3 = 0;
-    arg1->remaining = 0;
-    arg1->next = 0;
+    short count = 0;
 
-    if (arg0 & actorSelectorAll) {
+    list->remaining = 0;
+    list->next = 0;
+
+    if (selector & actorSelectorAll) {
         short i;
-        short var_a0 = -1;
-        if (arg0 == 0x2003) {
-            var_a0 = 4;
+        short role = -1;
+
+        if (selector == 0x2003) {
+            role = actorRoleEngagedEnemy;
         }
 
         for (i = 0; i < 17; ++i) {
-            temp_v0 = getActor(i);
-            if (temp_v0 != NULL) {
-                if ((var_a0 < 0) || (temp_v0->unk1C == var_a0)) {
-                    arg1->actors[var_s3++] = i;
-                    ++arg1->remaining;
-                }
+
+            Actor* actor = getActor(i);
+
+            if ((actor != NULL) && ((role < 0) || (actor->role == role))) {
+                list->actors[count++] = i;
+                ++list->remaining;
             }
         }
 
         return;
     }
-    ++arg1->remaining;
-    arg1->actors[0] = resolveActorId(arg0);
+
+    ++list->remaining;
+    list->actors[0] = resolveActorId(selector);
 }
 
-u_short nextActor(ActorList* arg0)
+/**
+ * Takes the next actor from a list filled in by expandActorSelector.
+ * @return The actor id, or 1 once the list is empty.
+ */
+u_short nextActor(ActorList* list)
 {
-    if (arg0->remaining == 0) {
+    if (list->remaining == 0) {
         return 1;
     }
 
-    --arg0->remaining;
-    return arg0->actors[(u_int)(arg0->next++)];
+    --list->remaining;
+
+    return list->actors[(u_int)(list->next++)];
 }
 
-int getActorScreenPosition(int arg0, SVECTOR* arg1)
+/**
+ * Gets an actor's position on the screen, and the angle on the screen of the actor's
+ * up direction. Uses the middle of bone 1.
+ * @param actorId Actor id.
+ * @param position Receives x and y in `vx` and `vy`, and the angle in `vz`.
+ * @return The angle.
+ */
+int getActorScreenPositionAndUpAngle(int actorId, SVECTOR* position)
 {
-    MATRIX sp10;
-    long sp30[5];
+    MATRIX boneMatrix;
+    long scratch[5];
 
-    arg1->vx = 0;
-    arg1->vy = -0x3E8;
-    arg1->vz = 0;
-    func_800A1178(arg0, 1, &sp10, &sp30[2]);
-    SetRotMatrix(&sp10);
-    SetTransMatrix(&sp10);
-    RotTransPers(arg1, sp30, &sp30[3], &sp30[4]);
-    func_800A1280(arg0, 1, arg1, sp30[2]);
-    arg1->vz = ratan2(((short*)&sp30)[1] - arg1->vy, (short)sp30[0] - arg1->vx);
-    return arg1->vz;
+    setVector(position, 0, -1000, 0);
+
+    getBoneMatrixById(actorId, 1, &boneMatrix, &scratch[2]);
+    SetRotMatrix(&boneMatrix);
+    SetTransMatrix(&boneMatrix);
+    RotTransPers(position, scratch, &scratch[3], &scratch[4]);
+    getActorScreenPoint(actorId, 1, position, scratch[2]);
+
+    position->vz =
+        ratan2((scratch[0] >> 16) - position->vy, (short)scratch[0] - position->vx);
+
+    return position->vz;
 }
 
-void func_800BB874(void)
+/**
+ * Renders an interlaced scanline effect.
+ */
+void drawScanlines(void)
 {
-    LINE_F2* var_s3;
-    short i;
-    u_int temp_v0_2;
+    LINE_F2* prim;
+    DR_TPAGE* tpage;
+    short y;
 
-    void** p = (void**)0x1F800000;
-    var_s3 = (LINE_F2*)p[0];
+    vs_Scratch* scratch = VS_SCRATCH;
+    prim = scratch->nextPrim;
 
-    ++D_800F4B20;
+    ++scanlinePhase;
 
-    for (i = 0; i < vs_main_screenHeight; ++i) {
-        u_short v;
-        temp_v0_2 = (((i + (D_800F4B20 >> 1)) & 1) << 5);
-        v = temp_v0_2;
-        if (temp_v0_2 != 0) {
-            SetLineF2(var_s3);
-            var_s3->r0 = var_s3->g0 = var_s3->b0 = v;
-            setSemiTrans(var_s3, 1);
-            var_s3->x0 = 0;
-            var_s3->y0 = var_s3->y1 = i;
-            var_s3->x1 = vs_main_screenWidth;
-            p = (void**)0x1F800000;
-            AddPrim(p[2], var_s3++);
+    for (y = 0; y < vs_main_screenHeight; ++y) {
+        u_int shade = (((y + (scanlinePhase >> 1)) & 1) << 5);
+        u_short color = shade;
+
+        if (shade != 0) {
+            SetLineF2(prim);
+
+            prim->r0 = prim->g0 = prim->b0 = color;
+
+            setSemiTrans(prim, 1);
+
+            prim->x0 = 0;
+            prim->y0 = prim->y1 = y;
+            prim->x1 = vs_main_screenWidth;
+
+            scratch = VS_SCRATCH;
+            AddPrim(scratch->frontOt, prim++);
         }
     }
 
-    SetDrawTPage((DR_TPAGE*)var_s3, 1, 1, GetTPage(0, 2, 0, 0));
+    tpage = (DR_TPAGE*)prim;
+    SetDrawTPage(tpage, 1, 1, GetTPage(0, 2, 0, 0));
 
-    p = (void**)0x1F800000;
-    AddPrim(p[2], var_s3);
-    p[0] = (LINE_F2*)&var_s3->x0;
+    scratch = VS_SCRATCH;
+    AddPrim(scratch->frontOt, tpage++);
+    scratch->nextPrim = tpage;
 }
 
 void func_800BB9B0(void)
@@ -4104,7 +4363,7 @@ void func_800BB9B0(void)
 
     for (i = 0; i < 3; ++i, ++tween, ++gim) {
         if (tween->duration != 0) {
-            tween->elapsed += vs_gametime_tickspeed >> 1;
+            tween->elapsed += vs_gametime_vblanksPerFrame >> 1;
             temp_a0 = func_800BFEBC(tween->curve, tween->elapsed, tween->duration);
             if (gims != NULL) {
                 gim->x = (tween->startX + ((tween->deltaX * temp_a0) >> 0xC));
@@ -4149,24 +4408,24 @@ void func_800BBBE8(void)
     VECTOR sp30;
 
     D_800F4BA4 = vs_main_allocHeapR(sizeof *D_800F4BA4);
-    D_800F4BA0 = 0;
+    cameraFollowsAshley = 0;
 
     getCameraPosition(&sp20);
     getCameraLookAt(&sp30);
     vectorCopy(&D_800F4BA4->eye.current, &sp20);
-    vectorCopy(&D_800F4BA4->lookAt.target, &sp20);
+    vectorCopy(&D_800F4BA4->lookAt.otherPosition, &sp20);
     vectorCopy(&D_800F4BA4->lookAt.current, &sp30);
-    vectorCopy(&D_800F4BA4->eye.target, &sp30);
+    vectorCopy(&D_800F4BA4->eye.otherPosition, &sp30);
 
     D_800F4BA4->lookAt.mode = 0xF;
-    D_800F4BA4->lookAt.follow = D_800F4BA4->lookAt.following = 0;
+    D_800F4BA4->lookAt.carryMomentum = D_800F4BA4->lookAt.carrying = 0;
     D_800F4BA4->eye.mode = 0xF;
-    D_800F4BA4->eye.follow = D_800F4BA4->eye.following = 0;
+    D_800F4BA4->eye.carryMomentum = D_800F4BA4->eye.carrying = 0;
     D_800F4BA4->unk168.unkA = 0;
     D_800F4BA4->unk168.unk2 = 0;
     D_800F4BA4->unk168.unk0 = 1;
 
-    func_8007DD50(0);
+    setFramebufferEffect(0);
 
     D_800F4BA4->unk174.unkA = 0;
     D_800F4BA4->unk174.unk2 = 0;
@@ -4207,75 +4466,83 @@ void func_800BBBE8(void)
     D_800F4BA4->farClip.unk0 = 1;
     D_800F4BA4->unk1A4.unk0.s16 = 0;
     D_800F4BA4->unk1A4.unkB = D_800F4BA4->unk1B0.unkB = 0;
-    D_800F4BA4->unk1E8 = 0x2000;
+    D_800F4BA4->attachedActor = 0x2000;
 }
 
 void func_800BBDDC(void) { vs_main_freeHeapR(D_800F4BA4); }
 
-void func_800BBE04(int arg0) { D_800F4BA0 = arg0; }
+/**
+ * Makes the scripted camera follow Ashley with the gameplay camera's view, until the
+ * next request to return to it.
+ */
+void setCameraFollowsAshley(int follows) { cameraFollowsAshley = follows; }
 
-void func_800BBE10(u_short arg0)
+/**
+ * Attaches the camera to an actor: camera positions become offsets from the actor and
+ * the camera moves with it. Detaching keeps the view where it is.
+ * @param actor Actor to attach to, 0x2000 = detach (world coordinates).
+ */
+void attachCameraToActor(u_short actor)
 {
     int _[4];
-    if (arg0 == 0x2000) {
-        if (D_800F4BA4->unk1E8 != arg0) {
-            vectorAdd(
-                &D_800F4BA4->eye.current, &D_800F4BA4->eye.current, &D_800F4BA4->unk1EC);
+    if (actor == 0x2000) {
+        if (D_800F4BA4->attachedActor != actor) {
+            vectorAdd(&D_800F4BA4->eye.current, &D_800F4BA4->eye.current,
+                &D_800F4BA4->attachedPosition);
             vectorAdd(&D_800F4BA4->lookAt.current, &D_800F4BA4->lookAt.current,
-                &D_800F4BA4->unk1EC);
+                &D_800F4BA4->attachedPosition);
         }
     }
-    D_800F4BA4->unk1E8 = arg0;
-    func_800BBE94();
+    D_800F4BA4->attachedActor = actor;
+    updateCameraAttachment();
 }
 
-void func_800BBE94(void)
+/** Updates the attached actor's position. Runs every frame of a script. */
+void updateCameraAttachment(void)
 {
     vs_ActorPosition sp10;
 
-    if (D_800F4BA4->unk1E8 == 0x2000) {
-        D_800F4BA4->unk1EC.vz = 0;
-        D_800F4BA4->unk1EC.vy = 0;
-        D_800F4BA4->unk1EC.vx = 0;
+    if (D_800F4BA4->attachedActor == 0x2000) {
+        D_800F4BA4->attachedPosition.vz = 0;
+        D_800F4BA4->attachedPosition.vy = 0;
+        D_800F4BA4->attachedPosition.vx = 0;
         return;
     }
-    vs_battle_getActorPosition(D_800F4BA4->unk1E8, &sp10);
-    D_800F4BA4->unk1EC.vx = sp10.unk0.unk4.vx * ONE;
-    D_800F4BA4->unk1EC.vy = sp10.unk0.unk4.vy * ONE;
-    D_800F4BA4->unk1EC.vz = sp10.unk0.unk4.vz * ONE;
+    vs_battle_getActorPosition(D_800F4BA4->attachedActor, &sp10);
+    D_800F4BA4->attachedPosition.vx = sp10.unk0.unk4.vx * ONE;
+    D_800F4BA4->attachedPosition.vy = sp10.unk0.unk4.vy * ONE;
+    D_800F4BA4->attachedPosition.vz = sp10.unk0.unk4.vz * ONE;
 }
 
 static void applyCameraState(void)
 {
     VECTOR cameraLookAt;
     VECTOR cameraPos;
-    SVECTOR* vec;
 
-    if (D_800F4BA0 != 0) {
+    if (cameraFollowsAshley != 0) {
         initialiseCameraFromSpherical(&cameraPos, &cameraLookAt, -1, -1);
         vectorCopy(&D_800F4BA4->lookAt.current, &cameraLookAt);
         vectorCopy(&D_800F4BA4->eye.current, &cameraPos);
     } else {
         vectorCopy(&cameraLookAt, &D_800F4BA4->lookAt.current);
         vectorCopy(&cameraPos, &D_800F4BA4->eye.current);
-        if (D_800F4BA4->unk1E8 != 0x2000) {
-            vectorAdd(&cameraLookAt, &cameraLookAt, &D_800F4BA4->unk1EC);
-            vectorAdd(&cameraPos, &cameraPos, &D_800F4BA4->unk1EC);
+        if (D_800F4BA4->attachedActor != 0x2000) {
+            vectorAdd(&cameraLookAt, &cameraLookAt, &D_800F4BA4->attachedPosition);
+            vectorAdd(&cameraPos, &cameraPos, &D_800F4BA4->attachedPosition);
         }
     }
     if (*(short*)&D_800F4BA4->unk1A4.unk0 != 0) {
-        sVectorToFixedPointVector((VECTOR*)0x1F800098, (SVECTOR*)&D_800F4BA4->unk1BE);
-        sVectorToFixedPointVector((VECTOR*)0x1F8000A8, (SVECTOR*)&D_800F4BA4->unk1C6);
-        vec = (SVECTOR*)0x1F800088;
-        vec[10].vz = 0;
-        vec[10].vx = 0;
-        vec[10].vy = atan2FixedPoint(
+        sVectorToFixedPointVector(&CAMERA_SCRATCH->v1, (SVECTOR*)&D_800F4BA4->unk1BE);
+        sVectorToFixedPointVector(&CAMERA_SCRATCH->v2, (SVECTOR*)&D_800F4BA4->unk1C6);
+        CAMERA_SCRATCH->rotation.vz = 0;
+        CAMERA_SCRATCH->rotation.vx = 0;
+        CAMERA_SCRATCH->rotation.vy = atan2FixedPoint(
             cameraLookAt.vx - cameraPos.vx, cameraLookAt.vz - cameraPos.vz);
-        RotMatrix_gte((SVECTOR*)0x1F8000D8, (MATRIX*)0x1F8000F8);
-        ApplyMatrixLV((MATRIX*)0x1F8000F8, (VECTOR*)0x1F800098, (VECTOR*)0x1F800098);
-        ApplyMatrixLV((MATRIX*)0x1F8000F8, (VECTOR*)0x1F8000A8, (VECTOR*)0x1F8000A8);
-        vectorAdd(&cameraLookAt, &cameraLookAt, (VECTOR*)0x1F800098);
-        vectorAdd(&cameraPos, &cameraPos, (VECTOR*)0x1F8000A8);
+        RotMatrix_gte(&CAMERA_SCRATCH->rotation, &CAMERA_SCRATCH->matrix);
+        ApplyMatrixLV(&CAMERA_SCRATCH->matrix, &CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1);
+        ApplyMatrixLV(&CAMERA_SCRATCH->matrix, &CAMERA_SCRATCH->v2, &CAMERA_SCRATCH->v2);
+        vectorAdd(&cameraLookAt, &cameraLookAt, &CAMERA_SCRATCH->v1);
+        vectorAdd(&cameraPos, &cameraPos, &CAMERA_SCRATCH->v2);
     }
     setCameraLookAt(&cameraLookAt);
     setCameraPosition(&cameraPos);
@@ -4301,24 +4568,31 @@ static void applyCameraState(void)
     }
 }
 
-void func_800BC1CC(short arg0, int arg1)
+/**
+ * Moves the scripted camera to the gameplay camera's view of Ashley. The time taken
+ * depends on how far the camera has to go. Does nothing except stop following Ashley if
+ * the camera is following him.
+ * @param facing New facing of the gameplay camera, -1 = unchanged.
+ * @param zoom 1 = normal, 2 = zoomed out, -1 = unchanged.
+ */
+void returnToGameplayCamera(short facing, int zoom)
 {
     VECTOR sp10;
     VECTOR sp20;
     int temp_s0;
     short temp_v0;
 
-    if (D_800F4BA0 != 0) {
-        D_800F4BA0 = 0;
+    if (cameraFollowsAshley != 0) {
+        cameraFollowsAshley = 0;
         return;
     }
-    initialiseCameraFromSpherical(&sp10, &sp20, arg0, (short)arg1);
+    initialiseCameraFromSpherical(&sp10, &sp20, facing, (short)zoom);
     vectorCopy(&D_800F4BA4->eye.position, &sp10);
     vectorCopy(&D_800F4BA4->lookAt.position, &sp20);
     temp_s0 = vectorMagnitude(vectorSubtract(
-        (VECTOR*)0x1F800098, &D_800F4BA4->eye.current, &D_800F4BA4->eye.position));
+        &CAMERA_SCRATCH->v1, &D_800F4BA4->eye.current, &D_800F4BA4->eye.position));
     temp_v0 = (temp_s0
-                  + vectorMagnitude(vectorSubtract((VECTOR*)0x1F800098,
+                  + vectorMagnitude(vectorSubtract(&CAMERA_SCRATCH->v1,
                       &D_800F4BA4->lookAt.current, &D_800F4BA4->lookAt.position)))
             / 0x28000;
     if ((temp_v0 << 0x10) != 0) {
@@ -4328,67 +4602,138 @@ void func_800BC1CC(short arg0, int arg1)
     }
 }
 
+/**
+ * Controls the look-at (opcodes 0xC0 to 0xCB) or eye (0xD0 to 0xDB) camera channel, as
+ * chosen by bit 4. The low nibble is the sub-opcode. An easing is a value of enum Easing,
+ * a duration is in steps of 1/30 s, and an angle is in 4096 per turn.
+ * @param script Opcode bytes, which depend on the sub-opcode.
+ */
 int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
 {
-    D_800F4BA4_t2* c;
-    D_800F4BA4_t2* other;
+    enum {
+        // Stores a destination for the channel.
+        // [1-6] = x, y and z of the destination, as 16-bit world coordinates.
+        cameraSetDestination = 0,
+        // Cuts the channel to its destination at once.
+        cameraCut = 1,
+        // Moves the channel to its destination in a straight line.
+        // [1] = easing, [2] = duration.
+        cameraLerpTo = 2,
+        // Moves the channel to its destination in an arc around the other channel.
+        // [1] = easing, [2] = duration.
+        cameraArcTo = 3,
+        // Orbits the channel around the other channel to its destination.
+        // [1] = angle easing in the high nibble, turn direction in the low nibble
+        // (0 = shortest way, 1 = positive, 15 = negative).
+        // [2] = height easing in the high nibble, distance easing in the low nibble.
+        // [3] = duration.
+        cameraOrbitTo = 4,
+        // Orbits the channel around the other channel by an angle. The destination is
+        // not used. [1-2] = signed angle.
+        // [3-4] = final height, as a world y. [5] = distance scale in 1/64 units.
+        // [6] = angle easing in the low nibble, distance easing in the high nibble.
+        // [7] = height easing. [8] = duration.
+        cameraOrbitBy = 5,
+        // Stores a destination that is an offset from a point on an actor.
+        // [1-2] = actor selector. [3] = point on the actor, a bone id or an ActorPoint.
+        // [4-9] = x, y and z of the offset, as 16-bit world values.
+        cameraSetDestinationToActorOffset = 7,
+        // Follows an offset from a point on an actor.
+        // [1-9] = as for cameraSetDestinationToActorOffset. [10] = duration.
+        cameraFollowActor = 8,
+        // Holds the channel at its current offset from the other channel.
+        // [1] = duration.
+        cameraLockOffset = 9,
+        // As cameraSetDestinationToActorOffset, with the offset turned by the actor's
+        // facing.
+        cameraSetDestinationToActorLocalOffset = 10,
+        // Moves the channel horizontally to its destination, at a fixed height above the
+        // ground. [2] = duration, [1] is not used.
+        cameraTerrainFollowTo = 11,
+    };
+
+    CameraChannel* channel;
+    CameraChannel* otherChannel;
+
     if (!(script[0] & 16)) {
-        c = &D_800F4BA4->lookAt;
-        other = &D_800F4BA4->eye;
+        channel = &D_800F4BA4->lookAt;
+        otherChannel = &D_800F4BA4->eye;
     } else {
-        c = &D_800F4BA4->eye;
-        other = &D_800F4BA4->lookAt;
+        channel = &D_800F4BA4->eye;
+        otherChannel = &D_800F4BA4->lookAt;
     }
+
     switch (script[0] & 15) {
-    case 0:
-        setVectorImm(&c->position, script + 1);
+    case cameraSetDestination:
+        setVectorImm(&channel->position, script + 1);
+
         return scriptNext;
-    case 1:
-        c->mode = 15;
-        vectorCopy(&c->current, &c->position);
-        vectorCopy(&other->target, &c->position);
+
+    case cameraCut:
+        channel->mode = 15;
+
+        vectorCopy(&channel->current, &channel->position);
+        vectorCopy(&otherChannel->otherPosition, &channel->position);
+
         return scriptNext;
-    case 2:
-        c->mode = 2;
-        c->time = 0;
-        c->ease1 = script[1];
-        c->duration = script[2];
-        vectorCopy(&c->start, &c->current);
-        vectorSubtract(&c->velocity, &c->position, &c->current);
+
+    case cameraLerpTo:
+        channel->mode = 2;
+        channel->time = 0;
+        channel->ease1 = script[1];
+        channel->duration = script[2];
+
+        vectorCopy(&channel->start, &channel->current);
+        vectorSubtract(&channel->velocity, &channel->position, &channel->current);
+
         return scriptNext;
-    case 3:
-        c->mode = 3;
-        c->time = 0;
-        c->ease1 = script[1];
-        c->duration = script[2];
-        vectorCopy(&c->start, &c->current);
-        vectorSubtract(&c->velocity, &c->position, &c->current);
-        c->value =
-            vectorMagnitude(vectorSubtract((VECTOR*)0x1F800098, &c->target, &c->current));
+
+    case cameraArcTo:
+        channel->mode = 3;
+        channel->time = 0;
+        channel->ease1 = script[1];
+        channel->duration = script[2];
+
+        vectorCopy(&channel->start, &channel->current);
+        vectorSubtract(&channel->velocity, &channel->position, &channel->current);
+
+        channel->value = vectorMagnitude(vectorSubtract(
+            &CAMERA_SCRATCH->v1, &channel->otherPosition, &channel->current));
+
         return scriptNext;
-    case 4: {
+
+    case cameraOrbitTo: {
         CameraScratch* s;
-        c->mode = 4;
-        c->time = 0;
-        c->duration = script[3];
-        c->ease1 = script[1] >> 4;
-        c->ease2 = script[2] & 15;
-        c->ease3 = script[2] >> 4;
-        vectorCopy(&c->start, &c->target);
-        s = (CameraScratch*)0x1F800088;
-        setVector(&s->v1, c->current.vx - c->target.vx, 0, c->current.vz - c->target.vz);
-        c->value = vectorMagnitude((VECTOR*)0x1F800098);
-        c->angle = atan2FixedPoint(s->v1.vx, s->v1.vz) & 4095;
-        setVector(
-            &s->v2, c->position.vx - c->target.vx, 0, c->position.vz - c->target.vz);
-        c->delta = vectorMagnitude((VECTOR*)0x1F8000A8) - c->value;
-        s->value = (atan2FixedPoint(s->v2.vx, s->v2.vz) & 4095) - c->angle;
+        channel->mode = 4;
+        channel->time = 0;
+        channel->duration = script[3];
+        channel->ease1 = script[1] >> 4;
+        channel->ease2 = script[2] & 15;
+        channel->ease3 = script[2] >> 4;
+
+        vectorCopy(&channel->start, &channel->otherPosition);
+
+        s = CAMERA_SCRATCH;
+
+        setVector(&s->v1, channel->current.vx - channel->otherPosition.vx, 0,
+            channel->current.vz - channel->otherPosition.vz);
+
+        channel->value = vectorMagnitude(&CAMERA_SCRATCH->v1);
+        channel->angle = atan2FixedPoint(s->v1.vx, s->v1.vz) & 4095;
+
+        setVector(&s->v2, channel->position.vx - channel->otherPosition.vx, 0,
+            channel->position.vz - channel->otherPosition.vz);
+
+        channel->delta = vectorMagnitude(&CAMERA_SCRATCH->v2) - channel->value;
+        s->value = (atan2FixedPoint(s->v2.vx, s->v2.vz) & 4095) - channel->angle;
+
         if (s->value < -ONE / 2) {
             s->value += ONE;
         }
         if (s->value > ONE / 2) {
             s->value -= ONE;
         }
+
         switch (script[1] & 15) {
         case 15:
             if (s->value == 0) {
@@ -4397,6 +4742,7 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
                 s->value -= ONE;
             }
             break;
+
         case 1:
             if (s->value == 0) {
                 s->value = ONE;
@@ -4405,95 +4751,137 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
             }
             break;
         }
-        c->angleDelta = ((CameraScratch*)0x1F800088)->value;
-        c->aux.vy = c->current.vy - c->target.vy;
-        c->velocity.vy = c->position.vy - c->target.vy - c->aux.vy;
+
+        channel->angleDelta = CAMERA_SCRATCH->value;
+        channel->aux.vy = channel->current.vy - channel->otherPosition.vy;
+        channel->velocity.vy =
+            channel->position.vy - channel->otherPosition.vy - channel->aux.vy;
+
         return scriptNext;
     }
-    case 5: {
+
+    case cameraOrbitBy: {
         CameraScratch* s;
         int height;
-        c->mode = 5;
-        c->time = 0;
-        c->duration = script[8];
-        c->ease1 = script[6] & 15;
-        c->ease2 = script[6] >> 4;
-        c->ease3 = script[7] & 15;
-        vectorCopy(&c->position, &c->target);
-        s = (CameraScratch*)0x1F800088;
-        setVector(&s->v1, c->current.vx - c->target.vx, 0, c->current.vz - c->target.vz);
-        c->value = vectorMagnitude((VECTOR*)0x1F800098);
-        c->delta = ((c->value * script[5]) >> 6) - c->value;
-        c->angle = atan2FixedPoint(s->v1.vx, s->v1.vz);
-        c->angleDelta = getShort(script + 1);
+
+        channel->mode = 5;
+        channel->time = 0;
+        channel->duration = script[8];
+        channel->ease1 = script[6] & 15;
+        channel->ease2 = script[6] >> 4;
+        channel->ease3 = script[7] & 15;
+
+        vectorCopy(&channel->position, &channel->otherPosition);
+
+        s = CAMERA_SCRATCH;
+
+        setVector(&s->v1, channel->current.vx - channel->otherPosition.vx, 0,
+            channel->current.vz - channel->otherPosition.vz);
+
+        channel->value = vectorMagnitude(&CAMERA_SCRATCH->v1);
+        channel->delta = ((channel->value * script[5]) >> 6) - channel->value;
+        channel->angle = atan2FixedPoint(s->v1.vx, s->v1.vz);
+        channel->angleDelta = getShort(script + 1);
+
         height = getShort(script + 3) * ONE;
-        c->start.vy = c->current.vy;
-        c->velocity.vy = height - c->start.vy;
+
+        channel->start.vy = channel->current.vy;
+        channel->velocity.vy = height - channel->start.vy;
+
         return scriptNext;
     }
-    case 7:
-        func_800A190C(
-            resolveActorId(getShort(script + 1)), script[3], (SVECTOR*)0x1F8000D8, 2);
-        sVectorToFixedPointVector((VECTOR*)0x1F800098, (SVECTOR*)0x1F8000D8);
-        setVectorImm((VECTOR*)0x1F8000A8, script + 4);
-        vectorAdd(&c->position, (VECTOR*)0x1F800098, (VECTOR*)0x1F8000A8);
-        if (D_800F4BA4->unk1E8 != 0x2000) {
-            vectorSubtract(&c->position, &c->position, &D_800F4BA4->unk1EC);
+
+    case cameraSetDestinationToActorOffset:
+        func_800A190C(resolveActorId(getShort(script + 1)), script[3],
+            &CAMERA_SCRATCH->rotation, 2);
+
+        sVectorToFixedPointVector(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->rotation);
+
+        setVectorImm(&CAMERA_SCRATCH->v2, script + 4);
+        vectorAdd(&channel->position, &CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v2);
+
+        if (D_800F4BA4->attachedActor != 0x2000) {
+            vectorSubtract(
+                &channel->position, &channel->position, &D_800F4BA4->attachedPosition);
         }
+
         return scriptNext;
-    case 8:
-        c->mode = 8;
-        c->value = resolveActorId(getShort(script + 1));
-        c->delta = script[3];
-        c->time = 0;
-        c->duration = script[10];
-        setVectorImm(&c->velocity, script + 4);
+
+    case cameraFollowActor:
+        channel->mode = 8;
+        channel->value = resolveActorId(getShort(script + 1));
+        channel->delta = script[3];
+        channel->time = 0;
+        channel->duration = script[10];
+
+        setVectorImm(&channel->velocity, script + 4);
+
         return scriptNext;
-    case 9:
-        c->mode = 9;
-        c->time = 0;
-        c->duration = script[1];
-        vectorSubtract(&c->velocity, &c->current, &c->target);
+
+    case cameraLockOffset:
+        channel->mode = 9;
+        channel->time = 0;
+        channel->duration = script[1];
+
+        vectorSubtract(&channel->velocity, &channel->current, &channel->otherPosition);
+
         return scriptNext;
-    case 10: {
+
+    case cameraSetDestinationToActorLocalOffset: {
         int id = resolveActorId(getShort(script + 1));
-        CameraScratch* s = (CameraScratch*)0x1F800088;
+
+        CameraScratch* s = CAMERA_SCRATCH;
         s->value = id;
+
         vs_battle_getActorPosition(id, &D_800F4BA4->unk1D0);
+
         s->rotation2.vz = 0;
         s->rotation2.vx = 0;
         s->rotation2.vy = D_800F4BA4->unk1D0.unk0.unk4.pad;
-        RotMatrix_gte((SVECTOR*)0x1F8000E0, (MATRIX*)0x1F8000F8);
-        setVectorImm((VECTOR*)0x1F800098, script + 4);
-        ApplyMatrixLV((MATRIX*)0x1F8000F8, (VECTOR*)0x1F800098, (VECTOR*)0x1F800098);
-        func_800A190C(s->value, script[3], (SVECTOR*)0x1F8000E0, 2);
-        vectorAdd(&c->position,
-            sVectorToFixedPointVector((VECTOR*)0x1F8000A8, (SVECTOR*)0x1F8000E0),
-            (VECTOR*)0x1F800098);
-        if (D_800F4BA4->unk1E8 != 0x2000) {
-            vectorSubtract(&c->position, &c->position, &D_800F4BA4->unk1EC);
+
+        RotMatrix_gte(&CAMERA_SCRATCH->rotation2, &CAMERA_SCRATCH->matrix);
+        setVectorImm(&CAMERA_SCRATCH->v1, script + 4);
+        ApplyMatrixLV(&CAMERA_SCRATCH->matrix, &CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1);
+        func_800A190C(s->value, script[3], &CAMERA_SCRATCH->rotation2, 2);
+
+        vectorAdd(&channel->position,
+            sVectorToFixedPointVector(&CAMERA_SCRATCH->v2, &CAMERA_SCRATCH->rotation2),
+            &CAMERA_SCRATCH->v1);
+
+        if (D_800F4BA4->attachedActor != 0x2000) {
+            vectorSubtract(
+                &channel->position, &channel->position, &D_800F4BA4->attachedPosition);
         }
+
         return scriptNext;
     }
-    case 11: {
+
+    case cameraTerrainFollowTo: {
         CameraScratch* s;
-        c->mode = 11;
-        c->time = 0;
-        c->ease1 = easingLinear;
-        c->duration = script[2];
-        vectorSubtract((VECTOR*)0x1F800098, &c->target, &c->current);
-        vecToRotMatrix((VECTOR*)0x1F800098, (MATRIX*)0x1F8000F8);
-        s = (CameraScratch*)0x1F800088;
-        s->matrix.t[0] = c->current.vx >> 12;
-        s->matrix.t[1] = c->current.vy >> 12;
-        s->matrix.t[2] = c->current.vz >> 12;
-        c->current.vy = func_800BD2B8((MATRIX*)0x1F8000F8);
-        vectorCopy(&c->computed, &c->current);
-        c->delta = vectorMagnitude(
-            vectorSubtract((VECTOR*)0x1F800098, &c->position, &c->computed));
-        c->value = c->delta / script[2];
+
+        channel->mode = 11;
+        channel->time = 0;
+        channel->ease1 = easingLinear;
+        channel->duration = script[2];
+
+        vectorSubtract(&CAMERA_SCRATCH->v1, &channel->otherPosition, &channel->current);
+        vecToRotMatrix(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->matrix);
+
+        s = CAMERA_SCRATCH;
+
+        s->matrix.t[0] = channel->current.vx >> 12;
+        s->matrix.t[1] = channel->current.vy >> 12;
+        s->matrix.t[2] = channel->current.vz >> 12;
+        channel->current.vy = func_800BD2B8(&CAMERA_SCRATCH->matrix);
+
+        vectorCopy(&channel->computed, &channel->current);
+
+        channel->delta = vectorMagnitude(
+            vectorSubtract(&CAMERA_SCRATCH->v1, &channel->position, &channel->computed));
+        channel->value = channel->delta / script[2];
         D_800F4BA4->unk27C.vx = D_800F4BA4->unk27C.vy = D_800F4BA4->unk27C.vz =
             0x80000000;
+
         return scriptNext;
     }
     }
@@ -4501,12 +4889,12 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
 
 void func_800BC9E0(void)
 {
-    D_800F4BA4->eye.target.vx = D_800F4BA4->lookAt.current.vx;
-    D_800F4BA4->eye.target.vy = D_800F4BA4->lookAt.current.vy;
-    D_800F4BA4->eye.target.vz = D_800F4BA4->lookAt.current.vz;
-    D_800F4BA4->lookAt.target.vx = D_800F4BA4->eye.current.vx;
-    D_800F4BA4->lookAt.target.vy = D_800F4BA4->eye.current.vy;
-    D_800F4BA4->lookAt.target.vz = D_800F4BA4->eye.current.vz;
+    D_800F4BA4->eye.otherPosition.vx = D_800F4BA4->lookAt.current.vx;
+    D_800F4BA4->eye.otherPosition.vy = D_800F4BA4->lookAt.current.vy;
+    D_800F4BA4->eye.otherPosition.vz = D_800F4BA4->lookAt.current.vz;
+    D_800F4BA4->lookAt.otherPosition.vx = D_800F4BA4->eye.current.vx;
+    D_800F4BA4->lookAt.otherPosition.vy = D_800F4BA4->eye.current.vy;
+    D_800F4BA4->lookAt.otherPosition.vz = D_800F4BA4->eye.current.vz;
     func_800BCA8C(&D_800F4BA4->lookAt, &D_800F4BA4->eye);
     func_800BCA8C(&D_800F4BA4->eye, &D_800F4BA4->lookAt);
     func_800BD57C(&D_800F4BA4->unk168);
@@ -4517,75 +4905,73 @@ void func_800BC9E0(void)
     func_800BE180();
 }
 
-void func_800BCA8C(D_800F4BA4_t2* c, D_800F4BA4_t2* other)
+void func_800BCA8C(CameraChannel* c, CameraChannel* other)
 {
     if (c->mode == 15) {
         return;
     }
     if (c->mode != 11) {
-        c->time += vs_gametime_tickspeed >> 1;
+        c->time += vs_gametime_vblanksPerFrame >> 1;
         if (c->time > c->duration) {
             c->time = c->duration;
         }
     }
     switch (c->mode) {
     case 2:
-        ((CameraScratch*)0x1F800088)->value =
-            func_800BFEBC(c->ease1, c->time, c->duration);
-        vectorFixedPointMult(
-            (VECTOR*)0x1F800098, &c->velocity, ((CameraScratch*)0x1F800088)->value);
-        vectorAdd(&c->computed, &c->start, (VECTOR*)0x1F800098);
+        CAMERA_SCRATCH->value = func_800BFEBC(c->ease1, c->time, c->duration);
+        vectorFixedPointMult(&CAMERA_SCRATCH->v1, &c->velocity, CAMERA_SCRATCH->value);
+        vectorAdd(&c->computed, &c->start, &CAMERA_SCRATCH->v1);
         break;
     case 3: {
-        CameraScratch* s = (CameraScratch*)0x1F800088;
+        CameraScratch* s = CAMERA_SCRATCH;
         s->value = func_800BFEBC(c->ease1, c->time, c->duration);
-        vectorFixedPointMult((VECTOR*)0x1F800098, &c->velocity, s->value);
-        vectorAdd((VECTOR*)0x1F8000A8, &c->start, (VECTOR*)0x1F800098);
-        vectorSubtract((VECTOR*)0x1F800098, (VECTOR*)0x1F8000A8, &c->target);
-        toNormalIntegerVector((VECTOR*)0x1F800098, (VECTOR*)0x1F800098);
+        vectorFixedPointMult(&CAMERA_SCRATCH->v1, &c->velocity, s->value);
+        vectorAdd(&CAMERA_SCRATCH->v2, &c->start, &CAMERA_SCRATCH->v1);
+        vectorSubtract(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v2, &c->otherPosition);
+        toNormalIntegerVector(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1);
         s->distance = vectorMagnitude(
-            vectorSubtract((VECTOR*)0x1F8000A8, &c->target, &c->position));
+            vectorSubtract(&CAMERA_SCRATCH->v2, &c->otherPosition, &c->position));
         s->value = c->value
                  + fixedPointMult(s->distance - c->value,
                      func_800BFEBC(c->ease1, c->time, c->duration));
-        vectorFixedPointMult((VECTOR*)0x1F800098, (VECTOR*)0x1F800098, s->value);
-        vectorAdd(&c->computed, &c->target, (VECTOR*)0x1F800098);
+        vectorFixedPointMult(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1, s->value);
+        vectorAdd(&c->computed, &c->otherPosition, &CAMERA_SCRATCH->v1);
         break;
     }
     case 4: {
-        CameraScratch* s = (CameraScratch*)0x1F800088;
+        CameraScratch* s = CAMERA_SCRATCH;
         s->rotation.vz = 0;
         s->rotation.vx = 0;
         s->rotation.vy =
             c->angle
             + ((c->angleDelta * func_800BFEBC(c->ease1, c->time, c->duration)) >> 12);
-        RotMatrix_gte((SVECTOR*)0x1F8000D8, (MATRIX*)0x1F8000F8);
+        RotMatrix_gte(&CAMERA_SCRATCH->rotation, &CAMERA_SCRATCH->matrix);
         s->v1.vz =
             c->value
             + fixedPointMult(c->delta, func_800BFEBC(c->ease2, c->time, c->duration));
         s->v1.vx = 0;
         s->v1.vy = 0;
-        ApplyMatrixLV((MATRIX*)0x1F8000F8, (VECTOR*)0x1F800098, (VECTOR*)0x1F800098);
+        ApplyMatrixLV(&CAMERA_SCRATCH->matrix, &CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1);
         s->v1.vy = c->aux.vy
                  + fixedPointMult(
                      c->velocity.vy, func_800BFEBC(c->ease3, c->time, c->duration));
-        vectorAdd(&c->computed, &c->start, (VECTOR*)0x1F800098);
+        vectorAdd(&c->computed, &c->start, &CAMERA_SCRATCH->v1);
         break;
     }
     case 5: {
-        CameraScratch* s = (CameraScratch*)0x1F800088;
+        CameraScratch* s = CAMERA_SCRATCH;
         s->rotation.vz = 0;
         s->rotation.vx = 0;
         s->rotation.vy =
             c->angle
             + ((c->angleDelta * func_800BFEBC(c->ease1, c->time, c->duration)) >> 12);
-        RotMatrix_gte((SVECTOR*)0x1F8000D8, (MATRIX*)0x1F8000F8);
+        RotMatrix_gte(&CAMERA_SCRATCH->rotation, &CAMERA_SCRATCH->matrix);
         s->v1.vz =
             c->value
             + fixedPointMult(c->delta, func_800BFEBC(c->ease2, c->time, c->duration));
         s->v1.vx = 0;
         s->v1.vy = 0;
-        ApplyMatrixLV((MATRIX*)0x1F8000F8, (VECTOR*)0x1F800098, (VECTOR*)0x1F800098);
+        ApplyMatrixLV(&CAMERA_SCRATCH->matrix, &CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1);
         c->computed.vx = c->position.vx + s->v1.vx;
         c->computed.vz = c->position.vz + s->v1.vz;
         c->computed.vy = c->start.vy
@@ -4594,93 +4980,99 @@ void func_800BCA8C(D_800F4BA4_t2* c, D_800F4BA4_t2* other)
         break;
     }
     case 8:
-        func_800A190C(c->value, c->delta, (SVECTOR*)0x1F8000D8, 2);
+        func_800A190C(c->value, c->delta, &CAMERA_SCRATCH->rotation, 2);
         vectorAdd(&c->computed,
-            sVectorToFixedPointVector((VECTOR*)0x1F800098, (SVECTOR*)0x1F8000D8),
+            sVectorToFixedPointVector(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->rotation),
             &c->velocity);
         break;
     case 9:
-        vectorAdd(&c->computed, &c->velocity, &c->target);
+        vectorAdd(&c->computed, &c->velocity, &c->otherPosition);
         break;
     case 11:
         func_800BCFB4(c);
         break;
     }
     vectorCopy(&c->previousCamera, &c->current);
-    if (c->follow & c->following) {
+    if (c->carryMomentum & c->carrying) {
         int fraction;
         CameraScratch* s;
-        vectorAdd(&c->followPosition, &c->followPosition, &c->followDelta);
+        vectorAdd(&c->momentumPosition, &c->momentumPosition, &c->momentumStep);
         fraction = func_800BFEBC(easingSineOut, c->time, c->duration);
-        s = (CameraScratch*)0x1F800088;
+        s = CAMERA_SCRATCH;
         s->value = fraction;
-        vectorSubtract((VECTOR*)0x1F800098, &c->computed, &c->followPosition);
-        vectorFixedPointMult((VECTOR*)0x1F800098, (VECTOR*)0x1F800098, s->value);
-        vectorAdd(&c->current, &c->followPosition, (VECTOR*)0x1F800098);
+        vectorSubtract(&CAMERA_SCRATCH->v1, &c->computed, &c->momentumPosition);
+        vectorFixedPointMult(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1, s->value);
+        vectorAdd(&c->current, &c->momentumPosition, &CAMERA_SCRATCH->v1);
     } else {
         vectorCopy(&c->current, &c->computed);
     }
     if (c->time == c->duration) {
         c->mode = 15;
-        if (c->follow) {
-            c->following = 1;
-            vectorCopy(&c->followPosition, &c->current);
-            vectorSubtract(&c->followDelta, &c->current, &c->previousCamera);
+        if (c->carryMomentum) {
+            c->carrying = 1;
+            vectorCopy(&c->momentumPosition, &c->current);
+            vectorSubtract(&c->momentumStep, &c->current, &c->previousCamera);
         }
     }
 }
 
-void func_800BCFB4(D_800F4BA4_t2* c)
+void func_800BCFB4(CameraChannel* c)
 {
     CameraMotionScratch* scratch;
     CameraMotionScratch* finalScratch;
     short i;
     int height;
-    vectorSubtract((VECTOR*)0x1F800098, &c->target, &c->position);
-    vecToRotMatrix((VECTOR*)0x1F800098, (MATRIX*)0x1F8000F8);
-    scratch = (CameraMotionScratch*)0x1F800088;
+    vectorSubtract(&CAMERA_MOTION_SCRATCH->delta, &c->otherPosition, &c->position);
+    vecToRotMatrix(&CAMERA_MOTION_SCRATCH->delta, &CAMERA_MOTION_SCRATCH->matrix);
+    scratch = CAMERA_MOTION_SCRATCH;
     scratch->matrix.t[0] = c->position.vx >> 12;
     scratch->matrix.t[1] = c->position.vy >> 12;
     scratch->matrix.t[2] = c->position.vz >> 12;
     setVector(&scratch->delta, c->position.vx - c->computed.vx,
-        func_800BD2B8((MATRIX*)0x1F8000F8) - c->computed.vy,
+        func_800BD2B8(&CAMERA_MOTION_SCRATCH->matrix) - c->computed.vy,
         c->position.vz - c->computed.vz);
-    scratch->distance = vectorMagnitude((VECTOR*)0x1F800098);
+    scratch->distance = vectorMagnitude(&CAMERA_MOTION_SCRATCH->delta);
     scratch->steps = scratch->distance / c->value;
     if (scratch->steps < 2) {
         c->time = c->duration;
     } else if (scratch->steps > 10) {
         scratch->steps = 10;
     }
-    toNormalIntegerVector((VECTOR*)0x1F800098, (VECTOR*)0x1F800098);
-    vectorFixedPointMult((VECTOR*)0x1F800098, (VECTOR*)0x1F800098, c->value);
-    vectorCopy((VECTOR*)0x1F8000A8, &c->computed);
-    for (i = 1; i <= ((CameraMotionScratch*)0x1F800088)->steps; ++i) {
-        scratch = (CameraMotionScratch*)0x1F800088;
-        vectorAdd((VECTOR*)0x1F8000A8, (VECTOR*)0x1F8000A8, (VECTOR*)0x1F800098);
-        vectorSubtract((VECTOR*)0x1F8000B8, &c->target, (VECTOR*)0x1F8000A8);
-        vecToRotMatrix((VECTOR*)0x1F8000B8, (MATRIX*)0x1F8000F8);
+    toNormalIntegerVector(&CAMERA_MOTION_SCRATCH->delta, &CAMERA_MOTION_SCRATCH->delta);
+    vectorFixedPointMult(
+        &CAMERA_MOTION_SCRATCH->delta, &CAMERA_MOTION_SCRATCH->delta, c->value);
+    vectorCopy(&CAMERA_MOTION_SCRATCH->candidate, &c->computed);
+    for (i = 1; i <= CAMERA_MOTION_SCRATCH->steps; ++i) {
+        scratch = CAMERA_MOTION_SCRATCH;
+        vectorAdd(&CAMERA_MOTION_SCRATCH->candidate, &CAMERA_MOTION_SCRATCH->candidate,
+            &CAMERA_MOTION_SCRATCH->delta);
+        vectorSubtract(&CAMERA_MOTION_SCRATCH->direction, &c->otherPosition,
+            &CAMERA_MOTION_SCRATCH->candidate);
+        vecToRotMatrix(&CAMERA_MOTION_SCRATCH->direction, &CAMERA_MOTION_SCRATCH->matrix);
         scratch->matrix.t[0] = scratch->candidate.vx >> 12;
         scratch->matrix.t[1] = scratch->candidate.vy >> 12;
         scratch->matrix.t[2] = scratch->candidate.vz >> 12;
-        height = func_800BD2B8((MATRIX*)0x1F8000F8);
+        height = func_800BD2B8(&CAMERA_MOTION_SCRATCH->matrix);
         if (height < scratch->candidate.vy) {
             setVector(&scratch->delta, scratch->candidate.vx - c->computed.vx,
                 height - c->computed.vy, scratch->candidate.vz - c->computed.vz);
-            toNormalIntegerVector((VECTOR*)0x1F800098, (VECTOR*)0x1F800098);
-            vectorFixedPointMult((VECTOR*)0x1F800098, (VECTOR*)0x1F800098, c->value);
+            toNormalIntegerVector(
+                &CAMERA_MOTION_SCRATCH->delta, &CAMERA_MOTION_SCRATCH->delta);
+            vectorFixedPointMult(
+                &CAMERA_MOTION_SCRATCH->delta, &CAMERA_MOTION_SCRATCH->delta, c->value);
             break;
         }
     }
-    vectorAdd((VECTOR*)0x1F8000A8, (VECTOR*)0x1F800098, &c->computed);
-    finalScratch = (CameraMotionScratch*)0x1F800088;
+    vectorAdd(
+        &CAMERA_MOTION_SCRATCH->candidate, &CAMERA_MOTION_SCRATCH->delta, &c->computed);
+    finalScratch = CAMERA_MOTION_SCRATCH;
     if (finalScratch->candidate.vx == D_800F4BA4->unk27C.vx
         && finalScratch->candidate.vy == D_800F4BA4->unk27C.vy
         && finalScratch->candidate.vz == D_800F4BA4->unk27C.vz) {
         c->time = c->duration;
     } else {
         vectorCopy(&D_800F4BA4->unk27C, &c->computed);
-        vectorCopy(&c->computed, (VECTOR*)0x1F8000A8);
+        vectorCopy(&c->computed, &CAMERA_MOTION_SCRATCH->candidate);
     }
 }
 
@@ -4778,7 +5170,7 @@ int vs_battle_script_E2_E3_camera(u_char* arg0, UNUSED short arg1)
 void func_800BD57C(func_800BD57C_t* arg0)
 {
     if (arg0->unkA > 0) {
-        arg0->unk8 += vs_gametime_tickspeed >> 1;
+        arg0->unk8 += vs_gametime_vblanksPerFrame >> 1;
 
         arg0->unk2 = (arg0->unk4
                       + ((arg0->unk6 * func_800BFEBC(arg0->unk1, arg0->unk8, arg0->unkA))
@@ -4791,9 +5183,15 @@ void func_800BD57C(func_800BD57C_t* arg0)
     }
 }
 
-int func_800BD610(void)
+/**
+ * Gets which camera channels are idle.
+ * @return Bit mask of the idle channels: 0x01 look-at, 0x02 eye, 0x04 roll (opcode E2),
+ * 0x08 projection distance (EA), 0x10 near clip (EB), 0x20 far clip (EC), 0x40 lens
+ * distortion (ED), 0x80 shake (EF).
+ */
+u_char getCameraIdleFlags(void)
 {
-    char temp_a2 = D_800F4BA4->lookAt.mode == 0xF;
+    u_char temp_a2 = D_800F4BA4->lookAt.mode == 0xF;
 
     if (D_800F4BA4->eye.mode == 0xF) {
         temp_a2 = temp_a2 | 2;
@@ -4889,6 +5287,8 @@ int vs_battle_script_B9_BA_BF_E4_E5_E6_E7_ED(u_char* script, UNUSED short arg1)
         func_8007DE2C(script[1]);
         return scriptNext;
 
+    // [1] = zoom (<< 6), [2] = distortion (signed), [3] = tween type, [4] = tween
+    // duration, 0 = immediate. See setScreenLensDistortion.
     case 237:
         if (D_800F4BA4->unk25C.unk1E > 0) {
             return scriptRepeat;
@@ -4898,7 +5298,7 @@ int vs_battle_script_B9_BA_BF_E4_E5_E6_E7_ED(u_char* script, UNUSED short arg1)
         if (D_800F4BA4->unk25C.unk1E == 0) {
             D_800F4BA4->unk25C.unk2 = effectValue = script[1] << 6;
             D_800F4BA4->unk25C.unk4 = (signed char)script[2];
-            func_800F9BC0(effectValue, D_800F4BA4->unk25C.unk4);
+            setScreenLensDistortion(effectValue, D_800F4BA4->unk25C.unk4);
         } else {
             D_800F4BA4->unk25C.unk1C = 0;
             D_800F4BA4->unk25C.unk12 =
@@ -4922,9 +5322,9 @@ int vs_battle_script_B9_BA_BF_E4_E5_E6_E7_ED(u_char* script, UNUSED short arg1)
             func_8007DDD4(&color);
             func_8007DE44(0);
             func_8007DE5C(0);
-            func_8007DD50(0);
+            setFramebufferEffect(0);
         } else {
-            func_8007DD50(1);
+            setFramebufferEffect(1);
             func_8007DE2C(0);
             values.vx = 0;
             values.vy = 2;
@@ -4962,27 +5362,27 @@ void func_800BDAB4(void)
         func_8007DDF8(&sp10);
     }
     if (func_800BDBB4(&D_800F4BA4->unk25C) != 0) {
-        func_800F9BC0(D_800F4BA4->unk25C.unk2, D_800F4BA4->unk25C.unk4);
+        setScreenLensDistortion(D_800F4BA4->unk25C.unk2, D_800F4BA4->unk25C.unk4);
     }
 }
 
 int func_800BDBB4(func_800BDBB4_t* arg0)
 {
-    func_800BDBB4_t2* a0;
+    CameraScratch* a0;
     int v0;
 
     if (arg0->unk1E == 0) {
         return 0;
     }
 
-    arg0->unk1C = arg0->unk1C + (vs_gametime_tickspeed >> 1);
+    arg0->unk1C = arg0->unk1C + (vs_gametime_vblanksPerFrame >> 1);
 
     v0 = func_800BFEBC(arg0->unk1, arg0->unk1C, arg0->unk1E);
-    a0 = (func_800BDBB4_t2*)0x1F800088;
-    a0->unk0 = v0;
-    arg0->unk2 = (arg0->unkA + ((arg0->unk12 * a0->unk0) >> 0xC));
-    arg0->unk4 = (arg0->unkC + ((arg0->unk14 * a0->unk0) >> 0xC));
-    arg0->unk6 = (arg0->unkE + ((arg0->unk16 * a0->unk0) >> 0xC));
+    a0 = CAMERA_SCRATCH;
+    a0->value = v0;
+    arg0->unk2 = (arg0->unkA + ((arg0->unk12 * a0->value) >> 0xC));
+    arg0->unk4 = (arg0->unkC + ((arg0->unk14 * a0->value) >> 0xC));
+    arg0->unk6 = (arg0->unkE + ((arg0->unk16 * a0->value) >> 0xC));
 
     if (arg0->unk1C == arg0->unk1E) {
         arg0->unk1E = 0;
@@ -5059,13 +5459,13 @@ void func_800BDF6C(func_800BDF6C_unk180_t* arg0)
 {
     if (arg0->unk9 != 0) {
         short* new_var;
-        arg0->unk8 += vs_gametime_tickspeed >> 1;
+        arg0->unk8 += vs_gametime_vblanksPerFrame >> 1;
         if (arg0->unk9 < arg0->unk8) {
             arg0->unk8 = arg0->unk9;
         }
-        *(int*)0x1F800088 = func_800BFEBC(arg0->unk1, arg0->unk8, arg0->unk9);
+        CAMERA_SCRATCH->value = func_800BFEBC(arg0->unk1, arg0->unk8, arg0->unk9);
         new_var = &arg0->unk6;
-        arg0->unk2 = arg0->unk4 + ((*new_var * *(int*)0x1F800088) >> 0xC);
+        arg0->unk2 = arg0->unk4 + ((*new_var * CAMERA_SCRATCH->value) >> 0xC);
         if (arg0->unk8 == arg0->unk9) {
             arg0->unk9 = 0;
         }
@@ -5081,7 +5481,7 @@ int func_800BE01C(func_800BDF6C_t* arg0)
         return 0;
     }
 
-    arg0->unk8 += vs_gametime_tickspeed >> 1;
+    arg0->unk8 += vs_gametime_vblanksPerFrame >> 1;
 
     if (arg0->unk9 < arg0->unk8) {
         arg0->unk8 = arg0->unk9;
@@ -5089,20 +5489,20 @@ int func_800BE01C(func_800BDF6C_t* arg0)
 
     switch (arg0->unk0.u8[1]) {
     case 0:
-        *(int*)0x1F800088 = 0x1000;
+        CAMERA_SCRATCH->value = 0x1000;
         break;
     case 1:
-        *(int*)0x1F800088 = rsin(((arg0->unk8 << 0xA) / arg0->unk9) + 0x400);
+        CAMERA_SCRATCH->value = rsin(((arg0->unk8 << 0xA) / arg0->unk9) + 0x400);
         break;
     case 2:
-        *(int*)0x1F800088 = rsin((arg0->unk8 << 0xB) / arg0->unk9);
+        CAMERA_SCRATCH->value = rsin((arg0->unk8 << 0xB) / arg0->unk9);
         break;
     case 3:
-        *(int*)0x1F800088 = rsin((arg0->unk8 << 0xA) / arg0->unk9);
+        CAMERA_SCRATCH->value = rsin((arg0->unk8 << 0xA) / arg0->unk9);
         break;
     }
     arg0->unk2 = (((rsin((temp_s1 * arg0->unk8) / arg0->unk9) * arg0->unk6) >> 0xC)
-                     * *(int*)0x1F800088)
+                     * CAMERA_SCRATCH->value)
               >> 0xC;
     if (arg0->unk8 == arg0->unk9) {
         arg0->unk9 = 0;
@@ -5110,17 +5510,18 @@ int func_800BE01C(func_800BDF6C_t* arg0)
     return 1;
 }
 
-// https://decomp.me/scratch/3pQUE
+// The totals in a and b are read back at their fixed addresses and not as members, which
+// the match needs.
 void func_800BE180(void)
 {
     short count = 0;
-    CameraShakeScratch* clear = (CameraShakeScratch*)0x1F800088;
+    CameraShakeScratch* clear = CAMERA_SHAKE_SCRATCH;
     short i = 0;
     int x, y, z;
     CameraShakeScratch* scratch;
     func_800BDF6C_t* entry = (func_800BDF6C_t*)&D_800F4BA4->unk1A4.unk2;
     clear->a.vx = clear->a.vy = clear->a.vz = clear->b.vx = clear->b.vy = clear->b.vz = 0;
-    scratch = (CameraShakeScratch*)0x1F800088;
+    scratch = CAMERA_SHAKE_SCRATCH;
     for (; i < 2; ++entry, ++i) {
         if (func_800BE01C(entry)) {
             setVector(&scratch->c, x = entry->unk2 * (((entry->unkA >> 2) & 3) - 1),
@@ -5137,37 +5538,42 @@ void func_800BE180(void)
     }
     D_800F4BA4->unk1A4.unk0.s16 = count;
     if (count) {
-        D_800F4BA4->unk1BE = ((SVECTOR*)0x1F8000D8)->vx;
-        D_800F4BA4->unk1C0 = ((SVECTOR*)0x1F8000D8)->vy;
-        D_800F4BA4->unk1C2 = ((SVECTOR*)0x1F8000D8)->vz;
-        D_800F4BA4->unk1C6 = ((SVECTOR*)0x1F8000E0)->vx;
-        D_800F4BA4->unk1C8 = ((SVECTOR*)0x1F8000E0)->vy;
-        D_800F4BA4->unk1CA = ((SVECTOR*)0x1F8000E0)->vz;
+        D_800F4BA4->unk1BE = VS_SCRATCH_AT(SVECTOR*, 0xD8)->vx;
+        D_800F4BA4->unk1C0 = VS_SCRATCH_AT(SVECTOR*, 0xD8)->vy;
+        D_800F4BA4->unk1C2 = VS_SCRATCH_AT(SVECTOR*, 0xD8)->vz;
+        D_800F4BA4->unk1C6 = VS_SCRATCH_AT(SVECTOR*, 0xE0)->vx;
+        D_800F4BA4->unk1C8 = VS_SCRATCH_AT(SVECTOR*, 0xE0)->vy;
+        D_800F4BA4->unk1CA = VS_SCRATCH_AT(SVECTOR*, 0xE0)->vz;
     }
 }
 
-void func_800BE36C(int arg0, int arg1)
+void setCameraMomentum(int lookAt, int eye)
 {
-    D_800F4BA4->lookAt.follow = arg0;
-    D_800F4BA4->lookAt.following = 0;
-    D_800F4BA4->eye.follow = arg1;
-    D_800F4BA4->eye.following = 0;
+    D_800F4BA4->lookAt.carryMomentum = lookAt;
+    D_800F4BA4->lookAt.carrying = 0;
+    D_800F4BA4->eye.carryMomentum = eye;
+    D_800F4BA4->eye.carrying = 0;
 }
 
-void func_800BE3A0(void)
+void clearCameraMomentum(void)
 {
     D_800F4BA4_t* c1 = D_800F4BA4;
     D_800F4BA4_t* c2;
     c1->eye.mode = 0xF;
     c1->lookAt.mode = 0xF;
     c2 = D_800F4BA4;
-    c2->eye.following = 0;
-    c2->eye.follow = 0;
-    c2->lookAt.following = 0;
-    c2->lookAt.follow = 0;
+    c2->eye.carrying = 0;
+    c2->eye.carryMomentum = 0;
+    c2->lookAt.carrying = 0;
+    c2->lookAt.carryMomentum = 0;
 }
 
-void func_800BE3D0(char arg0)
+/**
+ * Sweeps the camera into the view the player had before the scene (the facing and zoom
+ * saved in state flags 0xAF and 0xB0), coming in from above and from one side.
+ * @param side 0 or 1, which side the camera comes in from.
+ */
+void sweepCameraToSavedPlayerView(char side)
 {
     VECTOR sp10;
     VECTOR sp20;
@@ -5180,14 +5586,14 @@ void func_800BE3D0(char arg0)
     temp_s3 = getStateFlag(0xAF);
     temp_s0 = getStateFlag(0xB0);
     new_var = temp_s3 - 1;
-    initialiseCameraFromSpherical(&sp30, &sp10, (new_var + (arg0 * 2)) & 7, temp_s0 + 1);
+    initialiseCameraFromSpherical(&sp30, &sp10, (new_var + (side * 2)) & 7, temp_s0 + 1);
 
     sp30.vy += D_800E9C24[temp_s0] << 0xC;
     sp10.vy += D_800E9C24[temp_s0] << 0xC;
 
     vectorCopy(&D_800F4BA4->lookAt.current, &sp10);
-    vectorCopy(&D_800F4BA4->lookAt.target, &sp30);
-    vectorCopy(&D_800F4BA4->eye.target, &sp10);
+    vectorCopy(&D_800F4BA4->lookAt.otherPosition, &sp30);
+    vectorCopy(&D_800F4BA4->eye.otherPosition, &sp10);
     vectorCopy(&D_800F4BA4->eye.current, &sp30);
 
     D_800F4BA4->lookAt.mode = 0xF;
@@ -5201,36 +5607,45 @@ void func_800BE3D0(char arg0)
     vs_battle_script_Cx_Dx_camera(&D_800E9C2C, 0);
 }
 
-void func_800BE53C(D_800F4BA4_t2* arg0)
+/**
+ * Multiplies a camera move's duration by the distance left to travel, in units per 1000.
+ */
+static void scaleMoveDurationByDistance(CameraChannel* camera)
 {
-    VECTOR sp10;
+    VECTOR remaining;
 
-    vectorSubtract(&sp10, &arg0->current, &arg0->position);
-    arg0->duration = ((vectorMagnitude(&sp10) >> 0xC) * arg0->duration) / 1000;
+    vectorSubtract(&remaining, &camera->current, &camera->position);
+    camera->duration = ((vectorMagnitude(&remaining) >> 0xC) * camera->duration) / 1000;
 }
 
-void func_800BE5A4(short arg0)
+/**
+ * Scales the duration of a camera move by the distance it has left to travel, see
+ * scaleMoveDurationByDistance.
+ * @param target 0 = look-at, 2 = both (taking the average duration), anything else =
+ * eye.
+ */
+void scaleCameraMoveDurationByDistance(short target)
 {
-    D_800F4BA4_t2* temp_s0;
-    D_800F4BA4_t2* var_a0;
-    D_800F4BA4_t2* temp_s1;
+    CameraChannel* temp_s0;
+    CameraChannel* var_a0;
+    CameraChannel* temp_s1;
 
     temp_s0 = &D_800F4BA4->lookAt;
     temp_s1 = &D_800F4BA4->eye;
 
-    if (arg0 == 2) {
-        func_800BE53C(temp_s0);
-        func_800BE53C(temp_s1);
+    if (target == 2) {
+        scaleMoveDurationByDistance(temp_s0);
+        scaleMoveDurationByDistance(temp_s1);
         temp_s0->duration = temp_s1->duration =
             (temp_s0->duration + temp_s1->duration) >> 1;
 
         return;
     }
     var_a0 = temp_s0;
-    if (arg0 != 0) {
+    if (target != 0) {
         var_a0 = temp_s1;
     }
-    func_800BE53C(var_a0);
+    scaleMoveDurationByDistance(var_a0);
 }
 
 VECTOR* vectorAdd(VECTOR* arg0, VECTOR* arg1, VECTOR* arg2)
@@ -5368,7 +5783,7 @@ int loadMpdClearedScriptDoorSections(void* clearedSection, u_short clearedSectio
     mpdScriptSection = scriptSectionLen != 0;
 
     if (mpdScriptSection != 0) {
-        memcpy(D_800F4C30, scriptSection, scriptSectionLen);
+        memcpy(evtBuffer, scriptSection, scriptSectionLen);
     }
     return 0;
 }
@@ -5593,7 +6008,7 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
                 break;
 
             case 5:
-                left = flagValue = func_8007CF80(p[1]);
+                left = flagValue = countActorsByRole(p[1]);
                 flagId = getShort(p + 2);
 
                 if (flagId != 0) {
@@ -5786,8 +6201,8 @@ void parseEvt(u_char* data)
             ((u_short*)table)[i] ? (char*)table + ((u_short*)table)[i] : 0;
     }
 
-    D_800F4C38[0] = data + 16;
-    D_800F4C38[1] = D_800F4C38[2] = D_800F4C38[3] = 0;
+    scriptSlots[0] = data + 16;
+    scriptSlots[1] = scriptSlots[2] = scriptSlots[3] = 0;
     scriptSkipMode = scriptSkipOff;
     skipRequested = 0;
 
@@ -5797,10 +6212,10 @@ void parseEvt(u_char* data)
     effectCancelled = 0;
     weaponAnimating = 0;
     textBoxSelectionPending = 0;
-    D_800F4BE4 = 0;
+    scanlinesEnabled = 0;
     scriptMenuState = scriptMenuClosed;
     scriptWarpState = scriptWarpIdle;
-    D_800F4BB6 = 0;
+    cameraReturned = 0;
     scriptWaitFrames[0] = 0;
     D_800F4C22 = 0;
 
@@ -5850,11 +6265,11 @@ int func_800BF850(void)
 
     if (D_800F4C34 == 2) {
         fogDepthOverridden = 0;
-        D_800F4C54 = 0;
+        nextEvtQueued = 0;
 
         switch (D_800F4BE0) {
         case 1:
-            parseEvt(D_800F4C30);
+            parseEvt(evtBuffer);
             D_800F4C34 = 4;
             break;
 
@@ -5864,7 +6279,7 @@ int func_800BF850(void)
             break;
 
         case 0:
-            func_800C00E8(evtFile, D_800F4C30);
+            func_800C00E8(evtFile, evtBuffer);
             D_800F4C34 = 3;
             break;
         }
@@ -5876,33 +6291,34 @@ int func_800BF850(void)
         if (evtCdSlot->state == CdQueueStateLoaded) {
             vs_main_freeCdQueueSlot(evtCdSlot);
 
-            if (D_800F4C54 != 0) {
-                vs_main_memcpy(D_800F4C30, D_800F4C24, 0x1800);
-                vs_main_freeHeapR(D_800F4C24);
-                D_800F4C54 = 0;
+            if (nextEvtQueued != 0) {
+                vs_main_memcpy(evtBuffer, nextEvtBuffer, 0x1800);
+                vs_main_freeHeapR(nextEvtBuffer);
+                nextEvtQueued = 0;
             }
 
-            parseEvt(D_800F4C30);
+            parseEvt(evtBuffer);
             D_800F4C34 = 4;
         }
 
         return 2;
     }
 
-    func_800BBE94();
+    updateCameraAttachment();
 
     if (D_800F4C22 == 0) {
-        if (func_800BFBB8(D_800F4C38, 0) != 0) {
-            if (D_800F4BB6 == 0 && D_800F4C54 == 0 && scriptWarpState == scriptWarpIdle) {
-                func_800BC1CC(-1, -1);
+        if (func_800BFBB8(scriptSlots, 0) != 0) {
+            if (cameraReturned == 0 && nextEvtQueued == 0
+                && scriptWarpState == scriptWarpIdle) {
+                returnToGameplayCamera(-1, -1);
             }
 
             D_800F4C22 = 1;
         }
 
         for (i = 1; i < 4; ++i) {
-            if (D_800F4C38[i] != NULL) {
-                func_800BFBB8(&D_800F4C38[i], i);
+            if (scriptSlots[i] != NULL) {
+                func_800BFBB8(&scriptSlots[i], i);
             }
         }
     }
@@ -5913,12 +6329,12 @@ int func_800BF850(void)
     func_800BB9B0();
     func_800BBAFC();
 
-    if (D_800F4BE4 != 0) {
-        func_800BB874();
+    if (scanlinesEnabled != 0) {
+        drawScanlines();
     }
 
-    if (D_800F4C22 != 0 && (u_char)func_800BD610() == 255) {
-        if (D_800F4C54 != 0) {
+    if (D_800F4C22 != 0 && getCameraIdleFlags() == 255) {
+        if (nextEvtQueued != 0) {
             D_800F4C34 = 3;
             D_800F4BE0 = 0;
         } else {

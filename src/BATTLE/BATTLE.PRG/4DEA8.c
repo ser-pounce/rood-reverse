@@ -181,55 +181,22 @@ typedef struct {
 } ScriptCamera;
 
 typedef struct {
-    int value;
-    int distance;
-    u_char unk8[8];
+    int i1;
+    int i2;
+    UNUSED int i3;
+    UNUSED int i4;
     VECTOR v1;
     VECTOR v2;
     VECTOR v3;
-    u_char unk40[16];
-    SVECTOR rotation;
-    SVECTOR rotation2;
-    SVECTOR unk60;
-    u_char unk68[8];
+    UNUSED VECTOR v4;
+    SVECTOR s1;
+    SVECTOR s2;
+    SVECTOR s3;
+    UNUSED SVECTOR s4;
     MATRIX matrix;
 } CameraScratch;
 
 #define CAMERA_SCRATCH VS_SCRATCH_AT(CameraScratch*, 0x88)
-
-typedef struct {
-    int distance;
-    int steps;
-    u_char unk8[8];
-    VECTOR delta;
-    VECTOR candidate;
-    VECTOR direction;
-    u_char unk40[16];
-    SVECTOR unk50;
-    SVECTOR unk58;
-    SVECTOR unk60;
-    u_char unk68[8];
-    MATRIX matrix;
-} CameraMotionScratch;
-
-#define CAMERA_MOTION_SCRATCH VS_SCRATCH_AT(CameraMotionScratch*, 0x88)
-
-typedef struct {
-    int unk0;
-    int unk4;
-    u_char unk8[8];
-    VECTOR unk10;
-    VECTOR unk20;
-    VECTOR unk30;
-    u_char unk40[16];
-    SVECTOR a;
-    SVECTOR b;
-    SVECTOR c;
-    u_char unk68[8];
-    MATRIX unk70;
-} CameraShakeScratch;
-
-#define CAMERA_SHAKE_SCRATCH VS_SCRATCH_AT(CameraShakeScratch*, 0x88)
 
 typedef struct {
     u_char remaining;
@@ -4544,11 +4511,11 @@ static void applyCameraState(void)
     if (scriptCamera->shakeCount != 0) {
         sVectorToFixedPointVector(&CAMERA_SCRATCH->v1, &scriptCamera->shakeLookAt);
         sVectorToFixedPointVector(&CAMERA_SCRATCH->v2, &scriptCamera->shakeEye);
-        CAMERA_SCRATCH->rotation.vz = 0;
-        CAMERA_SCRATCH->rotation.vx = 0;
-        CAMERA_SCRATCH->rotation.vy =
+        CAMERA_SCRATCH->s1.vz = 0;
+        CAMERA_SCRATCH->s1.vx = 0;
+        CAMERA_SCRATCH->s1.vy =
             yawFromOffset(cameraLookAt.vx - cameraPos.vx, cameraLookAt.vz - cameraPos.vz);
-        RotMatrix_gte(&CAMERA_SCRATCH->rotation, &CAMERA_SCRATCH->matrix);
+        RotMatrix_gte(&CAMERA_SCRATCH->s1, &CAMERA_SCRATCH->matrix);
         ApplyMatrixLV(&CAMERA_SCRATCH->matrix, &CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1);
         ApplyMatrixLV(&CAMERA_SCRATCH->matrix, &CAMERA_SCRATCH->v2, &CAMERA_SCRATCH->v2);
         vectorAdd(&cameraLookAt, &cameraLookAt, &CAMERA_SCRATCH->v1);
@@ -4735,34 +4702,34 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
             channel->position.vz - channel->otherPosition.vz);
 
         channel->delta = vectorMagnitude(&CAMERA_SCRATCH->v2) - channel->value;
-        s->value = (yawFromOffset(s->v2.vx, s->v2.vz) & 4095) - channel->angle;
+        s->i1 = (yawFromOffset(s->v2.vx, s->v2.vz) & 4095) - channel->angle;
 
-        if (s->value < -ONE / 2) {
-            s->value += ONE;
+        if (s->i1 < -ONE / 2) {
+            s->i1 += ONE;
         }
-        if (s->value > ONE / 2) {
-            s->value -= ONE;
+        if (s->i1 > ONE / 2) {
+            s->i1 -= ONE;
         }
 
         switch (script[1] & 15) {
         case 15:
-            if (s->value == 0) {
-                s->value = -ONE;
-            } else if (s->value > 0) {
-                s->value -= ONE;
+            if (s->i1 == 0) {
+                s->i1 = -ONE;
+            } else if (s->i1 > 0) {
+                s->i1 -= ONE;
             }
             break;
 
         case 1:
-            if (s->value == 0) {
-                s->value = ONE;
-            } else if (s->value < 0) {
-                s->value += ONE;
+            if (s->i1 == 0) {
+                s->i1 = ONE;
+            } else if (s->i1 < 0) {
+                s->i1 += ONE;
             }
             break;
         }
 
-        channel->angleDelta = CAMERA_SCRATCH->value;
+        channel->angleDelta = CAMERA_SCRATCH->i1;
         channel->aux.vy = channel->current.vy - channel->otherPosition.vy;
         channel->velocity.vy =
             channel->position.vy - channel->otherPosition.vy - channel->aux.vy;
@@ -4803,9 +4770,9 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
 
     case cameraSetDestinationToActorOffset:
         getActorPoint(resolveActorId(getShort(script + 1)), script[3],
-            &CAMERA_SCRATCH->rotation, 2);
+            &CAMERA_SCRATCH->s1, 2);
 
-        sVectorToFixedPointVector(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->rotation);
+        sVectorToFixedPointVector(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->s1);
 
         readScriptVector(&CAMERA_SCRATCH->v2, script + 4);
         vectorAdd(&channel->position, &CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v2);
@@ -4840,21 +4807,21 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
     case cameraSetDestinationToActorLocalOffset: {
         int id = resolveActorId(getShort(script + 1));
 
-        CAMERA_SCRATCH->value = id;
+        CAMERA_SCRATCH->i1 = id;
 
         vs_battle_getActorPosition(id, &scriptCamera->actorPosition);
 
-        CAMERA_SCRATCH->rotation2.vz = 0;
-        CAMERA_SCRATCH->rotation2.vx = 0;
-        CAMERA_SCRATCH->rotation2.vy = scriptCamera->actorPosition.unk0.unk4.pad;
+        CAMERA_SCRATCH->s2.vz = 0;
+        CAMERA_SCRATCH->s2.vx = 0;
+        CAMERA_SCRATCH->s2.vy = scriptCamera->actorPosition.unk0.unk4.pad;
 
-        RotMatrix_gte(&CAMERA_SCRATCH->rotation2, &CAMERA_SCRATCH->matrix);
+        RotMatrix_gte(&CAMERA_SCRATCH->s2, &CAMERA_SCRATCH->matrix);
         readScriptVector(&CAMERA_SCRATCH->v1, script + 4);
         ApplyMatrixLV(&CAMERA_SCRATCH->matrix, &CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1);
-        getActorPoint(CAMERA_SCRATCH->value, script[3], &CAMERA_SCRATCH->rotation2, 2);
+        getActorPoint(CAMERA_SCRATCH->i1, script[3], &CAMERA_SCRATCH->s2, 2);
 
         vectorAdd(&channel->position,
-            sVectorToFixedPointVector(&CAMERA_SCRATCH->v2, &CAMERA_SCRATCH->rotation2),
+            sVectorToFixedPointVector(&CAMERA_SCRATCH->v2, &CAMERA_SCRATCH->s2),
             &CAMERA_SCRATCH->v1);
 
         if (scriptCamera->attachedActor != 0x2000) {
@@ -4928,49 +4895,49 @@ static void stepCameraChannel(CameraChannel* channel, UNUSED CameraChannel* othe
 
     switch (channel->mode) {
     case cameraModeLerp:
-        CAMERA_SCRATCH->value =
+        CAMERA_SCRATCH->i1 =
             evaluateEasing(channel->ease1, channel->time, channel->duration);
 
         vectorFixedPointMult(
-            &CAMERA_SCRATCH->v1, &channel->velocity, CAMERA_SCRATCH->value);
+            &CAMERA_SCRATCH->v1, &channel->velocity, CAMERA_SCRATCH->i1);
         vectorAdd(&channel->computed, &channel->start, &CAMERA_SCRATCH->v1);
 
         break;
 
     case cameraModeArc: {
-        CAMERA_SCRATCH->value =
+        CAMERA_SCRATCH->i1 =
             evaluateEasing(channel->ease1, channel->time, channel->duration);
 
         vectorFixedPointMult(
-            &CAMERA_SCRATCH->v1, &channel->velocity, CAMERA_SCRATCH->value);
+            &CAMERA_SCRATCH->v1, &channel->velocity, CAMERA_SCRATCH->i1);
         vectorAdd(&CAMERA_SCRATCH->v2, &channel->start, &CAMERA_SCRATCH->v1);
         vectorSubtract(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v2, &channel->otherPosition);
         normalizeVector(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1);
 
-        CAMERA_SCRATCH->distance = vectorMagnitude(vectorSubtract(
+        CAMERA_SCRATCH->i2 = vectorMagnitude(vectorSubtract(
             &CAMERA_SCRATCH->v2, &channel->otherPosition, &channel->position));
-        CAMERA_SCRATCH->value =
+        CAMERA_SCRATCH->i1 =
             channel->value
-            + fixedPointMult(CAMERA_SCRATCH->distance - channel->value,
+            + fixedPointMult(CAMERA_SCRATCH->i2 - channel->value,
                 evaluateEasing(channel->ease1, channel->time, channel->duration));
 
         vectorFixedPointMult(
-            &CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1, CAMERA_SCRATCH->value);
+            &CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1, CAMERA_SCRATCH->i1);
         vectorAdd(&channel->computed, &channel->otherPosition, &CAMERA_SCRATCH->v1);
 
         break;
     }
 
     case cameraModeOrbitTo: {
-        CAMERA_SCRATCH->rotation.vz = 0;
-        CAMERA_SCRATCH->rotation.vx = 0;
-        CAMERA_SCRATCH->rotation.vy =
+        CAMERA_SCRATCH->s1.vz = 0;
+        CAMERA_SCRATCH->s1.vx = 0;
+        CAMERA_SCRATCH->s1.vy =
             channel->angle
             + ((channel->angleDelta
                    * evaluateEasing(channel->ease1, channel->time, channel->duration))
                 >> 12);
 
-        RotMatrix_gte(&CAMERA_SCRATCH->rotation, &CAMERA_SCRATCH->matrix);
+        RotMatrix_gte(&CAMERA_SCRATCH->s1, &CAMERA_SCRATCH->matrix);
 
         CAMERA_SCRATCH->v1.vz =
             channel->value
@@ -4991,15 +4958,15 @@ static void stepCameraChannel(CameraChannel* channel, UNUSED CameraChannel* othe
     }
 
     case cameraModeOrbitBy: {
-        CAMERA_SCRATCH->rotation.vz = 0;
-        CAMERA_SCRATCH->rotation.vx = 0;
-        CAMERA_SCRATCH->rotation.vy =
+        CAMERA_SCRATCH->s1.vz = 0;
+        CAMERA_SCRATCH->s1.vx = 0;
+        CAMERA_SCRATCH->s1.vy =
             channel->angle
             + ((channel->angleDelta
                    * evaluateEasing(channel->ease1, channel->time, channel->duration))
                 >> 12);
 
-        RotMatrix_gte(&CAMERA_SCRATCH->rotation, &CAMERA_SCRATCH->matrix);
+        RotMatrix_gte(&CAMERA_SCRATCH->s1, &CAMERA_SCRATCH->matrix);
 
         CAMERA_SCRATCH->v1.vz =
             channel->value
@@ -5021,9 +4988,9 @@ static void stepCameraChannel(CameraChannel* channel, UNUSED CameraChannel* othe
     }
 
     case cameraModeFollowActor:
-        getActorPoint(channel->value, channel->delta, &CAMERA_SCRATCH->rotation, 2);
+        getActorPoint(channel->value, channel->delta, &CAMERA_SCRATCH->s1, 2);
         vectorAdd(&channel->computed,
-            sVectorToFixedPointVector(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->rotation),
+            sVectorToFixedPointVector(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->s1),
             &channel->velocity);
         break;
 
@@ -5043,13 +5010,13 @@ static void stepCameraChannel(CameraChannel* channel, UNUSED CameraChannel* othe
         vectorAdd(&channel->momentumPosition, &channel->momentumPosition,
             &channel->momentumStep);
 
-        CAMERA_SCRATCH->value =
+        CAMERA_SCRATCH->i1 =
             evaluateEasing(easingSineOut, channel->time, channel->duration);
 
         vectorSubtract(
             &CAMERA_SCRATCH->v1, &channel->computed, &channel->momentumPosition);
         vectorFixedPointMult(
-            &CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1, CAMERA_SCRATCH->value);
+            &CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1, CAMERA_SCRATCH->i1);
         vectorAdd(&channel->current, &channel->momentumPosition, &CAMERA_SCRATCH->v1);
     } else {
         vectorCopy(&channel->current, &channel->computed);
@@ -5074,72 +5041,72 @@ static void stepCameraChannel(CameraChannel* channel, UNUSED CameraChannel* othe
  */
 static void stepCameraTerrainFollow(CameraChannel* channel)
 {
-    CameraMotionScratch* scratch;
+    CameraScratch* scratch;
     short i;
 
     vectorSubtract(
-        &CAMERA_MOTION_SCRATCH->delta, &channel->otherPosition, &channel->position);
-    vectorToLookMatrix(&CAMERA_MOTION_SCRATCH->delta, &CAMERA_MOTION_SCRATCH->matrix);
+        &CAMERA_SCRATCH->v1, &channel->otherPosition, &channel->position);
+    vectorToLookMatrix(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->matrix);
 
-    scratch = CAMERA_MOTION_SCRATCH;
+    scratch = CAMERA_SCRATCH;
 
     scratch->matrix.t[0] = channel->position.vx >> 12;
     scratch->matrix.t[1] = channel->position.vy >> 12;
     scratch->matrix.t[2] = channel->position.vz >> 12;
 
-    setVector(&scratch->delta, channel->position.vx - channel->computed.vx,
+    setVector(&scratch->v1, channel->position.vx - channel->computed.vx,
         getCameraTerrainHeight(&scratch->matrix) - channel->computed.vy,
         channel->position.vz - channel->computed.vz);
 
-    scratch->distance = vectorMagnitude(&scratch->delta);
-    scratch->steps = scratch->distance / channel->value;
+    scratch->i1 = vectorMagnitude(&scratch->v1);
+    scratch->i2 = scratch->i1 / channel->value;
 
-    if (scratch->steps < 2) {
+    if (scratch->i2 < 2) {
         channel->time = channel->duration;
-    } else if (scratch->steps > 10) {
-        scratch->steps = 10;
+    } else if (scratch->i2 > 10) {
+        scratch->i2 = 10;
     }
 
-    normalizeVector(&CAMERA_MOTION_SCRATCH->delta, &CAMERA_MOTION_SCRATCH->delta);
+    normalizeVector(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1);
     vectorFixedPointMult(
-        &CAMERA_MOTION_SCRATCH->delta, &CAMERA_MOTION_SCRATCH->delta, channel->value);
-    vectorCopy(&CAMERA_MOTION_SCRATCH->candidate, &channel->computed);
+        &CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1, channel->value);
+    vectorCopy(&CAMERA_SCRATCH->v2, &channel->computed);
 
-    for (i = 1; i <= CAMERA_MOTION_SCRATCH->steps; ++i) {
+    for (i = 1; i <= CAMERA_SCRATCH->i2; ++i) {
         int height;
-        scratch = CAMERA_MOTION_SCRATCH;
+        scratch = CAMERA_SCRATCH;
 
-        vectorAdd(&scratch->candidate, &scratch->candidate, &scratch->delta);
-        vectorSubtract(&scratch->direction, &channel->otherPosition, &scratch->candidate);
-        vectorToLookMatrix(&scratch->direction, &scratch->matrix);
+        vectorAdd(&scratch->v2, &scratch->v2, &scratch->v1);
+        vectorSubtract(&scratch->v3, &channel->otherPosition, &scratch->v2);
+        vectorToLookMatrix(&scratch->v3, &scratch->matrix);
 
-        scratch->matrix.t[0] = scratch->candidate.vx >> 12;
-        scratch->matrix.t[1] = scratch->candidate.vy >> 12;
-        scratch->matrix.t[2] = scratch->candidate.vz >> 12;
+        scratch->matrix.t[0] = scratch->v2.vx >> 12;
+        scratch->matrix.t[1] = scratch->v2.vy >> 12;
+        scratch->matrix.t[2] = scratch->v2.vz >> 12;
 
         height = getCameraTerrainHeight(&scratch->matrix);
 
-        if (height < scratch->candidate.vy) {
-            setVector(&scratch->delta, scratch->candidate.vx - channel->computed.vx,
+        if (height < scratch->v2.vy) {
+            setVector(&scratch->v1, scratch->v2.vx - channel->computed.vx,
                 height - channel->computed.vy,
-                scratch->candidate.vz - channel->computed.vz);
-            normalizeVector(&scratch->delta, &scratch->delta);
-            vectorFixedPointMult(&scratch->delta, &scratch->delta, channel->value);
+                scratch->v2.vz - channel->computed.vz);
+            normalizeVector(&scratch->v1, &scratch->v1);
+            vectorFixedPointMult(&scratch->v1, &scratch->v1, channel->value);
 
             break;
         }
     }
 
-    vectorAdd(&CAMERA_MOTION_SCRATCH->candidate, &CAMERA_MOTION_SCRATCH->delta,
+    vectorAdd(&CAMERA_SCRATCH->v2, &CAMERA_SCRATCH->v1,
         &channel->computed);
 
-    if (CAMERA_MOTION_SCRATCH->candidate.vx == scriptCamera->terrainFollowLast.vx
-        && CAMERA_MOTION_SCRATCH->candidate.vy == scriptCamera->terrainFollowLast.vy
-        && CAMERA_MOTION_SCRATCH->candidate.vz == scriptCamera->terrainFollowLast.vz) {
+    if (CAMERA_SCRATCH->v2.vx == scriptCamera->terrainFollowLast.vx
+        && CAMERA_SCRATCH->v2.vy == scriptCamera->terrainFollowLast.vy
+        && CAMERA_SCRATCH->v2.vz == scriptCamera->terrainFollowLast.vz) {
         channel->time = channel->duration;
     } else {
         vectorCopy(&scriptCamera->terrainFollowLast, &channel->computed);
-        vectorCopy(&channel->computed, &CAMERA_MOTION_SCRATCH->candidate);
+        vectorCopy(&channel->computed, &CAMERA_SCRATCH->v2);
     }
 }
 
@@ -5544,11 +5511,11 @@ static int stepScreenEffectTween(ScreenEffectTween* tween)
 
     tween->elapsed += vs_gametime_vblanksPerFrame >> 1;
 
-    CAMERA_SCRATCH->value = evaluateEasing(tween->ease, tween->elapsed, tween->duration);
+    CAMERA_SCRATCH->i1 = evaluateEasing(tween->ease, tween->elapsed, tween->duration);
 
-    tween->value.vx = tween->start.vx + ((tween->delta.vx * CAMERA_SCRATCH->value) >> 12);
-    tween->value.vy = tween->start.vy + ((tween->delta.vy * CAMERA_SCRATCH->value) >> 12);
-    tween->value.vz = tween->start.vz + ((tween->delta.vz * CAMERA_SCRATCH->value) >> 12);
+    tween->value.vx = tween->start.vx + ((tween->delta.vx * CAMERA_SCRATCH->i1) >> 12);
+    tween->value.vy = tween->start.vy + ((tween->delta.vy * CAMERA_SCRATCH->i1) >> 12);
+    tween->value.vz = tween->start.vz + ((tween->delta.vz * CAMERA_SCRATCH->i1) >> 12);
 
     if (tween->elapsed == tween->duration) {
         tween->duration = 0;
@@ -5668,9 +5635,9 @@ static void stepProjectionTween(ProjectionTween* tween)
         tween->elapsed = tween->duration;
     }
 
-    CAMERA_SCRATCH->value = evaluateEasing(tween->ease, tween->elapsed, tween->duration);
+    CAMERA_SCRATCH->i1 = evaluateEasing(tween->ease, tween->elapsed, tween->duration);
 
-    tween->value = tween->start + ((tween->delta * CAMERA_SCRATCH->value) >> 0xC);
+    tween->value = tween->start + ((tween->delta * CAMERA_SCRATCH->i1) >> 0xC);
 
     if (tween->elapsed == tween->duration) {
         tween->duration = 0;
@@ -5696,27 +5663,27 @@ static int stepShakeEntry(ShakeEntry* entry)
 
     switch (entry->envelope) {
     case 0:
-        CAMERA_SCRATCH->value = ONE;
+        CAMERA_SCRATCH->i1 = ONE;
         break;
 
     case 1:
-        CAMERA_SCRATCH->value =
+        CAMERA_SCRATCH->i1 =
             rsin(entry->elapsed * (ONE / 4) / entry->duration + ONE / 4);
         break;
 
     case 2:
-        CAMERA_SCRATCH->value = rsin(entry->elapsed * (ONE / 2) / entry->duration);
+        CAMERA_SCRATCH->i1 = rsin(entry->elapsed * (ONE / 2) / entry->duration);
         break;
 
     case 3:
-        CAMERA_SCRATCH->value = rsin(entry->elapsed * (ONE / 4) / entry->duration);
+        CAMERA_SCRATCH->i1 = rsin(entry->elapsed * (ONE / 4) / entry->duration);
         break;
     }
 
     entry->offset =
         (((rsin((angleRange * entry->elapsed) / entry->duration) * entry->amplitude)
              >> 12)
-            * CAMERA_SCRATCH->value)
+            * CAMERA_SCRATCH->i1)
         >> 12;
 
     if (entry->elapsed == entry->duration) {
@@ -5732,13 +5699,13 @@ static int stepShakeEntry(ShakeEntry* entry)
 static void updateCameraShake(void)
 {
     short count = 0;
-    CameraShakeScratch* clear = CAMERA_SHAKE_SCRATCH;
+    CameraScratch* clear = CAMERA_SCRATCH;
     short i = 0;
-    CameraShakeScratch* scratch;
+    CameraScratch* scratch;
     ShakeEntry* entry = scriptCamera->shakeEntries;
-    clear->b.vx = clear->b.vy = clear->b.vz = 0;
-    clear->a.vx = clear->a.vy = clear->a.vz = 0;
-    scratch = CAMERA_SHAKE_SCRATCH;
+    clear->s2.vx = clear->s2.vy = clear->s2.vz = 0;
+    clear->s1.vx = clear->s1.vy = clear->s1.vz = 0;
+    scratch = CAMERA_SCRATCH;
 
     for (; i < 2; ++entry, ++i) {
         int x;
@@ -5750,20 +5717,20 @@ static void updateCameraShake(void)
         }
 
         x = entry->offset * (((entry->flags >> 2) & 3) - 1);
-        scratch->c.vx = x;
+        scratch->s3.vx = x;
 
         y = entry->offset * (((entry->flags >> 4) & 3) - 1);
-        scratch->c.vy = y;
+        scratch->s3.vy = y;
 
         z = entry->offset * ((entry->flags >> 6) - 1);
-        scratch->c.vz = z;
+        scratch->s3.vz = z;
 
         if (entry->flags & 1) {
-            applyVector(&scratch->a, x, y, z, +=);
+            applyVector(&scratch->s1, x, y, z, +=);
         }
 
         if (entry->flags & 2) {
-            addVector(&scratch->b, &scratch->c);
+            addVector(&scratch->s2, &scratch->s3);
         }
 
         ++count;
@@ -5772,7 +5739,7 @@ static void updateCameraShake(void)
     scriptCamera->shakeCount = count;
 
     if (count) {
-        // The totals in a and b are read back at their fixed addresses and not as
+        // The totals in lookAt and eye are read back at their fixed addresses and not as
         // members, which the match needs.
         scriptCamera->shakeLookAt.vx = VS_SCRATCH_AT(SVECTOR*, 0xD8)->vx;
         scriptCamera->shakeLookAt.vy = VS_SCRATCH_AT(SVECTOR*, 0xD8)->vy;

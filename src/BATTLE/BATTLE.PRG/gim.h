@@ -5,12 +5,11 @@
 typedef struct {
     u_int visible : 1;
     u_int loading : 1;
-    u_int unk0_2 : 1;
+    u_int is8Bit : 1;
     u_int drawMode : 3;
     u_int loadState : 3;
     u_int pageCount : 3;
-    u_int unk0_12 : 1;
-    u_int unk0_13 : 3;
+    u_int slotClut : 1;
     char vramSlot;
     char brightness;
     u_char columns;
@@ -19,10 +18,9 @@ typedef struct {
     short x;
     short y;
     short scale;
-    u_short unkE;
+    u_short backdropColor;
     u_short* data;
     vs_CdQueueSlot* cdQueueSlot;
     u_short widths[240];
-    u_short imageTable[254];
-    int unk3F4;
+    u_short imageTable[256];
 } Gim;

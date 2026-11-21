@@ -74,7 +74,28 @@ void func_800231E4(DS_CQ* p)
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSSYS_2", func_80023214);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSSYS_2", DS_CQ_flush);
+void DS_CQ_flush(void)
+{
+    DS_CQ* p;
+    int i;
+    int j;
+
+    D_80039CF0.len = 0;
+    D_80039CF0.tail = 0;
+    D_80039CF0.head = 0;
+
+    for (i = 0; i < DslMaxCOMMANDS; ++i) {
+        p = &D_80039CF0.q[i];
+        p->id = 0;
+        p->com = 0;
+        for (j = 0; j < 4; ++j) {
+            p->param[j] = 0;
+        }
+        p->pparam = 0;
+        p->x10 = 0;
+        p->x14 = 0;
+    }
+}
 
 DS_CQ* func_80023360(void)
 {
@@ -83,9 +104,6 @@ DS_CQ* func_80023360(void)
     if (D_80039CF0.len >= 8) {
         return NULL;
     }
-
-    do {
-    } while (0);
 
     i = D_80039CF0.head + D_80039CF0.len;
 
@@ -182,13 +200,15 @@ int DsShellOpen(void) { return DS_shell_open(); }
 
 u_char DsLastCom(void) { return DS_lastcom(); }
 
+static inline DS_CQ* currentCommand(void) { return &D_80039CF0.q[D_80039CF0.tail]; }
+
 void func_800244EC(void)
 {
     DS_CQ* e;
     int status = DS_system_status(0);
 
     if (status == 1 && D_80039CF0.len > 0 && DS_system_status(0) == status) {
-        e = &D_80039CF0.q[D_80039CF0.tail];
+        e = currentCommand();
         if (e->id != 0) {
             DS_cw(e->com, e->pparam);
         }

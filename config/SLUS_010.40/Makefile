@@ -42,6 +42,11 @@ $(BUILD)/src/SLUS_010.40/libc/MEMMOVE.c.o: CC1VER := 2.7.2-cdk
 $(patsubst %,$(BUILD)/src/SLUS_010.40/%.c.o,libpad/PADIF libpad/PADSEQD libetc/INTR_DMA): CC1VER := 2.7.2-cdk
 $(patsubst %,$(BUILD)/src/SLUS_010.40/%.c.o,libpad/PADIF libpad/PADSEQD libetc/INTR_DMA): CC1FLAGS += -mmips-as
 
+# libds DSSYS_2 was built with the CDK 2.7.2 cc1 (MIPS-as syntax), as upstream's DS_CQ_flush and
+# func_800244EC established; func_80023360 no longer needs a scheduling barrier under it.
+$(BUILD)/src/SLUS_010.40/libds/DSSYS_2.c.o: CC1VER := 2.7.2-cdk
+$(BUILD)/src/SLUS_010.40/libds/DSSYS_2.c.o: CC1FLAGS += -mmips-as
+
 # libcd BIOS was built with the CDK 2.7.2 cc1 (MIPS-as syntax): getintr's result[] loops keep their
 # index (no strength reduction) and reorg fills delay slots from branch-target threads. Previously
 # matched BIOS code is byte-identical either way.

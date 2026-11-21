@@ -13,6 +13,7 @@
 #include "battleUnk.h"
 #include "cameraPrivate.h"
 #include "entity.h"
+#include "gim.h"
 #include "src/SLUS_010.40/main.h"
 #include "src/SLUS_010.40/32154.h"
 #include "src/SLUS_010.40/cd.h"
@@ -138,7 +139,7 @@ typedef struct {
     SVECTOR shakeLookAt;
     SVECTOR shakeEye;
     vs_ActorPosition actorPosition;
-    int unk1E0[2];
+    UNUSED int _[2];
     u_short attachedActor;
     VECTOR attachedPosition;
     ScreenEffectTween framebufferScale;
@@ -147,20 +148,6 @@ typedef struct {
     ScreenEffectTween lensDistortion;
     VECTOR terrainFollowLast;
 } ScriptCamera;
-
-typedef struct {
-    u_int visible : 1;
-    u_int loading : 1;
-    u_int unk0_2 : 1;
-    u_int drawMode : 3;
-    u_int unk0_6 : 18;
-    u_int brightness : 8;
-    int unk4;
-    short x;
-    short y;
-    short scale;
-    int unk10[0xFA];
-} Gim;
 
 typedef struct {
     char unk0;

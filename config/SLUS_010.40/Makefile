@@ -11,6 +11,8 @@ $(BUILD)/src/SLUS_010.40/main.c.o: CC1FLAGS += -Wno-return-type
 $(BUILD)/src/SLUS_010.40/25AC.c.o: MASFLAGS += --expand-div
 $(BUILD)/src/SLUS_010.40/libgpu/SYS.c.o: CC1VER := 2.7.2-cdk
 $(BUILD)/src/SLUS_010.40/libgpu/SYS.c.o: CC1FLAGS += -mmips-as
+$(BUILD)/src/SLUS_010.40/libds/DSSYS_2.c.o: CC1VER := 2.7.2-cdk
+$(BUILD)/src/SLUS_010.40/libds/DSSYS_2.c.o: CC1FLAGS += -mmips-as
 
 $(patsubst %,$(BUILD)/src/SLUS_010.40/%.c.o, \
 	libsn/SNMAIN 2MBYTE.OBJ 25AC main \

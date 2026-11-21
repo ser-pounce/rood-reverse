@@ -321,11 +321,11 @@ extern Gim* gims;
 /**
  * Handler for opcode values that are not defined.
  */
-int vs_battle_script_invalidOpcode(u_char* arg0, short arg1)
+int vs_battle_script_invalidOpcode(u_char* script, short arg1)
 {
     char buf[64];
 
-    sprintf(buf, "unknown code detected:%d,$%08x,$%02x", arg1, (u_int)arg0, *arg0);
+    sprintf(buf, "unknown code detected:%d,$%08x,$%02x", arg1, (u_int)script, *script);
     // Debug printing presumably ifdef'd out
     return scriptNext;
 }
@@ -333,17 +333,20 @@ int vs_battle_script_invalidOpcode(u_char* arg0, short arg1)
 /**
  * Does nothing.
  */
-int vs_battle_script_nop(UNUSED u_char* arg0, UNUSED short arg1) { return scriptNext; }
+int vs_battle_script_nop(UNUSED u_char* script, UNUSED short arg1) { return scriptNext; }
 
 /**
  * Does nothing and waits until the next frame before carrying on.
  */
-int vs_battle_script_yield(UNUSED u_char* arg0, UNUSED short arg1) { return scriptYield; }
+int vs_battle_script_yield(UNUSED u_char* script, UNUSED short arg1)
+{
+    return scriptYield;
+}
 
 /**
  * Waits until the event file that is being loaded, if any, has finished loading.
  */
-int vs_battle_script_0A_waitEvtLoad(UNUSED u_char* arg0, UNUSED short arg1)
+int vs_battle_script_0A_waitEvtLoad(UNUSED u_char* script, UNUSED short arg1)
 {
     if ((evtCdSlot != 0) && (evtCdSlot->state != CdQueueStateLoaded)) {
         return scriptWait;
@@ -355,7 +358,7 @@ int vs_battle_script_0A_waitEvtLoad(UNUSED u_char* arg0, UNUSED short arg1)
 /**
  * Waits until the GIM that is being loaded has finished loading.
  */
-int vs_battle_script_0C_waitGimLoad(UNUSED u_char* arg0, UNUSED short arg1)
+int vs_battle_script_0C_waitGimLoad(UNUSED u_char* script, UNUSED short arg1)
 {
     return gims->loading;
 }
@@ -430,13 +433,13 @@ int vs_battle_script_0E_endSkippableBody(u_char* script, UNUSED short arg1)
  * Ends the skip handler of a skippable section. Only has an effect if the section was
  * being skipped, in which case it finishes the skip like 0E.
  */
-int vs_battle_script_0F_endSkipHandler(u_char* arg0, UNUSED short arg1)
+int vs_battle_script_0F_endSkipHandler(u_char* script, UNUSED short arg1)
 {
     u_char prevMode = scriptSkipMode;
     scriptSkipMode = scriptSkipOff;
 
     if (prevMode == scriptSkipping) {
-        endScriptSkip(arg0);
+        endScriptSkip(script);
         return scriptYield;
     }
 
@@ -758,7 +761,7 @@ int vs_battle_script_18_tweenGimImage(u_char* script, UNUSED short arg1)
 /**
  * Unloads the GIM.
  */
-int vs_battle_script_19_unloadGim(UNUSED u_char* arg0, UNUSED short arg1)
+int vs_battle_script_19_unloadGim(UNUSED u_char* script, UNUSED short arg1)
 {
     unloadGim();
 
@@ -768,7 +771,7 @@ int vs_battle_script_19_unloadGim(UNUSED u_char* arg0, UNUSED short arg1)
 /**
  * Waits until all the GIM image tweens have finished.
  */
-int vs_battle_script_1A_waitGimTweens(UNUSED u_char* arg0, UNUSED short arg1)
+int vs_battle_script_1A_waitGimTweens(UNUSED u_char* script, UNUSED short arg1)
 {
     return (gimTweens[0].duration | gimTweens[1].duration | gimTweens[2].duration) != 0
              ? scriptWait
@@ -1120,23 +1123,23 @@ int vs_battle_script_25_moveActorToTile(u_char* script, UNUSED short arg1)
  *   - [10] = movement frame count, 0 = immediately, 0xFF = default
  *   - [11] = turn frame count, 0 = immediately, 0xFF = default
  */
-int vs_battle_script_26_moveActorToCoordinate(u_char* arg0, UNUSED short arg1)
+int vs_battle_script_26_moveActorToCoordinate(u_char* script, UNUSED short arg1)
 {
     vs_ActorPosition position;
-    u_short actor = resolveActorId(getShort(arg0 + 1));
-    short x = getShort(arg0 + 3) >> 1;
-    short y = getShort(arg0 + 5);
-    short z = getShort(arg0 + 7);
+    u_short actor = resolveActorId(getShort(script + 1));
+    short x = getShort(script + 3) >> 1;
+    short y = getShort(script + 5);
+    short z = getShort(script + 7);
 
-    if (arg0[3] & 1) {
+    if (script[3] & 1) {
         vs_battle_getActorPosition(actor, &position);
         applyVector(&position.unk0.unk4, x, y, z, +=);
     } else {
         setVector(&position.unk0.unk4, x, y, z);
     }
 
-    if (arg0[9] != 0xFF) {
-        position.unk0.unk4.pad = arg0[9] << 4;
+    if (script[9] != 0xFF) {
+        position.unk0.unk4.pad = script[9] << 4;
     } else {
         position.unk0.unk4.pad = -0x8000;
     }
@@ -1145,7 +1148,7 @@ int vs_battle_script_26_moveActorToCoordinate(u_char* arg0, UNUSED short arg1)
         moveActorToCoordinate(actor, &position.unk0.unk4, 0, 0);
     } else {
         moveActorToCoordinate(actor, &position.unk0.unk4,
-            arg0[10] != 0xFF ? arg0[10] : -1, arg0[11] != 0xFF ? arg0[11] : -1);
+            script[10] != 0xFF ? script[10] : -1, script[11] != 0xFF ? script[11] : -1);
     }
 
     resetActorMotionState(actor);
@@ -3138,7 +3141,7 @@ int vs_battle_script_82_fadeSfxVolume(u_char* script, UNUSED short arg1)
 }
 
 /** Stops all sound effects. */
-int vs_battle_script_83_stopAllSfx(UNUSED u_char* arg0, UNUSED short arg1)
+int vs_battle_script_83_stopAllSfx(UNUSED u_char* script, UNUSED short arg1)
 {
     vs_main_stopAllSfx();
 
@@ -3318,7 +3321,7 @@ int vs_battle_script_95_rampMusicPitch(u_char* script, UNUSED short arg1)
 /**
  * Stops the script music.
  */
-int vs_battle_script_96_stopMusic(UNUSED u_char* arg0, UNUSED short arg1)
+int vs_battle_script_96_stopMusic(UNUSED u_char* script, UNUSED short arg1)
 {
     vs_main_stopMusicSlot(scriptMusicSlot);
 
@@ -3348,7 +3351,7 @@ int vs_battle_script_97_waitMusicSilent(u_char* script, UNUSED short arg1)
 /**
  * Saves a copy of the playing music's state.
  */
-int vs_battle_script_98_pushMusicState(UNUSED u_char* arg0, UNUSED short arg1)
+int vs_battle_script_98_pushMusicState(UNUSED u_char* script, UNUSED short arg1)
 {
     vs_main_pushMusicState();
 
@@ -3378,7 +3381,7 @@ int vs_battle_script_9D_loadInstrumentBank(u_char* script, UNUSED short arg1)
 }
 
 /** Waits until the instrument bank started by opcode 9D or 89 is loaded and ready. */
-int vs_battle_script_9E_waitInstrumentBankLoad(UNUSED u_char* arg0, UNUSED short arg1)
+int vs_battle_script_9E_waitInstrumentBankLoad(UNUSED u_char* script, UNUSED short arg1)
 {
     return vs_main_processInstrumentBankLoad() == 1 ? scriptWait : scriptNext;
 }
@@ -3921,7 +3924,7 @@ int vs_battle_script_B7_specialOp(u_char* script, UNUSED short arg1)
 /**
  * Waits until the screen effects overlay, started by opcode BC, has finished loading.
  */
-int vs_battle_script_B8_waitScreenEffectsLoaded(UNUSED u_char* arg0, UNUSED short arg1)
+int vs_battle_script_B8_waitScreenEffectsLoaded(UNUSED u_char* script, UNUSED short arg1)
 {
     if ((screenEffects != NULL) && (screenEffects->loading != 0)) {
         return scriptWait;
@@ -3946,7 +3949,7 @@ int vs_battle_script_BB_setScreenBlur(u_char* script, UNUSED short arg1)
 /**
  * Starts loading the screen effects overlay (SCREFF2.PRG).
  */
-int vs_battle_script_BC_loadScreenEffects(UNUSED u_char* arg0, UNUSED short arg1)
+int vs_battle_script_BC_loadScreenEffects(UNUSED u_char* script, UNUSED short arg1)
 {
     loadScreenEffects();
 
@@ -3957,12 +3960,15 @@ int vs_battle_script_BC_loadScreenEffects(UNUSED u_char* arg0, UNUSED short arg1
  * Does nothing. Only the room scripts of MAP101 and MAP213 use it, with the byte 0x0C,
  * right after setEnteredDoor.
  */
-int vs_battle_script_BD_nop(UNUSED u_char* arg0, UNUSED short arg1) { return scriptNext; }
+int vs_battle_script_BD_nop(UNUSED u_char* script, UNUSED short arg1)
+{
+    return scriptNext;
+}
 
 /**
  * Releases the screen effects overlay.
  */
-int vs_battle_script_BE_unloadScreenEffects(UNUSED u_char* arg0, UNUSED short arg1)
+int vs_battle_script_BE_unloadScreenEffects(UNUSED u_char* script, UNUSED short arg1)
 {
     unloadScreenEffects();
 
@@ -3975,7 +3981,7 @@ int vs_battle_script_BE_unloadScreenEffects(UNUSED u_char* arg0, UNUSED short ar
  * @param script Opcode bytes:
  *   - [1] = unused
  */
-int vs_battle_script_DE_stopCamera(UNUSED u_char* arg0, UNUSED short arg1)
+int vs_battle_script_DE_stopCamera(UNUSED u_char* script, UNUSED short arg1)
 {
     stopCamera();
 
@@ -4146,9 +4152,9 @@ int vs_battle_script_F6_endScript(UNUSED u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1-2] = EVT file number
  */
-int vs_battle_script_F7_queueNextEvt(u_char* arg0, UNUSED short arg1)
+int vs_battle_script_F7_queueNextEvt(u_char* script, UNUSED short arg1)
 {
-    evtFile = getShort(arg0 + 1);
+    evtFile = getShort(script + 1);
     nextEvtBuffer = vs_main_allocHeapR(0x1800);
 
     loadEvt(evtFile, nextEvtBuffer);
@@ -4769,8 +4775,8 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
     }
 
     case cameraSetDestinationToActorOffset:
-        getActorPoint(resolveActorId(getShort(script + 1)), script[3],
-            &CAMERA_SCRATCH->s1, 2);
+        getActorPoint(
+            resolveActorId(getShort(script + 1)), script[3], &CAMERA_SCRATCH->s1, 2);
 
         sVectorToFixedPointVector(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->s1);
 
@@ -4898,8 +4904,7 @@ static void stepCameraChannel(CameraChannel* channel, UNUSED CameraChannel* othe
         CAMERA_SCRATCH->i1 =
             evaluateEasing(channel->ease1, channel->time, channel->duration);
 
-        vectorFixedPointMult(
-            &CAMERA_SCRATCH->v1, &channel->velocity, CAMERA_SCRATCH->i1);
+        vectorFixedPointMult(&CAMERA_SCRATCH->v1, &channel->velocity, CAMERA_SCRATCH->i1);
         vectorAdd(&channel->computed, &channel->start, &CAMERA_SCRATCH->v1);
 
         break;
@@ -4908,8 +4913,7 @@ static void stepCameraChannel(CameraChannel* channel, UNUSED CameraChannel* othe
         CAMERA_SCRATCH->i1 =
             evaluateEasing(channel->ease1, channel->time, channel->duration);
 
-        vectorFixedPointMult(
-            &CAMERA_SCRATCH->v1, &channel->velocity, CAMERA_SCRATCH->i1);
+        vectorFixedPointMult(&CAMERA_SCRATCH->v1, &channel->velocity, CAMERA_SCRATCH->i1);
         vectorAdd(&CAMERA_SCRATCH->v2, &channel->start, &CAMERA_SCRATCH->v1);
         vectorSubtract(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v2, &channel->otherPosition);
         normalizeVector(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1);
@@ -5044,8 +5048,7 @@ static void stepCameraTerrainFollow(CameraChannel* channel)
     CameraScratch* scratch;
     short i;
 
-    vectorSubtract(
-        &CAMERA_SCRATCH->v1, &channel->otherPosition, &channel->position);
+    vectorSubtract(&CAMERA_SCRATCH->v1, &channel->otherPosition, &channel->position);
     vectorToLookMatrix(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->matrix);
 
     scratch = CAMERA_SCRATCH;
@@ -5068,8 +5071,7 @@ static void stepCameraTerrainFollow(CameraChannel* channel)
     }
 
     normalizeVector(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1);
-    vectorFixedPointMult(
-        &CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1, channel->value);
+    vectorFixedPointMult(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1, channel->value);
     vectorCopy(&CAMERA_SCRATCH->v2, &channel->computed);
 
     for (i = 1; i <= CAMERA_SCRATCH->i2; ++i) {
@@ -5088,8 +5090,7 @@ static void stepCameraTerrainFollow(CameraChannel* channel)
 
         if (height < scratch->v2.vy) {
             setVector(&scratch->v1, scratch->v2.vx - channel->computed.vx,
-                height - channel->computed.vy,
-                scratch->v2.vz - channel->computed.vz);
+                height - channel->computed.vy, scratch->v2.vz - channel->computed.vz);
             normalizeVector(&scratch->v1, &scratch->v1);
             vectorFixedPointMult(&scratch->v1, &scratch->v1, channel->value);
 
@@ -5097,8 +5098,7 @@ static void stepCameraTerrainFollow(CameraChannel* channel)
         }
     }
 
-    vectorAdd(&CAMERA_SCRATCH->v2, &CAMERA_SCRATCH->v1,
-        &channel->computed);
+    vectorAdd(&CAMERA_SCRATCH->v2, &CAMERA_SCRATCH->v1, &channel->computed);
 
     if (CAMERA_SCRATCH->v2.vx == scriptCamera->terrainFollowLast.vx
         && CAMERA_SCRATCH->v2.vy == scriptCamera->terrainFollowLast.vy
@@ -5667,8 +5667,7 @@ static int stepShakeEntry(ShakeEntry* entry)
         break;
 
     case 1:
-        CAMERA_SCRATCH->i1 =
-            rsin(entry->elapsed * (ONE / 4) / entry->duration + ONE / 4);
+        CAMERA_SCRATCH->i1 = rsin(entry->elapsed * (ONE / 4) / entry->duration + ONE / 4);
         break;
 
     case 2:

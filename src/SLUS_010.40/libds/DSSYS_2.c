@@ -4,7 +4,7 @@ typedef struct {
     int unk0;
     u_char unk4;
     u_char unk5[4];
-    int unkC;
+    u_char* unkC;
     int unk10;
     int unk14;
 } func_80023360_t;
@@ -17,6 +17,11 @@ typedef struct {
 } D_80039CF0_t;
 
 extern D_80039CF0_t D_80039CF0;
+// Same address as D_80039CF0.unkC4; a separate symbol keeps cse from folding the load
+extern int D_80039DB4;
+
+int DS_system_status(int);
+int DS_cw(u_char com, u_char* param);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSSYS_2", func_800231E4);
 
@@ -98,7 +103,18 @@ INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSSYS_2", DsShellOpen);
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSSYS_2", DsLastCom);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSSYS_2", func_800244EC);
+void func_800244EC(void)
+{
+    func_80023360_t* p;
+    int status = DS_system_status(0);
+
+    if (status == 1 && D_80039CF0.unkC8 > 0 && DS_system_status(0) == status) {
+        p = &D_80039CF0.unk0[D_80039DB4];
+        if (p->unk0 != 0) {
+            DS_cw(p->unk4, p->unkC);
+        }
+    }
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libds/DSSYS_2", func_80024590);
 

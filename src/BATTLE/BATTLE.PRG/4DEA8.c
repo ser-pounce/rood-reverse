@@ -36,6 +36,69 @@
 #include <inline_c.h>
 
 typedef struct {
+    u_char changed;
+    u_char ease;
+    short value;
+    short start;
+    short delta;
+    short elapsed;
+    short duration;
+} AngleTween;
+
+typedef struct {
+    u_char changed;
+    u_char ease;
+    short value;
+    short start;
+    short delta;
+    u_char elapsed;
+    u_char duration;
+    UNUSED u_char _;
+} ProjectionTween;
+
+typedef struct {
+    UNUSED u_char _0;
+    u_char ease;
+    SVECTOR value;
+    SVECTOR start;
+    SVECTOR delta;
+    UNUSED short _1;
+    short elapsed;
+    short duration;
+} ScreenEffectTween;
+
+typedef struct {
+    UNUSED u_char _;
+    u_char curve;
+    u_char elapsed;
+    u_char duration;
+    short startX;
+    short startY;
+    short deltaX;
+    short deltaY;
+    short startScale;
+    short deltaScale;
+    short startBrightness;
+    short deltaBrightness;
+} GimTween;
+
+typedef struct {
+    UNUSED u_char _0;
+    UNUSED u_char _1;
+    u_char elapsed;
+    u_char duration;
+    short direction;
+    short startDirection;
+    short deltaDirection;
+    short fallAngle;
+    short startFallAngle;
+    short deltaFallAngle;
+    short intensity;
+    short startIntensity;
+    short deltaIntensity;
+} ParticleTween;
+
+typedef struct {
     u_char mode;
     u_char ease1;
     u_char ease2;
@@ -84,47 +147,15 @@ enum {
 };
 
 typedef struct {
-    char changed;
-    char ease;
-    short value;
-    short start;
-    short delta;
-    short elapsed;
-    short duration;
-} AngleTween;
-
-typedef struct {
     UNUSED u_char _;
     u_char envelope;
     short offset;
     short cycles;
     short amplitude;
-    char elapsed;
-    char duration;
-    char flags;
+    u_char elapsed;
+    u_char duration;
+    u_char flags;
 } ShakeEntry;
-
-typedef struct {
-    char changed;
-    char ease;
-    short value;
-    short start;
-    short delta;
-    char elapsed;
-    char duration;
-    UNUSED char _;
-} ProjectionTween;
-
-typedef struct {
-    UNUSED char _0;
-    char ease;
-    SVECTOR value;
-    SVECTOR start;
-    SVECTOR delta;
-    UNUSED short _1;
-    short elapsed;
-    short duration;
-} ScreenEffectTween;
 
 typedef struct {
     CameraChannel lookAt;
@@ -150,40 +181,60 @@ typedef struct {
 } ScriptCamera;
 
 typedef struct {
-    char unk0;
-    char curve;
-    char elapsed;
-    char duration;
-    short startX;
-    short startY;
-    short deltaX;
-    short deltaY;
-    short startScale;
-    short deltaScale;
-    short startBrightness;
-    short deltaBrightness;
-} GimTween;
+    int value;
+    int distance;
+    u_char unk8[8];
+    VECTOR v1;
+    VECTOR v2;
+    VECTOR v3;
+    u_char unk40[16];
+    SVECTOR rotation;
+    SVECTOR rotation2;
+    SVECTOR unk60;
+    u_char unk68[8];
+    MATRIX matrix;
+} CameraScratch;
+
+#define CAMERA_SCRATCH VS_SCRATCH_AT(CameraScratch*, 0x88)
 
 typedef struct {
-    char unk0;
-    char unk1;
-    char elapsed;
-    char duration;
-    short direction;
-    short startDirection;
-    short deltaDirection;
-    short fallAngle;
-    short startFallAngle;
-    short deltaFallAngle;
-    short intensity;
-    short startIntensity;
-    short deltaIntensity;
-} ParticleTween;
+    int distance;
+    int steps;
+    u_char unk8[8];
+    VECTOR delta;
+    VECTOR candidate;
+    VECTOR direction;
+    u_char unk40[16];
+    SVECTOR unk50;
+    SVECTOR unk58;
+    SVECTOR unk60;
+    u_char unk68[8];
+    MATRIX matrix;
+} CameraMotionScratch;
+
+#define CAMERA_MOTION_SCRATCH VS_SCRATCH_AT(CameraMotionScratch*, 0x88)
 
 typedef struct {
-    char remaining;
-    char next;
-    char actors[17];
+    int unk0;
+    int unk4;
+    u_char unk8[8];
+    VECTOR unk10;
+    VECTOR unk20;
+    VECTOR unk30;
+    u_char unk40[16];
+    SVECTOR a;
+    SVECTOR b;
+    SVECTOR c;
+    u_char unk68[8];
+    MATRIX unk70;
+} CameraShakeScratch;
+
+#define CAMERA_SHAKE_SCRATCH VS_SCRATCH_AT(CameraShakeScratch*, 0x88)
+
+typedef struct {
+    u_char remaining;
+    u_char next;
+    u_char actors[17];
 } ActorList;
 
 typedef struct {
@@ -193,63 +244,6 @@ typedef struct {
     int distance;
 } TextPlacement;
 
-typedef struct {
-    int value;
-    int distance;
-    char unk8[8];
-    VECTOR v1;
-    VECTOR v2;
-    VECTOR v3;
-    char unk40[16];
-    SVECTOR rotation;
-    SVECTOR rotation2;
-    SVECTOR unk60;
-    char unk68[8];
-    MATRIX matrix;
-} CameraScratch;
-
-/**
- * The camera code's workspace in the scratchpad. The three structs overlay each other,
- * and are three names for the same slots.
- */
-#define CAMERA_SCRATCH VS_SCRATCH_AT(CameraScratch*, 0x88)
-
-typedef struct {
-    int distance;
-    int steps;
-    char unk8[8];
-    VECTOR delta;
-    VECTOR candidate;
-    VECTOR direction;
-    char unk40[16];
-    SVECTOR unk50;
-    SVECTOR unk58;
-    SVECTOR unk60;
-    char unk68[8];
-    MATRIX matrix;
-} CameraMotionScratch;
-
-#define CAMERA_MOTION_SCRATCH VS_SCRATCH_AT(CameraMotionScratch*, 0x88)
-
-typedef struct {
-    int unk0;
-    int unk4;
-    char unk8[8];
-    VECTOR unk10;
-    VECTOR unk20;
-    VECTOR unk30;
-    char unk40[16];
-    SVECTOR a;
-    SVECTOR b;
-    SVECTOR c;
-    char unk68[8];
-    MATRIX unk70;
-} CameraShakeScratch;
-
-#define CAMERA_SHAKE_SCRATCH VS_SCRATCH_AT(CameraShakeScratch*, 0x88)
-
-// Comparison selected by the high nibble of a conditional opcode's second byte, applied
-// as `flag <op> operand`
 enum flagComparison {
     flagComparisonLe = 0x00,
     flagComparisonGe = 0x10,
@@ -260,8 +254,6 @@ enum flagComparison {
     flagComparisonAnd = 0x60
 };
 
-// Operation selected by the high nibble of a flag modifying opcode's second byte,
-// applied as `flag = flag <op> operand`
 enum flagOperation {
     flagOperationAdd = 0x00,
     flagOperationSubtract = 0x10,
@@ -294,7 +286,7 @@ static void stepProjectionTween(ProjectionTween*);
 static void updateCameraShake(void);
 void setCameraMomentum(int lookAt, int eye);
 static void stopCamera(void);
-void sweepCameraToSavedPlayerView(char side);
+void sweepCameraToSavedPlayerView(u_char side);
 void scaleCameraMoveDurationByDistance(short target);
 static VECTOR* vectorAdd(VECTOR* result, VECTOR* a, VECTOR* b);
 static VECTOR* vectorSubtract(VECTOR* result, VECTOR* a, VECTOR* b);
@@ -310,9 +302,9 @@ static void normalizeVector(VECTOR* vector, VECTOR* result);
 
 extern int scriptSfxGroups[];
 extern int weaponDrawnModes[];
-extern char animationBankBase[];
-extern char skipResetPaletteOp[];
-extern char skipTailMarkerOp[];
+extern u_char animationBankBase[];
+extern u_char skipResetPaletteOp[];
+extern u_char skipTailMarkerOp[];
 extern u_char textBoxPlacementDirections[];
 extern u_char cubePuzzleSubmenus[];
 extern short battleTimerModes[];
@@ -326,37 +318,37 @@ extern u_char sweepLookAtScript[];
 extern u_short scanlinePhase;
 extern GimTween gimTweens[];
 extern ParticleTween particleTween;
-extern char D_800F4B8B;
-extern char cameraFollowsAshley;
+extern u_char D_800F4B8B;
+extern u_char cameraFollowsAshley;
 extern ScriptCamera* scriptCamera;
-extern char D_800F4BA8;
+extern u_char D_800F4BA8;
 extern void* mpdTriggerSection;
 extern u_short* scriptStrings;
-extern char switchValue;
+extern u_char switchValue;
 extern short cameraReturned;
-extern char eventReady;
+extern u_char eventReady;
 extern u_char effectCancelled;
 extern char* vibrationPatterns[];
 extern short eventSource;
-extern char scanlinesEnabled;
+extern u_char scanlinesEnabled;
 extern void* mpdTriggeredScripts;
-extern char scriptMenuState;
-extern char loopCounters[];
+extern u_char scriptMenuState;
+extern u_char loopCounters[];
 extern short mainScriptEnded;
 extern void* nextEvtBuffer;
-extern char eventState;
+extern u_char eventState;
 /** Next opcode of the code running in each script slot, NULL if it isn't running. */
 extern u_char* scriptSlots[];
 extern short particleEffectSoundToRestore;
-extern char weaponAnimating;
+extern u_char weaponAnimating;
 extern short mpdEntryScriptPending;
 extern short nextEvtQueued;
-extern char textBoxSelectionPending;
+extern u_char textBoxSelectionPending;
 extern int scriptReturnAddress;
-extern char scriptMusicSlot;
-extern char fogDepthOverridden;
+extern u_char scriptMusicSlot;
+extern u_char fogDepthOverridden;
 
-extern char actorMoved[];
+extern u_char actorMoved[];
 extern Gim* gims;
 
 /**
@@ -456,7 +448,7 @@ static void endScriptSkip(u_char* script)
  */
 int vs_battle_script_0E_endSkippableBody(u_char* script, UNUSED short arg1)
 {
-    char prevMode = scriptSkipMode;
+    u_char prevMode = scriptSkipMode;
     scriptSkipMode = scriptSkipOff;
 
     if (prevMode == scriptSkipping) {
@@ -473,7 +465,7 @@ int vs_battle_script_0E_endSkippableBody(u_char* script, UNUSED short arg1)
  */
 int vs_battle_script_0F_endSkipHandler(u_char* arg0, UNUSED short arg1)
 {
-    char prevMode = scriptSkipMode;
+    u_char prevMode = scriptSkipMode;
     scriptSkipMode = scriptSkipOff;
 
     if (prevMode == scriptSkipping) {
@@ -1847,7 +1839,7 @@ int vs_battle_script_3F_setWeaponDrawn(u_char* script, UNUSED short arg1)
 int vs_battle_script_40_jumpFwdUnlessFlagImm(u_char* script, UNUSED short arg1)
 {
     char flag = getStateFlag(((u_char)script[2] >> 2) | ((script[1] & 0xF) << 6));
-    char value = script[3];
+    u_char value = script[3];
 
     switch (script[1] & 0xF0) {
     case flagComparisonLe:
@@ -1911,7 +1903,7 @@ int vs_battle_script_40_jumpFwdUnlessFlagImm(u_char* script, UNUSED short arg1)
 int vs_battle_script_41_jumpFwdUnlessFlag(u_char* script, UNUSED short arg1)
 {
     char flag = getStateFlag(((u_char)script[2] >> 2) | ((script[1] & 0xF) << 6));
-    char other = getStateFlag(script[3] | ((script[2] & 3) << 8));
+    u_char other = getStateFlag(script[3] | ((script[2] & 3) << 8));
 
     switch (script[1] & 0xF0) {
     case flagComparisonLe:
@@ -2131,7 +2123,7 @@ int vs_battle_script_50_modifyFlagImm(u_char* script, UNUSED short arg1)
 int vs_battle_script_51_modifyFlag(u_char* script, UNUSED short arg1)
 {
     int tmp;
-    char prev;
+    u_char prev;
 
     int flag0 = (script[2] >> 2) + ((script[1] & 0xF) << 6);
     int flag1 = script[3] + ((script[2] & 3) << 8);
@@ -5831,7 +5823,7 @@ static void stopCamera(void)
  * orbits and the look-at moves to it.
  * @param side 0 or 1, which side the camera comes in from.
  */
-void sweepCameraToSavedPlayerView(char side)
+void sweepCameraToSavedPlayerView(u_char side)
 {
     VECTOR startLookAt;
     VECTOR endLookAt;

@@ -136,12 +136,10 @@ typedef struct {
     short shakeCount;
     ShakeEntry shakeEntries[2];
     SVECTOR shakeLookAt;
-    short shakeEye[3];
-    int unk1CC;
+    SVECTOR shakeEye;
     vs_ActorPosition actorPosition;
     int unk1E0[2];
     u_short attachedActor;
-    u_short unk1EA;
     VECTOR attachedPosition;
     ScreenEffectTween framebufferScale;
     ScreenEffectTween framebufferTint;
@@ -4566,7 +4564,7 @@ static void applyCameraState(void)
     }
     if (scriptCamera->shakeCount != 0) {
         sVectorToFixedPointVector(&CAMERA_SCRATCH->v1, &scriptCamera->shakeLookAt);
-        sVectorToFixedPointVector(&CAMERA_SCRATCH->v2, (SVECTOR*)scriptCamera->shakeEye);
+        sVectorToFixedPointVector(&CAMERA_SCRATCH->v2, &scriptCamera->shakeEye);
         CAMERA_SCRATCH->rotation.vz = 0;
         CAMERA_SCRATCH->rotation.vx = 0;
         CAMERA_SCRATCH->rotation.vy =
@@ -5800,9 +5798,9 @@ static void updateCameraShake(void)
         scriptCamera->shakeLookAt.vx = VS_SCRATCH_AT(SVECTOR*, 0xD8)->vx;
         scriptCamera->shakeLookAt.vy = VS_SCRATCH_AT(SVECTOR*, 0xD8)->vy;
         scriptCamera->shakeLookAt.vz = VS_SCRATCH_AT(SVECTOR*, 0xD8)->vz;
-        scriptCamera->shakeEye[0] = VS_SCRATCH_AT(SVECTOR*, 0xE0)->vx;
-        scriptCamera->shakeEye[1] = VS_SCRATCH_AT(SVECTOR*, 0xE0)->vy;
-        scriptCamera->shakeEye[2] = VS_SCRATCH_AT(SVECTOR*, 0xE0)->vz;
+        scriptCamera->shakeEye.vx = VS_SCRATCH_AT(SVECTOR*, 0xE0)->vx;
+        scriptCamera->shakeEye.vy = VS_SCRATCH_AT(SVECTOR*, 0xE0)->vy;
+        scriptCamera->shakeEye.vz = VS_SCRATCH_AT(SVECTOR*, 0xE0)->vz;
     }
 }
 

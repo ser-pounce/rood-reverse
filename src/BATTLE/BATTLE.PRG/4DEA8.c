@@ -4035,7 +4035,7 @@ int vs_battle_script_E9_returnToGameplayCamera(u_char* script, UNUSED short slot
 
 /**
  * Waits until the camera channels in a mask have finished moving, see getCameraIdleFlags.
- * The look-at and eye moves are started by vs_battle_script_Cx_Dx_camera.
+ * The look-at and eye moves are started by vs_battle_script_controlCameraChannel.
  * @param script Opcode bytes:
  *   - [1] = mask of the channels to wait for
  */
@@ -4169,7 +4169,7 @@ int vs_battle_script_F7_queueNextEvt(u_char* script, UNUSED short slot)
  * Restores the full frame rate. No discernable difference in usage
  * between 0xFE and 0xFF.
  */
-int vs_battle_script_FE_FF_endScene(UNUSED u_char* script, UNUSED short slot)
+int vs_battle_script_endScene(UNUSED u_char* script, UNUSED short slot)
 {
     int i;
     int boxesClosing = 0;
@@ -4580,8 +4580,8 @@ void returnToGameplayCamera(short facing, int zoom)
             / 0x28000;
     if ((temp_v0 << 0x10) != 0) {
         returnCameraScripts[2] = returnCameraScripts[6] = temp_v0;
-        vs_battle_script_Cx_Dx_camera(returnCameraScripts, 0);
-        vs_battle_script_Cx_Dx_camera(returnCameraScripts + 3, 0);
+        vs_battle_script_controlCameraChannel(returnCameraScripts, 0);
+        vs_battle_script_controlCameraChannel(returnCameraScripts + 3, 0);
     }
 }
 
@@ -4591,7 +4591,7 @@ void returnToGameplayCamera(short facing, int zoom)
  * a duration is in steps of 1/30 s, and an angle is in ONE per turn.
  * @param script Opcode bytes, which depend on the sub-opcode.
  */
-int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
+int vs_battle_script_controlCameraChannel(u_char* script, UNUSED short unused)
 {
     enum {
         // Stores a destination for the channel.
@@ -5169,7 +5169,7 @@ static int getCameraTerrainHeight(MATRIX* camera)
  *   - [4] = duration, 0 sets the angle immediately
  *   - [5] = unused
  */
-int vs_battle_script_E2_E3_camera(u_char* script, UNUSED short slot)
+int vs_battle_script_tweenAngle(u_char* script, UNUSED short slot)
 {
     AngleTween* tween;
 
@@ -5283,7 +5283,7 @@ u_char getCameraIdleFlags(void)
  * Sets the parameters of the frame buffer effect and the lens distortion.
  * @param script Opcode bytes, see the comments on each opcode.
  */
-int vs_battle_script_B9_BA_BF_E4_E5_E6_E7_ED(u_char* script, UNUSED short slot)
+int vs_battle_script_framebufferEffectParams(u_char* script, UNUSED short slot)
 {
     VECTOR values;
     CVECTOR color;
@@ -5529,7 +5529,7 @@ static int stepScreenEffectTween(ScreenEffectTween* tween)
  * uses this handler, but does nothing and does not return a result.
  * @param script Opcode bytes, see the comments on each opcode.
  */
-int vs_battle_script_EA_EB_EC_EE_EF_camera(u_char* script, UNUSED short slot)
+int vs_battle_script_setProjectionClipAndShake(u_char* script, UNUSED short slot)
 {
     ShakeEntry* entry;
     short i;
@@ -5817,8 +5817,8 @@ void sweepCameraToSavedPlayerView(u_char side)
     vectorCopy(&scriptCamera->eye.position, &endEye);
     vectorCopy(&scriptCamera->lookAt.position, &endLookAt);
 
-    vs_battle_script_Cx_Dx_camera(sweepEyeScript, 0);
-    vs_battle_script_Cx_Dx_camera(sweepLookAtScript, 0);
+    vs_battle_script_controlCameraChannel(sweepEyeScript, 0);
+    vs_battle_script_controlCameraChannel(sweepLookAtScript, 0);
 }
 
 /**

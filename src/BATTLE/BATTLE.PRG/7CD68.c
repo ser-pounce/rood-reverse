@@ -265,8 +265,8 @@ void func_800E5A9C(func_800E78F4_t* arg0, func_800E5A9C_t* arg1)
     arg0->unk102 = D_80069C08[actor->unk34_14];
     arg0->unk101 = actor->unk30_14;
     arg0->unkC8 = actor->unk30_16;
-    arg0->unkCC = actor->unk30_22;
-    arg0->unkCE = actor->unk30_27;
+    arg0->unkCC.x = actor->unk30_22;
+    arg0->unkCC.z = actor->unk30_27;
 
     if (actor->subType == 172 || actor->subType == 173) {
         arg0->unk68 = func_800E7F8C;

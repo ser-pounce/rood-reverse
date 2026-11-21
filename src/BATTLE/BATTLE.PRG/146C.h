@@ -44,6 +44,7 @@ void func_80077EC4(void);
 void func_8007D3F8(void);
 void func_8007DF48(void);
 void func_8008B6B4(void);
+void* func_8008E2D4(int);
 void func_8008E88C(void);
 extern u_short D_800F1BA4;
 extern u_short* D_800F1BA8;

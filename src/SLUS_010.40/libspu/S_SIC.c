@@ -1,7 +1,6 @@
-#include "common.h"
-#include <libspu.h>
+#include "spu.h"
 
-extern volatile SpuIRQCallbackProc D_8003089C; /* _spu_IRQCallback */
+extern volatile SpuIRQCallbackProc D_8003089C;
 extern void _SpuCallback(void (*func)(void));
 
 SpuIRQCallbackProc SpuSetIRQCallback(SpuIRQCallbackProc func)

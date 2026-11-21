@@ -93,7 +93,7 @@ typedef struct {
 } AngleTween;
 
 typedef struct {
-    u_char unk0;
+    UNUSED u_char _;
     u_char envelope;
     short offset;
     short cycles;
@@ -101,7 +101,6 @@ typedef struct {
     char elapsed;
     char duration;
     char flags;
-    char unkB;
 } ShakeEntry;
 
 typedef struct {
@@ -112,20 +111,16 @@ typedef struct {
     short delta;
     char elapsed;
     char duration;
-    char unkA;
-    char unkB;
+    UNUSED char _;
 } ProjectionTween;
 
 typedef struct {
-    char unk0;
+    UNUSED char _0;
     char ease;
-    short value[3];
-    short unk8;
-    short start[3];
-    short unk10;
-    short delta[3];
-    short unk18;
-    short unk1A;
+    SVECTOR value;
+    SVECTOR start;
+    SVECTOR delta;
+    UNUSED short _1;
     short elapsed;
     short duration;
 } ScreenEffectTween;
@@ -4469,20 +4464,20 @@ static void initScriptCamera(void)
     vs_battle_setFramebufferEffectSpin(0);
 
     scriptCamera->framebufferSpin.changed = 1;
-    scriptCamera->framebufferScale.value[1] = ONE;
-    scriptCamera->framebufferScale.value[0] = ONE;
+    scriptCamera->framebufferScale.value.vy = ONE;
+    scriptCamera->framebufferScale.value.vx = ONE;
 
     vs_battle_setFramebufferEffectScale(&oneVector);
 
-    scriptCamera->framebufferTint.value[0] = scriptCamera->framebufferTint.value[1] =
-        scriptCamera->framebufferTint.value[2] = scriptCamera->framebufferScale.duration =
+    scriptCamera->framebufferTint.value.vx = scriptCamera->framebufferTint.value.vy =
+        scriptCamera->framebufferTint.value.vz = scriptCamera->framebufferScale.duration =
             0;
 
     vs_battle_setFramebufferEffectTint(&neutralTint);
 
     scriptCamera->framebufferTint.duration = 0;
-    scriptCamera->framebufferOffset.value[1] = ONE;
-    scriptCamera->framebufferOffset.value[0] = ONE;
+    scriptCamera->framebufferOffset.value.vy = ONE;
+    scriptCamera->framebufferOffset.value.vx = ONE;
 
     vs_battle_setFramebufferEffectOffset(&oneVector);
 
@@ -4490,8 +4485,8 @@ static void initScriptCamera(void)
 
     vs_battle_setFramebufferEffectBlendMode(1);
 
-    scriptCamera->lensDistortion.value[0] = ONE;
-    scriptCamera->lensDistortion.duration = scriptCamera->lensDistortion.value[1] = 0;
+    scriptCamera->lensDistortion.value.vx = ONE;
+    scriptCamera->lensDistortion.duration = scriptCamera->lensDistortion.value.vy = 0;
     scriptCamera->projectionDistance.value = ONE / 8;
     scriptCamera->projectionDistance.duration = 0;
     scriptCamera->projectionDistance.changed = 1;
@@ -5382,10 +5377,10 @@ int vs_battle_script_B9_BA_BF_E4_E5_E6_E7_ED(u_char* script, UNUSED short arg1)
 
             getFramebufferEffectScale(&values);
 
-            scriptCamera->framebufferScale.delta[0] =
-                (script[1] << 7) - (scriptCamera->framebufferScale.start[0] = values.vx);
-            scriptCamera->framebufferScale.delta[1] =
-                (script[2] << 7) - (scriptCamera->framebufferScale.start[1] = values.vy);
+            scriptCamera->framebufferScale.delta.vx =
+                (script[1] << 7) - (scriptCamera->framebufferScale.start.vx = values.vx);
+            scriptCamera->framebufferScale.delta.vy =
+                (script[2] << 7) - (scriptCamera->framebufferScale.start.vy = values.vy);
             scriptCamera->framebufferScale.ease = script[3];
         }
 
@@ -5407,12 +5402,12 @@ int vs_battle_script_B9_BA_BF_E4_E5_E6_E7_ED(u_char* script, UNUSED short arg1)
 
             getFramebufferEffectTint(&color);
 
-            scriptCamera->framebufferTint.delta[0] =
-                script[1] - (scriptCamera->framebufferTint.start[0] = color.r);
-            scriptCamera->framebufferTint.delta[1] =
-                script[2] - (scriptCamera->framebufferTint.start[1] = color.g);
-            scriptCamera->framebufferTint.delta[2] =
-                script[3] - (scriptCamera->framebufferTint.start[2] = color.b);
+            scriptCamera->framebufferTint.delta.vx =
+                script[1] - (scriptCamera->framebufferTint.start.vx = color.r);
+            scriptCamera->framebufferTint.delta.vy =
+                script[2] - (scriptCamera->framebufferTint.start.vy = color.g);
+            scriptCamera->framebufferTint.delta.vz =
+                script[3] - (scriptCamera->framebufferTint.start.vz = color.b);
             scriptCamera->framebufferTint.ease = script[4];
         }
 
@@ -5434,12 +5429,12 @@ int vs_battle_script_B9_BA_BF_E4_E5_E6_E7_ED(u_char* script, UNUSED short arg1)
 
             getFramebufferEffectOffset(&values);
 
-            scriptCamera->framebufferOffset.delta[0] =
+            scriptCamera->framebufferOffset.delta.vx =
                 (signed char)script[1]
-                - (scriptCamera->framebufferOffset.start[0] = values.vx);
-            scriptCamera->framebufferOffset.delta[1] =
+                - (scriptCamera->framebufferOffset.start.vx = values.vx);
+            scriptCamera->framebufferOffset.delta.vy =
                 (signed char)script[2]
-                - (scriptCamera->framebufferOffset.start[1] = values.vy);
+                - (scriptCamera->framebufferOffset.start.vy = values.vy);
             scriptCamera->framebufferOffset.ease = script[3];
         }
 
@@ -5463,20 +5458,20 @@ int vs_battle_script_B9_BA_BF_E4_E5_E6_E7_ED(u_char* script, UNUSED short arg1)
         scriptCamera->lensDistortion.duration = script[4];
 
         if (scriptCamera->lensDistortion.duration == 0) {
-            scriptCamera->lensDistortion.value[0] = effectValue = script[1] << 6;
-            scriptCamera->lensDistortion.value[1] = (signed char)script[2];
+            scriptCamera->lensDistortion.value.vx = effectValue = script[1] << 6;
+            scriptCamera->lensDistortion.value.vy = (signed char)script[2];
 
-            setScreenLensDistortion(effectValue, scriptCamera->lensDistortion.value[1]);
+            setScreenLensDistortion(effectValue, scriptCamera->lensDistortion.value.vy);
         } else {
             scriptCamera->lensDistortion.elapsed = 0;
-            scriptCamera->lensDistortion.delta[0] =
+            scriptCamera->lensDistortion.delta.vx =
                 (script[1] << 6)
-                - (scriptCamera->lensDistortion.start[0] =
-                        scriptCamera->lensDistortion.value[0]);
-            scriptCamera->lensDistortion.delta[1] =
+                - (scriptCamera->lensDistortion.start.vx =
+                        scriptCamera->lensDistortion.value.vx);
+            scriptCamera->lensDistortion.delta.vy =
                 (signed char)script[2]
-                - (scriptCamera->lensDistortion.start[1] =
-                        scriptCamera->lensDistortion.value[1]);
+                - (scriptCamera->lensDistortion.start.vy =
+                        scriptCamera->lensDistortion.value.vy);
             scriptCamera->lensDistortion.ease = script[3];
         }
 
@@ -5536,30 +5531,30 @@ static void updateScreenEffectTweens(void)
     CVECTOR color;
 
     if (stepScreenEffectTween(&scriptCamera->framebufferScale) != 0) {
-        vector.vx = scriptCamera->framebufferScale.value[0];
-        vector.vy = scriptCamera->framebufferScale.value[1];
+        vector.vx = scriptCamera->framebufferScale.value.vx;
+        vector.vy = scriptCamera->framebufferScale.value.vy;
 
         vs_battle_setFramebufferEffectScale(&vector);
     }
 
     if (stepScreenEffectTween(&scriptCamera->framebufferTint) != 0) {
-        color.r = scriptCamera->framebufferTint.value[0];
-        color.g = scriptCamera->framebufferTint.value[1];
-        color.b = scriptCamera->framebufferTint.value[2];
+        color.r = scriptCamera->framebufferTint.value.vx;
+        color.g = scriptCamera->framebufferTint.value.vy;
+        color.b = scriptCamera->framebufferTint.value.vz;
 
         vs_battle_setFramebufferEffectTint(&color);
     }
 
     if (stepScreenEffectTween(&scriptCamera->framebufferOffset) != 0) {
-        vector.vx = scriptCamera->framebufferOffset.value[0];
-        vector.vy = scriptCamera->framebufferOffset.value[1];
+        vector.vx = scriptCamera->framebufferOffset.value.vx;
+        vector.vy = scriptCamera->framebufferOffset.value.vy;
 
         vs_battle_setFramebufferEffectOffset(&vector);
     }
 
     if (stepScreenEffectTween(&scriptCamera->lensDistortion) != 0) {
         setScreenLensDistortion(
-            scriptCamera->lensDistortion.value[0], scriptCamera->lensDistortion.value[1]);
+            scriptCamera->lensDistortion.value.vx, scriptCamera->lensDistortion.value.vy);
     }
 }
 
@@ -5574,9 +5569,9 @@ static int stepScreenEffectTween(ScreenEffectTween* tween)
 
     CAMERA_SCRATCH->value = evaluateEasing(tween->ease, tween->elapsed, tween->duration);
 
-    tween->value[0] = tween->start[0] + ((tween->delta[0] * CAMERA_SCRATCH->value) >> 12);
-    tween->value[1] = tween->start[1] + ((tween->delta[1] * CAMERA_SCRATCH->value) >> 12);
-    tween->value[2] = tween->start[2] + ((tween->delta[2] * CAMERA_SCRATCH->value) >> 12);
+    tween->value.vx = tween->start.vx + ((tween->delta.vx * CAMERA_SCRATCH->value) >> 12);
+    tween->value.vy = tween->start.vy + ((tween->delta.vy * CAMERA_SCRATCH->value) >> 12);
+    tween->value.vz = tween->start.vz + ((tween->delta.vz * CAMERA_SCRATCH->value) >> 12);
 
     if (tween->elapsed == tween->duration) {
         tween->duration = 0;

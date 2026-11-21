@@ -2322,7 +2322,7 @@ void func_8009D934(int arg0, int arg1, int arg2)
         temp_s1 = D_800E909C[temp_s0->unk5B1];
     }
 
-    if (func_800BEB00() == 4) {
+    if (getEventState() == eventRunning) {
         temp_s0->unk0.weaponDrawn = arg1;
         vs_battle_setActorAnimation(arg0, 1, 0, 16);
         return;
@@ -3946,7 +3946,8 @@ retry:
 
     actor->animationId = anim;
 
-    if (func_800BEB00() == 4 || actor->unk187C != found || D_800F49DC != actor->unk6E3) {
+    if (getEventState() == eventRunning || actor->unk187C != found
+        || D_800F49DC != actor->unk6E3) {
         actor->unk6E3 = D_800F49DC;
         actor->unk187C = found;
         actor->unk5BC = *frames;

@@ -11,6 +11,11 @@ typedef struct {
     u_char extra;
 } __attribute__((aligned(4))) vs_TilePosition;
 
+typedef union {
+    vs_TilePosition fields;
+    u_int value;
+} vs_TileWord;
+
 // A tile is often handled as a single 32-bit word: it is cleared by storing -1 (all
 // bytes 0xFF, "no tile") and compared whole. The sign bit of the word is also tested to
 // tell a set tile from the cleared one. The matching build does this with a word cast;

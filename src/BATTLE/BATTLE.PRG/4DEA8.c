@@ -59,21 +59,30 @@ typedef struct {
     VECTOR otherPosition;
 } CameraChannel;
 
-typedef struct {
-    char unk0;
-    char unk1;
-    short unk2;
-    short unk4;
-    short unk6;
-    short unk8;
-    short unkA;
-} func_800BD57C_t;
+enum {
+    cameraModeLerp = 2,
+    cameraModeArc = 3,
+    cameraModeOrbitTo = 4,
+    cameraModeOrbitBy = 5,
+    cameraModeFollowActor = 8,
+    cameraModeLockOffset = 9,
+    cameraModeTerrainFollow = 11,
+    cameraModeIdle = 15
+};
 
 typedef struct {
-    union {
-        u_char u8[2];
-        short s16;
-    } unk0;
+    char changed;
+    char ease;
+    short value;
+    short start;
+    short delta;
+    short elapsed;
+    short duration;
+} AngleTween;
+
+typedef struct {
+    u_char unk0;
+    u_char envelope;
     short unk2;
     short unk4;
     short unk6;
@@ -81,19 +90,19 @@ typedef struct {
     char unk9;
     char unkA;
     char unkB;
-} func_800BDF6C_t;
+} ShakeEntry;
 
 typedef struct {
-    char unk0;
-    char unk1;
-    short unk2;
-    short unk4;
-    short unk6;
-    char unk8;
-    char unk9;
+    char changed;
+    char ease;
+    short value;
+    short start;
+    short delta;
+    char elapsed;
+    char duration;
     char unkA;
     char unkB;
-} func_800BDF6C_unk180_t;
+} ProjectionTween;
 
 typedef struct {
     char unk0;
@@ -118,21 +127,15 @@ typedef struct {
 typedef struct {
     CameraChannel lookAt;
     CameraChannel eye;
-    func_800BD57C_t unk168;
-    func_800BD57C_t unk174;
-    func_800BDF6C_unk180_t projectionDistance;
-    func_800BDF6C_unk180_t nearClip;
-    func_800BDF6C_unk180_t farClip;
-    func_800BDF6C_t unk1A4;
-    func_800BDF6C_t unk1B0;
-    short unk1BC;
-    short unk1BE;
-    short unk1C0;
-    short unk1C2;
-    short unk1C4;
-    short unk1C6;
-    short unk1C8;
-    short unk1CA;
+    AngleTween roll;
+    AngleTween unk174;
+    ProjectionTween projectionDistance;
+    ProjectionTween nearClip;
+    ProjectionTween farClip;
+    short shakeCount;
+    ShakeEntry shakeEntries[2];
+    SVECTOR shakeLookAt;
+    short shakeEye[3];
     int unk1CC;
     vs_ActorPosition unk1D0;
     int unk1E0[2];
@@ -144,7 +147,7 @@ typedef struct {
     func_800BDBB4_t unk23C;
     func_800BDBB4_t unk25C;
     VECTOR unk27C;
-} D_800F4BA4_t;
+} ScriptCamera;
 
 typedef struct {
     u_int visible : 1;
@@ -294,15 +297,15 @@ int getActorScreenPositionAndUpAngle(int actorId, SVECTOR* position);
 void attachCameraToActor(u_short actor);
 void setCameraFollowsAshley(int follows);
 void updateCameraAttachment(void);
-void func_800BCA8C(CameraChannel*, CameraChannel*);
-void func_800BCFB4(CameraChannel*);
+static void stepCameraChannel(CameraChannel*, CameraChannel*);
+static void stepCameraTerrainFollow(CameraChannel*);
 void returnToGameplayCamera(short facing, int zoom);
-int func_800BD2B8(MATRIX*);
-void func_800BD57C(func_800BD57C_t* arg0);
+static int getCameraTerrainHeight(MATRIX*);
+static void stepAngleTween(AngleTween*);
 u_char getCameraIdleFlags(void);
 int func_800BDBB4(func_800BDBB4_t* arg0);
-void func_800BDF6C(func_800BDF6C_unk180_t* arg0);
-void func_800BE180(void);
+static void stepProjectionTween(ProjectionTween*);
+static void updateCameraShake(void);
 void setCameraMomentum(int lookAt, int eye);
 void clearCameraMomentum(void);
 void sweepCameraToSavedPlayerView(char side);
@@ -339,7 +342,7 @@ extern GimTween gimTweens[];
 extern ParticleTween particleTween;
 extern char D_800F4B8B;
 extern char cameraFollowsAshley;
-extern D_800F4BA4_t* D_800F4BA4;
+extern ScriptCamera* scriptCamera;
 extern char D_800F4BA8;
 extern void* mpdClearedSection;
 extern u_short* scriptStrings;
@@ -4407,69 +4410,69 @@ void func_800BBBE8(void)
     VECTOR sp20;
     VECTOR sp30;
 
-    D_800F4BA4 = vs_main_allocHeapR(sizeof *D_800F4BA4);
+    scriptCamera = vs_main_allocHeapR(sizeof *scriptCamera);
     cameraFollowsAshley = 0;
 
     getCameraPosition(&sp20);
     getCameraLookAt(&sp30);
-    vectorCopy(&D_800F4BA4->eye.current, &sp20);
-    vectorCopy(&D_800F4BA4->lookAt.otherPosition, &sp20);
-    vectorCopy(&D_800F4BA4->lookAt.current, &sp30);
-    vectorCopy(&D_800F4BA4->eye.otherPosition, &sp30);
+    vectorCopy(&scriptCamera->eye.current, &sp20);
+    vectorCopy(&scriptCamera->lookAt.otherPosition, &sp20);
+    vectorCopy(&scriptCamera->lookAt.current, &sp30);
+    vectorCopy(&scriptCamera->eye.otherPosition, &sp30);
 
-    D_800F4BA4->lookAt.mode = 0xF;
-    D_800F4BA4->lookAt.carryMomentum = D_800F4BA4->lookAt.carrying = 0;
-    D_800F4BA4->eye.mode = 0xF;
-    D_800F4BA4->eye.carryMomentum = D_800F4BA4->eye.carrying = 0;
-    D_800F4BA4->unk168.unkA = 0;
-    D_800F4BA4->unk168.unk2 = 0;
-    D_800F4BA4->unk168.unk0 = 1;
+    scriptCamera->lookAt.mode = cameraModeIdle;
+    scriptCamera->lookAt.carryMomentum = scriptCamera->lookAt.carrying = 0;
+    scriptCamera->eye.mode = cameraModeIdle;
+    scriptCamera->eye.carryMomentum = scriptCamera->eye.carrying = 0;
+    scriptCamera->roll.duration = 0;
+    scriptCamera->roll.value = 0;
+    scriptCamera->roll.changed = 1;
 
     setFramebufferEffect(0);
 
-    D_800F4BA4->unk174.unkA = 0;
-    D_800F4BA4->unk174.unk2 = 0;
+    scriptCamera->unk174.duration = 0;
+    scriptCamera->unk174.value = 0;
 
     func_8007DDAC(0);
 
-    D_800F4BA4->unk174.unk0 = 1;
-    D_800F4BA4->unk1FC.unk4 = ONE;
-    D_800F4BA4->unk1FC.unk2 = ONE;
+    scriptCamera->unk174.changed = 1;
+    scriptCamera->unk1FC.unk4 = ONE;
+    scriptCamera->unk1FC.unk2 = ONE;
 
     func_8007DDB8(&D_800E9C0C);
 
-    D_800F4BA4->unk21C.unk2 = D_800F4BA4->unk21C.unk4 = D_800F4BA4->unk21C.unk6 =
-        D_800F4BA4->unk1FC.unk1E = 0;
+    scriptCamera->unk21C.unk2 = scriptCamera->unk21C.unk4 = scriptCamera->unk21C.unk6 =
+        scriptCamera->unk1FC.unk1E = 0;
 
     func_8007DDD4(&D_800E9C08);
 
-    D_800F4BA4->unk21C.unk1E = 0;
-    D_800F4BA4->unk23C.unk4 = ONE;
-    D_800F4BA4->unk23C.unk2 = ONE;
+    scriptCamera->unk21C.unk1E = 0;
+    scriptCamera->unk23C.unk4 = ONE;
+    scriptCamera->unk23C.unk2 = ONE;
 
     func_8007DDF8(&D_800E9C0C);
 
-    D_800F4BA4->unk23C.unk1E = 0;
+    scriptCamera->unk23C.unk1E = 0;
 
     func_8007DE2C(1);
 
-    D_800F4BA4->unk25C.unk2 = ONE;
-    D_800F4BA4->unk25C.unk1E = D_800F4BA4->unk25C.unk4 = 0;
-    D_800F4BA4->projectionDistance.unk2 = 0x200;
-    D_800F4BA4->projectionDistance.unk9 = 0;
-    D_800F4BA4->projectionDistance.unk0 = 1;
-    D_800F4BA4->nearClip.unk2 = 0x40;
-    D_800F4BA4->nearClip.unk9 = 0;
-    D_800F4BA4->nearClip.unk0 = 1;
-    D_800F4BA4->farClip.unk2 = 0x1000;
-    D_800F4BA4->farClip.unk9 = 0;
-    D_800F4BA4->farClip.unk0 = 1;
-    D_800F4BA4->unk1A4.unk0.s16 = 0;
-    D_800F4BA4->unk1A4.unkB = D_800F4BA4->unk1B0.unkB = 0;
-    D_800F4BA4->attachedActor = 0x2000;
+    scriptCamera->unk25C.unk2 = ONE;
+    scriptCamera->unk25C.unk1E = scriptCamera->unk25C.unk4 = 0;
+    scriptCamera->projectionDistance.value = 0x200;
+    scriptCamera->projectionDistance.duration = 0;
+    scriptCamera->projectionDistance.changed = 1;
+    scriptCamera->nearClip.value = 0x40;
+    scriptCamera->nearClip.duration = 0;
+    scriptCamera->nearClip.changed = 1;
+    scriptCamera->farClip.value = 0x1000;
+    scriptCamera->farClip.duration = 0;
+    scriptCamera->farClip.changed = 1;
+    scriptCamera->shakeCount = 0;
+    scriptCamera->shakeEntries[0].unk9 = scriptCamera->shakeEntries[1].unk9 = 0;
+    scriptCamera->attachedActor = 0x2000;
 }
 
-void func_800BBDDC(void) { vs_main_freeHeapR(D_800F4BA4); }
+void func_800BBDDC(void) { vs_main_freeHeapR(scriptCamera); }
 
 /**
  * Makes the scripted camera follow Ashley with the gameplay camera's view, until the
@@ -4486,14 +4489,14 @@ void attachCameraToActor(u_short actor)
 {
     int _[4];
     if (actor == 0x2000) {
-        if (D_800F4BA4->attachedActor != actor) {
-            vectorAdd(&D_800F4BA4->eye.current, &D_800F4BA4->eye.current,
-                &D_800F4BA4->attachedPosition);
-            vectorAdd(&D_800F4BA4->lookAt.current, &D_800F4BA4->lookAt.current,
-                &D_800F4BA4->attachedPosition);
+        if (scriptCamera->attachedActor != actor) {
+            vectorAdd(&scriptCamera->eye.current, &scriptCamera->eye.current,
+                &scriptCamera->attachedPosition);
+            vectorAdd(&scriptCamera->lookAt.current, &scriptCamera->lookAt.current,
+                &scriptCamera->attachedPosition);
         }
     }
-    D_800F4BA4->attachedActor = actor;
+    scriptCamera->attachedActor = actor;
     updateCameraAttachment();
 }
 
@@ -4502,16 +4505,16 @@ void updateCameraAttachment(void)
 {
     vs_ActorPosition sp10;
 
-    if (D_800F4BA4->attachedActor == 0x2000) {
-        D_800F4BA4->attachedPosition.vz = 0;
-        D_800F4BA4->attachedPosition.vy = 0;
-        D_800F4BA4->attachedPosition.vx = 0;
+    if (scriptCamera->attachedActor == 0x2000) {
+        scriptCamera->attachedPosition.vz = 0;
+        scriptCamera->attachedPosition.vy = 0;
+        scriptCamera->attachedPosition.vx = 0;
         return;
     }
-    vs_battle_getActorPosition(D_800F4BA4->attachedActor, &sp10);
-    D_800F4BA4->attachedPosition.vx = sp10.unk0.unk4.vx * ONE;
-    D_800F4BA4->attachedPosition.vy = sp10.unk0.unk4.vy * ONE;
-    D_800F4BA4->attachedPosition.vz = sp10.unk0.unk4.vz * ONE;
+    vs_battle_getActorPosition(scriptCamera->attachedActor, &sp10);
+    scriptCamera->attachedPosition.vx = sp10.unk0.unk4.vx * ONE;
+    scriptCamera->attachedPosition.vy = sp10.unk0.unk4.vy * ONE;
+    scriptCamera->attachedPosition.vz = sp10.unk0.unk4.vz * ONE;
 }
 
 static void applyCameraState(void)
@@ -4521,19 +4524,19 @@ static void applyCameraState(void)
 
     if (cameraFollowsAshley != 0) {
         initialiseCameraFromSpherical(&cameraPos, &cameraLookAt, -1, -1);
-        vectorCopy(&D_800F4BA4->lookAt.current, &cameraLookAt);
-        vectorCopy(&D_800F4BA4->eye.current, &cameraPos);
+        vectorCopy(&scriptCamera->lookAt.current, &cameraLookAt);
+        vectorCopy(&scriptCamera->eye.current, &cameraPos);
     } else {
-        vectorCopy(&cameraLookAt, &D_800F4BA4->lookAt.current);
-        vectorCopy(&cameraPos, &D_800F4BA4->eye.current);
-        if (D_800F4BA4->attachedActor != 0x2000) {
-            vectorAdd(&cameraLookAt, &cameraLookAt, &D_800F4BA4->attachedPosition);
-            vectorAdd(&cameraPos, &cameraPos, &D_800F4BA4->attachedPosition);
+        vectorCopy(&cameraLookAt, &scriptCamera->lookAt.current);
+        vectorCopy(&cameraPos, &scriptCamera->eye.current);
+        if (scriptCamera->attachedActor != 0x2000) {
+            vectorAdd(&cameraLookAt, &cameraLookAt, &scriptCamera->attachedPosition);
+            vectorAdd(&cameraPos, &cameraPos, &scriptCamera->attachedPosition);
         }
     }
-    if (*(short*)&D_800F4BA4->unk1A4.unk0 != 0) {
-        sVectorToFixedPointVector(&CAMERA_SCRATCH->v1, (SVECTOR*)&D_800F4BA4->unk1BE);
-        sVectorToFixedPointVector(&CAMERA_SCRATCH->v2, (SVECTOR*)&D_800F4BA4->unk1C6);
+    if (scriptCamera->shakeCount != 0) {
+        sVectorToFixedPointVector(&CAMERA_SCRATCH->v1, &scriptCamera->shakeLookAt);
+        sVectorToFixedPointVector(&CAMERA_SCRATCH->v2, (SVECTOR*)scriptCamera->shakeEye);
         CAMERA_SCRATCH->rotation.vz = 0;
         CAMERA_SCRATCH->rotation.vx = 0;
         CAMERA_SCRATCH->rotation.vy = atan2FixedPoint(
@@ -4546,25 +4549,25 @@ static void applyCameraState(void)
     }
     setCameraLookAt(&cameraLookAt);
     setCameraPosition(&cameraPos);
-    if (D_800F4BA4->unk168.unk0 != 0) {
-        setCameraRoll(D_800F4BA4->unk168.unk2);
-        D_800F4BA4->unk168.unk0 = 0;
+    if (scriptCamera->roll.changed != 0) {
+        setCameraRoll(scriptCamera->roll.value);
+        scriptCamera->roll.changed = 0;
     }
-    if (D_800F4BA4->unk174.unk0 != 0) {
-        func_8007DDAC(D_800F4BA4->unk174.unk2);
-        D_800F4BA4->unk174.unk0 = 0;
+    if (scriptCamera->unk174.changed != 0) {
+        func_8007DDAC(scriptCamera->unk174.value);
+        scriptCamera->unk174.changed = 0;
     }
-    if (D_800F4BA4->projectionDistance.unk0 != 0) {
-        vs_battle_setProjectionDistance(D_800F4BA4->projectionDistance.unk2);
-        D_800F4BA4->projectionDistance.unk0 = 0;
+    if (scriptCamera->projectionDistance.changed != 0) {
+        vs_battle_setProjectionDistance(scriptCamera->projectionDistance.value);
+        scriptCamera->projectionDistance.changed = 0;
     }
-    if (D_800F4BA4->nearClip.unk0 != 0) {
-        setNearClip(D_800F4BA4->nearClip.unk2);
-        D_800F4BA4->nearClip.unk0 = 0;
+    if (scriptCamera->nearClip.changed != 0) {
+        setNearClip(scriptCamera->nearClip.value);
+        scriptCamera->nearClip.changed = 0;
     }
-    if (D_800F4BA4->farClip.unk0 != 0) {
-        setFarClip(D_800F4BA4->farClip.unk2, fogDepthOverridden);
-        D_800F4BA4->farClip.unk0 = 0;
+    if (scriptCamera->farClip.changed != 0) {
+        setFarClip(scriptCamera->farClip.value, fogDepthOverridden);
+        scriptCamera->farClip.changed = 0;
     }
 }
 
@@ -4587,13 +4590,13 @@ void returnToGameplayCamera(short facing, int zoom)
         return;
     }
     initialiseCameraFromSpherical(&sp10, &sp20, facing, (short)zoom);
-    vectorCopy(&D_800F4BA4->eye.position, &sp10);
-    vectorCopy(&D_800F4BA4->lookAt.position, &sp20);
+    vectorCopy(&scriptCamera->eye.position, &sp10);
+    vectorCopy(&scriptCamera->lookAt.position, &sp20);
     temp_s0 = vectorMagnitude(vectorSubtract(
-        &CAMERA_SCRATCH->v1, &D_800F4BA4->eye.current, &D_800F4BA4->eye.position));
+        &CAMERA_SCRATCH->v1, &scriptCamera->eye.current, &scriptCamera->eye.position));
     temp_v0 = (temp_s0
                   + vectorMagnitude(vectorSubtract(&CAMERA_SCRATCH->v1,
-                      &D_800F4BA4->lookAt.current, &D_800F4BA4->lookAt.position)))
+                      &scriptCamera->lookAt.current, &scriptCamera->lookAt.position)))
             / 0x28000;
     if ((temp_v0 << 0x10) != 0) {
         D_800E9C1C[2] = D_800E9C1C[6] = temp_v0;
@@ -4656,11 +4659,11 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
     CameraChannel* otherChannel;
 
     if (!(script[0] & 16)) {
-        channel = &D_800F4BA4->lookAt;
-        otherChannel = &D_800F4BA4->eye;
+        channel = &scriptCamera->lookAt;
+        otherChannel = &scriptCamera->eye;
     } else {
-        channel = &D_800F4BA4->eye;
-        otherChannel = &D_800F4BA4->lookAt;
+        channel = &scriptCamera->eye;
+        otherChannel = &scriptCamera->lookAt;
     }
 
     switch (script[0] & 15) {
@@ -4670,7 +4673,7 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
         return scriptNext;
 
     case cameraCut:
-        channel->mode = 15;
+        channel->mode = cameraModeIdle;
 
         vectorCopy(&channel->current, &channel->position);
         vectorCopy(&otherChannel->otherPosition, &channel->position);
@@ -4678,7 +4681,7 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
         return scriptNext;
 
     case cameraLerpTo:
-        channel->mode = 2;
+        channel->mode = cameraModeLerp;
         channel->time = 0;
         channel->ease1 = script[1];
         channel->duration = script[2];
@@ -4689,7 +4692,7 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
         return scriptNext;
 
     case cameraArcTo:
-        channel->mode = 3;
+        channel->mode = cameraModeArc;
         channel->time = 0;
         channel->ease1 = script[1];
         channel->duration = script[2];
@@ -4704,7 +4707,7 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
 
     case cameraOrbitTo: {
         CameraScratch* s;
-        channel->mode = 4;
+        channel->mode = cameraModeOrbitTo;
         channel->time = 0;
         channel->duration = script[3];
         channel->ease1 = script[1] >> 4;
@@ -4764,7 +4767,7 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
         CameraScratch* s;
         int height;
 
-        channel->mode = 5;
+        channel->mode = cameraModeOrbitBy;
         channel->time = 0;
         channel->duration = script[8];
         channel->ease1 = script[6] & 15;
@@ -4800,15 +4803,15 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
         setVectorImm(&CAMERA_SCRATCH->v2, script + 4);
         vectorAdd(&channel->position, &CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v2);
 
-        if (D_800F4BA4->attachedActor != 0x2000) {
+        if (scriptCamera->attachedActor != 0x2000) {
             vectorSubtract(
-                &channel->position, &channel->position, &D_800F4BA4->attachedPosition);
+                &channel->position, &channel->position, &scriptCamera->attachedPosition);
         }
 
         return scriptNext;
 
     case cameraFollowActor:
-        channel->mode = 8;
+        channel->mode = cameraModeFollowActor;
         channel->value = resolveActorId(getShort(script + 1));
         channel->delta = script[3];
         channel->time = 0;
@@ -4819,7 +4822,7 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
         return scriptNext;
 
     case cameraLockOffset:
-        channel->mode = 9;
+        channel->mode = cameraModeLockOffset;
         channel->time = 0;
         channel->duration = script[1];
 
@@ -4830,36 +4833,33 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
     case cameraSetDestinationToActorLocalOffset: {
         int id = resolveActorId(getShort(script + 1));
 
-        CameraScratch* s = CAMERA_SCRATCH;
-        s->value = id;
+        CAMERA_SCRATCH->value = id;
 
-        vs_battle_getActorPosition(id, &D_800F4BA4->unk1D0);
+        vs_battle_getActorPosition(id, &scriptCamera->unk1D0);
 
-        s->rotation2.vz = 0;
-        s->rotation2.vx = 0;
-        s->rotation2.vy = D_800F4BA4->unk1D0.unk0.unk4.pad;
+        CAMERA_SCRATCH->rotation2.vz = 0;
+        CAMERA_SCRATCH->rotation2.vx = 0;
+        CAMERA_SCRATCH->rotation2.vy = scriptCamera->unk1D0.unk0.unk4.pad;
 
         RotMatrix_gte(&CAMERA_SCRATCH->rotation2, &CAMERA_SCRATCH->matrix);
         setVectorImm(&CAMERA_SCRATCH->v1, script + 4);
         ApplyMatrixLV(&CAMERA_SCRATCH->matrix, &CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1);
-        func_800A190C(s->value, script[3], &CAMERA_SCRATCH->rotation2, 2);
+        func_800A190C(CAMERA_SCRATCH->value, script[3], &CAMERA_SCRATCH->rotation2, 2);
 
         vectorAdd(&channel->position,
             sVectorToFixedPointVector(&CAMERA_SCRATCH->v2, &CAMERA_SCRATCH->rotation2),
             &CAMERA_SCRATCH->v1);
 
-        if (D_800F4BA4->attachedActor != 0x2000) {
+        if (scriptCamera->attachedActor != 0x2000) {
             vectorSubtract(
-                &channel->position, &channel->position, &D_800F4BA4->attachedPosition);
+                &channel->position, &channel->position, &scriptCamera->attachedPosition);
         }
 
         return scriptNext;
     }
 
     case cameraTerrainFollowTo: {
-        CameraScratch* s;
-
-        channel->mode = 11;
+        channel->mode = cameraModeTerrainFollow;
         channel->time = 0;
         channel->ease1 = easingLinear;
         channel->duration = script[2];
@@ -4867,19 +4867,17 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
         vectorSubtract(&CAMERA_SCRATCH->v1, &channel->otherPosition, &channel->current);
         vecToRotMatrix(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->matrix);
 
-        s = CAMERA_SCRATCH;
-
-        s->matrix.t[0] = channel->current.vx >> 12;
-        s->matrix.t[1] = channel->current.vy >> 12;
-        s->matrix.t[2] = channel->current.vz >> 12;
-        channel->current.vy = func_800BD2B8(&CAMERA_SCRATCH->matrix);
+        CAMERA_SCRATCH->matrix.t[0] = channel->current.vx >> 12;
+        CAMERA_SCRATCH->matrix.t[1] = channel->current.vy >> 12;
+        CAMERA_SCRATCH->matrix.t[2] = channel->current.vz >> 12;
+        channel->current.vy = getCameraTerrainHeight(&CAMERA_SCRATCH->matrix);
 
         vectorCopy(&channel->computed, &channel->current);
 
         channel->delta = vectorMagnitude(
             vectorSubtract(&CAMERA_SCRATCH->v1, &channel->position, &channel->computed));
         channel->value = channel->delta / script[2];
-        D_800F4BA4->unk27C.vx = D_800F4BA4->unk27C.vy = D_800F4BA4->unk27C.vz =
+        scriptCamera->unk27C.vx = scriptCamera->unk27C.vy = scriptCamera->unk27C.vz =
             0x80000000;
 
         return scriptNext;
@@ -4887,300 +4885,383 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
     }
 }
 
-void func_800BC9E0(void)
+/** Advances the camera by one frame. */
+static void updateCamera(void)
 {
-    D_800F4BA4->eye.otherPosition.vx = D_800F4BA4->lookAt.current.vx;
-    D_800F4BA4->eye.otherPosition.vy = D_800F4BA4->lookAt.current.vy;
-    D_800F4BA4->eye.otherPosition.vz = D_800F4BA4->lookAt.current.vz;
-    D_800F4BA4->lookAt.otherPosition.vx = D_800F4BA4->eye.current.vx;
-    D_800F4BA4->lookAt.otherPosition.vy = D_800F4BA4->eye.current.vy;
-    D_800F4BA4->lookAt.otherPosition.vz = D_800F4BA4->eye.current.vz;
-    func_800BCA8C(&D_800F4BA4->lookAt, &D_800F4BA4->eye);
-    func_800BCA8C(&D_800F4BA4->eye, &D_800F4BA4->lookAt);
-    func_800BD57C(&D_800F4BA4->unk168);
-    func_800BD57C(&D_800F4BA4->unk174);
-    func_800BDF6C(&D_800F4BA4->projectionDistance);
-    func_800BDF6C(&D_800F4BA4->nearClip);
-    func_800BDF6C(&D_800F4BA4->farClip);
-    func_800BE180();
+    scriptCamera->eye.otherPosition.vx = scriptCamera->lookAt.current.vx;
+    scriptCamera->eye.otherPosition.vy = scriptCamera->lookAt.current.vy;
+    scriptCamera->eye.otherPosition.vz = scriptCamera->lookAt.current.vz;
+    scriptCamera->lookAt.otherPosition.vx = scriptCamera->eye.current.vx;
+    scriptCamera->lookAt.otherPosition.vy = scriptCamera->eye.current.vy;
+    scriptCamera->lookAt.otherPosition.vz = scriptCamera->eye.current.vz;
+
+    stepCameraChannel(&scriptCamera->lookAt, &scriptCamera->eye);
+    stepCameraChannel(&scriptCamera->eye, &scriptCamera->lookAt);
+    stepAngleTween(&scriptCamera->roll);
+    stepAngleTween(&scriptCamera->unk174);
+    stepProjectionTween(&scriptCamera->projectionDistance);
+    stepProjectionTween(&scriptCamera->nearClip);
+    stepProjectionTween(&scriptCamera->farClip);
+    updateCameraShake();
 }
 
-void func_800BCA8C(CameraChannel* c, CameraChannel* other)
+/** Steps one camera channel by a frame, evaluating its current mode. */
+static void stepCameraChannel(CameraChannel* channel, UNUSED CameraChannel* other)
 {
-    if (c->mode == 15) {
+    if (channel->mode == cameraModeIdle) {
         return;
     }
-    if (c->mode != 11) {
-        c->time += vs_gametime_vblanksPerFrame >> 1;
-        if (c->time > c->duration) {
-            c->time = c->duration;
+
+    if (channel->mode != cameraModeTerrainFollow) {
+        channel->time += vs_gametime_vblanksPerFrame >> 1;
+        if (channel->time > channel->duration) {
+            channel->time = channel->duration;
         }
     }
-    switch (c->mode) {
-    case 2:
-        CAMERA_SCRATCH->value = func_800BFEBC(c->ease1, c->time, c->duration);
-        vectorFixedPointMult(&CAMERA_SCRATCH->v1, &c->velocity, CAMERA_SCRATCH->value);
-        vectorAdd(&c->computed, &c->start, &CAMERA_SCRATCH->v1);
+
+    switch (channel->mode) {
+    case cameraModeLerp:
+        CAMERA_SCRATCH->value =
+            func_800BFEBC(channel->ease1, channel->time, channel->duration);
+
+        vectorFixedPointMult(
+            &CAMERA_SCRATCH->v1, &channel->velocity, CAMERA_SCRATCH->value);
+        vectorAdd(&channel->computed, &channel->start, &CAMERA_SCRATCH->v1);
+
         break;
-    case 3: {
-        CameraScratch* s = CAMERA_SCRATCH;
-        s->value = func_800BFEBC(c->ease1, c->time, c->duration);
-        vectorFixedPointMult(&CAMERA_SCRATCH->v1, &c->velocity, s->value);
-        vectorAdd(&CAMERA_SCRATCH->v2, &c->start, &CAMERA_SCRATCH->v1);
-        vectorSubtract(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v2, &c->otherPosition);
+
+    case cameraModeArc: {
+        CAMERA_SCRATCH->value =
+            func_800BFEBC(channel->ease1, channel->time, channel->duration);
+
+        vectorFixedPointMult(
+            &CAMERA_SCRATCH->v1, &channel->velocity, CAMERA_SCRATCH->value);
+        vectorAdd(&CAMERA_SCRATCH->v2, &channel->start, &CAMERA_SCRATCH->v1);
+        vectorSubtract(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v2, &channel->otherPosition);
         toNormalIntegerVector(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1);
-        s->distance = vectorMagnitude(
-            vectorSubtract(&CAMERA_SCRATCH->v2, &c->otherPosition, &c->position));
-        s->value = c->value
-                 + fixedPointMult(s->distance - c->value,
-                     func_800BFEBC(c->ease1, c->time, c->duration));
-        vectorFixedPointMult(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1, s->value);
-        vectorAdd(&c->computed, &c->otherPosition, &CAMERA_SCRATCH->v1);
+
+        CAMERA_SCRATCH->distance = vectorMagnitude(vectorSubtract(
+            &CAMERA_SCRATCH->v2, &channel->otherPosition, &channel->position));
+        CAMERA_SCRATCH->value =
+            channel->value
+            + fixedPointMult(CAMERA_SCRATCH->distance - channel->value,
+                func_800BFEBC(channel->ease1, channel->time, channel->duration));
+
+        vectorFixedPointMult(
+            &CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1, CAMERA_SCRATCH->value);
+        vectorAdd(&channel->computed, &channel->otherPosition, &CAMERA_SCRATCH->v1);
+
         break;
     }
-    case 4: {
-        CameraScratch* s = CAMERA_SCRATCH;
-        s->rotation.vz = 0;
-        s->rotation.vx = 0;
-        s->rotation.vy =
-            c->angle
-            + ((c->angleDelta * func_800BFEBC(c->ease1, c->time, c->duration)) >> 12);
+
+    case cameraModeOrbitTo: {
+        CAMERA_SCRATCH->rotation.vz = 0;
+        CAMERA_SCRATCH->rotation.vx = 0;
+        CAMERA_SCRATCH->rotation.vy =
+            channel->angle
+            + ((channel->angleDelta
+                   * func_800BFEBC(channel->ease1, channel->time, channel->duration))
+                >> 12);
+
         RotMatrix_gte(&CAMERA_SCRATCH->rotation, &CAMERA_SCRATCH->matrix);
-        s->v1.vz =
-            c->value
-            + fixedPointMult(c->delta, func_800BFEBC(c->ease2, c->time, c->duration));
-        s->v1.vx = 0;
-        s->v1.vy = 0;
+
+        CAMERA_SCRATCH->v1.vz =
+            channel->value
+            + fixedPointMult(channel->delta,
+                func_800BFEBC(channel->ease2, channel->time, channel->duration));
+        CAMERA_SCRATCH->v1.vx = 0;
+        CAMERA_SCRATCH->v1.vy = 0;
+
         ApplyMatrixLV(&CAMERA_SCRATCH->matrix, &CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1);
-        s->v1.vy = c->aux.vy
-                 + fixedPointMult(
-                     c->velocity.vy, func_800BFEBC(c->ease3, c->time, c->duration));
-        vectorAdd(&c->computed, &c->start, &CAMERA_SCRATCH->v1);
+
+        CAMERA_SCRATCH->v1.vy =
+            channel->aux.vy
+            + fixedPointMult(channel->velocity.vy,
+                func_800BFEBC(channel->ease3, channel->time, channel->duration));
+        vectorAdd(&channel->computed, &channel->start, &CAMERA_SCRATCH->v1);
+
         break;
     }
-    case 5: {
-        CameraScratch* s = CAMERA_SCRATCH;
-        s->rotation.vz = 0;
-        s->rotation.vx = 0;
-        s->rotation.vy =
-            c->angle
-            + ((c->angleDelta * func_800BFEBC(c->ease1, c->time, c->duration)) >> 12);
+
+    case cameraModeOrbitBy: {
+        CAMERA_SCRATCH->rotation.vz = 0;
+        CAMERA_SCRATCH->rotation.vx = 0;
+        CAMERA_SCRATCH->rotation.vy =
+            channel->angle
+            + ((channel->angleDelta
+                   * func_800BFEBC(channel->ease1, channel->time, channel->duration))
+                >> 12);
+
         RotMatrix_gte(&CAMERA_SCRATCH->rotation, &CAMERA_SCRATCH->matrix);
-        s->v1.vz =
-            c->value
-            + fixedPointMult(c->delta, func_800BFEBC(c->ease2, c->time, c->duration));
-        s->v1.vx = 0;
-        s->v1.vy = 0;
+
+        CAMERA_SCRATCH->v1.vz =
+            channel->value
+            + fixedPointMult(channel->delta,
+                func_800BFEBC(channel->ease2, channel->time, channel->duration));
+        CAMERA_SCRATCH->v1.vx = 0;
+        CAMERA_SCRATCH->v1.vy = 0;
+
         ApplyMatrixLV(&CAMERA_SCRATCH->matrix, &CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1);
-        c->computed.vx = c->position.vx + s->v1.vx;
-        c->computed.vz = c->position.vz + s->v1.vz;
-        c->computed.vy = c->start.vy
-                       + fixedPointMult(
-                           c->velocity.vy, func_800BFEBC(c->ease3, c->time, c->duration));
+
+        channel->computed.vx = channel->position.vx + CAMERA_SCRATCH->v1.vx;
+        channel->computed.vz = channel->position.vz + CAMERA_SCRATCH->v1.vz;
+        channel->computed.vy =
+            channel->start.vy
+            + fixedPointMult(channel->velocity.vy,
+                func_800BFEBC(channel->ease3, channel->time, channel->duration));
+
         break;
     }
-    case 8:
-        func_800A190C(c->value, c->delta, &CAMERA_SCRATCH->rotation, 2);
-        vectorAdd(&c->computed,
+
+    case cameraModeFollowActor:
+        func_800A190C(channel->value, channel->delta, &CAMERA_SCRATCH->rotation, 2);
+        vectorAdd(&channel->computed,
             sVectorToFixedPointVector(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->rotation),
-            &c->velocity);
+            &channel->velocity);
         break;
-    case 9:
-        vectorAdd(&c->computed, &c->velocity, &c->otherPosition);
+
+    case cameraModeLockOffset:
+        vectorAdd(&channel->computed, &channel->velocity, &channel->otherPosition);
         break;
-    case 11:
-        func_800BCFB4(c);
+
+    case cameraModeTerrainFollow:
+        stepCameraTerrainFollow(channel);
         break;
     }
-    vectorCopy(&c->previousCamera, &c->current);
-    if (c->carryMomentum & c->carrying) {
-        int fraction;
-        CameraScratch* s;
-        vectorAdd(&c->momentumPosition, &c->momentumPosition, &c->momentumStep);
-        fraction = func_800BFEBC(easingSineOut, c->time, c->duration);
-        s = CAMERA_SCRATCH;
-        s->value = fraction;
-        vectorSubtract(&CAMERA_SCRATCH->v1, &c->computed, &c->momentumPosition);
-        vectorFixedPointMult(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1, s->value);
-        vectorAdd(&c->current, &c->momentumPosition, &CAMERA_SCRATCH->v1);
+
+    vectorCopy(&channel->previousCamera, &channel->current);
+
+    if (channel->carryMomentum & channel->carrying) {
+
+        vectorAdd(&channel->momentumPosition, &channel->momentumPosition,
+            &channel->momentumStep);
+
+        CAMERA_SCRATCH->value =
+            func_800BFEBC(easingSineOut, channel->time, channel->duration);
+
+        vectorSubtract(
+            &CAMERA_SCRATCH->v1, &channel->computed, &channel->momentumPosition);
+        vectorFixedPointMult(
+            &CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1, CAMERA_SCRATCH->value);
+        vectorAdd(&channel->current, &channel->momentumPosition, &CAMERA_SCRATCH->v1);
     } else {
-        vectorCopy(&c->current, &c->computed);
+        vectorCopy(&channel->current, &channel->computed);
     }
-    if (c->time == c->duration) {
-        c->mode = 15;
-        if (c->carryMomentum) {
-            c->carrying = 1;
-            vectorCopy(&c->momentumPosition, &c->current);
-            vectorSubtract(&c->momentumStep, &c->current, &c->previousCamera);
+
+    if (channel->time == channel->duration) {
+
+        channel->mode = cameraModeIdle;
+
+        if (channel->carryMomentum) {
+            channel->carrying = 1;
+
+            vectorCopy(&channel->momentumPosition, &channel->current);
+            vectorSubtract(
+                &channel->momentumStep, &channel->current, &channel->previousCamera);
         }
     }
 }
 
-void func_800BCFB4(CameraChannel* c)
+/**
+ * Steps a terrain-following channel, keeping its position above the ground.
+ */
+static void stepCameraTerrainFollow(CameraChannel* channel)
 {
     CameraMotionScratch* scratch;
-    CameraMotionScratch* finalScratch;
     short i;
-    int height;
-    vectorSubtract(&CAMERA_MOTION_SCRATCH->delta, &c->otherPosition, &c->position);
+
+    vectorSubtract(
+        &CAMERA_MOTION_SCRATCH->delta, &channel->otherPosition, &channel->position);
     vecToRotMatrix(&CAMERA_MOTION_SCRATCH->delta, &CAMERA_MOTION_SCRATCH->matrix);
+
     scratch = CAMERA_MOTION_SCRATCH;
-    scratch->matrix.t[0] = c->position.vx >> 12;
-    scratch->matrix.t[1] = c->position.vy >> 12;
-    scratch->matrix.t[2] = c->position.vz >> 12;
-    setVector(&scratch->delta, c->position.vx - c->computed.vx,
-        func_800BD2B8(&CAMERA_MOTION_SCRATCH->matrix) - c->computed.vy,
-        c->position.vz - c->computed.vz);
-    scratch->distance = vectorMagnitude(&CAMERA_MOTION_SCRATCH->delta);
-    scratch->steps = scratch->distance / c->value;
+
+    scratch->matrix.t[0] = channel->position.vx >> 12;
+    scratch->matrix.t[1] = channel->position.vy >> 12;
+    scratch->matrix.t[2] = channel->position.vz >> 12;
+
+    setVector(&scratch->delta, channel->position.vx - channel->computed.vx,
+        getCameraTerrainHeight(&scratch->matrix) - channel->computed.vy,
+        channel->position.vz - channel->computed.vz);
+
+    scratch->distance = vectorMagnitude(&scratch->delta);
+    scratch->steps = scratch->distance / channel->value;
+
     if (scratch->steps < 2) {
-        c->time = c->duration;
+        channel->time = channel->duration;
     } else if (scratch->steps > 10) {
         scratch->steps = 10;
     }
+
     toNormalIntegerVector(&CAMERA_MOTION_SCRATCH->delta, &CAMERA_MOTION_SCRATCH->delta);
     vectorFixedPointMult(
-        &CAMERA_MOTION_SCRATCH->delta, &CAMERA_MOTION_SCRATCH->delta, c->value);
-    vectorCopy(&CAMERA_MOTION_SCRATCH->candidate, &c->computed);
+        &CAMERA_MOTION_SCRATCH->delta, &CAMERA_MOTION_SCRATCH->delta, channel->value);
+    vectorCopy(&CAMERA_MOTION_SCRATCH->candidate, &channel->computed);
+
     for (i = 1; i <= CAMERA_MOTION_SCRATCH->steps; ++i) {
+        int height;
         scratch = CAMERA_MOTION_SCRATCH;
-        vectorAdd(&CAMERA_MOTION_SCRATCH->candidate, &CAMERA_MOTION_SCRATCH->candidate,
-            &CAMERA_MOTION_SCRATCH->delta);
-        vectorSubtract(&CAMERA_MOTION_SCRATCH->direction, &c->otherPosition,
-            &CAMERA_MOTION_SCRATCH->candidate);
-        vecToRotMatrix(&CAMERA_MOTION_SCRATCH->direction, &CAMERA_MOTION_SCRATCH->matrix);
+
+        vectorAdd(&scratch->candidate, &scratch->candidate, &scratch->delta);
+        vectorSubtract(&scratch->direction, &channel->otherPosition, &scratch->candidate);
+        vecToRotMatrix(&scratch->direction, &scratch->matrix);
+
         scratch->matrix.t[0] = scratch->candidate.vx >> 12;
         scratch->matrix.t[1] = scratch->candidate.vy >> 12;
         scratch->matrix.t[2] = scratch->candidate.vz >> 12;
-        height = func_800BD2B8(&CAMERA_MOTION_SCRATCH->matrix);
+
+        height = getCameraTerrainHeight(&scratch->matrix);
+
         if (height < scratch->candidate.vy) {
-            setVector(&scratch->delta, scratch->candidate.vx - c->computed.vx,
-                height - c->computed.vy, scratch->candidate.vz - c->computed.vz);
-            toNormalIntegerVector(
-                &CAMERA_MOTION_SCRATCH->delta, &CAMERA_MOTION_SCRATCH->delta);
-            vectorFixedPointMult(
-                &CAMERA_MOTION_SCRATCH->delta, &CAMERA_MOTION_SCRATCH->delta, c->value);
+            setVector(&scratch->delta, scratch->candidate.vx - channel->computed.vx,
+                height - channel->computed.vy,
+                scratch->candidate.vz - channel->computed.vz);
+            toNormalIntegerVector(&scratch->delta, &scratch->delta);
+            vectorFixedPointMult(&scratch->delta, &scratch->delta, channel->value);
+
             break;
         }
     }
-    vectorAdd(
-        &CAMERA_MOTION_SCRATCH->candidate, &CAMERA_MOTION_SCRATCH->delta, &c->computed);
-    finalScratch = CAMERA_MOTION_SCRATCH;
-    if (finalScratch->candidate.vx == D_800F4BA4->unk27C.vx
-        && finalScratch->candidate.vy == D_800F4BA4->unk27C.vy
-        && finalScratch->candidate.vz == D_800F4BA4->unk27C.vz) {
-        c->time = c->duration;
+
+    vectorAdd(&CAMERA_MOTION_SCRATCH->candidate, &CAMERA_MOTION_SCRATCH->delta,
+        &channel->computed);
+
+    if (CAMERA_MOTION_SCRATCH->candidate.vx == scriptCamera->unk27C.vx
+        && CAMERA_MOTION_SCRATCH->candidate.vy == scriptCamera->unk27C.vy
+        && CAMERA_MOTION_SCRATCH->candidate.vz == scriptCamera->unk27C.vz) {
+        channel->time = channel->duration;
     } else {
-        vectorCopy(&D_800F4BA4->unk27C, &c->computed);
-        vectorCopy(&c->computed, &CAMERA_MOTION_SCRATCH->candidate);
+        vectorCopy(&scriptCamera->unk27C, &channel->computed);
+        vectorCopy(&channel->computed, &CAMERA_MOTION_SCRATCH->candidate);
     }
 }
 
-int func_800BD2B8(MATRIX* arg0)
+/**
+ * Lowest terrain height under a square of four points just ahead of the camera, with
+ * some clearance.
+ */
+static int getCameraTerrainHeight(MATRIX* camera)
 {
     VECTOR pos;
     SVECTOR offset;
     long flag;
     int first;
     int second;
-    int h;
+    int third;
+    int fourth;
     short lowest;
 
-    SetRotMatrix(arg0);
-    SetTransMatrix(arg0);
+#define SAMPLE_HEIGHT(result, x, y)                                                     \
+    setVector(&offset, x, y, 150);                                                      \
+    RotTrans(&offset, &pos, &flag);                                                     \
+    result = ((getTerrainHeight(pos.vx, pos.vz) << 17) >> 17) - 200
 
-    setVector(&offset, 80, 80, 150);
-    RotTrans(&offset, &pos, &flag);
-    first = ((func_8008DC7C(pos.vx, pos.vz) << 0x11) >> 0x11) - 200;
+    SetRotMatrix(camera);
+    SetTransMatrix(camera);
+
+    SAMPLE_HEIGHT(first, 80, 80);
+
     lowest = first;
 
-    setVector(&offset, -80, 80, 150);
-    RotTrans(&offset, &pos, &flag);
-    second = ((func_8008DC7C(pos.vx, pos.vz) << 0x11) >> 0x11) - 200;
+    SAMPLE_HEIGHT(second, -80, 80);
 
     if (second < first) {
         lowest = second;
     }
 
-    setVector(&offset, 80, -80, 150);
-    RotTrans(&offset, &pos, &flag);
-    h = ((func_8008DC7C(pos.vx, pos.vz) << 0x11) >> 0x11) - 200;
+    SAMPLE_HEIGHT(third, 80, -80);
 
-    if (h < lowest) {
-        lowest = h;
+    if (third < lowest) {
+        lowest = third;
     }
 
-    setVector(&offset, -80, -80, 150);
-    RotTrans(&offset, &pos, &flag);
-    h = ((func_8008DC7C(pos.vx, pos.vz) << 0x11) >> 0x11) - 200;
+    SAMPLE_HEIGHT(fourth, -80, -80);
 
-    if (h < lowest) {
-        lowest = h;
+    if (fourth < lowest) {
+        lowest = fourth;
     }
 
     return lowest * ONE;
+
+#undef SAMPLE_HEIGHT
 }
 
-int vs_battle_script_E2_E3_camera(u_char* arg0, UNUSED short arg1)
+/**
+ * Tweens an angle: the camera roll for E2, an angle of the framebuffer effect for E3.
+ * @param script Opcode bytes:
+ *   - [1..2] = target angle
+ *   - [3] = low nibble the easing, high nibble the direction: 0 negative, 1 shortest,
+ *     2 positive
+ *   - [4] = duration, 0 sets the angle immediately
+ */
+int vs_battle_script_E2_E3_camera(u_char* script, UNUSED short arg1)
 {
-    func_800BD57C_t* var_s0;
+    AngleTween* tween;
 
-    switch (arg0[0]) {
+    switch (script[0]) {
     case 0xE2:
-        var_s0 = &D_800F4BA4->unk168;
+        tween = &scriptCamera->roll;
         break;
     case 0xE3:
-        var_s0 = &D_800F4BA4->unk174;
+        tween = &scriptCamera->unk174;
         break;
     }
 
-    var_s0->unkA = arg0[4];
+    tween->duration = script[4];
 
-    if (var_s0->unkA == 0) {
-        var_s0->unk2 = getShort(arg0 + 1);
-        var_s0->unk0 = 1;
+    if (tween->duration == 0) {
+        tween->value = getShort(script + 1);
+        tween->changed = 1;
     } else {
-        var_s0->unk4 = var_s0->unk2;
-        var_s0->unk6 = getShort(arg0 + 1) - var_s0->unk2;
-        if (var_s0->unk6 < -(ONE / 2)) {
-            var_s0->unk6 += ONE;
-        } else if (var_s0->unk6 > (ONE / 2)) {
-            var_s0->unk6 -= ONE;
+
+        tween->start = tween->value;
+        tween->delta = getShort(script + 1) - tween->value;
+
+        if (tween->delta < -(ONE / 2)) {
+            tween->delta += ONE;
+        } else if (tween->delta > (ONE / 2)) {
+            tween->delta -= ONE;
         }
 
-        switch (arg0[3] >> 4) {
+        switch (script[3] >> 4) {
         case 0:
-            if (var_s0->unk6 > 0) {
-                var_s0->unk6 -= ONE;
+            if (tween->delta > 0) {
+                tween->delta -= ONE;
             }
             break;
         case 2:
-            if (var_s0->unk6 < 0) {
-                var_s0->unk6 += ONE;
+            if (tween->delta < 0) {
+                tween->delta += ONE;
             }
             break;
         }
 
-        var_s0->unk1 = arg0[3] & 0xF;
-        var_s0->unk8 = 0;
+        tween->ease = script[3] & 0xF;
+        tween->elapsed = 0;
     }
+
     return scriptNext;
 }
 
-void func_800BD57C(func_800BD57C_t* arg0)
+/** Steps an angle tween by one frame. */
+static void stepAngleTween(AngleTween* tween)
 {
-    if (arg0->unkA > 0) {
-        arg0->unk8 += vs_gametime_vblanksPerFrame >> 1;
-
-        arg0->unk2 = (arg0->unk4
-                      + ((arg0->unk6 * func_800BFEBC(arg0->unk1, arg0->unk8, arg0->unkA))
-                          >> 0xC));
-
-        if (arg0->unk8 >= arg0->unkA) {
-            arg0->unkA = 0;
-        }
-        arg0->unk0 = 1;
+    if (tween->duration <= 0) {
+        return;
     }
+
+    tween->elapsed += vs_gametime_vblanksPerFrame >> 1;
+
+    tween->value =
+        tween->start
+        + ((tween->delta * func_800BFEBC(tween->ease, tween->elapsed, tween->duration))
+            >> 0xC);
+
+    if (tween->elapsed >= tween->duration) {
+        tween->duration = 0;
+    }
+
+    tween->changed = 1;
 }
 
 /**
@@ -5191,27 +5272,27 @@ void func_800BD57C(func_800BD57C_t* arg0)
  */
 u_char getCameraIdleFlags(void)
 {
-    u_char temp_a2 = D_800F4BA4->lookAt.mode == 0xF;
+    u_char temp_a2 = scriptCamera->lookAt.mode == cameraModeIdle;
 
-    if (D_800F4BA4->eye.mode == 0xF) {
+    if (scriptCamera->eye.mode == cameraModeIdle) {
         temp_a2 = temp_a2 | 2;
     }
-    if (D_800F4BA4->unk168.unkA == 0) {
+    if (scriptCamera->roll.duration == 0) {
         temp_a2 |= 4;
     }
-    if (D_800F4BA4->projectionDistance.unk9 == 0) {
+    if (scriptCamera->projectionDistance.duration == 0) {
         temp_a2 |= 8;
     }
-    if (D_800F4BA4->nearClip.unk9 == 0) {
+    if (scriptCamera->nearClip.duration == 0) {
         temp_a2 |= 0x10;
     }
-    if (D_800F4BA4->farClip.unk9 == 0) {
+    if (scriptCamera->farClip.duration == 0) {
         temp_a2 |= 0x20;
     }
-    if (D_800F4BA4->unk25C.unk1E == 0) {
+    if (scriptCamera->unk25C.unk1E == 0) {
         temp_a2 |= 0x40;
     }
-    if ((D_800F4BA4->unk1A4.unkB + D_800F4BA4->unk1B0.unkB) == 0) {
+    if ((scriptCamera->shakeEntries[0].unk9 + scriptCamera->shakeEntries[1].unk9) == 0) {
         temp_a2 |= 0x80;
     }
     return temp_a2;
@@ -5233,53 +5314,56 @@ int vs_battle_script_B9_BA_BF_E4_E5_E6_E7_ED(u_char* script, UNUSED short arg1)
         return scriptNext;
 
     case 228:
-        D_800F4BA4->unk1FC.unk1E = script[4];
-        if (D_800F4BA4->unk1FC.unk1E == 0) {
+        scriptCamera->unk1FC.unk1E = script[4];
+        if (scriptCamera->unk1FC.unk1E == 0) {
             values.vx = (script[1] << 7);
             values.vy = (script[2] << 7);
             func_8007DDB8(&values);
         } else {
-            D_800F4BA4->unk1FC.unk1C = 0;
+            scriptCamera->unk1FC.unk1C = 0;
             func_8007DE88(&values);
-            D_800F4BA4->unk1FC.unk12 =
-                (script[1] << 7) - (D_800F4BA4->unk1FC.unkA = values.vx);
-            D_800F4BA4->unk1FC.unk14 =
-                (script[2] << 7) - (D_800F4BA4->unk1FC.unkC = values.vy);
-            D_800F4BA4->unk1FC.unk1 = script[3];
+            scriptCamera->unk1FC.unk12 =
+                (script[1] << 7) - (scriptCamera->unk1FC.unkA = values.vx);
+            scriptCamera->unk1FC.unk14 =
+                (script[2] << 7) - (scriptCamera->unk1FC.unkC = values.vy);
+            scriptCamera->unk1FC.unk1 = script[3];
         }
         return scriptNext;
 
     case 229:
-        D_800F4BA4->unk21C.unk1E = script[5];
-        if (D_800F4BA4->unk21C.unk1E == 0) {
+        scriptCamera->unk21C.unk1E = script[5];
+        if (scriptCamera->unk21C.unk1E == 0) {
             color.r = script[1];
             color.g = script[2];
             color.b = script[3];
             func_8007DDD4(&color);
         } else {
-            D_800F4BA4->unk21C.unk1C = 0;
+            scriptCamera->unk21C.unk1C = 0;
             func_8007DEA8(&color);
-            D_800F4BA4->unk21C.unk12 = script[1] - (D_800F4BA4->unk21C.unkA = color.r);
-            D_800F4BA4->unk21C.unk14 = script[2] - (D_800F4BA4->unk21C.unkC = color.g);
-            D_800F4BA4->unk21C.unk16 = script[3] - (D_800F4BA4->unk21C.unkE = color.b);
-            D_800F4BA4->unk21C.unk1 = script[4];
+            scriptCamera->unk21C.unk12 =
+                script[1] - (scriptCamera->unk21C.unkA = color.r);
+            scriptCamera->unk21C.unk14 =
+                script[2] - (scriptCamera->unk21C.unkC = color.g);
+            scriptCamera->unk21C.unk16 =
+                script[3] - (scriptCamera->unk21C.unkE = color.b);
+            scriptCamera->unk21C.unk1 = script[4];
         }
         return scriptNext;
 
     case 230:
-        D_800F4BA4->unk23C.unk1E = script[4];
-        if (D_800F4BA4->unk23C.unk1E == 0) {
+        scriptCamera->unk23C.unk1E = script[4];
+        if (scriptCamera->unk23C.unk1E == 0) {
             values.vx = (signed char)script[1];
             values.vy = (signed char)script[2];
             func_8007DDF8(&values);
         } else {
-            D_800F4BA4->unk23C.unk1C = 0;
+            scriptCamera->unk23C.unk1C = 0;
             func_8007DECC(&values);
-            D_800F4BA4->unk23C.unk12 =
-                (signed char)script[1] - (D_800F4BA4->unk23C.unkA = values.vx);
-            D_800F4BA4->unk23C.unk14 =
-                (signed char)script[2] - (D_800F4BA4->unk23C.unkC = values.vy);
-            D_800F4BA4->unk23C.unk1 = script[3];
+            scriptCamera->unk23C.unk12 =
+                (signed char)script[1] - (scriptCamera->unk23C.unkA = values.vx);
+            scriptCamera->unk23C.unk14 =
+                (signed char)script[2] - (scriptCamera->unk23C.unkC = values.vy);
+            scriptCamera->unk23C.unk1 = script[3];
         }
         return scriptNext;
 
@@ -5290,23 +5374,24 @@ int vs_battle_script_B9_BA_BF_E4_E5_E6_E7_ED(u_char* script, UNUSED short arg1)
     // [1] = zoom (<< 6), [2] = distortion (signed), [3] = tween type, [4] = tween
     // duration, 0 = immediate. See setScreenLensDistortion.
     case 237:
-        if (D_800F4BA4->unk25C.unk1E > 0) {
+        if (scriptCamera->unk25C.unk1E > 0) {
             return scriptRepeat;
         }
 
-        D_800F4BA4->unk25C.unk1E = script[4];
-        if (D_800F4BA4->unk25C.unk1E == 0) {
-            D_800F4BA4->unk25C.unk2 = effectValue = script[1] << 6;
-            D_800F4BA4->unk25C.unk4 = (signed char)script[2];
-            setScreenLensDistortion(effectValue, D_800F4BA4->unk25C.unk4);
+        scriptCamera->unk25C.unk1E = script[4];
+        if (scriptCamera->unk25C.unk1E == 0) {
+            scriptCamera->unk25C.unk2 = effectValue = script[1] << 6;
+            scriptCamera->unk25C.unk4 = (signed char)script[2];
+            setScreenLensDistortion(effectValue, scriptCamera->unk25C.unk4);
         } else {
-            D_800F4BA4->unk25C.unk1C = 0;
-            D_800F4BA4->unk25C.unk12 =
-                (script[1] << 6) - (D_800F4BA4->unk25C.unkA = D_800F4BA4->unk25C.unk2);
-            D_800F4BA4->unk25C.unk14 =
+            scriptCamera->unk25C.unk1C = 0;
+            scriptCamera->unk25C.unk12 =
+                (script[1] << 6)
+                - (scriptCamera->unk25C.unkA = scriptCamera->unk25C.unk2);
+            scriptCamera->unk25C.unk14 =
                 (signed char)script[2]
-                - (D_800F4BA4->unk25C.unkC = D_800F4BA4->unk25C.unk4);
-            D_800F4BA4->unk25C.unk1 = script[3];
+                - (scriptCamera->unk25C.unkC = scriptCamera->unk25C.unk4);
+            scriptCamera->unk25C.unk1 = script[3];
         }
         return scriptNext;
 
@@ -5345,31 +5430,29 @@ void func_800BDAB4(void)
     VECTOR sp10;
     CVECTOR sp20;
 
-    if (func_800BDBB4(&D_800F4BA4->unk1FC) != 0) {
-        sp10.vx = D_800F4BA4->unk1FC.unk2;
-        sp10.vy = D_800F4BA4->unk1FC.unk4;
+    if (func_800BDBB4(&scriptCamera->unk1FC) != 0) {
+        sp10.vx = scriptCamera->unk1FC.unk2;
+        sp10.vy = scriptCamera->unk1FC.unk4;
         func_8007DDB8(&sp10);
     }
-    if (func_800BDBB4(&D_800F4BA4->unk21C) != 0) {
-        sp20.r = D_800F4BA4->unk21C.unk2;
-        sp20.g = D_800F4BA4->unk21C.unk4;
-        sp20.b = D_800F4BA4->unk21C.unk6;
+    if (func_800BDBB4(&scriptCamera->unk21C) != 0) {
+        sp20.r = scriptCamera->unk21C.unk2;
+        sp20.g = scriptCamera->unk21C.unk4;
+        sp20.b = scriptCamera->unk21C.unk6;
         func_8007DDD4(&sp20);
     }
-    if (func_800BDBB4(&D_800F4BA4->unk23C) != 0) {
-        sp10.vx = D_800F4BA4->unk23C.unk2;
-        sp10.vy = D_800F4BA4->unk23C.unk4;
+    if (func_800BDBB4(&scriptCamera->unk23C) != 0) {
+        sp10.vx = scriptCamera->unk23C.unk2;
+        sp10.vy = scriptCamera->unk23C.unk4;
         func_8007DDF8(&sp10);
     }
-    if (func_800BDBB4(&D_800F4BA4->unk25C) != 0) {
-        setScreenLensDistortion(D_800F4BA4->unk25C.unk2, D_800F4BA4->unk25C.unk4);
+    if (func_800BDBB4(&scriptCamera->unk25C) != 0) {
+        setScreenLensDistortion(scriptCamera->unk25C.unk2, scriptCamera->unk25C.unk4);
     }
 }
 
 int func_800BDBB4(func_800BDBB4_t* arg0)
 {
-    CameraScratch* a0;
-    int v0;
 
     if (arg0->unk1E == 0) {
         return 0;
@@ -5377,12 +5460,10 @@ int func_800BDBB4(func_800BDBB4_t* arg0)
 
     arg0->unk1C = arg0->unk1C + (vs_gametime_vblanksPerFrame >> 1);
 
-    v0 = func_800BFEBC(arg0->unk1, arg0->unk1C, arg0->unk1E);
-    a0 = CAMERA_SCRATCH;
-    a0->value = v0;
-    arg0->unk2 = (arg0->unkA + ((arg0->unk12 * a0->value) >> 0xC));
-    arg0->unk4 = (arg0->unkC + ((arg0->unk14 * a0->value) >> 0xC));
-    arg0->unk6 = (arg0->unkE + ((arg0->unk16 * a0->value) >> 0xC));
+    CAMERA_SCRATCH->value = func_800BFEBC(arg0->unk1, arg0->unk1C, arg0->unk1E);
+    arg0->unk2 = (arg0->unkA + ((arg0->unk12 * CAMERA_SCRATCH->value) >> 0xC));
+    arg0->unk4 = (arg0->unkC + ((arg0->unk14 * CAMERA_SCRATCH->value) >> 0xC));
+    arg0->unk6 = (arg0->unkE + ((arg0->unk16 * CAMERA_SCRATCH->value) >> 0xC));
 
     if (arg0->unk1C == arg0->unk1E) {
         arg0->unk1E = 0;
@@ -5392,50 +5473,52 @@ int func_800BDBB4(func_800BDBB4_t* arg0)
 
 int vs_battle_script_EA_EB_EC_EE_EF_camera(u_char* script, UNUSED short arg1)
 {
-    func_800BDF6C_t* entry;
+    ShakeEntry* entry;
     short i;
     switch (script[0]) {
     case 234:
-        if ((D_800F4BA4->projectionDistance.unk9 = script[3]) == 0) {
-            D_800F4BA4->projectionDistance.unk2 = script[1] ? (script[1] << 2) : ONE / 8;
-            D_800F4BA4->projectionDistance.unk0 = 1;
+        if ((scriptCamera->projectionDistance.duration = script[3]) == 0) {
+            scriptCamera->projectionDistance.value =
+                script[1] ? (script[1] << 2) : ONE / 8;
+            scriptCamera->projectionDistance.changed = 1;
         } else {
-            D_800F4BA4->projectionDistance.unk6 =
+            scriptCamera->projectionDistance.delta =
                 script[1] ? (script[1] << 2)
-                                - (D_800F4BA4->projectionDistance.unk4 =
-                                        D_800F4BA4->projectionDistance.unk2)
+                                - (scriptCamera->projectionDistance.start =
+                                        scriptCamera->projectionDistance.value)
                           : ONE / 8;
-            D_800F4BA4->projectionDistance.unk1 = script[2];
-            D_800F4BA4->projectionDistance.unk8 = 0;
+            scriptCamera->projectionDistance.ease = script[2];
+            scriptCamera->projectionDistance.elapsed = 0;
         }
         return scriptNext;
     case 235:
-        if ((D_800F4BA4->nearClip.unk9 = script[3]) == 0) {
-            D_800F4BA4->nearClip.unk2 = script[1] ? script[1] : 64;
-            D_800F4BA4->nearClip.unk0 = 1;
+        if ((scriptCamera->nearClip.duration = script[3]) == 0) {
+            scriptCamera->nearClip.value = script[1] ? script[1] : 64;
+            scriptCamera->nearClip.changed = 1;
         } else {
-            D_800F4BA4->nearClip.unk6 =
+            scriptCamera->nearClip.delta =
                 (script[1] ? script[1] : 64)
-                - (D_800F4BA4->nearClip.unk4 = D_800F4BA4->nearClip.unk2);
-            D_800F4BA4->nearClip.unk1 = script[2];
-            D_800F4BA4->nearClip.unk8 = 0;
+                - (scriptCamera->nearClip.start = scriptCamera->nearClip.value);
+            scriptCamera->nearClip.ease = script[2];
+            scriptCamera->nearClip.elapsed = 0;
         }
         return scriptNext;
     case 236:
-        if ((D_800F4BA4->farClip.unk9 = script[3]) == 0) {
-            D_800F4BA4->farClip.unk2 = script[1] ? (script[1] << 7) : ONE;
-            D_800F4BA4->farClip.unk0 = 1;
+        if ((scriptCamera->farClip.duration = script[3]) == 0) {
+            scriptCamera->farClip.value = script[1] ? (script[1] << 7) : ONE;
+            scriptCamera->farClip.changed = 1;
         } else {
-            D_800F4BA4->farClip.unk6 =
-                script[1] ? (script[1] << 7)
-                                - (D_800F4BA4->farClip.unk4 = D_800F4BA4->farClip.unk2)
-                          : ONE;
-            D_800F4BA4->farClip.unk1 = script[2];
-            D_800F4BA4->farClip.unk8 = 0;
+            scriptCamera->farClip.delta =
+                script[1]
+                    ? (script[1] << 7)
+                          - (scriptCamera->farClip.start = scriptCamera->farClip.value)
+                    : ONE;
+            scriptCamera->farClip.ease = script[2];
+            scriptCamera->farClip.elapsed = 0;
         }
         return scriptNext;
     case 239:
-        entry = (func_800BDF6C_t*)&D_800F4BA4->unk1A4.unk2;
+        entry = scriptCamera->shakeEntries;
         if (script[2] == 0) {
             entry[0].unk9 = entry[1].unk9 = 0;
             return scriptNext;
@@ -5445,7 +5528,7 @@ int vs_battle_script_EA_EB_EC_EE_EF_camera(u_char* script, UNUSED short arg1)
                 entry->unk4 = script[1];
                 entry->unk6 = script[2];
                 entry->unkA = script[3];
-                entry->unk0.u8[1] = script[4];
+                entry->envelope = script[4];
                 entry->unk9 = script[5];
                 entry->unk8 = 0;
                 break;
@@ -5455,25 +5538,31 @@ int vs_battle_script_EA_EB_EC_EE_EF_camera(u_char* script, UNUSED short arg1)
     }
 }
 
-void func_800BDF6C(func_800BDF6C_unk180_t* arg0)
+/** Steps a projection parameter tween by a frame. */
+static void stepProjectionTween(ProjectionTween* tween)
 {
-    if (arg0->unk9 != 0) {
-        short* new_var;
-        arg0->unk8 += vs_gametime_vblanksPerFrame >> 1;
-        if (arg0->unk9 < arg0->unk8) {
-            arg0->unk8 = arg0->unk9;
-        }
-        CAMERA_SCRATCH->value = func_800BFEBC(arg0->unk1, arg0->unk8, arg0->unk9);
-        new_var = &arg0->unk6;
-        arg0->unk2 = arg0->unk4 + ((*new_var * CAMERA_SCRATCH->value) >> 0xC);
-        if (arg0->unk8 == arg0->unk9) {
-            arg0->unk9 = 0;
-        }
-        arg0->unk0 = 1;
+    if (tween->duration == 0) {
+        return;
     }
+
+    tween->elapsed += vs_gametime_vblanksPerFrame >> 1;
+
+    if (tween->duration < tween->elapsed) {
+        tween->elapsed = tween->duration;
+    }
+
+    CAMERA_SCRATCH->value = func_800BFEBC(tween->ease, tween->elapsed, tween->duration);
+
+    tween->value = tween->start + ((tween->delta * CAMERA_SCRATCH->value) >> 0xC);
+
+    if (tween->elapsed == tween->duration) {
+        tween->duration = 0;
+    }
+
+    tween->changed = 1;
 }
 
-int func_800BE01C(func_800BDF6C_t* arg0)
+int func_800BE01C(ShakeEntry* arg0)
 {
     int temp_s1 = arg0->unk4 << 0xC;
 
@@ -5487,7 +5576,7 @@ int func_800BE01C(func_800BDF6C_t* arg0)
         arg0->unk8 = arg0->unk9;
     }
 
-    switch (arg0->unk0.u8[1]) {
+    switch (arg0->envelope) {
     case 0:
         CAMERA_SCRATCH->value = 0x1000;
         break;
@@ -5510,58 +5599,78 @@ int func_800BE01C(func_800BDF6C_t* arg0)
     return 1;
 }
 
-// The totals in a and b are read back at their fixed addresses and not as members, which
-// the match needs.
-void func_800BE180(void)
+/**
+ * Sums the active shake entries for the look-at and the eye.
+ */
+static void updateCameraShake(void)
 {
     short count = 0;
     CameraShakeScratch* clear = CAMERA_SHAKE_SCRATCH;
     short i = 0;
-    int x, y, z;
     CameraShakeScratch* scratch;
-    func_800BDF6C_t* entry = (func_800BDF6C_t*)&D_800F4BA4->unk1A4.unk2;
-    clear->a.vx = clear->a.vy = clear->a.vz = clear->b.vx = clear->b.vy = clear->b.vz = 0;
+    ShakeEntry* entry = scriptCamera->shakeEntries;
+    clear->b.vx = clear->b.vy = clear->b.vz = 0;
+    clear->a.vx = clear->a.vy = clear->a.vz = 0;
     scratch = CAMERA_SHAKE_SCRATCH;
+
     for (; i < 2; ++entry, ++i) {
-        if (func_800BE01C(entry)) {
-            setVector(&scratch->c, x = entry->unk2 * (((entry->unkA >> 2) & 3) - 1),
-                y = entry->unk2 * (((entry->unkA >> 4) & 3) - 1),
-                z = entry->unk2 * ((entry->unkA >> 6) - 1));
-            if (entry->unkA & 1) {
-                applyVector(&scratch->a, x, y, z, +=);
-            }
-            if (entry->unkA & 2) {
-                addVector(&scratch->b, &scratch->c);
-            }
-            ++count;
+        int x;
+        int y;
+        int z;
+
+        if (!func_800BE01C(entry)) {
+            continue;
         }
+
+        x = entry->unk2 * (((entry->unkA >> 2) & 3) - 1);
+        scratch->c.vx = x;
+
+        y = entry->unk2 * (((entry->unkA >> 4) & 3) - 1);
+        scratch->c.vy = y;
+
+        z = entry->unk2 * ((entry->unkA >> 6) - 1);
+        scratch->c.vz = z;
+
+        if (entry->unkA & 1) {
+            applyVector(&scratch->a, x, y, z, +=);
+        }
+
+        if (entry->unkA & 2) {
+            addVector(&scratch->b, &scratch->c);
+        }
+
+        ++count;
     }
-    D_800F4BA4->unk1A4.unk0.s16 = count;
+
+    scriptCamera->shakeCount = count;
+
     if (count) {
-        D_800F4BA4->unk1BE = VS_SCRATCH_AT(SVECTOR*, 0xD8)->vx;
-        D_800F4BA4->unk1C0 = VS_SCRATCH_AT(SVECTOR*, 0xD8)->vy;
-        D_800F4BA4->unk1C2 = VS_SCRATCH_AT(SVECTOR*, 0xD8)->vz;
-        D_800F4BA4->unk1C6 = VS_SCRATCH_AT(SVECTOR*, 0xE0)->vx;
-        D_800F4BA4->unk1C8 = VS_SCRATCH_AT(SVECTOR*, 0xE0)->vy;
-        D_800F4BA4->unk1CA = VS_SCRATCH_AT(SVECTOR*, 0xE0)->vz;
+        // The totals in a and b are read back at their fixed addresses and not as
+        // members, which the match needs.
+        scriptCamera->shakeLookAt.vx = VS_SCRATCH_AT(SVECTOR*, 0xD8)->vx;
+        scriptCamera->shakeLookAt.vy = VS_SCRATCH_AT(SVECTOR*, 0xD8)->vy;
+        scriptCamera->shakeLookAt.vz = VS_SCRATCH_AT(SVECTOR*, 0xD8)->vz;
+        scriptCamera->shakeEye[0] = VS_SCRATCH_AT(SVECTOR*, 0xE0)->vx;
+        scriptCamera->shakeEye[1] = VS_SCRATCH_AT(SVECTOR*, 0xE0)->vy;
+        scriptCamera->shakeEye[2] = VS_SCRATCH_AT(SVECTOR*, 0xE0)->vz;
     }
 }
 
 void setCameraMomentum(int lookAt, int eye)
 {
-    D_800F4BA4->lookAt.carryMomentum = lookAt;
-    D_800F4BA4->lookAt.carrying = 0;
-    D_800F4BA4->eye.carryMomentum = eye;
-    D_800F4BA4->eye.carrying = 0;
+    scriptCamera->lookAt.carryMomentum = lookAt;
+    scriptCamera->lookAt.carrying = 0;
+    scriptCamera->eye.carryMomentum = eye;
+    scriptCamera->eye.carrying = 0;
 }
 
 void clearCameraMomentum(void)
 {
-    D_800F4BA4_t* c1 = D_800F4BA4;
-    D_800F4BA4_t* c2;
-    c1->eye.mode = 0xF;
-    c1->lookAt.mode = 0xF;
-    c2 = D_800F4BA4;
+    ScriptCamera* c1 = scriptCamera;
+    ScriptCamera* c2;
+    c1->eye.mode = cameraModeIdle;
+    c1->lookAt.mode = cameraModeIdle;
+    c2 = scriptCamera;
     c2->eye.carrying = 0;
     c2->eye.carryMomentum = 0;
     c2->lookAt.carrying = 0;
@@ -5591,17 +5700,17 @@ void sweepCameraToSavedPlayerView(char side)
     sp30.vy += D_800E9C24[temp_s0] << 0xC;
     sp10.vy += D_800E9C24[temp_s0] << 0xC;
 
-    vectorCopy(&D_800F4BA4->lookAt.current, &sp10);
-    vectorCopy(&D_800F4BA4->lookAt.otherPosition, &sp30);
-    vectorCopy(&D_800F4BA4->eye.otherPosition, &sp10);
-    vectorCopy(&D_800F4BA4->eye.current, &sp30);
+    vectorCopy(&scriptCamera->lookAt.current, &sp10);
+    vectorCopy(&scriptCamera->lookAt.otherPosition, &sp30);
+    vectorCopy(&scriptCamera->eye.otherPosition, &sp10);
+    vectorCopy(&scriptCamera->eye.current, &sp30);
 
-    D_800F4BA4->lookAt.mode = 0xF;
+    scriptCamera->lookAt.mode = cameraModeIdle;
 
     initialiseCameraFromSpherical(&sp40, &sp20, temp_s3, temp_s0 + 1);
 
-    vectorCopy(&D_800F4BA4->eye.position, &sp40);
-    vectorCopy(&D_800F4BA4->lookAt.position, &sp20);
+    vectorCopy(&scriptCamera->eye.position, &sp40);
+    vectorCopy(&scriptCamera->lookAt.position, &sp20);
 
     vs_battle_script_Cx_Dx_camera(&D_800E9C28, 0);
     vs_battle_script_Cx_Dx_camera(&D_800E9C2C, 0);
@@ -5610,12 +5719,12 @@ void sweepCameraToSavedPlayerView(char side)
 /**
  * Multiplies a camera move's duration by the distance left to travel, in units per 1000.
  */
-static void scaleMoveDurationByDistance(CameraChannel* camera)
+static void scaleMoveDurationByDistance(CameraChannel* channel)
 {
     VECTOR remaining;
 
-    vectorSubtract(&remaining, &camera->current, &camera->position);
-    camera->duration = ((vectorMagnitude(&remaining) >> 0xC) * camera->duration) / 1000;
+    vectorSubtract(&remaining, &channel->current, &channel->position);
+    channel->duration = ((vectorMagnitude(&remaining) >> 0xC) * channel->duration) / 1000;
 }
 
 /**
@@ -5630,8 +5739,8 @@ void scaleCameraMoveDurationByDistance(short target)
     CameraChannel* var_a0;
     CameraChannel* temp_s1;
 
-    temp_s0 = &D_800F4BA4->lookAt;
-    temp_s1 = &D_800F4BA4->eye;
+    temp_s0 = &scriptCamera->lookAt;
+    temp_s1 = &scriptCamera->eye;
 
     if (target == 2) {
         scaleMoveDurationByDistance(temp_s0);
@@ -6323,7 +6432,7 @@ int func_800BF850(void)
         }
     }
 
-    func_800BC9E0();
+    updateCamera();
     func_800BDAB4();
     applyCameraState();
     func_800BB9B0();

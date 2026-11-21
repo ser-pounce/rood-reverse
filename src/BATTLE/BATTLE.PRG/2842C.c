@@ -1200,7 +1200,7 @@ int func_8009306C(func_80092F74_t* arg0)
     addVector(&arg0->unk1C, &arg0->unk2C);
     applyVector(&arg0->unk1C, 0xFFF, 0xFFF, 0xFFF, &=);
 
-    height = func_8008DC7C(arg0->unkC.vx / 16, arg0->unkC.vz / 16) << 17;
+    height = getTerrainHeight(arg0->unkC.vx / 16, arg0->unkC.vz / 16) << 17;
     height >>= 17;
 
     if (height < arg0->unkC.vy / 16) {

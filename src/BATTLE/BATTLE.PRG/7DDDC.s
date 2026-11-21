@@ -597,7 +597,7 @@ alabel func_800E6C34
      nop
     beqz       $v0, 14f
      addu      $a0, $s2, $zero
-    jal        func_8008DC7C
+    jal        getTerrainHeight
      addu      $a1, $s4, $zero
     lw         $t0, 0x3C($sp)
     sll        $v0, 17
@@ -851,7 +851,7 @@ alabel func_800E71DC
     sll        $s0, $a0, 7
     sll        $s1, $a1, 7
     addu       $a0, $s0, 0x40
-    jal        func_8008DC7C
+    jal        getTerrainHeight
      addu      $a1, $s1, 0x40
     addu       $s5, $v0, $zero
     addu       $s2, $zero, $zero
@@ -863,7 +863,7 @@ alabel func_800E71DC
     and        $a1, $s2, 0x3
     sll        $a1, 5
     add        $a0, $s0, $a0
-    jal        func_8008DC7C
+    jal        getTerrainHeight
      add       $a1, $s1, $a1
     li         $v1, 0xA
     bne        $s2, $v1, 23f

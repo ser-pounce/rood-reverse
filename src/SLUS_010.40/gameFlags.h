@@ -4,7 +4,14 @@
 enum itemIdentifiers { bronzeKey = 458, chamomileSigil = 466 };
 
 // Indices into vs_main_stateFlags, an alternative to accessing its members by name
-enum stateFlagIds { scriptScratch = 0x10, menuFSubmenu = 0xB6 };
+enum stateFlagIds {
+    scriptScratch = 0x10,
+    savedWeaponDrawn = 0xAC,
+    savedCameraFacing = 0xAF,
+    savedCameraZoom = 0xB0,
+    specialOpResult = 0xB1,
+    menuFSubmenu = 0xB6
+};
 
 // Values of vs_main_stateFlags.menuFSubmenu, selecting the screen shown by MENUF.PRG
 enum MenuFSubmenu {
@@ -42,7 +49,7 @@ typedef struct {
     char puzzleTimerHundredths;
     char puzzleTimerSeconds;
     char puzzleTimerMins;
-    char puzzleSetMaxTimer;
+    char puzzleTimerHours;
     char gameOver;
     char unkA5;
     char unkA6;
@@ -51,7 +58,13 @@ typedef struct {
     char unkA9;
     char unkAA;
     char introState;
-    char unkAC[9];
+    char savedWeaponDrawn;
+    char unkAD;
+    char unkAE;
+    char savedCameraFacing;
+    char savedCameraZoom;
+    char specialOpResult;
+    char unkB2[3];
     char unkB5;
     char menuFSubmenu;
     char magicUsed;

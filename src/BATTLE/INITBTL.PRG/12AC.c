@@ -108,7 +108,7 @@ static int (*skipOpcodeTableInit[])(u_char*, short) = { vs_battle_script_invalid
     vs_battle_script_Cx_Dx_camera, vs_battle_script_Cx_Dx_camera,
     vs_battle_script_Cx_Dx_camera, vs_battle_script_Cx_Dx_camera,
     vs_battle_script_invalidOpcode, vs_battle_script_invalidOpcode,
-    vs_battle_script_DE_clearCameraMomentum, vs_battle_script_DF_setCameraMomentum,
+    vs_battle_script_DE_stopCamera, vs_battle_script_DF_setCameraMomentum,
     vs_battle_script_yield, vs_battle_script_E1_setFramebufferEffect,
     vs_battle_script_E2_E3_camera, vs_battle_script_E2_E3_camera,
     vs_battle_script_B9_BA_BF_E4_E5_E6_E7_ED, vs_battle_script_B9_BA_BF_E4_E5_E6_E7_ED,

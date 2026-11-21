@@ -193,7 +193,7 @@ void func_800DCC94(
     }
 
     for (actor = vs_battle_actors[0]; actor != NULL; actor = actor->next) {
-        int id = actor->id;
+        int id = actor->slot;
         int kind = arg0->unk1A4[id].unk0_6;
         int value;
 
@@ -310,7 +310,7 @@ void func_800DD344(func_800E78F4_t* arg0)
 
     if (arg0->unk13) {
         for (actor = vs_battle_actors[0]; actor != NULL; actor = actor->next) {
-            int id = actor->id;
+            int id = actor->slot;
             func_800E78F4_t* other = D_800F5878[id];
             int kind;
 
@@ -331,15 +331,15 @@ void func_800DD344(func_800E78F4_t* arg0)
         }
     } else if (arg0->unk21) {
         for (actor = vs_battle_actors[0]; actor != NULL; actor = actor->next) {
-            func_800E78F4_t* other = D_800F5878[actor->id];
+            func_800E78F4_t* other = D_800F5878[actor->slot];
 
-            if (arg0->unk1A4[actor->id].unk0_6 != 2
+            if (arg0->unk1A4[actor->slot].unk0_6 != 2
                 || other->unk1A4[arg0->unk88].unk0_6 != 2) {
                 continue;
             }
 
             for (target = vs_battle_actors[0]; target != NULL; target = target->next) {
-                int id = target->id;
+                int id = target->slot;
 
                 if (arg0->unk1A4[id].unk0_6 != 1 || !arg0->unk1A4[id].unk0_0
                     || other->unk1A4[id].unk0_6 != 3) {
@@ -347,9 +347,9 @@ void func_800DD344(func_800E78F4_t* arg0)
                 }
 
                 for (ally = vs_battle_actors[0]; ally != NULL; ally = ally->next) {
-                    func_800E78F4_t* allyState = D_800F5878[ally->id];
+                    func_800E78F4_t* allyState = D_800F5878[ally->slot];
 
-                    if (arg0->unk1A4[ally->id].unk0_6 == 2
+                    if (arg0->unk1A4[ally->slot].unk0_6 == 2
                         && allyState->unk1A4[arg0->unk88].unk0_6 == 2
                         && (allyState->unk1A4[id].unk0_6 == 2
                             || (allyState->unk1A4[id].unk0_20
@@ -483,7 +483,7 @@ void func_800DD918(func_800E78F4_t* arg0, int arg1)
             list[1].unk8 = config->unk4;
 
             for (actor = vs_battle_actors[0]; actor != NULL; actor = actor->next) {
-                u_int id = actor->id;
+                u_int id = actor->slot;
 
                 if (D_800F5878[id]->unk1B) {
                     continue;
@@ -554,7 +554,7 @@ void func_800DD918(func_800E78F4_t* arg0, int arg1)
                     break;
 
                 case 3:
-                    target = D_800F5878[actor->id];
+                    target = D_800F5878[actor->slot];
                     func_800DC2E0(&list[2], list);
                     func_800DC2E0(&list[3], list);
                     list[1].unkC_7 = 0;
@@ -677,7 +677,7 @@ void func_800DE030(int arg0)
         }
 
         stats->statuses = statuses;
-        state = D_800F5878[actor->id];
+        state = D_800F5878[actor->slot];
         func_800E4F14(state);
 
         for (row = 0; row < 6; ++row) {
@@ -699,7 +699,7 @@ static inline int snapshotActorStats(void)
     }
 
     for (actor = vs_battle_actors[0]; actor != NULL; actor = actor->next) {
-        func_800DC3E8(actor->stats, &D_800F58E8[actor->id]);
+        func_800DC3E8(actor->stats, &D_800F58E8[actor->slot]);
     }
 
     return 1;
@@ -710,7 +710,7 @@ static inline void restoreActorStats(void)
     Actor* actor;
 
     for (actor = vs_battle_actors[0]; actor != NULL; actor = actor->next) {
-        func_800DC3E8(&D_800F58E8[actor->id], actor->stats);
+        func_800DC3E8(&D_800F58E8[actor->slot], actor->stats);
     }
 
     vs_main_freeHeapR(D_800F58E8);
@@ -738,7 +738,7 @@ void func_800DE3E4(func_800E78F4_t* arg0)
     for (row = 0; row < 6; ++row) {
         for (column = 0; column < 4; ++column) {
             for (actor = vs_battle_actors[0]; actor != NULL; actor = actor->next) {
-                D_800F5904[actor->id][stats->armor[row][column].id] = 0;
+                D_800F5904[actor->slot][stats->armor[row][column].id] = 0;
             }
         }
     }
@@ -923,7 +923,7 @@ int func_800DEC88(void* arg0)
         func_800DEB10(action);
 
         for (actor = vs_battle_actors[0]; actor != NULL; actor = actor->next) {
-            func_800E78F4_t* state = D_800F5878[actor->id];
+            func_800E78F4_t* state = D_800F5878[actor->slot];
 
             state->unkE8 = 0;
             state->unkE7 = 0;
@@ -940,11 +940,11 @@ int func_800DEC88(void* arg0)
         func_800DC810(action);
 
         for (actor = vs_battle_actors[0]; actor != NULL; actor = actor->next) {
-            D_800F5878[actor->id]->unk1B = actor->stats->currentHP == 0;
+            D_800F5878[actor->slot]->unk1B = actor->stats->currentHP == 0;
         }
 
         for (actor = vs_battle_actors[0]; actor != NULL; actor = actor->next) {
-            func_800E78F4_t* state = D_800F5878[actor->id];
+            func_800E78F4_t* state = D_800F5878[actor->slot];
 
             func_800DE3E4(state);
 

@@ -1,3 +1,5 @@
+# .as<T> cast used to work around kaitai's naming lint warning.
+
 meta:
   id: scene_arm
   file-extension: ARM
@@ -9,15 +11,15 @@ seq:
   - id: rooms
     type: room(_index)
     repeat: expr
-    repeat-expr: num_rooms
+    repeat-expr: num_rooms.as<u4>
   - id: room_headers
     type: room_header
     repeat: expr
-    repeat-expr: num_rooms
+    repeat-expr: num_rooms.as<u4>
   - id: primitives
     type: primitives
     repeat: expr
-    repeat-expr: num_rooms
+    repeat-expr: num_rooms.as<u4>
   - id: room_info
     type: room_info
     repeat: eos

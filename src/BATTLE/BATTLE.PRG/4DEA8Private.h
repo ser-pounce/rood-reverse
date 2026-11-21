@@ -23,16 +23,17 @@ enum ScriptWarpState {
 // Actor selectors, as taken by many script opcodes: the top nibble is the kind, the rest
 // the operand (see resolveActorId and expandActorSelector)
 enum ActorSelector {
-    actorSelectorById = 0x0000, // | id of the actor to find (Actor.unk18)
+    actorSelectorById = 0x0000, // | id of the actor to find (Actor.id)
     actorSelectorSlot = 0x1000, // | slot in vs_battle_actors
     actorSelectorNone = 0x2000, // where a single actor is expected: no actor
     actorSelectorAll = 0x2000, // where a list of actors is expected: every actor
 };
 
-// Return values of script opcode handlers, as interpreted by func_800BFBB8
+// Return values of script opcode handlers, as interpreted by runScript. Any other value
+// is the address of the opcode to jump to.
 enum ScriptResult {
     scriptNext = 0, // advance to the next opcode and keep running
-    scriptRepeat = 1, // not finished: stop and run this opcode again next frame
+    scriptWait = 1, // not finished: stop and run this opcode again next frame
     scriptFinish = 2, // the main script has finished, which ends the scene
     scriptEnd = 3, // terminate this script
     scriptYield = 4, // advance past this opcode, resume next frame
@@ -41,7 +42,7 @@ enum ScriptResult {
 void freeScriptCamera(void);
 VS_HIDDEN(freeScriptCamera);
 
-// States of the event that is being started or run, see func_800BF850
+// States of the event that is being started or run, see updateEvent
 enum EventState {
     eventIdle = 0,
     eventRequested = 1, // waiting for the game to be ready to start it
@@ -102,8 +103,8 @@ int loadMpdEventSections(void* triggerSection, u_short triggerSectionLen,
     u_short triggeredScriptsLen, int firstLoad);
 VS_HIDDEN(loadMpdEventSections);
 
-int func_800BF850(void);
-VS_HIDDEN(func_800BF850);
+int updateEvent(void);
+VS_HIDDEN(updateEvent);
 
 extern char textBoxStatuses[];
 VS_HIDDEN(textBoxStatuses);
@@ -140,8 +141,8 @@ VS_HIDDEN(scriptWaitFrames);
 extern char skipRequested;
 VS_HIDDEN(skipRequested);
 
-extern u_char D_800E9C30[];
-VS_HIDDEN(D_800E9C30);
+extern u_char opcodeLengths[];
+VS_HIDDEN(opcodeLengths);
 
 extern u_char* textBoxShapes[];
 VS_HIDDEN(textBoxShapes);

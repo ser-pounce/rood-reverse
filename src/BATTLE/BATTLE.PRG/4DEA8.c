@@ -3335,14 +3335,14 @@ int vs_battle_script_96_stopMusic(UNUSED u_char* script, UNUSED short slot)
  */
 int vs_battle_script_97_waitMusicSilent(u_char* script, UNUSED short slot)
 {
-    int slot = script[1];
+    int musicSlot = script[1];
 
-    if (vs_main_getMusicSlotVolume2(slot) != 0) {
-        if (vs_main_getMusicSlotVolume(slot) != 0) {
+    if (vs_main_getMusicSlotVolume2(musicSlot) != 0) {
+        if (vs_main_getMusicSlotVolume(musicSlot) != 0) {
             return scriptWait;
         }
 
-        vs_main_stopMusicSlot(slot);
+        vs_main_stopMusicSlot(musicSlot);
     }
 
     return scriptNext;
@@ -4112,15 +4112,15 @@ int vs_battle_script_F3_setScanlines(u_char* script, UNUSED short slot)
  */
 int vs_battle_script_F4_joinScript(u_char* script, UNUSED short slot)
 {
-    u_short slot = script[1] & 3;
+    u_short joinSlot = script[1] & 3;
 
     if ((script[1] & 0x80)) {
-        scriptSlots[slot] = 0;
+        scriptSlots[joinSlot] = 0;
 
         return scriptNext;
     }
 
-    return scriptSlots[slot] != 0 ? scriptWait : scriptNext;
+    return scriptSlots[joinSlot] != 0 ? scriptWait : scriptNext;
 }
 
 /**

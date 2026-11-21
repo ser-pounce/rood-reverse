@@ -321,11 +321,11 @@ extern Gim* gims;
 /**
  * Handler for opcode values that are not defined.
  */
-int vs_battle_script_invalidOpcode(u_char* script, short arg1)
+int vs_battle_script_invalidOpcode(u_char* script, short slot)
 {
     char buf[64];
 
-    sprintf(buf, "unknown code detected:%d,$%08x,$%02x", arg1, (u_int)script, *script);
+    sprintf(buf, "unknown code detected:%d,$%08x,$%02x", slot, (u_int)script, *script);
     // Debug printing presumably ifdef'd out
     return scriptNext;
 }
@@ -333,12 +333,12 @@ int vs_battle_script_invalidOpcode(u_char* script, short arg1)
 /**
  * Does nothing.
  */
-int vs_battle_script_nop(UNUSED u_char* script, UNUSED short arg1) { return scriptNext; }
+int vs_battle_script_nop(UNUSED u_char* script, UNUSED short slot) { return scriptNext; }
 
 /**
  * Does nothing and waits until the next frame before carrying on.
  */
-int vs_battle_script_yield(UNUSED u_char* script, UNUSED short arg1)
+int vs_battle_script_yield(UNUSED u_char* script, UNUSED short slot)
 {
     return scriptYield;
 }
@@ -346,7 +346,7 @@ int vs_battle_script_yield(UNUSED u_char* script, UNUSED short arg1)
 /**
  * Waits until the event file that is being loaded, if any, has finished loading.
  */
-int vs_battle_script_0A_waitEvtLoad(UNUSED u_char* script, UNUSED short arg1)
+int vs_battle_script_0A_waitEvtLoad(UNUSED u_char* script, UNUSED short slot)
 {
     if ((evtCdSlot != 0) && (evtCdSlot->state != CdQueueStateLoaded)) {
         return scriptWait;
@@ -358,7 +358,7 @@ int vs_battle_script_0A_waitEvtLoad(UNUSED u_char* script, UNUSED short arg1)
 /**
  * Waits until the GIM that is being loaded has finished loading.
  */
-int vs_battle_script_0C_waitGimLoad(UNUSED u_char* script, UNUSED short arg1)
+int vs_battle_script_0C_waitGimLoad(UNUSED u_char* script, UNUSED short slot)
 {
     return gims->loading;
 }
@@ -369,7 +369,7 @@ int vs_battle_script_0C_waitGimLoad(UNUSED u_char* script, UNUSED short arg1)
  *   - [1] bit 0 = keep the music playing if the section is skipped
  *   - [2] = unused
  */
-int vs_battle_script_0D_beginSkippable(u_char* script, UNUSED short arg1)
+int vs_battle_script_0D_beginSkippable(u_char* script, UNUSED short slot)
 {
     scriptSkipMode = scriptSkippable;
     stopMusicOnSkip = !(script[1] & 1);
@@ -416,7 +416,7 @@ static void endScriptSkip(u_char* script)
  * @return scriptYield if the section was skipped, otherwise the address to
  * jump to.
  */
-int vs_battle_script_0E_endSkippableBody(u_char* script, UNUSED short arg1)
+int vs_battle_script_0E_endSkippableBody(u_char* script, UNUSED short slot)
 {
     u_char prevMode = scriptSkipMode;
     scriptSkipMode = scriptSkipOff;
@@ -433,7 +433,7 @@ int vs_battle_script_0E_endSkippableBody(u_char* script, UNUSED short arg1)
  * Ends the skip handler of a skippable section. Only has an effect if the section was
  * being skipped, in which case it finishes the skip like 0E.
  */
-int vs_battle_script_0F_endSkipHandler(u_char* script, UNUSED short arg1)
+int vs_battle_script_0F_endSkipHandler(u_char* script, UNUSED short slot)
 {
     u_char prevMode = scriptSkipMode;
     scriptSkipMode = scriptSkipOff;
@@ -458,7 +458,7 @@ int vs_battle_script_0F_endSkipHandler(u_char* script, UNUSED short arg1)
  *   - [8-9] = speaker actor (actorSelectorNone: none)
  *   - [10] = speaker animation
  */
-int vs_battle_script_10_initTextBox(u_char* script, UNUSED short arg1)
+int vs_battle_script_10_initTextBox(u_char* script, UNUSED short slot)
 {
     vs_TextBox* box;
     short speakerSelector;
@@ -498,7 +498,7 @@ int vs_battle_script_10_initTextBox(u_char* script, UNUSED short arg1)
  *   - [2] = string index
  *   - [3] = nonzero: do not wait for the player to advance the text
  */
-int vs_battle_script_11_showTextBox(u_char* script, UNUSED short arg1)
+int vs_battle_script_11_showTextBox(u_char* script, UNUSED short slot)
 {
     int printStatus;
 
@@ -536,7 +536,7 @@ int vs_battle_script_11_showTextBox(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = boxId
  */
-int vs_battle_script_12_dismissTextBox(u_char* script, UNUSED short arg1)
+int vs_battle_script_12_dismissTextBox(u_char* script, UNUSED short slot)
 {
     vs_battle_dismissTextBox(script[1]);
 
@@ -599,7 +599,7 @@ static int tryTextBoxPlacement(
  *   - [7] = height in lines
  *   - [8] = speaker animation
  */
-int vs_battle_script_13_initTextBoxNearActor(u_char* script, UNUSED short arg1)
+int vs_battle_script_13_initTextBoxNearActor(u_char* script, UNUSED short slot)
 {
     TextPlacement placements[4];
     SVECTOR origin;
@@ -653,7 +653,7 @@ int vs_battle_script_13_initTextBoxNearActor(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = boxId
  */
-int vs_battle_script_14_dismissTextBoxAndWait(u_char* script, UNUSED short arg1)
+int vs_battle_script_14_dismissTextBoxAndWait(u_char* script, UNUSED short slot)
 {
     return vs_battle_dismissTextBox(script[1]) != 0 ? scriptWait : scriptNext;
 }
@@ -663,7 +663,7 @@ int vs_battle_script_14_dismissTextBoxAndWait(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = mask of pad buttons, only the low byte (L2, R2, L1, R1 and the face buttons)
  */
-int vs_battle_script_15_waitButtonPressed(u_char* script, UNUSED short arg1)
+int vs_battle_script_15_waitButtonPressed(u_char* script, UNUSED short slot)
 {
     if (vs_main_buttonsPressed.all & script[1]) {
         return scriptYield;
@@ -678,7 +678,7 @@ int vs_battle_script_15_waitButtonPressed(u_char* script, UNUSED short arg1)
  *   - [1-2] = GIM index
  *   - [3] = first VRAM page slot
  */
-int vs_battle_script_16_loadGim(u_char* script, UNUSED short arg1)
+int vs_battle_script_16_loadGim(u_char* script, UNUSED short slot)
 {
     loadGim(getShort(script + 1), script[3]);
 
@@ -695,7 +695,7 @@ int vs_battle_script_16_loadGim(u_char* script, UNUSED short arg1)
  *   - [4] = scale, 0x20 is full size
  *   - [5] = brightness, 0x80 is normal
  */
-int vs_battle_script_17_showGimImage(u_char* script, UNUSED short arg1)
+int vs_battle_script_17_showGimImage(u_char* script, UNUSED short slot)
 {
     GimTween* tween;
 
@@ -732,7 +732,7 @@ int vs_battle_script_17_showGimImage(u_char* script, UNUSED short arg1)
  *   - [5] = (image << 6) | curve, curve 0-3 are built in and 4-7 are set up by script
  *   - [6] = duration
  */
-int vs_battle_script_18_tweenGimImage(u_char* script, UNUSED short arg1)
+int vs_battle_script_18_tweenGimImage(u_char* script, UNUSED short slot)
 {
     Gim* gim = gims;
     GimTween* tween = &gimTweens[script[5] >> 6];
@@ -761,7 +761,7 @@ int vs_battle_script_18_tweenGimImage(u_char* script, UNUSED short arg1)
 /**
  * Unloads the GIM.
  */
-int vs_battle_script_19_unloadGim(UNUSED u_char* script, UNUSED short arg1)
+int vs_battle_script_19_unloadGim(UNUSED u_char* script, UNUSED short slot)
 {
     unloadGim();
 
@@ -771,7 +771,7 @@ int vs_battle_script_19_unloadGim(UNUSED u_char* script, UNUSED short arg1)
 /**
  * Waits until all the GIM image tweens have finished.
  */
-int vs_battle_script_1A_waitGimTweens(UNUSED u_char* script, UNUSED short arg1)
+int vs_battle_script_1A_waitGimTweens(UNUSED u_char* script, UNUSED short slot)
 {
     return (gimTweens[0].duration | gimTweens[1].duration | gimTweens[2].duration) != 0
              ? scriptWait
@@ -786,7 +786,7 @@ int vs_battle_script_1A_waitGimTweens(UNUSED u_char* script, UNUSED short arg1)
  *     1 = signed byte, 2 = unsigned 16 bits, 3 = signed 16 bits. 2 and 3 read
  *     two sequential state flags.
  */
-int vs_battle_script_1B_setPrintfArgInt(u_char* script, UNUSED short arg1)
+int vs_battle_script_1B_setPrintfArgInt(u_char* script, UNUSED short slot)
 {
     int flag = getShort(script + 2) & 0x3FF;
 
@@ -818,7 +818,7 @@ int vs_battle_script_1B_setPrintfArgInt(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = (boxId << 5) | animation duration (0-31)
  */
-int vs_battle_script_1D_setTextBoxAnimationDuration(u_char* script, UNUSED short arg1)
+int vs_battle_script_1D_setTextBoxAnimationDuration(u_char* script, UNUSED short slot)
 {
     vs_battle_getTextBox(script[1] >> 5)->animationDuration = script[1] & 0x1F;
 
@@ -831,7 +831,7 @@ int vs_battle_script_1D_setTextBoxAnimationDuration(u_char* script, UNUSED short
  * @param script Opcode bytes:
  *   - [1] = mask of the text boxes to choose between, bit n is box n
  */
-int vs_battle_script_1C_selectTextBox(u_char* script, UNUSED short arg1)
+int vs_battle_script_1C_selectTextBox(u_char* script, UNUSED short slot)
 {
     if (scriptSkipMode == scriptSkipping) {
         return scriptNext;
@@ -863,7 +863,7 @@ int vs_battle_script_1C_selectTextBox(u_char* script, UNUSED short arg1)
  *   - [1-2] = actor selector, a single actor or a group
  *   - [3] = nonzero: play the death animation first, 0: start the fade-out directly
  */
-int vs_battle_script_1E_actorDeath(u_char* script, UNUSED short arg1)
+int vs_battle_script_1E_actorDeath(u_char* script, UNUSED short slot)
 {
     ActorList actors;
 
@@ -889,7 +889,7 @@ int vs_battle_script_1E_actorDeath(u_char* script, UNUSED short arg1)
  *   - [3-4] = first of three consecutive state flags that receive the actor's tile
  *     x, surface and z. The first flag is set to 0xFF if the actor does not exist.
  */
-int vs_battle_script_1F_getActorTile(u_char* script, UNUSED short arg1)
+int vs_battle_script_1F_getActorTile(u_char* script, UNUSED short slot)
 {
     vs_ActorPosition position;
     u_short actor = getShort(script + 1);
@@ -928,7 +928,7 @@ int vs_battle_script_1F_getActorTile(u_char* script, UNUSED short arg1)
  *   - [3-4] = model index (OBJ/xx.SHP), doubles as the id the actor is looked up by
  *   - [5-8] = tile to spawn on and facing: x, surface, z and facing (1/256 turn)
  */
-int vs_battle_script_20_spawnActor(u_char* script, UNUSED short arg1)
+int vs_battle_script_20_spawnActor(u_char* script, UNUSED short slot)
 {
     vs_TilePosition tile[3];
 
@@ -950,7 +950,7 @@ int vs_battle_script_20_spawnActor(u_char* script, UNUSED short arg1)
  *   - [4] = unused
  *   - [5] = tile z
  */
-int vs_battle_script_21_walkActorToTile(u_char* script, UNUSED short arg1)
+int vs_battle_script_21_walkActorToTile(u_char* script, UNUSED short slot)
 {
     SVECTOR destination;
     u_short actor = resolveActorId(getShort(script + 1));
@@ -981,7 +981,7 @@ int vs_battle_script_21_walkActorToTile(u_char* script, UNUSED short arg1)
  *   - [4] = unused
  *   - [5] = (bank << 6) | blend frames, the bank selects the base id in animationBankBase
  */
-int vs_battle_script_22_playAnimation(u_char* script, UNUSED short arg1)
+int vs_battle_script_22_playAnimation(u_char* script, UNUSED short slot)
 {
     vs_battle_setActorAnimation(resolveActorId(getShort(script + 1)),
         animationBankBase[script[5] >> 6] + script[3], script[4], script[5] & 0x3F);
@@ -1002,7 +1002,7 @@ int vs_battle_script_22_playAnimation(u_char* script, UNUSED short arg1)
  *     - bit 3: leave the shield model's flag unchanged (ignores bit 2)
  *     - bit 5: toggle actor deactivation
  */
-int vs_battle_script_23_setActorFlags(u_char* script, UNUSED short arg1)
+int vs_battle_script_23_setActorFlags(u_char* script, UNUSED short slot)
 {
     ActorList actors;
 
@@ -1052,7 +1052,7 @@ int vs_battle_script_23_setActorFlags(u_char* script, UNUSED short arg1)
  *   - [5] = volume, 0x7F is maximum
  *   - [6] = ramp duration in frames, 0 applies immediately
  */
-int vs_battle_script_24_setActorSfxPanVolume(u_char* script, UNUSED short arg1)
+int vs_battle_script_24_setActorSfxPanVolume(u_char* script, UNUSED short slot)
 {
     SfxOverride override;
     int actorId;
@@ -1086,7 +1086,7 @@ int vs_battle_script_24_setActorSfxPanVolume(u_char* script, UNUSED short arg1)
  *   - [8] = turn frame count, 0 = immediately, 0xFF = default (from angle and the
  *     actor's unk5C0)
  */
-int vs_battle_script_25_moveActorToTile(u_char* script, UNUSED short arg1)
+int vs_battle_script_25_moveActorToTile(u_char* script, UNUSED short slot)
 {
     vs_TilePosition tile[3];
     u_short actor = resolveActorId(getShort(script + 1));
@@ -1123,7 +1123,7 @@ int vs_battle_script_25_moveActorToTile(u_char* script, UNUSED short arg1)
  *   - [10] = movement frame count, 0 = immediately, 0xFF = default
  *   - [11] = turn frame count, 0 = immediately, 0xFF = default
  */
-int vs_battle_script_26_moveActorToCoordinate(u_char* script, UNUSED short arg1)
+int vs_battle_script_26_moveActorToCoordinate(u_char* script, UNUSED short slot)
 {
     vs_ActorPosition position;
     u_short actor = resolveActorId(getShort(script + 1));
@@ -1166,7 +1166,7 @@ int vs_battle_script_26_moveActorToCoordinate(u_char* script, UNUSED short arg1)
  *   - [3-5] = tile x, surface and z
  *   - [6] = frame count, 0xFF = default (from distance and the actor's unk5C2)
  */
-int vs_battle_script_27_slideActorToTile(u_char* script, UNUSED short arg1)
+int vs_battle_script_27_slideActorToTile(u_char* script, UNUSED short slot)
 {
     vs_TilePosition tile[4];
     u_short actor = resolveActorId(getShort(script + 1));
@@ -1199,7 +1199,7 @@ int vs_battle_script_27_slideActorToTile(u_char* script, UNUSED short arg1)
  *   - [7-8] = z
  *   - [9] = frame count, 0xFF = default (from distance and the actor's unk5C2)
  */
-int vs_battle_script_28_slideActorToCoordinate(u_char* script, UNUSED short arg1)
+int vs_battle_script_28_slideActorToCoordinate(u_char* script, UNUSED short slot)
 {
     vs_ActorPosition position;
     u_short actor = resolveActorId(getShort(script + 1));
@@ -1239,7 +1239,7 @@ int vs_battle_script_28_slideActorToCoordinate(u_char* script, UNUSED short arg1
  *   - [5] = bone index in the parent
  *   - [6] = unused
  */
-int vs_battle_script_29_attachActor(u_char* script, UNUSED short arg1)
+int vs_battle_script_29_attachActor(u_char* script, UNUSED short slot)
 {
     u_short actor = resolveActorId(getShort(script + 1));
     u_short parent = resolveActorId(getShort(script + 3));
@@ -1260,7 +1260,7 @@ int vs_battle_script_29_attachActor(u_char* script, UNUSED short arg1)
  *   - [3-4] = x
  *   - [5-6] = z
  */
-int vs_battle_script_2A_walkActorToCoordinate(u_char* script, UNUSED short arg1)
+int vs_battle_script_2A_walkActorToCoordinate(u_char* script, UNUSED short slot)
 {
     SVECTOR destination;
     u_short actor = resolveActorId(getShort(script + 1));
@@ -1291,7 +1291,7 @@ int vs_battle_script_2A_walkActorToCoordinate(u_char* script, UNUSED short arg1)
  *   - [5] = frame count, 0 = immediately, 0xFF = default (from angle and the actor's
  *     unk5C0)
  */
-int vs_battle_script_2B_turnActorToFacing(u_char* script, UNUSED short arg1)
+int vs_battle_script_2B_turnActorToFacing(u_char* script, UNUSED short slot)
 {
     vs_ActorPosition position;
     u_short actor = resolveActorId(getShort(script + 1));
@@ -1343,7 +1343,7 @@ int vs_battle_script_2B_turnActorToFacing(u_char* script, UNUSED short arg1)
  *   - [5] = frame count, 0 = immediately, 0xFF = default (from angle and the actor's
  *     unk5C0)
  */
-int vs_battle_script_2C_turnActorToFaceActor(u_char* script, UNUSED short arg1)
+int vs_battle_script_2C_turnActorToFaceActor(u_char* script, UNUSED short slot)
 {
     vs_ActorPosition position;
     u_short actor = resolveActorId(getShort(script + 1));
@@ -1364,7 +1364,7 @@ int vs_battle_script_2C_turnActorToFaceActor(u_char* script, UNUSED short arg1)
  *   - [6] = frame count, 0 = immediately, 0xFF = default (from angle and the actor's
  *     unk5C0)
  */
-int vs_battle_script_2D_turnActorToFaceTile(u_char* script, UNUSED short arg1)
+int vs_battle_script_2D_turnActorToFaceTile(u_char* script, UNUSED short slot)
 {
     vs_TilePosition tile;
     u_short actor = resolveActorId(getShort(script + 1));
@@ -1390,7 +1390,7 @@ int vs_battle_script_2D_turnActorToFaceTile(u_char* script, UNUSED short arg1)
  *   - [7-8] = z scale
  *   - [9] = frame count to change over, 0 = immediately
  */
-int vs_battle_script_2E_setActorScale(u_char* script, UNUSED short arg1)
+int vs_battle_script_2E_setActorScale(u_char* script, UNUSED short slot)
 {
     SVECTOR scale;
     setVector(&scale, getShort(script + 3), getShort(script + 5), getShort(script + 7));
@@ -1406,7 +1406,7 @@ int vs_battle_script_2E_setActorScale(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1-2] = actor selector
  */
-int vs_battle_script_2F_despawnActor(u_char* script, UNUSED short arg1)
+int vs_battle_script_2F_despawnActor(u_char* script, UNUSED short slot)
 {
     ActorList actors;
 
@@ -1432,7 +1432,7 @@ int vs_battle_script_2F_despawnActor(u_char* script, UNUSED short arg1)
  *   - [3-4] = mask of the vs_battle_getActorFlags bits to wait for
  *   - [5] = unused
  */
-int vs_battle_script_30_waitActorActivity(u_char* script, UNUSED short arg1)
+int vs_battle_script_30_waitActorActivity(u_char* script, UNUSED short slot)
 {
     u_short actor = resolveActorId(getShort(script + 1)) & 0xFFFF;
     u_short status = vs_battle_getActorFlags(actor) ^ 0x81;
@@ -1454,7 +1454,7 @@ int vs_battle_script_30_waitActorActivity(u_char* script, UNUSED short arg1)
  *   - [1-2] = actor selector
  *   - [3-5] = red, green and blue (0x80 = neutral)
  */
-int vs_battle_script_31_setActorLightColor(u_char* script, UNUSED short arg1)
+int vs_battle_script_31_setActorLightColor(u_char* script, UNUSED short slot)
 {
     CVECTOR color;
 
@@ -1479,7 +1479,7 @@ int vs_battle_script_31_setActorLightColor(u_char* script, UNUSED short arg1)
  *   - [4] = unused
  *   - [5] = (bank << 6) | blend frames, as for playAnimation
  */
-int vs_battle_script_32_queueAnimation(u_char* script, UNUSED short arg1)
+int vs_battle_script_32_queueAnimation(u_char* script, UNUSED short slot)
 {
     queueActorAnimation(resolveActorId(getShort(script + 1)),
         animationBankBase[script[5] >> 6] + script[3], script[5] & 0x3F, 0);
@@ -1498,7 +1498,7 @@ int vs_battle_script_32_queueAnimation(u_char* script, UNUSED short arg1)
  *   - [10] = frame count, 0 = immediately, 0xFF = default (from angle and the actor's
  *     unk5C0)
  */
-int vs_battle_script_33_rotateActor(u_char* script, UNUSED short arg1)
+int vs_battle_script_33_rotateActor(u_char* script, UNUSED short slot)
 {
     SVECTOR rotation;
     u_short actor = resolveActorId(getShort(script + 1));
@@ -1527,7 +1527,7 @@ int vs_battle_script_33_rotateActor(u_char* script, UNUSED short arg1)
  *   - [5-6] = yaw
  *   - [7] = speed, 0 = unlimited
  */
-int vs_battle_script_34_setActorLookAngles(u_char* script, UNUSED short arg1)
+int vs_battle_script_34_setActorLookAngles(u_char* script, UNUSED short slot)
 {
     SVECTOR angles;
     int actor;
@@ -1557,7 +1557,7 @@ int vs_battle_script_34_setActorLookAngles(u_char* script, UNUSED short arg1)
  *   - [5] = unused
  *   - [6] = (bank << 6) | blend frames
  */
-int vs_battle_script_35_playAnimationFromFrame(u_char* script, UNUSED short arg1)
+int vs_battle_script_35_playAnimationFromFrame(u_char* script, UNUSED short slot)
 {
     setActorAnimationFromFrame(resolveActorId(getShort(script + 1)),
         animationBankBase[script[6] >> 6] + script[3], script[6] & 0x3F, script[4]);
@@ -1569,7 +1569,7 @@ int vs_battle_script_35_playAnimationFromFrame(u_char* script, UNUSED short arg1
  * Like queueAnimation, but the queued animation starts part way through.
  * @param script Opcode bytes: as for playAnimationFromFrame
  */
-int vs_battle_script_36_queueAnimationFromFrame(u_char* script, UNUSED short arg1)
+int vs_battle_script_36_queueAnimationFromFrame(u_char* script, UNUSED short slot)
 {
     queueActorAnimation(resolveActorId(getShort(script + 1)),
         animationBankBase[script[6] >> 6] + script[3], script[6] & 0x3F, script[4]);
@@ -1585,7 +1585,7 @@ int vs_battle_script_36_queueAnimationFromFrame(u_char* script, UNUSED short arg
  *   - [3] = animation bank, selects the base id in animationBankBase
  *   - [4] = animation index within the bank, 0xFF = the default
  */
-int vs_battle_script_37_setActorMoveAnimation(u_char* script, UNUSED short arg1)
+int vs_battle_script_37_setActorMoveAnimation(u_char* script, UNUSED short slot)
 {
     int actor = resolveActorId(getShort(script + 1));
 
@@ -1605,7 +1605,7 @@ int vs_battle_script_37_setActorMoveAnimation(u_char* script, UNUSED short arg1)
  *   - [3-4] = target actor selector, actorSelectorNone = stop looking at anything
  *   - [5] = speed, 0 = unlimited
  */
-int vs_battle_script_38_setActorLookTarget(u_char* script, UNUSED short arg1)
+int vs_battle_script_38_setActorLookTarget(u_char* script, UNUSED short slot)
 {
     int speed;
 
@@ -1638,7 +1638,7 @@ int vs_battle_script_38_setActorLookTarget(u_char* script, UNUSED short arg1)
  *   - [7-8] = z
  *   - [9] = speed, 0 = unlimited
  */
-int vs_battle_script_39_setActorLookPosition(u_char* script, UNUSED short arg1)
+int vs_battle_script_39_setActorLookPosition(u_char* script, UNUSED short slot)
 {
     SVECTOR position;
     int actor;
@@ -1668,7 +1668,7 @@ int vs_battle_script_39_setActorLookPosition(u_char* script, UNUSED short arg1)
  *   - [3] = bits 0-1: slot, bits 2-3: what to load (0 the ESQ, 1 the ESQ and then the
  *     ETM, 2 the ETM), bits 4-7: selects the VRAM slot of the ETM
  */
-int vs_battle_script_3A_enqueueEventData(u_char* script, UNUSED short arg1)
+int vs_battle_script_3A_enqueueEventData(u_char* script, UNUSED short slot)
 {
     switch ((script[3] >> 2) & 3) {
     case 0:
@@ -1690,7 +1690,7 @@ int vs_battle_script_3A_enqueueEventData(u_char* script, UNUSED short arg1)
 /**
  * Waits until the object data queue is empty.
  */
-int vs_battle_script_3B_waitDataQueueEmpty(UNUSED u_char* script, UNUSED short arg1)
+int vs_battle_script_3B_waitDataQueueEmpty(UNUSED u_char* script, UNUSED short slot)
 {
     // BUG: a full queue has no empty slot (-1), so this does not wait
     return getEmptyObjectDataSlot() > 0 ? scriptWait : scriptNext;
@@ -1701,7 +1701,7 @@ int vs_battle_script_3B_waitDataQueueEmpty(UNUSED u_char* script, UNUSED short a
  * @param script Opcode bytes:
  *   - [1] = bits 0-1: slot, bit 2: unload only the ETM, otherwise the ESQ and its ETM
  */
-int vs_battle_script_3C_unloadEventData(u_char* script, UNUSED short arg1)
+int vs_battle_script_3C_unloadEventData(u_char* script, UNUSED short slot)
 {
     if (script[1] & 4) {
         unloadEtm(script[1] & 3);
@@ -1717,7 +1717,7 @@ int vs_battle_script_3C_unloadEventData(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = slot (1-3)
  */
-int vs_battle_script_3D_selectEventData(u_char* script, UNUSED short arg1)
+int vs_battle_script_3D_selectEventData(u_char* script, UNUSED short slot)
 {
     selectEventData(script[1]);
 
@@ -1733,7 +1733,7 @@ int vs_battle_script_3D_selectEventData(u_char* script, UNUSED short arg1)
  *   - [6] = number of ordering table entries to push the copy back
  *   - [7-9] = red, green and blue of the copy, all zero = no edge highlight
  */
-int vs_battle_script_3E_setActorEdgeHighlight(u_char* script, UNUSED short arg1)
+int vs_battle_script_3E_setActorEdgeHighlight(u_char* script, UNUSED short slot)
 {
 // `offset` below appers to have been defined as a flat array of bytes in the original
 #ifdef NON_MATCHING
@@ -1778,7 +1778,7 @@ int vs_battle_script_3E_setActorEdgeHighlight(u_char* script, UNUSED short arg1)
  *   - [1-2] = actor selector
  *   - [3] = 0 = sheathe, 1 = draw, 2 = toggle
  */
-int vs_battle_script_3F_setWeaponDrawn(u_char* script, UNUSED short arg1)
+int vs_battle_script_3F_setWeaponDrawn(u_char* script, UNUSED short slot)
 {
     ActorList actors;
 
@@ -1806,7 +1806,7 @@ int vs_battle_script_3F_setWeaponDrawn(u_char* script, UNUSED short arg1)
  *   - [3] = value to compare with (signed)
  *   - [4-5] = offset from this opcode to jump to if the comparison is false
  */
-int vs_battle_script_40_jumpFwdUnlessFlagImm(u_char* script, UNUSED short arg1)
+int vs_battle_script_40_jumpFwdUnlessFlagImm(u_char* script, UNUSED short slot)
 {
     char flag = getStateFlag(((u_char)script[2] >> 2) | ((script[1] & 0xF) << 6));
     u_char value = script[3];
@@ -1870,7 +1870,7 @@ int vs_battle_script_40_jumpFwdUnlessFlagImm(u_char* script, UNUSED short arg1)
  *   - [3] = bits 0-7 of the second flag id
  *   - [4-5] = offset from this opcode to jump to if the comparison is false
  */
-int vs_battle_script_41_jumpFwdUnlessFlag(u_char* script, UNUSED short arg1)
+int vs_battle_script_41_jumpFwdUnlessFlag(u_char* script, UNUSED short slot)
 {
     char flag = getStateFlag(((u_char)script[2] >> 2) | ((script[1] & 0xF) << 6));
     u_char other = getStateFlag(script[3] | ((script[2] & 3) << 8));
@@ -1922,7 +1922,7 @@ int vs_battle_script_41_jumpFwdUnlessFlag(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1-2] = target offset from this opcode
  */
-int vs_battle_script_42_jumpFwdElse(u_char* script, UNUSED short arg1)
+int vs_battle_script_42_jumpFwdElse(u_char* script, UNUSED short slot)
 {
     return (long)&script[getShort(script + 1)];
 }
@@ -1932,7 +1932,7 @@ int vs_battle_script_42_jumpFwdElse(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1-2] = target offset from this opcode
  */
-int vs_battle_script_45_jumpFwd(u_char* script, UNUSED short arg1)
+int vs_battle_script_45_jumpFwd(u_char* script, UNUSED short slot)
 {
     return (long)&script[getShort(script + 1)];
 }
@@ -1943,7 +1943,7 @@ int vs_battle_script_45_jumpFwd(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1-2] = state flag id
  */
-int vs_battle_script_46_switchOnFlag(u_char* script, UNUSED short arg1)
+int vs_battle_script_46_switchOnFlag(u_char* script, UNUSED short slot)
 {
     switchValue = getStateFlag(getShort(script + 1));
 
@@ -1956,7 +1956,7 @@ int vs_battle_script_46_switchOnFlag(u_char* script, UNUSED short arg1)
  *   - [1] = value to compare
  *   - [2-3] = target offset from this opcode
  */
-int vs_battle_script_47_jumpFwdCase(u_char* script, UNUSED short arg1)
+int vs_battle_script_47_jumpFwdCase(u_char* script, UNUSED short slot)
 {
     if (switchValue == script[1]) {
         return (long)&script[getShort(script + 2)];
@@ -1968,7 +1968,7 @@ int vs_battle_script_47_jumpFwdCase(u_char* script, UNUSED short arg1)
 /**
  * Ends sceneResetScript.
  */
-int vs_battle_script_48_endSceneReset(UNUSED u_char* script, UNUSED short arg1)
+int vs_battle_script_48_endSceneReset(UNUSED u_char* script, UNUSED short slot)
 {
     return scriptReturnAddress;
 }
@@ -1980,7 +1980,7 @@ int vs_battle_script_48_endSceneReset(UNUSED u_char* script, UNUSED short arg1)
  *   - [1] = counter index (0-15), 0xFF = none
  *   - [2] = number of times to loop
  */
-int vs_battle_script_49_setLoopCounter(u_char* script, UNUSED short arg1)
+int vs_battle_script_49_setLoopCounter(u_char* script, UNUSED short slot)
 {
     if (script[1] != 0xFF) {
         loopCounters[script[1]] = script[2];
@@ -1995,7 +1995,7 @@ int vs_battle_script_49_setLoopCounter(u_char* script, UNUSED short arg1)
  *   - [1] = counter index (0-15), 0xFF = unconditional jump back (i.e. infinite loop)
  *   - [2-3] = target offset before this opcode
  */
-int vs_battle_script_4A_loopCondition(u_char* script, UNUSED short arg1)
+int vs_battle_script_4A_loopCondition(u_char* script, UNUSED short slot)
 {
     if (script[1] == 0xFF) {
         return (long)&script[-getShort(script + 2)];
@@ -2013,7 +2013,7 @@ int vs_battle_script_4A_loopCondition(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1-2] = target offset from this opcode
  */
-int vs_battle_script_4C_jumpFwdUnused(u_char* script, UNUSED short arg1)
+int vs_battle_script_4C_jumpFwdUnused(u_char* script, UNUSED short slot)
 {
     return (long)&script[getShort(script + 1)];
 }
@@ -2023,7 +2023,7 @@ int vs_battle_script_4C_jumpFwdUnused(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1-2] = target offset from this opcode
  */
-int vs_battle_script_4B_break(u_char* script, UNUSED short arg1)
+int vs_battle_script_4B_break(u_char* script, UNUSED short slot)
 {
     return (long)&script[getShort(script + 1)];
 }
@@ -2037,7 +2037,7 @@ int vs_battle_script_4B_break(u_char* script, UNUSED short arg1)
  *   - [2] = bits 0-5 of the flag id in bits 2-7
  *   - [3] = value
  */
-int vs_battle_script_50_modifyFlagImm(u_char* script, UNUSED short arg1)
+int vs_battle_script_50_modifyFlagImm(u_char* script, UNUSED short slot)
 {
     int operationAndFlag = script[1];
     short value = script[3];
@@ -2090,7 +2090,7 @@ int vs_battle_script_50_modifyFlagImm(u_char* script, UNUSED short arg1)
  *     bits 0-1
  *   - [3] = bits 0-7 of the second flag id
  */
-int vs_battle_script_51_modifyFlag(u_char* script, UNUSED short arg1)
+int vs_battle_script_51_modifyFlag(u_char* script, UNUSED short slot)
 {
     int tmp;
     u_char prev;
@@ -2152,7 +2152,7 @@ int vs_battle_script_51_modifyFlag(u_char* script, UNUSED short arg1)
  *   - [1-2] = item id
  *   - [3-4] = state flag id
  */
-int vs_battle_script_52_setFlagToItemCount(u_char* script, UNUSED short arg1)
+int vs_battle_script_52_setFlagToItemCount(u_char* script, UNUSED short slot)
 {
     vs_battle_setStateFlag(
         getShort(script + 3), itemIdIsInInventory(getShort(script + 1)));
@@ -2167,7 +2167,7 @@ int vs_battle_script_52_setFlagToItemCount(u_char* script, UNUSED short arg1)
  *   - [1] = zone id (ZND)
  *   - [2] = map id (MPD)
  */
-int vs_battle_script_53_forgetZoneEnemies(u_char* script, UNUSED short arg1)
+int vs_battle_script_53_forgetZoneEnemies(u_char* script, UNUSED short slot)
 {
     vs_battle_forgetZoneEnemies(script[2], script[1]);
 
@@ -2181,7 +2181,7 @@ int vs_battle_script_53_forgetZoneEnemies(u_char* script, UNUSED short arg1)
  *   - [1-2] = actor selector
  *   - [3] = 0 = draw, 1 = sheathe
  */
-int vs_battle_script_54_playWeaponSfx(u_char* script, UNUSED short arg1)
+int vs_battle_script_54_playWeaponSfx(u_char* script, UNUSED short slot)
 {
     playWeaponSfx(resolveActorId(getShort(script + 1)), script[3]);
 
@@ -2194,7 +2194,7 @@ int vs_battle_script_54_playWeaponSfx(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = 0 = dormant, nonzero = awake
  */
-int vs_battle_script_55_setActorsAwake(u_char* script, UNUSED short arg1)
+int vs_battle_script_55_setActorsAwake(u_char* script, UNUSED short slot)
 {
     setActorsAwake(script[1]);
 
@@ -2208,7 +2208,7 @@ int vs_battle_script_55_setActorsAwake(u_char* script, UNUSED short arg1)
  *   - [1-2] = bits 0-9: state flag id, bit 15: 1 = buttons newly pressed this frame,
  *     0 = buttons held
  */
-int vs_battle_script_56_setFlagToButtons(u_char* script, UNUSED short arg1)
+int vs_battle_script_56_setFlagToButtons(u_char* script, UNUSED short slot)
 {
     short flagAndMode = getShort(script + 1);
 
@@ -2226,7 +2226,7 @@ int vs_battle_script_56_setFlagToButtons(u_char* script, UNUSED short arg1)
  *   - [1-2] = actor selector
  *   - [3] = unused
  */
-int vs_battle_script_57_fullyRestoreActor(u_char* script, UNUSED short arg1)
+int vs_battle_script_57_fullyRestoreActor(u_char* script, UNUSED short slot)
 {
     fullyRestoreActor(resolveActorId(getShort(script + 1)));
 
@@ -2239,7 +2239,7 @@ int vs_battle_script_57_fullyRestoreActor(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = 0 = hide, 1 = show
  */
-int vs_battle_script_58_setUiVisible(u_char* script, UNUSED short arg1)
+int vs_battle_script_58_setUiVisible(u_char* script, UNUSED short slot)
 {
     setUiHidden(script[1] ^ 1);
 
@@ -2255,7 +2255,7 @@ int vs_battle_script_58_setUiVisible(u_char* script, UNUSED short arg1)
  *   - [1] = menu selector
  *   - [2-3] = unused
  */
-int vs_battle_script_59_openMenu(u_char* script, UNUSED short arg1)
+int vs_battle_script_59_openMenu(u_char* script, UNUSED short slot)
 {
     // Values of script[1]. The first three are in the order of cubePuzzleSubmenus.
     enum {
@@ -2360,7 +2360,7 @@ int vs_battle_script_59_openMenu(u_char* script, UNUSED short arg1)
  *   - [3] = mode index, 0 = counts up, 1 = counts down
  *   - [4-6] = hours, minutes and seconds to count down from
  */
-int vs_battle_script_5A_setBattleTimer(u_char* script, UNUSED short arg1)
+int vs_battle_script_5A_setBattleTimer(u_char* script, UNUSED short slot)
 {
     if (script[1] != 0) {
         startBattleTimer(battleTimerModes[script[3]], battleTimerLifetimes[script[2]],
@@ -2378,7 +2378,7 @@ int vs_battle_script_5A_setBattleTimer(u_char* script, UNUSED short arg1)
  *   - [1] = box id in the low nibble, speaker animation in the high nibble
  *   - [2-3] = actor selector, or actorSelectorNone for no speaker
  */
-int vs_battle_script_5B_setTextBoxSpeaker(u_char* script, UNUSED short arg1)
+int vs_battle_script_5B_setTextBoxSpeaker(u_char* script, UNUSED short slot)
 {
     u_short speakerSelector = getShort(script + 2);
     vs_TextBox* box = vs_battle_getTextBox(script[1] & 0xF);
@@ -2400,7 +2400,7 @@ int vs_battle_script_5B_setTextBoxSpeaker(u_char* script, UNUSED short arg1)
  *   - [5] = shield model id, 0 = none, 0xFF = leave unchanged
  *   - [6] = unused
  */
-int vs_battle_script_5C_setActorWeaponModels(u_char* script, UNUSED short arg1)
+int vs_battle_script_5C_setActorWeaponModels(u_char* script, UNUSED short slot)
 {
     u_short actor = resolveActorId(getShort(script + 1));
 
@@ -2419,7 +2419,7 @@ int vs_battle_script_5C_setActorWeaponModels(u_char* script, UNUSED short arg1)
  *   - [1-2] = actor selector
  *   - [3] = sway angle at its peak, in 1/ONE of a full turn, 0 = stop swaying
  */
-int vs_battle_script_5D_setActorSway(u_char* script, UNUSED short arg1)
+int vs_battle_script_5D_setActorSway(u_char* script, UNUSED short slot)
 {
     setActorSway(resolveActorId(getShort(script + 1)), script[3]);
 
@@ -2458,7 +2458,7 @@ int vs_battle_script_5E_waitFramesOrButton(u_char* script, short slot)
  *   - [1] = (slot << 6) | (base curve << 4) | squarings, where squarings is a signed 4
  *     bit number, an ease-in if positive and an ease-out if negative
  */
-int vs_battle_script_5F_defineEasing(u_char* script, UNUSED short arg1)
+int vs_battle_script_5F_defineEasing(u_char* script, UNUSED short slot)
 {
     int power;
     CustomEasing* base = customEasings;
@@ -2483,7 +2483,7 @@ int vs_battle_script_5F_defineEasing(u_char* script, UNUSED short arg1)
  *   - [1] = index of the cloudstone in the room data
  *   - [2] = 1 = moving, 0 = stopped
  */
-int vs_battle_script_60_setCloudstoneMoving(u_char* script, UNUSED short arg1)
+int vs_battle_script_60_setCloudstoneMoving(u_char* script, UNUSED short slot)
 {
     setCloudstoneMoving(script[1], script[2]);
 
@@ -2495,7 +2495,7 @@ int vs_battle_script_60_setCloudstoneMoving(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1..2] = depth, with bit 15 toggling the override
  */
-int vs_battle_script_61_overrideFogDepth(u_char* script, UNUSED short arg1)
+int vs_battle_script_61_overrideFogDepth(u_char* script, UNUSED short slot)
 {
     short depth = getShort(script + 1);
 
@@ -2515,7 +2515,7 @@ int vs_battle_script_61_overrideFogDepth(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = 1 = enabled, 0 = disabled
  */
-int vs_battle_script_62_setFirstPersonRendering(u_char* script, UNUSED short arg1)
+int vs_battle_script_62_setFirstPersonRendering(u_char* script, UNUSED short slot)
 {
     firstPersonRendering = script[1];
 
@@ -2523,7 +2523,7 @@ int vs_battle_script_62_setFirstPersonRendering(u_char* script, UNUSED short arg
 }
 
 /** Clears no statuses (empty mask), so it has no effect. Probably unused. */
-int vs_battle_script_63_statusUnk(UNUSED u_char* script, UNUSED short arg1)
+int vs_battle_script_63_statusUnk(UNUSED u_char* script, UNUSED short slot)
 {
     func_8007C31C();
 
@@ -2535,7 +2535,7 @@ int vs_battle_script_63_statusUnk(UNUSED u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = geometry object id
  */
-int vs_battle_script_64_showGeometry(u_char* script, UNUSED short arg1)
+int vs_battle_script_64_showGeometry(u_char* script, UNUSED short slot)
 {
     showGeometryObject(script[1]);
 
@@ -2547,7 +2547,7 @@ int vs_battle_script_64_showGeometry(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = geometry object id
  */
-int vs_battle_script_65_hideGeometry(u_char* script, UNUSED short arg1)
+int vs_battle_script_65_hideGeometry(u_char* script, UNUSED short slot)
 {
     hideGeometryObject(script[1]);
 
@@ -2559,7 +2559,7 @@ int vs_battle_script_65_hideGeometry(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1], [2] = geometry object ids
  */
-int vs_battle_script_66_swapGeometryFlags(u_char* script, UNUSED short arg1)
+int vs_battle_script_66_swapGeometryFlags(u_char* script, UNUSED short slot)
 {
     swapGeometryFlags(script[1], script[2]);
 
@@ -2574,7 +2574,7 @@ int vs_battle_script_66_swapGeometryFlags(u_char* script, UNUSED short arg1)
  *   - [3] = tile row
  *   - [4] = 1 = blocked, 0 = open
  */
-int vs_battle_script_67_setTileBlocked(u_char* script, UNUSED short arg1)
+int vs_battle_script_67_setTileBlocked(u_char* script, UNUSED short slot)
 {
     setTileBlocked(script[1], script[3], script[2], script[4]);
 
@@ -2595,7 +2595,7 @@ int vs_battle_script_67_setTileBlocked(u_char* script, UNUSED short arg1)
  *   - [8] = screen transition effect
  *   - [9] = screen transition speed
  */
-int vs_battle_script_68_warp(u_char* script, UNUSED short arg1)
+int vs_battle_script_68_warp(u_char* script, UNUSED short slot)
 {
     if (scriptWarpState == scriptWarpIdle) {
         vs_Warp warp;
@@ -2635,7 +2635,7 @@ int vs_battle_script_68_warp(u_char* script, UNUSED short arg1)
  *   - [2] = speed
  *   - [3] = wipe angle, in 1/256ths of a turn
  */
-int vs_battle_script_69_screenTransitionOut(u_char* script, UNUSED short arg1)
+int vs_battle_script_69_screenTransitionOut(u_char* script, UNUSED short slot)
 {
     int phase = getScreenTransitionPhase();
 
@@ -2657,7 +2657,7 @@ int vs_battle_script_69_screenTransitionOut(u_char* script, UNUSED short arg1)
  *   - [2] = speed
  *   - [3] = wipe angle, in 1/256ths of a turn
  */
-int vs_battle_script_6A_screenTransitionIn(u_char* script, UNUSED short arg1)
+int vs_battle_script_6A_screenTransitionIn(u_char* script, UNUSED short slot)
 {
     startScreenTransitionIn(script[1], script[2], script[3] * ONE / 256);
 
@@ -2669,7 +2669,7 @@ int vs_battle_script_6A_screenTransitionIn(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = wipe angle, in 1/256ths of a turn
  */
-int vs_battle_script_6B_setScreenTransitionWipeAngle(u_char* script, UNUSED short arg1)
+int vs_battle_script_6B_setScreenTransitionWipeAngle(u_char* script, UNUSED short slot)
 {
     setScreenTransitionWipeAngle(script[1] * ONE / 256);
 
@@ -2683,7 +2683,7 @@ int vs_battle_script_6B_setScreenTransitionWipeAngle(u_char* script, UNUSED shor
  *   - [2] = speed
  *   - [3] = wipe angle, in 1/256ths of a turn
  */
-int vs_battle_script_6C_setScreenTransition(u_char* script, UNUSED short arg1)
+int vs_battle_script_6C_setScreenTransition(u_char* script, UNUSED short slot)
 {
     setScreenTransition(script[1], script[2], script[3] * ONE / 256);
 
@@ -2696,7 +2696,7 @@ int vs_battle_script_6C_setScreenTransition(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = bits 0-1 screen output, bits 2-3 room geometry, bits 4-5 all actors
  */
-int vs_battle_script_6D_setSceneVisibility(u_char* script, UNUSED short arg1)
+int vs_battle_script_6D_setSceneVisibility(u_char* script, UNUSED short slot)
 {
     switch (script[1] & 3) {
     case 0:
@@ -2731,7 +2731,7 @@ int vs_battle_script_6D_setSceneVisibility(u_char* script, UNUSED short arg1)
 /**
  * Waits until the screen transition has finished.
  */
-int vs_battle_script_6E_waitForScreenTransition(UNUSED u_char* script, UNUSED short arg1)
+int vs_battle_script_6E_waitForScreenTransition(UNUSED u_char* script, UNUSED short slot)
 {
     return getScreenTransitionPhase() != screenTransitionIdle ? scriptWait : scriptNext;
 }
@@ -2740,7 +2740,7 @@ int vs_battle_script_6E_waitForScreenTransition(UNUSED u_char* script, UNUSED sh
  * Turns something unknown on (nonzero operand) or off. Both handlers are empty, so it has
  * no effect. Only used with [1] = 0xF6, in events 5, 14 and 15.
  */
-int vs_battle_script_6F_setUnk(u_char* script, UNUSED short arg1)
+int vs_battle_script_6F_setUnk(u_char* script, UNUSED short slot)
 {
     if (script[1] != 0) {
         func_8007B104();
@@ -2761,7 +2761,7 @@ int vs_battle_script_6F_setUnk(u_char* script, UNUSED short arg1)
  *   - [4] = duration in frames as a power of two, 0 to 4, anything higher is instant
  *   - [5-7] = signed red, green and blue offsets
  */
-int vs_battle_script_70_transformColors(u_char* script, UNUSED short arg1)
+int vs_battle_script_70_transformColors(u_char* script, UNUSED short slot)
 {
     ActorList actors;
 
@@ -2799,7 +2799,7 @@ int vs_battle_script_70_transformColors(u_char* script, UNUSED short arg1)
  *   - [1-2] = actor
  *   - [3] = 1 fades out, 2 fades in. 0 is not used by any script (renders invisible).
  */
-int vs_battle_script_71_fadeActor(u_char* script, UNUSED short arg1)
+int vs_battle_script_71_fadeActor(u_char* script, UNUSED short slot)
 {
     fadeActor(resolveActorId(getShort(script + 1)), script[3]);
 
@@ -2817,7 +2817,7 @@ static inline void setWeaponAnimating(int animating) { weaponAnimating = animati
  *   - [2] = 0 changes at once, 1 plays the quick animation the player uses, 2 plays
  *     a slower one seen only in cutscenes
  */
-int vs_battle_script_72_drawSheatheAshleyWeapon(u_char* script, UNUSED short arg1)
+int vs_battle_script_72_drawSheatheAshleyWeapon(u_char* script, UNUSED short slot)
 {
     if (weaponAnimating == 0) {
         int variantOffset;
@@ -2873,7 +2873,7 @@ int vs_battle_script_72_drawSheatheAshleyWeapon(u_char* script, UNUSED short arg
  * @param script Opcode bytes:
  *   - [1] = 0 == hide, !0 == show
  */
-int vs_battle_script_73_setBackgroundVisible(u_char* script, UNUSED short arg1)
+int vs_battle_script_73_setBackgroundVisible(u_char* script, UNUSED short slot)
 {
     setBackgroundVisible(script[1]);
 
@@ -2885,7 +2885,7 @@ int vs_battle_script_73_setBackgroundVisible(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = texture page slot
  */
-int vs_battle_script_74_loadBackground(u_char* script, UNUSED short arg1)
+int vs_battle_script_74_loadBackground(u_char* script, UNUSED short slot)
 {
     loadBackground(script[1]);
 
@@ -2895,7 +2895,7 @@ int vs_battle_script_74_loadBackground(u_char* script, UNUSED short arg1)
 /**
  * Waits until the background image started by opcode 74 has finished loading.
  */
-int vs_battle_script_75_waitBackgroundLoad(UNUSED u_char* script, UNUSED short arg1)
+int vs_battle_script_75_waitBackgroundLoad(UNUSED u_char* script, UNUSED short slot)
 {
     return pollBackgroundLoad() == 0 ? scriptWait : scriptNext;
 }
@@ -2903,7 +2903,7 @@ int vs_battle_script_75_waitBackgroundLoad(UNUSED u_char* script, UNUSED short a
 /**
  * Hides the background image and frees its texture page(s).
  */
-int vs_battle_script_76_unloadBackground(UNUSED u_char* script, UNUSED short arg1)
+int vs_battle_script_76_unloadBackground(UNUSED u_char* script, UNUSED short slot)
 {
     unloadBackground();
 
@@ -2921,7 +2921,7 @@ int vs_battle_script_76_unloadBackground(UNUSED u_char* script, UNUSED short arg
  *   - [3] = fall angle, 0x80 falls straight down
  *   - [4] = 0 sets the values at once, otherwise the number of frames to blend over
  */
-int vs_battle_script_77_setParticleEffect(u_char* script, UNUSED short arg1)
+int vs_battle_script_77_setParticleEffect(u_char* script, UNUSED short slot)
 {
     setParticleEffect(script[1] >> 4);
 
@@ -2967,7 +2967,7 @@ int vs_battle_script_77_setParticleEffect(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = 1 stops the drift, 0 resumes it
  */
-int vs_battle_script_78_freezeParticleEffect(u_char* script, UNUSED short arg1)
+int vs_battle_script_78_freezeParticleEffect(u_char* script, UNUSED short slot)
 {
     setParticleEffectDrift(script[1] ^ 1);
 
@@ -2980,7 +2980,7 @@ int vs_battle_script_78_freezeParticleEffect(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = !0 acquires control, 0 returns control
  */
-int vs_battle_script_7A_setParticleEffectSoundScripted(u_char* script, UNUSED short arg1)
+int vs_battle_script_7A_setParticleEffectSoundScripted(u_char* script, UNUSED short slot)
 {
     if (script[1] != 0) {
 
@@ -3011,7 +3011,7 @@ int vs_battle_script_7A_setParticleEffectSoundScripted(u_char* script, UNUSED sh
  *     first), 1 pauses or resumes
  *   - [2] = task index, with the room's scripted tasks starting at 0x40
  */
-int vs_battle_script_79_controlRoomTask(u_char* script, UNUSED short arg1)
+int vs_battle_script_79_controlRoomTask(u_char* script, UNUSED short slot)
 {
     int task = script[2];
 
@@ -3038,7 +3038,7 @@ int vs_battle_script_79_controlRoomTask(u_char* script, UNUSED short arg1)
  *   - [1..2] = horizontal offset (signed)
  *   - [3..4] = vertical offset (signed)
  */
-int vs_battle_script_7B_setBackgroundOffset(u_char* script, UNUSED short arg1)
+int vs_battle_script_7B_setBackgroundOffset(u_char* script, UNUSED short slot)
 {
     setBackgroundOffset(getShort(script + 1), getShort(script + 3));
 
@@ -3051,7 +3051,7 @@ int vs_battle_script_7B_setBackgroundOffset(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = 0 renders all geometry, anything else culls by camera angle
  */
-int vs_battle_script_7C_cullOccludingGeometry(u_char* script, UNUSED short arg1)
+int vs_battle_script_7C_cullOccludingGeometry(u_char* script, UNUSED short slot)
 {
     cullOccludingGeometry(script[1] != 0);
 
@@ -3065,7 +3065,7 @@ int vs_battle_script_7C_cullOccludingGeometry(u_char* script, UNUSED short arg1)
  *   - [1] = geometry object index
  *   - [2] = amount to add (signed)
  */
-int vs_battle_script_7D_adjustGeometryDepth(u_char* script, UNUSED short arg1)
+int vs_battle_script_7D_adjustGeometryDepth(u_char* script, UNUSED short slot)
 {
     adjustGeometryObjectDepth(script[1], (signed char)script[2]);
 
@@ -3079,7 +3079,7 @@ int vs_battle_script_7D_adjustGeometryDepth(u_char* script, UNUSED short arg1)
  *   - [2] = shift for vertical tilting (signed)
  *   - [3] = unused
  */
-int vs_battle_script_7E_setBackgroundParallax(u_char* script, UNUSED short arg1)
+int vs_battle_script_7E_setBackgroundParallax(u_char* script, UNUSED short slot)
 {
     setBackgroundParallax(
         (signed char)script[1] * (ONE / 32), (signed char)script[2] * (ONE / 32));
@@ -3097,7 +3097,7 @@ int vs_battle_script_7E_setBackgroundParallax(u_char* script, UNUSED short arg1)
  *   - [3] = pan, 0x80 is centre
  *   - [4] = volume, up to 0x7F
  */
-int vs_battle_script_80_playSfx(u_char* script, UNUSED short arg1)
+int vs_battle_script_80_playSfx(u_char* script, UNUSED short slot)
 {
     if (script[1] == 2 && particleEffectSoundScripted == 0) {
         return scriptNext;
@@ -3118,7 +3118,7 @@ int vs_battle_script_80_playSfx(u_char* script, UNUSED short arg1)
  *   - [1..2] = actor ID
  *   - [3] = sound effect type
  */
-int vs_battle_script_81_playActorSfx(u_char* script, UNUSED short arg1)
+int vs_battle_script_81_playActorSfx(u_char* script, UNUSED short slot)
 {
     playActorSfx(resolveActorId(getShort(script + 1)), script[3]);
 
@@ -3133,7 +3133,7 @@ int vs_battle_script_81_playActorSfx(u_char* script, UNUSED short arg1)
  *   - [3] = target volume
  *   - [4] = fade duration
  */
-int vs_battle_script_82_fadeSfxVolume(u_char* script, UNUSED short arg1)
+int vs_battle_script_82_fadeSfxVolume(u_char* script, UNUSED short slot)
 {
     vs_main_fadeSfxVolume(scriptSfxGroups[script[1]], script[2], script[3], script[4]);
 
@@ -3141,7 +3141,7 @@ int vs_battle_script_82_fadeSfxVolume(u_char* script, UNUSED short arg1)
 }
 
 /** Stops all sound effects. */
-int vs_battle_script_83_stopAllSfx(UNUSED u_char* script, UNUSED short arg1)
+int vs_battle_script_83_stopAllSfx(UNUSED u_char* script, UNUSED short slot)
 {
     vs_main_stopAllSfx();
 
@@ -3154,7 +3154,7 @@ int vs_battle_script_83_stopAllSfx(UNUSED u_char* script, UNUSED short arg1)
  *   - [1] = sound group, as in opcode 80
  *   - [2] = sound ID
  */
-int vs_battle_script_84_stopSfx(u_char* script, UNUSED short arg1)
+int vs_battle_script_84_stopSfx(u_char* script, UNUSED short slot)
 {
     vs_main_stopSfx(scriptSfxGroups[script[1]], script[2]);
 
@@ -3168,7 +3168,7 @@ int vs_battle_script_84_stopSfx(u_char* script, UNUSED short arg1)
  *   - [1] = sound effect file ID
  *   - [2] = slot, 1 to 3
  */
-int vs_battle_script_85_loadSfxSlot(u_char* script, UNUSED short arg1)
+int vs_battle_script_85_loadSfxSlot(u_char* script, UNUSED short slot)
 {
     vs_main_loadSfxSlot(script[1], script[2]);
 
@@ -3180,7 +3180,7 @@ int vs_battle_script_85_loadSfxSlot(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = slot, 1 to 3
  */
-int vs_battle_script_86_waitSfxLoad(u_char* script, UNUSED short arg1)
+int vs_battle_script_86_waitSfxLoad(u_char* script, UNUSED short slot)
 {
     return vs_main_finishSfxLoad(script[1]) != 0 ? scriptWait : scriptNext;
 }
@@ -3190,7 +3190,7 @@ int vs_battle_script_86_waitSfxLoad(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = slot, 1 to 3
  */
-int vs_battle_script_87_freeSfx(u_char* script, UNUSED short arg1)
+int vs_battle_script_87_freeSfx(u_char* script, UNUSED short slot)
 {
     vs_main_freeSfx(script[1]);
 
@@ -3202,7 +3202,7 @@ int vs_battle_script_87_freeSfx(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = slot, 1 to 3
  */
-int vs_battle_script_88_setCurrentSfx(u_char* script, UNUSED short arg1)
+int vs_battle_script_88_setCurrentSfx(u_char* script, UNUSED short slot)
 {
     vs_main_setCurrentSfx(script[1]);
 
@@ -3213,7 +3213,7 @@ int vs_battle_script_88_setCurrentSfx(u_char* script, UNUSED short arg1)
  * Starts loading the area's music into music slot 3, along with its instrument bank.
  * Scripts use it to bring the area music back after a cutscene track.
  */
-int vs_battle_script_89_loadAreaMusic(UNUSED u_char* script, UNUSED short arg1)
+int vs_battle_script_89_loadAreaMusic(UNUSED u_char* script, UNUSED short slot)
 {
     short musicId = func_80089104();
     vs_main_loadMusicSlot(musicId, 3);
@@ -3230,7 +3230,7 @@ int vs_battle_script_89_loadAreaMusic(UNUSED u_char* script, UNUSED short arg1)
  *   - [3] = fade in duration
  *   - [4] = fade out duration
  */
-int vs_battle_script_8F_crossfadeMusic(u_char* script, UNUSED short arg1)
+int vs_battle_script_8F_crossfadeMusic(u_char* script, UNUSED short slot)
 {
     vs_main_fadeMusicVolume(scriptMusicSlot, 0, script[4]);
     vs_main_playMusicSlotFadeIn(scriptMusicSlot = script[1], script[2], script[3]);
@@ -3245,7 +3245,7 @@ int vs_battle_script_8F_crossfadeMusic(u_char* script, UNUSED short arg1)
  *   - [1] = music ID
  *   - [2] = slot, 1 to 4
  */
-int vs_battle_script_90_loadMusicSlot(u_char* script, UNUSED short arg1)
+int vs_battle_script_90_loadMusicSlot(u_char* script, UNUSED short slot)
 {
     vs_main_loadMusicSlot(script[1], script[2]);
 
@@ -3257,7 +3257,7 @@ int vs_battle_script_90_loadMusicSlot(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = slot, 1 to 4
  */
-int vs_battle_script_91_freeMusic(u_char* script, UNUSED short arg1)
+int vs_battle_script_91_freeMusic(u_char* script, UNUSED short slot)
 {
     vs_main_freeMusic(script[1]);
 
@@ -3271,7 +3271,7 @@ int vs_battle_script_91_freeMusic(u_char* script, UNUSED short arg1)
  *   - [2] = volume
  *   - [3] = fade duration
  */
-int vs_battle_script_92_playMusic(u_char* script, UNUSED short arg1)
+int vs_battle_script_92_playMusic(u_char* script, UNUSED short slot)
 {
     vs_main_playMusicSlot(scriptMusicSlot = script[1], script[2], script[3]);
 
@@ -3284,7 +3284,7 @@ int vs_battle_script_92_playMusic(u_char* script, UNUSED short arg1)
  *   - [1] = target volume
  *   - [2] = fade duration
  */
-int vs_battle_script_93_fadeMusicVolume(u_char* script, UNUSED short arg1)
+int vs_battle_script_93_fadeMusicVolume(u_char* script, UNUSED short slot)
 {
     vs_main_fadeMusicVolume(scriptMusicSlot, script[1], script[2]);
 
@@ -3298,7 +3298,7 @@ int vs_battle_script_93_fadeMusicVolume(u_char* script, UNUSED short arg1)
  *     slower and positive is faster
  *   - [2] = ramp duration
  */
-int vs_battle_script_94_rampMusicTempo(u_char* script, UNUSED short arg1)
+int vs_battle_script_94_rampMusicTempo(u_char* script, UNUSED short slot)
 {
     vs_main_rampMusicTempo(scriptMusicSlot, (signed char)script[1], script[2]);
 
@@ -3311,7 +3311,7 @@ int vs_battle_script_94_rampMusicTempo(u_char* script, UNUSED short arg1)
  *   - [1] = target pitch (signed)
  *   - [2] = ramp duration
  */
-int vs_battle_script_95_rampMusicPitch(u_char* script, UNUSED short arg1)
+int vs_battle_script_95_rampMusicPitch(u_char* script, UNUSED short slot)
 {
     vs_main_rampMusicPitch(scriptMusicSlot, (signed char)script[1], script[2]);
 
@@ -3321,7 +3321,7 @@ int vs_battle_script_95_rampMusicPitch(u_char* script, UNUSED short arg1)
 /**
  * Stops the script music.
  */
-int vs_battle_script_96_stopMusic(UNUSED u_char* script, UNUSED short arg1)
+int vs_battle_script_96_stopMusic(UNUSED u_char* script, UNUSED short slot)
 {
     vs_main_stopMusicSlot(scriptMusicSlot);
 
@@ -3333,7 +3333,7 @@ int vs_battle_script_96_stopMusic(UNUSED u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = slot, 1 to 4
  */
-int vs_battle_script_97_waitMusicSilent(u_char* script, UNUSED short arg1)
+int vs_battle_script_97_waitMusicSilent(u_char* script, UNUSED short slot)
 {
     int slot = script[1];
 
@@ -3351,7 +3351,7 @@ int vs_battle_script_97_waitMusicSilent(u_char* script, UNUSED short arg1)
 /**
  * Saves a copy of the playing music's state.
  */
-int vs_battle_script_98_pushMusicState(UNUSED u_char* script, UNUSED short arg1)
+int vs_battle_script_98_pushMusicState(UNUSED u_char* script, UNUSED short slot)
 {
     vs_main_pushMusicState();
 
@@ -3363,7 +3363,7 @@ int vs_battle_script_98_pushMusicState(UNUSED u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = slot, 1 to 4
  */
-int vs_battle_script_99_waitMusicLoad(u_char* script, UNUSED short arg1)
+int vs_battle_script_99_waitMusicLoad(u_char* script, UNUSED short slot)
 {
     return vs_main_finishMusicLoad(script[1]) == 1 ? scriptWait : scriptNext;
 }
@@ -3374,14 +3374,14 @@ int vs_battle_script_99_waitMusicLoad(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = music ID
  */
-int vs_battle_script_9D_loadInstrumentBank(u_char* script, UNUSED short arg1)
+int vs_battle_script_9D_loadInstrumentBank(u_char* script, UNUSED short slot)
 {
     vs_main_loadInstrumentBank(script[1]);
     return scriptNext;
 }
 
 /** Waits until the instrument bank started by opcode 9D or 89 is loaded and ready. */
-int vs_battle_script_9E_waitInstrumentBankLoad(UNUSED u_char* script, UNUSED short arg1)
+int vs_battle_script_9E_waitInstrumentBankLoad(UNUSED u_char* script, UNUSED short slot)
 {
     return vs_main_processInstrumentBankLoad() == 1 ? scriptWait : scriptNext;
 }
@@ -3391,7 +3391,7 @@ int vs_battle_script_9E_waitInstrumentBankLoad(UNUSED u_char* script, UNUSED sho
  * @param script Opcode bytes:
  *   - [1..2] = bar number
  */
-int vs_battle_script_9A_waitMusicBar(u_char* script, UNUSED short arg1)
+int vs_battle_script_9A_waitMusicBar(u_char* script, UNUSED short slot)
 {
     int bar = vs_main_getMusicPosition() >> 0x10;
 
@@ -3406,7 +3406,7 @@ int vs_battle_script_9A_waitMusicBar(u_char* script, UNUSED short arg1)
  *   - [3] = target pitch (signed)
  *   - [4] = ramp duration
  */
-int vs_battle_script_9B_rampSfxPitch(u_char* script, UNUSED short arg1)
+int vs_battle_script_9B_rampSfxPitch(u_char* script, UNUSED short slot)
 {
     vs_main_rampSfxPitch(
         scriptSfxGroups[script[1]], script[2], (signed char)script[3], script[4]);
@@ -3422,7 +3422,7 @@ int vs_battle_script_9B_rampSfxPitch(u_char* script, UNUSED short arg1)
  *   - [3] = target pan, 0x80 is centre
  *   - [4] = ramp duration
  */
-int vs_battle_script_9C_rampSfxPan(u_char* script, UNUSED short arg1)
+int vs_battle_script_9C_rampSfxPan(u_char* script, UNUSED short slot)
 {
     vs_main_rampSfxPan(scriptSfxGroups[script[1]], script[2], script[3], script[4]);
 
@@ -3434,7 +3434,7 @@ int vs_battle_script_9C_rampSfxPan(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = slot, 1 to 4
  */
-int vs_battle_script_9F_queueMusic(u_char* script, UNUSED short arg1)
+int vs_battle_script_9F_queueMusic(u_char* script, UNUSED short slot)
 {
     vs_main_queueMusicSlot(scriptMusicSlot = script[1]);
 
@@ -3449,7 +3449,7 @@ int vs_battle_script_9F_queueMusic(u_char* script, UNUSED short arg1)
  *   - [1-2] = effect ID
  *   - [3-4] = target actor
  */
-int vs_battle_script_A0_startEffect(u_char* script, UNUSED short arg1)
+int vs_battle_script_A0_startEffect(u_char* script, UNUSED short slot)
 {
     startEffect(getShort(script + 1), resolveActorId(getShort(script + 3)));
 
@@ -3461,7 +3461,7 @@ int vs_battle_script_A0_startEffect(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = stage index
  */
-int vs_battle_script_A1_triggerEffectStage(u_char* script, UNUSED short arg1)
+int vs_battle_script_A1_triggerEffectStage(u_char* script, UNUSED short slot)
 {
     triggerEffectStage(script[1]);
 
@@ -3479,7 +3479,7 @@ int vs_battle_script_A1_triggerEffectStage(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = state to wait for
  */
-int vs_battle_script_A2_waitEffectState(u_char* script, UNUSED short arg1)
+int vs_battle_script_A2_waitEffectState(u_char* script, UNUSED short slot)
 {
     if ((scriptSkipMode == scriptSkipping) && ((script[1] == 0) || (script[1] == 5))) {
 
@@ -3503,7 +3503,7 @@ int vs_battle_script_A2_waitEffectState(u_char* script, UNUSED short arg1)
  * Yields for a frame while skipping, otherwise does nothing.
  * @param script Opcode bytes: none
  */
-int vs_battle_script_A3_yieldIfSkipping(UNUSED u_char* script, UNUSED short arg1)
+int vs_battle_script_A3_yieldIfSkipping(UNUSED u_char* script, UNUSED short slot)
 {
     effectNop();
 
@@ -3514,7 +3514,7 @@ int vs_battle_script_A3_yieldIfSkipping(UNUSED u_char* script, UNUSED short arg1
  * Waits until the visual effect is loaded and has stages left to trigger.
  * @param script Opcode bytes: none
  */
-int vs_battle_script_A4_waitEffectStageReady(UNUSED u_char* script, UNUSED short arg1)
+int vs_battle_script_A4_waitEffectStageReady(UNUSED u_char* script, UNUSED short slot)
 {
     return isEffectStageReady() != 1 ? scriptWait : scriptNext;
 }
@@ -3524,7 +3524,7 @@ int vs_battle_script_A4_waitEffectStageReady(UNUSED u_char* script, UNUSED short
  * waiting for a stage to be triggered.
  * @param script Opcode bytes: none
  */
-int vs_battle_script_A5_cancelEffect(UNUSED u_char* script, UNUSED short arg1)
+int vs_battle_script_A5_cancelEffect(UNUSED u_char* script, UNUSED short slot)
 {
     if (effectCancelled == 0) {
         cancelEffects();
@@ -3542,7 +3542,7 @@ int vs_battle_script_A5_cancelEffect(UNUSED u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = stage index
  */
-int vs_battle_script_A6_rearmEffectStage(u_char* script, UNUSED short arg1)
+int vs_battle_script_A6_rearmEffectStage(u_char* script, UNUSED short slot)
 {
     rearmEffectStage(script[1]);
 
@@ -3555,7 +3555,7 @@ int vs_battle_script_A6_rearmEffectStage(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = cue
  */
-int vs_battle_script_A8_setMusicTargetCue(u_char* script, UNUSED short arg1)
+int vs_battle_script_A8_setMusicTargetCue(u_char* script, UNUSED short slot)
 {
     vs_main_setMusicTargetCue(script[1]);
 
@@ -3568,7 +3568,7 @@ int vs_battle_script_A8_setMusicTargetCue(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = pattern index, or 0xFF to stop vibration
  */
-int vs_battle_script_A9_playVibration(u_char* script, UNUSED short arg1)
+int vs_battle_script_A9_playVibration(u_char* script, UNUSED short slot)
 {
     short pattern = script[1];
 
@@ -3592,7 +3592,7 @@ int vs_battle_script_A9_playVibration(u_char* script, UNUSED short arg1)
  *   - [2-3] = actor
  *   - [4] = bone
  */
-int vs_battle_script_AA_setActorTrail(u_char* script, UNUSED short arg1)
+int vs_battle_script_AA_setActorTrail(u_char* script, UNUSED short slot)
 {
     short actor = resolveActorId(getShort(script + 2));
 
@@ -3610,7 +3610,7 @@ int vs_battle_script_AA_setActorTrail(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = door index
  */
-int vs_battle_script_B1_setEnteredDoor(u_char* script, UNUSED short arg1)
+int vs_battle_script_B1_setEnteredDoor(u_char* script, UNUSED short slot)
 {
     setEnteredDoor(script[1]);
 
@@ -3625,7 +3625,7 @@ int vs_battle_script_B1_setEnteredDoor(u_char* script, UNUSED short arg1)
  *   - [5] = distance scale
  *   - [6-7] = state flag id for the distance, the angle is placed in the following flag
  */
-int vs_battle_script_B2_setFlagsToActorDistanceAndAngle(u_char* script, UNUSED short arg1)
+int vs_battle_script_B2_setFlagsToActorDistanceAndAngle(u_char* script, UNUSED short slot)
 {
     vs_ActorPosition first;
     vs_ActorPosition second;
@@ -3653,7 +3653,7 @@ int vs_battle_script_B2_setFlagsToActorDistanceAndAngle(u_char* script, UNUSED s
  *   - [1-2] = actor selector
  *   - [3] = 0 = dormant, nonzero = awake
  */
-int vs_battle_script_B3_setActorAwake(u_char* script, UNUSED short arg1)
+int vs_battle_script_B3_setActorAwake(u_char* script, UNUSED short slot)
 {
     ActorList actors;
 
@@ -3681,7 +3681,7 @@ int vs_battle_script_B3_setActorAwake(u_char* script, UNUSED short arg1)
  *   - [4-5] = second item id
  *   - [6] = second item count
  */
-int vs_battle_script_B4_showMiscLoot(u_char* script, UNUSED short arg1)
+int vs_battle_script_B4_showMiscLoot(u_char* script, UNUSED short slot)
 {
     if (scriptMenuState == scriptMenuClosed) {
         showMiscLoot(getShort(script + 1), script[3], getShort(script + 4), script[6]);
@@ -3704,7 +3704,7 @@ int vs_battle_script_B4_showMiscLoot(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1-2] = item id
  */
-int vs_battle_script_B5_removeMiscItem(u_char* script, UNUSED short arg1)
+int vs_battle_script_B5_removeMiscItem(u_char* script, UNUSED short slot)
 {
     removeMiscItem(getShort(script + 1));
 
@@ -3718,7 +3718,7 @@ int vs_battle_script_B5_removeMiscItem(u_char* script, UNUSED short arg1)
  *   - [3-4] = second actor
  *   - [5-6] = state flag id
  */
-int vs_battle_script_B6_setFlagToActorDistance(u_char* script, UNUSED short arg1)
+int vs_battle_script_B6_setFlagToActorDistance(u_char* script, UNUSED short slot)
 {
     vs_ActorPosition first;
     vs_ActorPosition second;
@@ -3765,7 +3765,7 @@ void setAllActorsEnabledAndAwake(short awake)
  *   - [2] = argument, if the sub-opcode takes one
  *   - [3-5] = unused, the script resumes at [6]
  */
-int vs_battle_script_B7_specialOp(u_char* script, UNUSED short arg1)
+int vs_battle_script_B7_specialOp(u_char* script, UNUSED short slot)
 {
     enum {
         // Starts loading an SHP model. [2] = model id. Unused.
@@ -3924,7 +3924,7 @@ int vs_battle_script_B7_specialOp(u_char* script, UNUSED short arg1)
 /**
  * Waits until the screen effects overlay, started by opcode BC, has finished loading.
  */
-int vs_battle_script_B8_waitScreenEffectsLoaded(UNUSED u_char* script, UNUSED short arg1)
+int vs_battle_script_B8_waitScreenEffectsLoaded(UNUSED u_char* script, UNUSED short slot)
 {
     if ((screenEffects != NULL) && (screenEffects->loading != 0)) {
         return scriptWait;
@@ -3939,7 +3939,7 @@ int vs_battle_script_B8_waitScreenEffectsLoaded(UNUSED u_char* script, UNUSED sh
  * @param script Opcode bytes:
  *   - [1-2] = depth in the ordering table, 0 = off
  */
-int vs_battle_script_BB_setScreenBlur(u_char* script, UNUSED short arg1)
+int vs_battle_script_BB_setScreenBlur(u_char* script, UNUSED short slot)
 {
     setScreenBlurDepth(getShort(script + 1));
 
@@ -3949,7 +3949,7 @@ int vs_battle_script_BB_setScreenBlur(u_char* script, UNUSED short arg1)
 /**
  * Starts loading the screen effects overlay (SCREFF2.PRG).
  */
-int vs_battle_script_BC_loadScreenEffects(UNUSED u_char* script, UNUSED short arg1)
+int vs_battle_script_BC_loadScreenEffects(UNUSED u_char* script, UNUSED short slot)
 {
     loadScreenEffects();
 
@@ -3960,7 +3960,7 @@ int vs_battle_script_BC_loadScreenEffects(UNUSED u_char* script, UNUSED short ar
  * Does nothing. Only the room scripts of MAP101 and MAP213 use it, with the byte 0x0C,
  * right after setEnteredDoor.
  */
-int vs_battle_script_BD_nop(UNUSED u_char* script, UNUSED short arg1)
+int vs_battle_script_BD_nop(UNUSED u_char* script, UNUSED short slot)
 {
     return scriptNext;
 }
@@ -3968,7 +3968,7 @@ int vs_battle_script_BD_nop(UNUSED u_char* script, UNUSED short arg1)
 /**
  * Releases the screen effects overlay.
  */
-int vs_battle_script_BE_unloadScreenEffects(UNUSED u_char* script, UNUSED short arg1)
+int vs_battle_script_BE_unloadScreenEffects(UNUSED u_char* script, UNUSED short slot)
 {
     unloadScreenEffects();
 
@@ -3981,7 +3981,7 @@ int vs_battle_script_BE_unloadScreenEffects(UNUSED u_char* script, UNUSED short 
  * @param script Opcode bytes:
  *   - [1] = unused
  */
-int vs_battle_script_DE_stopCamera(UNUSED u_char* script, UNUSED short arg1)
+int vs_battle_script_DE_stopCamera(UNUSED u_char* script, UNUSED short slot)
 {
     stopCamera();
 
@@ -3995,7 +3995,7 @@ int vs_battle_script_DE_stopCamera(UNUSED u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = bit 0 for the look-at, bit 1 for the eye
  */
-int vs_battle_script_DF_setCameraMomentum(u_char* script, UNUSED short arg1)
+int vs_battle_script_DF_setCameraMomentum(u_char* script, UNUSED short slot)
 {
     int eye = script[1] & 2;
     setCameraMomentum(script[1] & 1, eye != 0);
@@ -4008,7 +4008,7 @@ int vs_battle_script_DF_setCameraMomentum(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1-2] = actor id, 0x2000 = detach
  */
-int vs_battle_script_E8_attachCameraToActor(u_char* script, UNUSED short arg1)
+int vs_battle_script_E8_attachCameraToActor(u_char* script, UNUSED short slot)
 {
     attachCameraToActor(resolveActorId(getShort(script + 1)));
 
@@ -4023,7 +4023,7 @@ int vs_battle_script_E8_attachCameraToActor(u_char* script, UNUSED short arg1)
  *   - [1] = facing of the camera in 45 degree steps, 0xFF = unchanged
  *   - [2] = zoom, 1 = normal, 2 = zoomed out, 0 = unchanged
  */
-int vs_battle_script_E9_returnToGameplayCamera(u_char* script, UNUSED short arg1)
+int vs_battle_script_E9_returnToGameplayCamera(u_char* script, UNUSED short slot)
 {
     returnToGameplayCamera(
         script[1] != 0xFF ? ((script[1] + 4) & 7) : -1, script[2] != 0 ? script[2] : -1);
@@ -4039,7 +4039,7 @@ int vs_battle_script_E9_returnToGameplayCamera(u_char* script, UNUSED short arg1
  * @param script Opcode bytes:
  *   - [1] = mask of the channels to wait for
  */
-int vs_battle_script_E0_waitCameraIdle(u_char* script, UNUSED short arg1)
+int vs_battle_script_E0_waitCameraIdle(u_char* script, UNUSED short slot)
 {
     return script[1] != (script[1] & getCameraIdleFlags()) ? scriptWait : scriptNext;
 }
@@ -4049,7 +4049,7 @@ int vs_battle_script_E0_waitCameraIdle(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = 1 for on, 0 for off
  */
-int vs_battle_script_E1_setFramebufferEffect(u_char* script, UNUSED short arg1)
+int vs_battle_script_E1_setFramebufferEffect(u_char* script, UNUSED short slot)
 {
     setFramebufferEffect(script[1]);
 
@@ -4086,7 +4086,7 @@ int vs_battle_script_F0_waitFrames(u_char* script, short slot)
  * @param script Opcode bytes:
  *   - [1] = 2 for full rate, 4 for half, else ignored
  */
-int vs_battle_script_F1_setFrameRate(u_char* script, UNUSED short arg1)
+int vs_battle_script_F1_setFrameRate(u_char* script, UNUSED short slot)
 {
     setFrameRate(script[1]);
 
@@ -4098,7 +4098,7 @@ int vs_battle_script_F1_setFrameRate(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = 1 for on, 0 for off
  */
-int vs_battle_script_F3_setScanlines(u_char* script, UNUSED short arg1)
+int vs_battle_script_F3_setScanlines(u_char* script, UNUSED short slot)
 {
     scanlinesEnabled = script[1];
 
@@ -4110,7 +4110,7 @@ int vs_battle_script_F3_setScanlines(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = slot in the low 2 bits, bit 7 set to stop the slot instead of waiting
  */
-int vs_battle_script_F4_joinScript(u_char* script, UNUSED short arg1)
+int vs_battle_script_F4_joinScript(u_char* script, UNUSED short slot)
 {
     u_short slot = script[1] & 3;
 
@@ -4130,7 +4130,7 @@ int vs_battle_script_F4_joinScript(u_char* script, UNUSED short arg1)
  *   - [1] = slot to run the forked script in, 1 to 3
  *   - [2-3] = Current script continues from this offset
  */
-int vs_battle_script_F5_forkAndJump(u_char* script, UNUSED short arg1)
+int vs_battle_script_F5_forkAndJump(u_char* script, UNUSED short slot)
 {
     scriptSlots[script[1]] = script + 4;
 
@@ -4142,7 +4142,7 @@ int vs_battle_script_F5_forkAndJump(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = slot identifier, unused
  */
-int vs_battle_script_F6_endScript(UNUSED u_char* script, UNUSED short arg1)
+int vs_battle_script_F6_endScript(UNUSED u_char* script, UNUSED short slot)
 {
     return scriptEnd;
 }
@@ -4152,7 +4152,7 @@ int vs_battle_script_F6_endScript(UNUSED u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1-2] = EVT file number
  */
-int vs_battle_script_F7_queueNextEvt(u_char* script, UNUSED short arg1)
+int vs_battle_script_F7_queueNextEvt(u_char* script, UNUSED short slot)
 {
     evtFile = getShort(script + 1);
     nextEvtBuffer = vs_main_allocHeapR(0x1800);
@@ -4169,7 +4169,7 @@ int vs_battle_script_F7_queueNextEvt(u_char* script, UNUSED short arg1)
  * Restores the full frame rate. No discernable difference in usage
  * between 0xFE and 0xFF.
  */
-int vs_battle_script_FE_FF_endScene(UNUSED u_char* script, UNUSED short arg1)
+int vs_battle_script_FE_FF_endScene(UNUSED u_char* script, UNUSED short slot)
 {
     int i;
     int boxesClosing = 0;
@@ -4194,7 +4194,7 @@ int vs_battle_script_FE_FF_endScene(UNUSED u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1-4] = unused
  */
-int vs_battle_script_F2_playMenuSelectSfx(UNUSED u_char* script, UNUSED short arg1)
+int vs_battle_script_F2_playMenuSelectSfx(UNUSED u_char* script, UNUSED short slot)
 {
     vs_main_playSfxDefault(0x7E, VS_SFX_MENUSELECT);
     return scriptNext;
@@ -5169,7 +5169,7 @@ static int getCameraTerrainHeight(MATRIX* camera)
  *   - [4] = duration, 0 sets the angle immediately
  *   - [5] = unused
  */
-int vs_battle_script_E2_E3_camera(u_char* script, UNUSED short arg1)
+int vs_battle_script_E2_E3_camera(u_char* script, UNUSED short slot)
 {
     AngleTween* tween;
 
@@ -5283,7 +5283,7 @@ u_char getCameraIdleFlags(void)
  * Sets the parameters of the frame buffer effect and the lens distortion.
  * @param script Opcode bytes, see the comments on each opcode.
  */
-int vs_battle_script_B9_BA_BF_E4_E5_E6_E7_ED(u_char* script, UNUSED short arg1)
+int vs_battle_script_B9_BA_BF_E4_E5_E6_E7_ED(u_char* script, UNUSED short slot)
 {
     VECTOR values;
     CVECTOR color;
@@ -5529,7 +5529,7 @@ static int stepScreenEffectTween(ScreenEffectTween* tween)
  * uses this handler, but does nothing and does not return a result.
  * @param script Opcode bytes, see the comments on each opcode.
  */
-int vs_battle_script_EA_EB_EC_EE_EF_camera(u_char* script, UNUSED short arg1)
+int vs_battle_script_EA_EB_EC_EE_EF_camera(u_char* script, UNUSED short slot)
 {
     ShakeEntry* entry;
     short i;

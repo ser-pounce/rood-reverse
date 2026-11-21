@@ -1,3 +1,5 @@
+# .as<T> cast used to work around kaitai's naming lint warning.
+
 meta:
   id: p
   file-extension: .P
@@ -144,12 +146,12 @@ types:
       - id: offsets
         type: u2
         repeat: expr
-        repeat-expr: num_offsets
+        repeat-expr: num_offsets.as<u4>
     instances:
       sections:
         type: section_ref(offsets[_index])
         repeat: expr
-        repeat-expr: num_offsets
+        repeat-expr: num_offsets.as<u4>
 
   section_ref:
     params:
@@ -187,11 +189,11 @@ types:
       - id: sizes
         type: u1
         repeat: expr
-        repeat-expr: num_curves
+        repeat-expr: num_curves.as<u2>
       - id: curves
         type: block_chunk(_index)
         repeat: expr
-        repeat-expr: num_curves
+        repeat-expr: num_curves.as<u2>
 
   block_chunk:
     params:

@@ -15,6 +15,7 @@
 #include "battleEffect.h"
 #include "battleUnk.h"
 #include "cameraPrivate.h"
+#include "gim.h"
 #include "src/SLUS_010.40/main.h"
 #include "src/SLUS_010.40/31724.h"
 #include "src/SLUS_010.40/32154.h"
@@ -86,31 +87,6 @@ typedef struct {
     u_char unk2;
     u_char unk3;
 } func_800D6894_t;
-
-typedef struct {
-    u_int visible : 1;
-    u_int loading : 1;
-    u_int unk0_2 : 1;
-    u_int drawMode : 3;
-    u_int loadState : 3;
-    u_int pageCount : 3;
-    u_int unk0_12 : 1;
-    u_int unk0_13 : 3;
-    char vramSlot;
-    char brightness;
-    u_char columns;
-    u_char rows;
-    short id;
-    short x;
-    short y;
-    short scale;
-    u_short unkE;
-    u_short* data;
-    vs_CdQueueSlot* cdQueueSlot;
-    u_short widths[240];
-    u_short imageTable[254];
-    int unk3F4;
-} Gim;
 
 typedef struct {
     ActionEffectTarget* unk0;
@@ -2065,17 +2041,17 @@ void func_800C8778(void)
 
             switch (current->imageTable[2]) {
             case 0:
-                current->unk0_2 = 0;
-                current->unkE = gim->data[count + j * 16];
+                current->is8Bit = 0;
+                current->backdropColor = gim->data[count + j * 16];
                 break;
             case 1:
-                current->unk0_2 = 1;
-                current->unkE = gim->data[count + 64];
+                current->is8Bit = 1;
+                current->backdropColor = gim->data[count + 64];
                 break;
             case 2:
-                current->unk0_2 = 1;
-                current->unkE = gim->data[count + 320];
-                current->unk0_12 = 1;
+                current->is8Bit = 1;
+                current->backdropColor = gim->data[count + 320];
+                current->slotClut = 1;
                 vs_battle_renderImage(
                     (width + 512) | 0x1FF0000, gim->data + (count + 320), 0x10100);
                 break;
@@ -3645,7 +3621,7 @@ void func_800CBBCC(Gim* image, int clut, u_long* ot)
         rowY[i] = (((i * 2 - rows) * scale * 15) >> 13) + j;
     }
 
-    color = image->unkE;
+    color = image->backdropColor;
 
     if (color) {
         int r = ((color << 3) & 0xF8) * alpha;
@@ -3721,7 +3697,7 @@ void func_800CBBCC(Gim* image, int clut, u_long* ot)
                 int tpage;
 
                 v = (v & 0x1F00) * 15;
-                tpage = getTPage(image->unk0_2, 1,
+                tpage = getTPage(image->is8Bit, 1,
                     ((image->vramSlot - 18) * 64) + ((tile >> 2) & 0x1C0), 256);
 
                 if (scale == ONE) {
@@ -3789,10 +3765,10 @@ void func_800CC204(Gim* image, int clut, u_long* ot)
     short left[240];
     short right[240];
     u_short* tiles = &image->imageTable[4];
-    int mode = image->unk0_2;
+    int mode = image->is8Bit;
     u_short* widths = image->widths;
     int page = image->vramSlot - 18;
-    int color = image->unkE;
+    int color = image->backdropColor;
     int y;
     int column;
     int end = image->brightness;
@@ -3900,7 +3876,7 @@ void func_800CC600(Gim* image, int clut, u_long* ot)
     int alpha;
     int inverse;
     u_short* tiles = &image->imageTable[4];
-    int mode = image->unk0_2;
+    int mode = image->is8Bit;
     int columns;
     int column;
     int top;
@@ -4002,8 +3978,8 @@ void func_800CCA90(int arg0)
         return;
     }
 
-    if (gim->unk0_2) {
-        if (gim->unk0_12) {
+    if (gim->is8Bit) {
+        if (gim->slotClut) {
             clut = getClut(clut, 511);
         } else {
             clut = getClut(768, 227);

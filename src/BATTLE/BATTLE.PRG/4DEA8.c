@@ -1803,7 +1803,7 @@ int vs_battle_script_3F_setWeaponDrawn(u_char* script, UNUSED short slot)
  *   - [1] = comparison in the high nibble (flagComparison*), bits 6-9 of the flag id in
  *     the low nibble
  *   - [2] = bits 0-5 of the flag id in bits 2-7
- *   - [3] = value to compare with (signed)
+ *   - [3] = value to compare with (unsigned)
  *   - [4-5] = offset from this opcode to jump to if the comparison is false
  */
 int vs_battle_script_40_jumpFwdUnlessFlagImm(u_char* script, UNUSED short slot)

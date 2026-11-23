@@ -61,7 +61,7 @@ void func_800B28A8(D_800F4538_t* actor, MATRIX* camera, int mode)
         &scratch->rotation, actor->unk0.unk24, actor->unk0.facing, actor->unk0.unk28, +=);
 
     if (actor->unk5AC_21) {
-        if ((func_800BEB00() == 4 || actor->unk0.freeze) && mode == 0) {
+        if ((getEventState() == eventRunning || actor->unk0.freeze) && mode == 0) {
             if (!actor->unk5AC_22) {
                 temp = actor->unk1802[0] + 1;
 
@@ -263,7 +263,7 @@ void func_800B28A8(D_800F4538_t* actor, MATRIX* camera, int mode)
 
     if (actor->unk0.visible
         && (actor->unk0.position.vy < 0x100
-            || (actor->unk0.unkF != 0 && func_800BEB00() == 4))) {
+            || (actor->unk0.unkF != 0 && getEventState() == eventRunning))) {
         D_800F4538_t* visual;
         int detailed;
 

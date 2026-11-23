@@ -316,17 +316,17 @@ void setCameraMomentum(int lookAt, int eye);
 static void stopCamera(void);
 void sweepCameraToSavedPlayerView(char side);
 void scaleCameraMoveDurationByDistance(short target);
-VECTOR* vectorAdd(VECTOR* arg0, VECTOR* arg1, VECTOR* arg2);
-VECTOR* vectorSubtract(VECTOR* arg0, VECTOR* arg1, VECTOR* arg2);
-VECTOR* setVectorImm(VECTOR*, u_char*);
-VECTOR* vectorFixedPointMult(VECTOR*, VECTOR*, int);
-void vecToRotMatrix(VECTOR*, MATRIX*);
-int atan2FixedPoint(int arg0, int arg1);
+static VECTOR* vectorAdd(VECTOR* result, VECTOR* a, VECTOR* b);
+static VECTOR* vectorSubtract(VECTOR* result, VECTOR* a, VECTOR* b);
+static VECTOR* readScriptVector(VECTOR* result, u_char* script);
+static VECTOR* vectorFixedPointMult(VECTOR* result, VECTOR* vector, int scalar);
+static void vectorToLookMatrix(VECTOR* direction, MATRIX* matrix);
+static int yawFromOffset(int x, int z);
 static int fixedPointMult(int a, int b);
-static int vectorMagnitude(VECTOR*);
-static VECTOR* vectorCopy(VECTOR* arg0, VECTOR* arg1);
-static VECTOR* sVectorToFixedPointVector(VECTOR* arg0, SVECTOR* arg1);
-static void toNormalIntegerVector(VECTOR*, VECTOR*);
+static int vectorMagnitude(VECTOR* vector);
+static VECTOR* vectorCopy(VECTOR* destination, VECTOR* source);
+static VECTOR* sVectorToFixedPointVector(VECTOR* result, SVECTOR* integer);
+static void normalizeVector(VECTOR* vector, VECTOR* result);
 
 extern int scriptSfxGroups[];
 extern int weaponDrawnModes[];
@@ -350,33 +350,33 @@ extern char D_800F4B8B;
 extern char cameraFollowsAshley;
 extern ScriptCamera* scriptCamera;
 extern char D_800F4BA8;
-extern void* mpdClearedSection;
+extern void* mpdTriggerSection;
 extern u_short* scriptStrings;
 extern char switchValue;
 extern short cameraReturned;
-extern char D_800F4BB8;
+extern char eventReady;
 extern u_char effectCancelled;
 extern char* vibrationPatterns[];
-extern short D_800F4BE0;
+extern short eventSource;
 extern char scanlinesEnabled;
-extern void* mpdRoomDoorSection;
+extern void* mpdTriggeredScripts;
 extern char scriptMenuState;
 extern char loopCounters[];
-extern short D_800F4C22;
+extern short mainScriptEnded;
 extern void* nextEvtBuffer;
-extern char D_800F4C34;
+extern char eventState;
 /** Next opcode of the code running in each script slot, NULL if it isn't running. */
 extern u_char* scriptSlots[];
 extern short particleEffectSoundToRestore;
 extern char weaponAnimating;
-extern short mpdScriptSection;
+extern short mpdEntryScriptPending;
 extern short nextEvtQueued;
 extern char textBoxSelectionPending;
 extern int scriptReturnAddress;
 extern char scriptMusicSlot;
 extern char fogDepthOverridden;
 
-extern char D_800F4B70[];
+extern char actorMoved[];
 extern Gim* gims;
 
 /**
@@ -454,14 +454,14 @@ static void endScriptSkip(u_char* script)
 
     while (*script != endOpcode) {
         if (memcmp(script, skipTailMarkerOp, 4) == 0) {
-            vs_battle_setStateFlag(0xA8, 0);
+            vs_battle_setStateFlag(skippingScene, 0);
             return;
         }
         script = &script[D_800E9C30[*script]];
     }
 
     func_80093A70();
-    vs_battle_setStateFlag(0xA8, 0);
+    vs_battle_setStateFlag(skippingScene, 0);
 }
 
 /**
@@ -1024,7 +1024,7 @@ int vs_battle_script_21_walkActorToTile(u_char* script, UNUSED short arg1)
 
     func_8009DC8C(actor);
 
-    D_800F4B70[actor] = 1;
+    actorMoved[actor] = 1;
 
     return scriptNext;
 }
@@ -1161,7 +1161,7 @@ int vs_battle_script_25_moveActorToTile(u_char* script, UNUSED short arg1)
 
     func_8009DC8C(actor);
 
-    D_800F4B70[actor] = 1;
+    actorMoved[actor] = 1;
 
     return scriptNext;
 }
@@ -1209,7 +1209,7 @@ int vs_battle_script_26_moveActorToCoordinate(u_char* arg0, UNUSED short arg1)
 
     func_8009DC8C(actor);
 
-    D_800F4B70[actor] = 1;
+    actorMoved[actor] = 1;
 
     return scriptNext;
 }
@@ -1240,7 +1240,7 @@ int vs_battle_script_27_slideActorToTile(u_char* script, UNUSED short arg1)
 
     func_8009DC8C(actor);
 
-    D_800F4B70[actor] = 1;
+    actorMoved[actor] = 1;
 
     return scriptNext;
 }
@@ -1281,7 +1281,7 @@ int vs_battle_script_28_slideActorToCoordinate(u_char* script, UNUSED short arg1
 
     func_8009DC8C(actor);
 
-    D_800F4B70[actor] = 1;
+    actorMoved[actor] = 1;
 
     return scriptNext;
 }
@@ -1333,7 +1333,7 @@ int vs_battle_script_2A_walkActorToCoordinate(u_char* script, UNUSED short arg1)
 
     func_8009DC8C(actor);
 
-    D_800F4B70[actor] = 1;
+    actorMoved[actor] = 1;
 
     return scriptNext;
 }
@@ -1386,7 +1386,7 @@ int vs_battle_script_2B_turnActorToFacing(u_char* script, UNUSED short arg1)
         turnActorToFacing(actor, script[3] << 4, frames);
     }
 
-    D_800F4B70[actor] = 1;
+    actorMoved[actor] = 1;
 
     return scriptNext;
 }
@@ -1407,7 +1407,7 @@ int vs_battle_script_2C_turnActorToFaceActor(u_char* script, UNUSED short arg1)
     vs_battle_getActorPosition(resolveActorId(getShort(script + 3)), &position);
     turnActorToFaceTile(actor, &position.unk0.unk0, script[5] != 0xFF ? script[5] : -1);
 
-    D_800F4B70[actor] = 1;
+    actorMoved[actor] = 1;
 
     return scriptNext;
 }
@@ -1432,7 +1432,7 @@ int vs_battle_script_2D_turnActorToFaceTile(u_char* script, UNUSED short arg1)
     // BUG: tile.extra is uninitialised, but used as the facing if already on the tile
     turnActorToFaceTile(actor, &tile, script[6] != 0xFF ? script[6] : -1);
 
-    D_800F4B70[actor] = 1;
+    actorMoved[actor] = 1;
 
     return scriptNext;
 }
@@ -1441,7 +1441,7 @@ int vs_battle_script_2D_turnActorToFaceTile(u_char* script, UNUSED short arg1)
  * Sets the scale of an actor, per axis.
  * @param script Opcode bytes:
  *   - [1-2] = actor selector
- *   - [3-4] = x scale (0x1000 = normal size)
+ *   - [3-4] = x scale (ONE = normal size)
  *   - [5-6] = y scale
  *   - [7-8] = z scale
  *   - [9] = frame count to change over, 0 = immediately
@@ -1547,7 +1547,7 @@ int vs_battle_script_32_queueAnimation(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1-2] = actor selector
  *   - [3] = 0: rotate to the given absolute rotation, otherwise rotate by it
- *   - [4-5] = x rotation (1/4096 turn)
+ *   - [4-5] = x rotation (1/ONE turn)
  *   - [6-7] = y rotation (the facing)
  *   - [8-9] = z rotation
  *   - [10] = frame count, 0 = immediately, 0xFF = default (from angle and the actor's
@@ -1569,7 +1569,7 @@ int vs_battle_script_33_rotateActor(u_char* script, UNUSED short arg1)
         func_800A9FD0(actor, &rotation, frames);
     }
 
-    D_800F4B70[actor] = 1;
+    actorMoved[actor] = 1;
 
     return scriptNext;
 }
@@ -1578,7 +1578,7 @@ int vs_battle_script_33_rotateActor(u_char* script, UNUSED short arg1)
  * Turns the actor's head to the given angles.
  * @param script Opcode bytes:
  *   - [1-2] = actor selector
- *   - [3-4] = pitch (1/4096 turn)
+ *   - [3-4] = pitch (1/ONE turn)
  *   - [5-6] = yaw
  *   - [7] = speed, 0 = unlimited
  */
@@ -2468,7 +2468,7 @@ int vs_battle_script_5C_setActorWeaponModels(u_char* script, UNUSED short arg1)
  * Gives an actor a slight swaying motion.
  * @param script Opcode bytes:
  *   - [1-2] = actor selector
- *   - [3] = sway angle at its peak, in 1/4096 of a full turn, 0 = stop swaying
+ *   - [3] = sway angle at its peak, in 1/ONE of a full turn, 0 = stop swaying
  */
 int vs_battle_script_5D_setActorSway(u_char* script, UNUSED short arg1)
 {
@@ -4479,7 +4479,8 @@ void func_800BBBE8(void)
     scriptCamera->attachedActor = 0x2000;
 }
 
-void func_800BBDDC(void) { vs_main_freeHeapR(scriptCamera); }
+/** Frees the scripted camera. */
+void freeScriptCamera(void) { vs_main_freeHeapR(scriptCamera); }
 
 /**
  * Makes the scripted camera follow Ashley with the gameplay camera's view, until the
@@ -4546,8 +4547,8 @@ static void applyCameraState(void)
         sVectorToFixedPointVector(&CAMERA_SCRATCH->v2, (SVECTOR*)scriptCamera->shakeEye);
         CAMERA_SCRATCH->rotation.vz = 0;
         CAMERA_SCRATCH->rotation.vx = 0;
-        CAMERA_SCRATCH->rotation.vy = atan2FixedPoint(
-            cameraLookAt.vx - cameraPos.vx, cameraLookAt.vz - cameraPos.vz);
+        CAMERA_SCRATCH->rotation.vy =
+            yawFromOffset(cameraLookAt.vx - cameraPos.vx, cameraLookAt.vz - cameraPos.vz);
         RotMatrix_gte(&CAMERA_SCRATCH->rotation, &CAMERA_SCRATCH->matrix);
         ApplyMatrixLV(&CAMERA_SCRATCH->matrix, &CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1);
         ApplyMatrixLV(&CAMERA_SCRATCH->matrix, &CAMERA_SCRATCH->v2, &CAMERA_SCRATCH->v2);
@@ -4615,7 +4616,7 @@ void returnToGameplayCamera(short facing, int zoom)
 /**
  * Controls the look-at (opcodes 0xC0 to 0xCB) or eye (0xD0 to 0xDB) camera channel, as
  * chosen by bit 4. The low nibble is the sub-opcode. An easing is a value of enum Easing,
- * a duration is in steps of 1/30 s, and an angle is in 4096 per turn.
+ * a duration is in steps of 1/30 s, and an angle is in ONE per turn.
  * @param script Opcode bytes, which depend on the sub-opcode.
  */
 int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
@@ -4675,7 +4676,7 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
 
     switch (script[0] & 15) {
     case cameraSetDestination:
-        setVectorImm(&channel->position, script + 1);
+        readScriptVector(&channel->position, script + 1);
 
         return scriptNext;
 
@@ -4729,13 +4730,13 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
             channel->current.vz - channel->otherPosition.vz);
 
         channel->value = vectorMagnitude(&CAMERA_SCRATCH->v1);
-        channel->angle = atan2FixedPoint(s->v1.vx, s->v1.vz) & 4095;
+        channel->angle = yawFromOffset(s->v1.vx, s->v1.vz) & 4095;
 
         setVector(&s->v2, channel->position.vx - channel->otherPosition.vx, 0,
             channel->position.vz - channel->otherPosition.vz);
 
         channel->delta = vectorMagnitude(&CAMERA_SCRATCH->v2) - channel->value;
-        s->value = (atan2FixedPoint(s->v2.vx, s->v2.vz) & 4095) - channel->angle;
+        s->value = (yawFromOffset(s->v2.vx, s->v2.vz) & 4095) - channel->angle;
 
         if (s->value < -ONE / 2) {
             s->value += ONE;
@@ -4790,7 +4791,7 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
 
         channel->value = vectorMagnitude(&CAMERA_SCRATCH->v1);
         channel->delta = ((channel->value * script[5]) >> 6) - channel->value;
-        channel->angle = atan2FixedPoint(s->v1.vx, s->v1.vz);
+        channel->angle = yawFromOffset(s->v1.vx, s->v1.vz);
         channel->angleDelta = getShort(script + 1);
 
         height = getShort(script + 3) * ONE;
@@ -4807,7 +4808,7 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
 
         sVectorToFixedPointVector(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->rotation);
 
-        setVectorImm(&CAMERA_SCRATCH->v2, script + 4);
+        readScriptVector(&CAMERA_SCRATCH->v2, script + 4);
         vectorAdd(&channel->position, &CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v2);
 
         if (scriptCamera->attachedActor != 0x2000) {
@@ -4824,7 +4825,7 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
         channel->time = 0;
         channel->duration = script[10];
 
-        setVectorImm(&channel->velocity, script + 4);
+        readScriptVector(&channel->velocity, script + 4);
 
         return scriptNext;
 
@@ -4849,7 +4850,7 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
         CAMERA_SCRATCH->rotation2.vy = scriptCamera->unk1D0.unk0.unk4.pad;
 
         RotMatrix_gte(&CAMERA_SCRATCH->rotation2, &CAMERA_SCRATCH->matrix);
-        setVectorImm(&CAMERA_SCRATCH->v1, script + 4);
+        readScriptVector(&CAMERA_SCRATCH->v1, script + 4);
         ApplyMatrixLV(&CAMERA_SCRATCH->matrix, &CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1);
         func_800A190C(CAMERA_SCRATCH->value, script[3], &CAMERA_SCRATCH->rotation2, 2);
 
@@ -4872,7 +4873,7 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
         channel->duration = script[2];
 
         vectorSubtract(&CAMERA_SCRATCH->v1, &channel->otherPosition, &channel->current);
-        vecToRotMatrix(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->matrix);
+        vectorToLookMatrix(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->matrix);
 
         CAMERA_SCRATCH->matrix.t[0] = channel->current.vx >> 12;
         CAMERA_SCRATCH->matrix.t[1] = channel->current.vy >> 12;
@@ -4945,7 +4946,7 @@ static void stepCameraChannel(CameraChannel* channel, UNUSED CameraChannel* othe
             &CAMERA_SCRATCH->v1, &channel->velocity, CAMERA_SCRATCH->value);
         vectorAdd(&CAMERA_SCRATCH->v2, &channel->start, &CAMERA_SCRATCH->v1);
         vectorSubtract(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v2, &channel->otherPosition);
-        toNormalIntegerVector(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1);
+        normalizeVector(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1);
 
         CAMERA_SCRATCH->distance = vectorMagnitude(vectorSubtract(
             &CAMERA_SCRATCH->v2, &channel->otherPosition, &channel->position));
@@ -5079,7 +5080,7 @@ static void stepCameraTerrainFollow(CameraChannel* channel)
 
     vectorSubtract(
         &CAMERA_MOTION_SCRATCH->delta, &channel->otherPosition, &channel->position);
-    vecToRotMatrix(&CAMERA_MOTION_SCRATCH->delta, &CAMERA_MOTION_SCRATCH->matrix);
+    vectorToLookMatrix(&CAMERA_MOTION_SCRATCH->delta, &CAMERA_MOTION_SCRATCH->matrix);
 
     scratch = CAMERA_MOTION_SCRATCH;
 
@@ -5100,7 +5101,7 @@ static void stepCameraTerrainFollow(CameraChannel* channel)
         scratch->steps = 10;
     }
 
-    toNormalIntegerVector(&CAMERA_MOTION_SCRATCH->delta, &CAMERA_MOTION_SCRATCH->delta);
+    normalizeVector(&CAMERA_MOTION_SCRATCH->delta, &CAMERA_MOTION_SCRATCH->delta);
     vectorFixedPointMult(
         &CAMERA_MOTION_SCRATCH->delta, &CAMERA_MOTION_SCRATCH->delta, channel->value);
     vectorCopy(&CAMERA_MOTION_SCRATCH->candidate, &channel->computed);
@@ -5111,7 +5112,7 @@ static void stepCameraTerrainFollow(CameraChannel* channel)
 
         vectorAdd(&scratch->candidate, &scratch->candidate, &scratch->delta);
         vectorSubtract(&scratch->direction, &channel->otherPosition, &scratch->candidate);
-        vecToRotMatrix(&scratch->direction, &scratch->matrix);
+        vectorToLookMatrix(&scratch->direction, &scratch->matrix);
 
         scratch->matrix.t[0] = scratch->candidate.vx >> 12;
         scratch->matrix.t[1] = scratch->candidate.vy >> 12;
@@ -5123,7 +5124,7 @@ static void stepCameraTerrainFollow(CameraChannel* channel)
             setVector(&scratch->delta, scratch->candidate.vx - channel->computed.vx,
                 height - channel->computed.vy,
                 scratch->candidate.vz - channel->computed.vz);
-            toNormalIntegerVector(&scratch->delta, &scratch->delta);
+            normalizeVector(&scratch->delta, &scratch->delta);
             vectorFixedPointMult(&scratch->delta, &scratch->delta, channel->value);
 
             break;
@@ -5855,165 +5856,235 @@ void sweepCameraToSavedPlayerView(char side)
 }
 
 /**
- * Multiplies a camera move's duration by the distance left to travel, in units per 1000.
+ * Rescales a camera move's duration, which is for a distance of 1000, to the distance
+ * it has left to travel.
  */
 static void scaleMoveDurationByDistance(CameraChannel* channel)
 {
     VECTOR remaining;
 
     vectorSubtract(&remaining, &channel->current, &channel->position);
-    channel->duration = ((vectorMagnitude(&remaining) >> 0xC) * channel->duration) / 1000;
+    channel->duration = ((vectorMagnitude(&remaining) >> 12) * channel->duration) / 1000;
 }
 
 /**
- * Scales the duration of a camera move by the distance it has left to travel, see
- * scaleMoveDurationByDistance.
- * @param target 0 = look-at, 2 = both (taking the average duration), anything else =
- * eye.
+ * Scales the duration of a running camera move by the distance it has left to travel,
+ * see scaleMoveDurationByDistance.
+ * @param target 0 = look-at, 2 = both (taking the average of the two durations),
+ * anything else = eye.
  */
 void scaleCameraMoveDurationByDistance(short target)
 {
-    CameraChannel* temp_s0;
-    CameraChannel* var_a0;
-    CameraChannel* temp_s1;
-
-    temp_s0 = &scriptCamera->lookAt;
-    temp_s1 = &scriptCamera->eye;
+    CameraChannel* lookAt = &scriptCamera->lookAt;
+    CameraChannel* eye = &scriptCamera->eye;
 
     if (target == 2) {
-        scaleMoveDurationByDistance(temp_s0);
-        scaleMoveDurationByDistance(temp_s1);
-        temp_s0->duration = temp_s1->duration =
-            (temp_s0->duration + temp_s1->duration) >> 1;
+        scaleMoveDurationByDistance(lookAt);
+        scaleMoveDurationByDistance(eye);
+        lookAt->duration = eye->duration = (lookAt->duration + eye->duration) >> 1;
 
         return;
     }
-    var_a0 = temp_s0;
-    if (target != 0) {
-        var_a0 = temp_s1;
-    }
-    scaleMoveDurationByDistance(var_a0);
+
+    scaleMoveDurationByDistance(target != 0 ? eye : lookAt);
 }
 
-VECTOR* vectorAdd(VECTOR* arg0, VECTOR* arg1, VECTOR* arg2)
+/**
+ * Adds two fixed-point vectors.
+ * @param result Receives the sum, may be one of the operands.
+ * @return result
+ */
+static VECTOR* vectorAdd(VECTOR* result, VECTOR* a, VECTOR* b)
 {
-    setVector(arg0, arg1->vx + arg2->vx, arg1->vy + arg2->vy, arg1->vz + arg2->vz);
-    return arg0;
-}
+    setVector(result, a->vx + b->vx, a->vy + b->vy, a->vz + b->vz);
 
-VECTOR* vectorSubtract(VECTOR* arg0, VECTOR* arg1, VECTOR* arg2)
-{
-    setVector(arg0, arg1->vx - arg2->vx, arg1->vy - arg2->vy, arg1->vz - arg2->vz);
-    return arg0;
-}
-
-VECTOR* vectorFixedPointMult(VECTOR* arg0, VECTOR* arg1, int arg2)
-{
-    setVector(arg0, fixedPointMult(arg1->vx, arg2), fixedPointMult(arg1->vy, arg2),
-        fixedPointMult(arg1->vz, arg2));
-    return arg0;
-}
-
-static VECTOR* vectorCopy(VECTOR* arg0, VECTOR* arg1)
-{
-    copyVector(arg0, arg1);
-    return arg0;
-}
-
-static int vectorMagnitude(VECTOR* arg0)
-{
-    VECTOR sp10;
-    int temp_lo;
-    int temp_lo_2;
-    int temp_v0;
-
-    vectorCopy(&sp10, arg0);
-    temp_lo = (sp10.vx >> 0xC) * (sp10.vx >> 0xC);
-    temp_lo_2 = (sp10.vy >> 0xC) * (sp10.vy >> 0xC);
-    temp_v0 = (sp10.vz >> 0xC) * (sp10.vz >> 0xC);
-    sp10.vx = sp10.vx >> 0xC;
-    sp10.vy = sp10.vy >> 0xC;
-    sp10.vz = sp10.vz >> 0xC;
-    return SquareRoot0(temp_lo + temp_lo_2 + temp_v0) * ONE;
-}
-
-VECTOR* setVectorImm(VECTOR* arg0, u_char* arg1)
-{
-    setVector(
-        arg0, getShort(arg1) * ONE, getShort(arg1 + 2) * ONE, getShort(arg1 + 4) * ONE);
-    return arg0;
-}
-
-static VECTOR* sVectorToFixedPointVector(VECTOR* arg0, SVECTOR* arg1)
-{
-    arg0->vx = arg1->vx * ONE;
-    arg0->vy = arg1->vy * ONE;
-    arg0->vz = arg1->vz * ONE;
-    return arg0;
-}
-
-static int fixedPointMult(int a, int b)
-{
-    int result;
-    __asm__("mult       %1, %2;"
-            "mflo       $t0;"
-            "mfhi       $t1;"
-            "srl        $t0, 12;"
-            "sll        $t1, 20;"
-            "or         %0, $t0, $t1;"
-        : "=r"(result)
-        : "r"(a), "r"(b));
     return result;
 }
 
-int atan2FixedPoint(int arg0, int arg1) { return ratan2(arg0 >> 6, arg1 >> 6); }
-
-void vecToRotMatrix(VECTOR* arg0, MATRIX* arg1)
+/**
+ * Subtracts one fixed-point vector from another.
+ * @param result Receives a - b, may be one of the operands.
+ * @return result
+ */
+static VECTOR* vectorSubtract(VECTOR* result, VECTOR* a, VECTOR* b)
 {
-    SVECTOR sp10;
-    SVECTOR sp18;
+    setVector(result, a->vx - b->vx, a->vy - b->vy, a->vz - b->vz);
 
-    sp18.vx = arg0->vx >> 0xC;
-    sp18.vy = arg0->vy >> 0xC;
-    sp18.vz = arg0->vz >> 0xC;
-    sp10.vy = ratan2(sp18.vx, sp18.vz);
-    sp10.vx = ratan2(sp18.vy, SquareRoot0((sp18.vx * sp18.vx) + (sp18.vz * sp18.vz)));
-    sp10.vz = 0;
-    RotMatrix_gte(&sp10, arg1);
+    return result;
 }
 
-static void toNormalIntegerVector(VECTOR* arg0, VECTOR* arg1)
+/**
+ * Multiplies a fixed-point vector by a fixed-point scalar.
+ * @param result Receives the product, may be the same as vector.
+ * @return result
+ */
+static VECTOR* vectorFixedPointMult(VECTOR* result, VECTOR* vector, int scalar)
 {
-    VECTOR sp10;
+    setVector(result, fixedPointMult(vector->vx, scalar),
+        fixedPointMult(vector->vy, scalar), fixedPointMult(vector->vz, scalar));
 
-    setVector(&sp10, arg0->vx >> 0xC, arg0->vy >> 0xC, arg0->vz >> 0xC);
-    VectorNormal(&sp10, arg1);
+    return result;
 }
 
-int loadMpdClearedScriptDoorSections(void* clearedSection, u_short clearedSectionLen,
-    void* scriptSection, u_short scriptSectionLen, void* doorSection,
-    u_short doorSectionLen, int startState)
+/**
+ * Copies a vector.
+ * @return destination
+ */
+static VECTOR* vectorCopy(VECTOR* destination, VECTOR* source)
+{
+    copyVector(destination, source);
+
+    return destination;
+}
+
+/**
+ * Gets the length of a fixed-point vector, as a fixed-point value.
+ */
+static int vectorMagnitude(VECTOR* vector)
+{
+    VECTOR integer;
+
+    vectorCopy(&integer, vector);
+    applyVector(&integer, 12, 12, 12, >>=);
+
+    return SquareRoot0((integer.vx * integer.vx) + (integer.vy * integer.vy)
+                       + (integer.vz * integer.vz))
+         * ONE;
+}
+
+/**
+ * Reads a vector of three 16-bit world coordinates from script bytes into a fixed-point
+ * vector.
+ * @param result Receives the vector.
+ * @param script The six bytes.
+ * @return result
+ */
+static VECTOR* readScriptVector(VECTOR* result, u_char* script)
+{
+    setVector(result, getShort(script) * ONE, getShort(script + 2) * ONE,
+        getShort(script + 4) * ONE);
+
+    return result;
+}
+
+/**
+ * Converts an integer vector to a fixed-point one.
+ * @return result
+ */
+static VECTOR* sVectorToFixedPointVector(VECTOR* result, SVECTOR* integer)
+{
+    result->vx = integer->vx * ONE;
+    result->vy = integer->vy * ONE;
+    result->vz = integer->vz * ONE;
+    return result;
+}
+
+/**
+ * Multiplies two fixed-point values, using a 64-bit intermediate product.
+ */
+static int fixedPointMult(int a, int b)
+{
+#ifdef NON_MATCHING
+#define MULTIPLY_SHIFT_12(result, a, b) result = ((long long)(a) * (b)) >> 12
+#else
+#define MULTIPLY_SHIFT_12(result, a, b)                                                  \
+    __asm__("mult       %1, %2;"                                                         \
+            "mflo       $t0;"                                                            \
+            "mfhi       $t1;"                                                            \
+            "srl        $t0, 12;"                                                        \
+            "sll        $t1, 20;"                                                        \
+            "or         %0, $t0, $t1;"                                                   \
+        : "=r"(result)                                                                   \
+        : "r"(a), "r"(b))
+#endif
+
+    int result;
+    MULTIPLY_SHIFT_12(result, a, b);
+    return result;
+#undef MULTIPLY_SHIFT_12
+}
+
+/**
+ * Gets the angle of a fixed-point offset on the x and z axes, measured from the z axis
+ * towards the x axis. A full turn is ONE.
+ * @param x Offset along x.
+ * @param z Offset along z.
+ */
+static int yawFromOffset(int x, int z) { return ratan2(x >> 6, z >> 6); }
+
+/**
+ * Builds the rotation for looking along a fixed-point vector, from its heading and pitch,
+ * with no roll.
+ * @param direction The vector to point along.
+ * @param matrix Receives the rotation.
+ */
+static void vectorToLookMatrix(VECTOR* direction, MATRIX* matrix)
+{
+    SVECTOR angles;
+    SVECTOR integer;
+
+    integer.vx = direction->vx >> 12;
+    integer.vy = direction->vy >> 12;
+    integer.vz = direction->vz >> 12;
+    angles.vy = ratan2(integer.vx, integer.vz);
+    angles.vx = ratan2(
+        integer.vy, SquareRoot0((integer.vx * integer.vx) + (integer.vz * integer.vz)));
+    angles.vz = 0;
+
+    RotMatrix_gte(&angles, matrix);
+}
+
+/**
+ * Normalises a fixed-point vector, discarding its fractional part first.
+ * @param vector The vector.
+ * @param result Receives a vector of length ONE pointing the same way.
+ */
+static void normalizeVector(VECTOR* vector, VECTOR* result)
+{
+    VECTOR integer;
+
+    setVector(&integer, vector->vx >> 12, vector->vy >> 12, vector->vz >> 12);
+    VectorNormal(&integer, result);
+}
+
+/**
+ * Loads the event data of a map.
+ * @param triggerSection The map's table of event triggers, see requestEvent.
+ * @param triggerSectionLen Size of triggerSection, 0 if there is none.
+ * @param entryScript The script run when the map loads.
+ * @param entryScriptLen Size of entryScript, 0 if there is none.
+ * @param triggeredScripts A table of up to 16 scripts that the triggers can start, those
+ * with bit 15 set in their event id.
+ * @param triggeredScriptsLen Size of triggeredScripts, 0 if there is none.
+ * @param firstLoad 1 for the first map loaded after entering the battle overlay.
+ * @return 1 if the map was loaded by a warp that continues the running script, otherwise
+ * 0.
+ */
+int loadMpdEventSections(void* triggerSection, u_short triggerSectionLen,
+    void* entryScript, u_short entryScriptLen, void* triggeredScripts,
+    u_short triggeredScriptsLen, int firstLoad)
 {
     vs_battle_setStateFlag(0xA9, 0);
-    if (startState == 0) {
+
+    if (firstLoad == 0) {
         short i;
         for (i = 32; i < 64; ++i) {
             vs_battle_setStateFlag(i, 0);
         }
     }
 
-    if (clearedSectionLen != 0) {
-        mpdClearedSection = vs_main_allocHeap(clearedSectionLen);
-        memcpy(mpdClearedSection, clearedSection, clearedSectionLen);
+    if (triggerSectionLen != 0) {
+        mpdTriggerSection = vs_main_allocHeap(triggerSectionLen);
+        memcpy(mpdTriggerSection, triggerSection, triggerSectionLen);
     } else {
-        mpdClearedSection = NULL;
+        mpdTriggerSection = NULL;
     }
 
-    if (doorSectionLen != 0) {
-        mpdRoomDoorSection = vs_main_allocHeap(doorSectionLen);
-        memcpy(mpdRoomDoorSection, doorSection, doorSectionLen);
+    if (triggeredScriptsLen != 0) {
+        mpdTriggeredScripts = vs_main_allocHeap(triggeredScriptsLen);
+        memcpy(mpdTriggeredScripts, triggeredScripts, triggeredScriptsLen);
     } else {
-        mpdRoomDoorSection = NULL;
+        mpdTriggeredScripts = NULL;
     }
 
     if (scriptWarpState == scriptWarpResume) {
@@ -6022,39 +6093,56 @@ int loadMpdClearedScriptDoorSections(void* clearedSection, u_short clearedSectio
     }
 
     if (scriptWarpState == scriptWarpEnd) {
-        D_800F4C34 = 0;
+        eventState = eventIdle;
         scriptWarpState = scriptWarpIdle;
-        D_800F4BB8 = 0;
+        eventReady = 0;
     }
 
-    mpdScriptSection = scriptSectionLen != 0;
+    mpdEntryScriptPending = entryScriptLen != 0;
 
-    if (mpdScriptSection != 0) {
-        memcpy(evtBuffer, scriptSection, scriptSectionLen);
+    if (mpdEntryScriptPending != 0) {
+        memcpy(evtBuffer, entryScript, entryScriptLen);
     }
+
     return 0;
 }
 
-short func_800BEB00(void) { return D_800F4C34; }
+/**
+ * Gets the state of the current event.
+ * @return An EventState value.
+ */
+short getEventState(void) { return eventState; }
 
-short func_800BEB10(void) { return (D_800F4BE0 << 0xC) | evtFile; }
+/**
+ * Gets an id for the current event.
+ * @return The EventSource in the top nibble, below it the number of the EVT file or
+ * triggered script, if relevant.
+ */
+short getEventId(void) { return (eventSource << 12) | evtFile; }
 
-void func_800BEB34(void)
+/**
+ * Releases the event data of the current map, the counterpart of loadMpdEventSections.
+ */
+void unloadMpdEventSections(void)
 {
     if (scriptWarpState == scriptWarpEnd) {
-        func_800BFD9C();
+        releaseScriptControl();
     }
-    if (mpdClearedSection != 0) {
-        vs_main_freeHeap(mpdClearedSection);
+    if (mpdTriggerSection != 0) {
+        vs_main_freeHeap(mpdTriggerSection);
     }
-    if (mpdRoomDoorSection != 0) {
-        vs_main_freeHeap(mpdRoomDoorSection);
+    if (mpdTriggeredScripts != 0) {
+        vs_main_freeHeap(mpdTriggeredScripts);
     }
 }
 
-void func_800BEB9C(int arg0)
+/**
+ * Clears the zone flags.
+ * @param firstLoad If nonzero, does nothing.
+ */
+void resetZoneFlags(int firstLoad)
 {
-    if (arg0 == 0) {
+    if (firstLoad == 0) {
         short i;
         for (i = 64; i < 128; ++i) {
             vs_battle_setStateFlag(i, 0);
@@ -6062,31 +6150,79 @@ void func_800BEB9C(int arg0)
     }
 }
 
-void func_800BEBEC(void) { }
+void zoneUnloadNop(void) { }
 
-char getStateFlag(short arg0)
+/**
+ * Gets a state flag.
+ * @param id Index of the flag, see vs_Flags.
+ */
+char getStateFlag(short id)
 {
     char* flags = (char*)&vs_main_stateFlags;
-    return flags[arg0];
+
+    return flags[id];
 }
 
+/**
+ * Sets a state flag.
+ * @param id Index of the flag, see vs_Flags.
+ */
 void vs_battle_setStateFlag(short id, char value)
 {
     char* flags = (char*)&vs_main_stateFlags;
+
     flags[id] = value;
 }
 
-int func_800BEC30(void)
+/**
+ * Signals that the game is ready for the requested event to start. Does nothing if no
+ * event is requested.
+ * @return Always 1.
+ */
+int signalEventReady(void)
 {
-    if (D_800F4C34 == 1) {
-        D_800F4BB8 = D_800F4C34;
+    if (eventState == eventRequested) {
+        eventReady = 1;
         return 1;
     }
     return 1;
 }
 
-short func_800BEC58(short type, int arg1, int arg2, short mode)
+/**
+ * Requests the event of the first of the map's triggers that matches a kind of check, or
+ * a specific event.
+ *
+ * @param trigger One or more EventTrigger values.
+ * @param arg1 With eventTriggerForced, the EVT file. With eventTriggerInteract and mode
+ * 0, the actor that interacted.
+ * @param arg2 With eventTriggerInteract, the actor that was interacted with if mode is 0,
+ * or a pointer to the tile if mode is 1.
+ * @param mode 0 or 1, see arg2.
+ * @return An EventRequestResult.
+ */
+short requestEvent(short trigger, int arg1, int arg2, short mode)
 {
+    enum {
+        conditionPlayerOnTile = 1,
+        conditionPlayerInRectangle,
+        conditionFlagVsValue,
+        conditionActorExists,
+        conditionActorRoleCount,
+        conditionInteractActors,
+        conditionActorHpPercent,
+        conditionInteractFacingTile,
+        conditionPlayerStopped,
+        conditionItemOwned,
+        conditionUnk11,
+        conditionUnk12,
+        conditionActorOnTile,
+        conditionActorInRectangle,
+        conditionFlagVsFlag,
+        conditionUnk16,
+        conditionNot = 0xFE,
+        conditionsEnd = 0xFF,
+    };
+
     char buf[64];
     vs_ActorPosition position;
     short i;
@@ -6094,196 +6230,201 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
     short flagId;
     short actorId;
     short flagValue;
-    int result;
+    int conditionMet;
     short negate;
     short eventId;
-    u_char* p;
+    u_char* data;
     short left;
     int right;
 
-    if (type == 255) {
-        if (D_800F4C34 == 0) {
-            return 0;
+    if (trigger == eventTriggerPoll) {
+        if (eventState == eventIdle) {
+            return eventRequestNone;
         }
 
-        return 2;
+        return eventRequestBusy;
     }
 
-    if (type == 1) {
-        int scriptSection = mpdScriptSection;
+    if (trigger == eventTriggerMapLoad) {
+        int pending = mpdEntryScriptPending;
 
-        if (scriptSection & 1) {
-            mpdScriptSection = 0;
-            D_800F4C34 = 1;
-            D_800F4BE0 = 1;
+        if (pending & 1) {
+            mpdEntryScriptPending = 0;
+            eventState = eventRequested;
+            eventSource = eventFromEntryScript;
             D_800F4BA8 = 1;
-            return 1;
+
+            return eventRequestMade;
         }
     }
 
-    if (type == 64) {
+    if (trigger == eventTriggerForced) {
         evtFile = arg1;
-        D_800F4BE0 = 0;
-        D_800F4C34 = 1;
+        eventSource = eventFromEvt;
+        eventState = eventRequested;
         D_800F4BA8 = 1;
-        return 1;
+
+        return eventRequestMade;
     }
 
-    if (D_800F4C34 != 0 && D_800F4BA8 != 0) {
-        return 2;
+    if (eventState != eventIdle && D_800F4BA8 != 0) {
+        return eventRequestBusy;
     }
 
     for (i = 0; i < 16; ++i) {
-        u_short offset = ((u_short*)mpdClearedSection)[i];
+        u_short offset = ((u_short*)mpdTriggerSection)[i];
 
         if (offset == 0xFFFF) {
-            return 0;
+            return eventRequestNone;
         }
 
-        p = mpdClearedSection + offset;
+        data = mpdTriggerSection + offset;
 
-        if (!(*p & type)) {
+        if (!(*data & trigger)) {
             continue;
         }
 
-        ++p;
-        eventId = getShort(p);
-        p += 2;
+        ++data;
+        eventId = getShort(data);
+        data += 2;
         negate = 0;
 
         while (1) {
-            result = 0;
+            conditionMet = 0;
 
-            switch (*p) {
-            case 0xFF:
+            switch (*data) {
+            case conditionsEnd:
                 if (eventId & 0x8000) {
                     evtFile = eventId & 0xF;
-                    D_800F4BE0 = 2;
+                    eventSource = eventFromTriggeredScripts;
                 } else {
                     evtFile = eventId;
-                    D_800F4BE0 = 0;
+                    eventSource = eventFromEvt;
                 }
 
-                D_800F4C34 = 1;
+                eventState = eventRequested;
                 D_800F4BA8 = 0;
-                return 1;
 
-            case 1:
+                return eventRequestMade;
+
+            case conditionPlayerOnTile:
                 vs_battle_getActorPosition(0, &position);
 
-                if (position.unk0.unk0.x == p[1] && position.unk0.unk0.z == p[2]) {
-                    result = 1;
+                if (position.unk0.unk0.x == data[1] && position.unk0.unk0.z == data[2]) {
+                    conditionMet = 1;
                 }
 
-                p += 3;
+                data += 3;
                 break;
 
-            case 2:
+            case conditionPlayerInRectangle:
                 vs_battle_getActorPosition(0, &position);
 
-                if (position.unk0.unk0.x >= p[1] && position.unk0.unk0.x < p[1] + p[3]
-                    && position.unk0.unk0.z >= p[2]
-                    && position.unk0.unk0.z < p[2] + p[4]) {
-                    result = 1;
+                if (position.unk0.unk0.x >= data[1]
+                    && position.unk0.unk0.x < data[1] + data[3]
+                    && position.unk0.unk0.z >= data[2]
+                    && position.unk0.unk0.z < data[2] + data[4]) {
+                    conditionMet = 1;
                 }
 
-                p += 5;
+                data += 5;
                 break;
 
-            case 3:
-                left = getStateFlag(((p[1] & 0xF) << 6) | (p[2] >> 2));
-                right = p[3];
+            case conditionFlagVsValue:
+                left = getStateFlag(((data[1] & 0xF) << 6) | (data[2] >> 2));
+                right = data[3];
                 goto compare;
 
-            case 15:
-                left = getStateFlag(((p[1] & 0xF) << 6) | (p[2] >> 2));
-                right = getStateFlag(((p[2] & 3) << 8) | p[3]);
+            case conditionFlagVsFlag:
+                left = getStateFlag(((data[1] & 0xF) << 6) | (data[2] >> 2));
+                right = getStateFlag(((data[2] & 3) << 8) | data[3]);
+
             compare:
-                switch (p[1] & 0xF0) {
-                case 0x00:
+                switch (data[1] & 0xF0) {
+                case flagComparisonLe:
                     if (left <= right) {
-                        result = 1;
+                        conditionMet = 1;
                     }
                     break;
 
-                case 0x10:
+                case flagComparisonGe:
                     if (left >= right) {
-                        result = 1;
+                        conditionMet = 1;
                     }
                     break;
 
-                case 0x20:
+                case flagComparisonEq:
                     if (left == right) {
-                        result = 1;
+                        conditionMet = 1;
                     }
                     break;
 
-                case 0x30:
+                case flagComparisonNe:
                     if (left != right) {
-                        result = 1;
+                        conditionMet = 1;
                     }
                     break;
 
-                case 0x40:
+                case flagComparisonLt:
                     if (left < right) {
-                        result = 1;
+                        conditionMet = 1;
                     }
                     break;
 
-                case 0x50:
+                case flagComparisonGt:
                     if (left > right) {
-                        result = 1;
+                        conditionMet = 1;
                     }
                     break;
                 }
 
-                p += 4;
+                data += 4;
                 break;
 
-            case 4:
-                left = getShort(p + 1);
+            case conditionActorExists:
+                left = getShort(data + 1);
 
                 if (left & 0x1000) {
                     if (getActor(left & 0x1F) != NULL) {
-                        result = 1;
+                        conditionMet = 1;
                     }
                 } else if (func_8007CF18(left) != 1) {
-                    result = 1;
+                    conditionMet = 1;
                 }
 
-                p += 3;
+                data += 3;
                 break;
 
-            case 5:
-                left = flagValue = countActorsByRole(p[1]);
-                flagId = getShort(p + 2);
+            case conditionActorRoleCount:
+                left = flagValue = countActorsByRole(data[1]);
+                flagId = getShort(data + 2);
 
                 if (flagId != 0) {
                     vs_battle_setStateFlag(flagId, flagValue);
-                    result = 1;
+                    conditionMet = 1;
                 } else if (left != 0) {
-                    result = 1;
+                    conditionMet = 1;
                 }
 
-                p += 4;
+                data += 4;
                 break;
 
-            case 6:
+            case conditionInteractActors:
                 if (mode == 0) {
-                    actorId = resolveActorId(getShort(p + 1));
-                    otherActorId = resolveActorId(getShort(p + 3));
+                    actorId = resolveActorId(getShort(data + 1));
+                    otherActorId = resolveActorId(getShort(data + 3));
 
                     if (actorId != 1 && otherActorId != 1 && arg1 == actorId
                         && arg2 == otherActorId) {
-                        result = 1;
+                        conditionMet = 1;
                     }
                 }
 
-                p += 5;
+                data += 5;
                 break;
 
-            case 7:
-                actorId = resolveActorId(getShort(p + 1));
+            case conditionActorHpPercent:
+                actorId = resolveActorId(getShort(data + 1));
 
                 if (actorId == 1) {
                     negate = 0;
@@ -6291,76 +6432,76 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
                 }
 
                 left = flagValue = func_8007C218(actorId);
-                flagId = getShort(p + 3);
+                flagId = getShort(data + 3);
 
                 if (flagId != 0) {
                     vs_battle_setStateFlag(flagId, flagValue);
-                    result = 1;
+                    conditionMet = 1;
                 } else if (left != 0) {
-                    result = 1;
+                    conditionMet = 1;
                 }
 
-                p += 5;
+                data += 5;
                 break;
 
-            case 8:
-                if (mode == 1 && ((u_char*)arg2)[0] == p[1]
-                    && ((u_char*)arg2)[2] == p[2]) {
-                    result = 1;
+            case conditionInteractFacingTile:
+                if (mode == 1 && ((u_char*)arg2)[0] == data[1]
+                    && ((u_char*)arg2)[2] == data[2]) {
+                    conditionMet = 1;
                 }
 
-                p += 3;
+                data += 3;
                 break;
 
-            case 9:
+            case conditionPlayerStopped:
                 if (!(vs_battle_getActorFlags(0) & 0x104000)) {
-                    result = 1;
+                    conditionMet = 1;
                 }
 
-                ++p;
+                ++data;
                 break;
 
-            case 10:
-                left = flagValue = itemIdIsInInventory(getShort(p + 1));
-                flagId = getShort(p + 3);
+            case conditionItemOwned:
+                left = flagValue = itemIdIsInInventory(getShort(data + 1));
+                flagId = getShort(data + 3);
 
                 if (flagId != 0) {
                     vs_battle_setStateFlag(flagId, flagValue);
-                    result = 1;
+                    conditionMet = 1;
                 } else if (left != 0) {
-                    result = 1;
+                    conditionMet = 1;
                 }
 
-                p += 5;
+                data += 5;
                 break;
 
-            case 11:
-                if ((short)func_800A0024(p[1], &position.unk0) >= 0
-                    && position.unk0.unk0.x == p[2] && position.unk0.unk0.z == p[3]
-                    && (p[4] == 0 || -(position.unk0.unk4.vy / 128) + 1 == p[4])
-                    && (p[5] == 0 || (position.unk0.unk0.extra >> 2) + 1 == p[5])) {
-                    result = 1;
+            case conditionUnk11:
+                if ((short)func_800A0024(data[1], &position.unk0) >= 0
+                    && position.unk0.unk0.x == data[2] && position.unk0.unk0.z == data[3]
+                    && (data[4] == 0 || -(position.unk0.unk4.vy / 128) + 1 == data[4])
+                    && (data[5] == 0 || (position.unk0.unk0.extra >> 2) + 1 == data[5])) {
+                    conditionMet = 1;
                 }
 
-                p += 6;
+                data += 6;
                 break;
 
-            case 12:
-                left = flagValue = -func_800A92B8(p[1], p[2]) / 128;
-                flagId = getShort(p + 3);
+            case conditionUnk12:
+                left = flagValue = -func_800A92B8(data[1], data[2]) / 128;
+                flagId = getShort(data + 3);
 
                 if (flagId != 0) {
                     vs_battle_setStateFlag(flagId, flagValue);
-                    result = 1;
+                    conditionMet = 1;
                 } else if (left != 0) {
-                    result = 1;
+                    conditionMet = 1;
                 }
 
-                p += 5;
+                data += 5;
                 break;
 
-            case 13:
-                actorId = resolveActorId(getShort(p + 1));
+            case conditionActorOnTile:
+                actorId = resolveActorId(getShort(data + 1));
 
                 if (actorId == 1) {
                     negate = 0;
@@ -6369,15 +6510,15 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
 
                 vs_battle_getActorPosition(actorId, &position);
 
-                if (position.unk0.unk0.x == p[3] && position.unk0.unk0.z == p[4]) {
-                    result = 1;
+                if (position.unk0.unk0.x == data[3] && position.unk0.unk0.z == data[4]) {
+                    conditionMet = 1;
                 }
 
-                p += 5;
+                data += 5;
                 break;
 
-            case 14:
-                actorId = resolveActorId(getShort(p + 1));
+            case conditionActorInRectangle:
+                actorId = resolveActorId(getShort(data + 1));
 
                 if (actorId == 1) {
                     negate = 0;
@@ -6386,17 +6527,18 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
 
                 vs_battle_getActorPosition(actorId, &position);
 
-                if (position.unk0.unk0.x >= p[3] && position.unk0.unk0.x < p[3] + p[5]
-                    && position.unk0.unk0.z >= p[4]
-                    && position.unk0.unk0.z < p[4] + p[6]) {
-                    result = 1;
+                if (position.unk0.unk0.x >= data[3]
+                    && position.unk0.unk0.x < data[3] + data[5]
+                    && position.unk0.unk0.z >= data[4]
+                    && position.unk0.unk0.z < data[4] + data[6]) {
+                    conditionMet = 1;
                 }
 
-                p += 7;
+                data += 7;
                 break;
 
-            case 16:
-                actorId = resolveActorId(getShort(p + 1));
+            case conditionUnk16:
+                actorId = resolveActorId(getShort(data + 1));
 
                 if (actorId == 1) {
                     negate = 0;
@@ -6404,23 +6546,23 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
                 }
 
                 if (func_8007CFCC(actorId) != 0) {
-                    result = 1;
+                    conditionMet = 1;
                 }
 
-                p += 3;
+                data += 3;
                 break;
 
-            case 0xFE:
+            case conditionNot:
                 negate = 1;
-                ++p;
+                ++data;
                 continue;
 
             default:
-                sprintf(buf, "UNKNOWN TRIGGER DETECTED:%02x", *p);
+                sprintf(buf, "UNKNOWN TRIGGER DETECTED:%02x", *data);
                 break;
             }
 
-            if (result == negate) {
+            if (conditionMet == negate) {
                 break;
             }
 
@@ -6429,23 +6571,30 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
     }
 }
 
-void parseEvt(u_char* data)
+/**
+ * Sets up the engine to run an event's scripts, resetting everything they share.
+ * @param data The event, with offsets to the strings at +2, to the text box shapes after
+ * the built in ones at +4, to the vibration patterns at +6, and the script at +0x10.
+ */
+static void initEvent(u_char* data)
 {
     short i;
-    u_char* table;
+    u_char* shapes;
+    u_char* vibration;
 
     scriptStrings = (u_short*)(data + *(u_short*)(data + 2));
-    table = data + *(u_short*)(data + 4);
+    shapes = data + *(u_short*)(data + 4);
 
     for (i = 9; i < 16; ++i) {
-        D_800EB588[i] = ((u_short*)table)[i - 8] ? table + ((u_short*)table)[i - 8] : 0;
+        textBoxShapes[i] =
+            ((u_short*)shapes)[i - 8] ? shapes + ((u_short*)shapes)[i - 8] : 0;
     }
 
-    table = data + *(u_short*)(data + 6);
+    vibration = data + *(u_short*)(data + 6);
 
     for (i = 0; i < 8; ++i) {
         vibrationPatterns[i] =
-            ((u_short*)table)[i] ? (char*)table + ((u_short*)table)[i] : 0;
+            ((u_short*)vibration)[i] ? (char*)vibration + ((u_short*)vibration)[i] : 0;
     }
 
     scriptSlots[0] = data + 16;
@@ -6453,7 +6602,7 @@ void parseEvt(u_char* data)
     scriptSkipMode = scriptSkipOff;
     skipRequested = 0;
 
-    vs_battle_setStateFlag(168, 0);
+    vs_battle_setStateFlag(skippingScene, 0);
 
     scriptWaitFrames[1] = scriptWaitFrames[2] = scriptWaitFrames[3] = 0;
     effectCancelled = 0;
@@ -6464,7 +6613,7 @@ void parseEvt(u_char* data)
     scriptWarpState = scriptWarpIdle;
     cameraReturned = 0;
     scriptWaitFrames[0] = 0;
-    D_800F4C22 = 0;
+    mainScriptEnded = 0;
 
     for (i = 0; i < 8; ++i) {
         textBoxStatuses[i] = 0;
@@ -6479,7 +6628,7 @@ void parseEvt(u_char* data)
     scriptMusicSlot = vs_main_getcurrentMusicSlot();
     evtCdSlot = NULL;
 
-    for (i = 16; i < 32; ++i) {
+    for (i = scriptScratch; i < scriptScratch + 16; ++i) {
         vs_battle_setStateFlag(i, 0);
     }
 }
@@ -6489,19 +6638,19 @@ int func_800BF850(void)
     short i;
     UNUSED int _[2];
 
-    if (D_800F4C34 == 0) {
+    if (eventState == eventIdle) {
         return 0;
     }
 
-    if (D_800F4C34 == 1) {
-        if (D_800F4BB8 != 0) {
-            D_800F4C34 = 2;
-            D_800F4BB8 = 0;
+    if (eventState == eventRequested) {
+        if (eventReady != 0) {
+            eventState = eventStarting;
+            eventReady = 0;
             func_800BBBE8();
             func_8007CEC0();
 
             for (i = 0; i < 17; ++i) {
-                D_800F4B70[i] = 0;
+                actorMoved[i] = 0;
             }
 
             return 2;
@@ -6510,31 +6659,31 @@ int func_800BF850(void)
         return 0;
     }
 
-    if (D_800F4C34 == 2) {
+    if (eventState == eventStarting) {
         fogDepthOverridden = 0;
         nextEvtQueued = 0;
 
-        switch (D_800F4BE0) {
-        case 1:
-            parseEvt(evtBuffer);
-            D_800F4C34 = 4;
+        switch (eventSource) {
+        case eventFromEntryScript:
+            initEvent(evtBuffer);
+            eventState = eventRunning;
             break;
 
-        case 2:
-            parseEvt(mpdRoomDoorSection + ((short*)mpdRoomDoorSection)[evtFile]);
-            D_800F4C34 = 4;
+        case eventFromTriggeredScripts:
+            initEvent(mpdTriggeredScripts + ((short*)mpdTriggeredScripts)[evtFile]);
+            eventState = eventRunning;
             break;
 
-        case 0:
+        case eventFromEvt:
             func_800C00E8(evtFile, evtBuffer);
-            D_800F4C34 = 3;
+            eventState = eventLoading;
             break;
         }
 
         return 2;
     }
 
-    if (D_800F4C34 == 3) {
+    if (eventState == eventLoading) {
         if (evtCdSlot->state == CdQueueStateLoaded) {
             vs_main_freeCdQueueSlot(evtCdSlot);
 
@@ -6544,8 +6693,8 @@ int func_800BF850(void)
                 nextEvtQueued = 0;
             }
 
-            parseEvt(evtBuffer);
-            D_800F4C34 = 4;
+            initEvent(evtBuffer);
+            eventState = eventRunning;
         }
 
         return 2;
@@ -6553,14 +6702,14 @@ int func_800BF850(void)
 
     updateCameraAttachment();
 
-    if (D_800F4C22 == 0) {
+    if (mainScriptEnded == 0) {
         if (func_800BFBB8(scriptSlots, 0) != 0) {
             if (cameraReturned == 0 && nextEvtQueued == 0
                 && scriptWarpState == scriptWarpIdle) {
                 returnToGameplayCamera(-1, -1);
             }
 
-            D_800F4C22 = 1;
+            mainScriptEnded = 1;
         }
 
         for (i = 1; i < 4; ++i) {
@@ -6580,16 +6729,16 @@ int func_800BF850(void)
         drawScanlines();
     }
 
-    if (D_800F4C22 != 0 && getCameraIdleFlags() == cameraIdleAll) {
+    if (mainScriptEnded != 0 && getCameraIdleFlags() == cameraIdleAll) {
         if (nextEvtQueued != 0) {
-            D_800F4C34 = 3;
-            D_800F4BE0 = 0;
+            eventState = eventLoading;
+            eventSource = eventFromEvt;
         } else {
-            func_800BFD9C();
-            D_800F4C34 = 0;
+            releaseScriptControl();
+            eventState = eventIdle;
         }
 
-        D_800F4C22 = 0;
+        mainScriptEnded = 0;
     }
 
     return 2;

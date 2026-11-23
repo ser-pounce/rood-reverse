@@ -6,6 +6,7 @@ enum itemIdentifiers { bronzeKey = 458, chamomileSigil = 466 };
 // Indices into vs_main_stateFlags, an alternative to accessing its members by name
 enum stateFlagIds {
     scriptScratch = 0x10,
+    skippingScene = 0xA8,
     savedWeaponDrawn = 0xAC,
     savedCameraFacing = 0xAF,
     savedCameraZoom = 0xB0,
@@ -41,11 +42,16 @@ typedef struct {
     char unkD;
     char unkE;
     char unkF;
-    char scriptScratch[16]; // reset when an event starts
+    // Event flags, cleared when an event starts
+    char scriptScratch[16];
+    // Map flags, cleared when a map loads, except on the first load after entering the
+    // battle overlay
     char unk20;
     char unk21[0x1F];
+    // Zone flags, cleared when a zone loads, with the same exception
     char unk40;
-    char unk41[0x5F];
+    char unk41[0x3F];
+    char unk80[0x20];
     char puzzleTimerHundredths;
     char puzzleTimerSeconds;
     char puzzleTimerMins;

@@ -14,17 +14,24 @@
 extern int (*normalOpcodeTable[])(u_char*, short);
 extern vs_CdFile D_800F4BF0;
 
-int func_800BFE34(u_char*);
+int getOpcodeLength(u_char*);
 void func_800C0150(void);
 
 extern unsigned char actorMoved[17];
 
-short func_800BFBB8(u_char** arg0, short arg1)
+/**
+ * Runs the script of a slot until it yields, waits or ends.
+ * @param next The next opcode of the slot, updated as it runs and set to NULL if the
+ * script ends.
+ * @param slot The slot, 0 is the main script.
+ * @return 1 if the script finished the scene, otherwise 0.
+ */
+short runScript(u_char** next, short slot)
 {
-    int ret;
-    u_char* script = *arg0;
+    int result;
+    u_char* script = *next;
 
-    if ((arg1 == 0) && (scriptSkipMode == scriptSkippable)
+    if ((slot == 0) && (scriptSkipMode == scriptSkippable)
         && ((vs_main_buttonsPressed.all & PADstart) || (skipRequested != 0))) {
         skipRequested = 0;
         scriptWaitFrames[3] = 0;
@@ -51,36 +58,38 @@ short func_800BFBB8(u_char** arg0, short arg1)
 
     while (1) {
         if (scriptSkipMode != scriptSkipping) {
-            ret = normalOpcodeTable[*script](script, arg1);
+            result = normalOpcodeTable[*script](script, slot);
         } else {
-            ret = vs_battle_skipOpcodeTable[*script](script, arg1);
+            result = vs_battle_skipOpcodeTable[*script](script, slot);
         }
 
-        switch (ret) {
-        case 0:
-            script += func_800BFE34(script);
+        switch (result) {
+        case scriptNext:
+            script += getOpcodeLength(script);
             continue;
 
-        case 1:
+        case scriptWait:
             break;
 
-        case 3:
-            *arg0 = NULL;
+        case scriptEnd:
+            *next = NULL;
             return 0;
 
-        case 2:
+        case scriptFinish:
             return 1;
 
-        case 4:
-            script += func_800BFE34(script);
+        case scriptYield:
+            script += getOpcodeLength(script);
             break;
 
         default:
-            script = (u_char*)ret;
+            script = (u_char*)result;
+
             continue;
         }
 
-        *arg0 = script;
+        *next = script;
+
         return 0;
     }
 }
@@ -94,7 +103,7 @@ void releaseScriptControl(void)
 
     for (i = 0; i < 17; i++) {
         if (actorMoved[i] != 0) {
-            func_8007D260(i);
+            releaseActorControl(i);
         }
     }
 
@@ -109,13 +118,13 @@ short getShort(u_char* arg0)
     return arg0[0] | (arg0[1] << 8);
 }
 
-int func_800BFE34(u_char* arg0) { return D_800E9C30[arg0[0]]; }
+int getOpcodeLength(u_char* arg0) { return opcodeLengths[arg0[0]]; }
 
 int resolveActorId(u_short arg0)
 {
     switch (arg0 >> 12) {
     case 0:
-        return func_8007CF18(arg0 & 0xFFF);
+        return getActorSlotById(arg0 & 0xFFF);
     case 1:
         return arg0 & 0x1F;
     case 2:
@@ -192,12 +201,17 @@ int evaluateEasing(short mode, short frame, short duration)
     }
 }
 
-void func_800C00E8(int arg0, void* arg1)
+/**
+ * Starts loading an EVT file from disc.
+ * @param file Unused, the file is taken from evtFile.
+ * @param buffer Receives the file.
+ */
+void loadEvt(UNUSED int file, void* buffer)
 {
     D_800F4BF0.size = VS_0000_EVT_SIZE;
     D_800F4BF0.lba = (evtFile * 3) + VS_0000_EVT_LBA; // .EVT files must be sequential
     evtCdSlot = vs_main_allocateCdQueueSlot(&D_800F4BF0);
-    vs_main_cdEnqueue(evtCdSlot, arg1);
+    vs_main_cdEnqueue(evtCdSlot, buffer);
 }
 
 void func_800C0150(void)

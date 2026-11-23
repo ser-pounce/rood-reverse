@@ -2,8 +2,8 @@
 #include "common.h"
 #include "573B8.h"
 
-short func_800BFBB8(u_char**, short);
-VS_HIDDEN(func_800BFBB8);
+short runScript(u_char** next, short slot);
+VS_HIDDEN(runScript);
 
 void releaseScriptControl(void);
 VS_HIDDEN(releaseScriptControl);
@@ -14,8 +14,8 @@ VS_HIDDEN(resolveActorId);
 int evaluateEasing(short mode, short frame, short duration);
 VS_HIDDEN(evaluateEasing);
 
-void func_800C00E8(int, void*);
-VS_HIDDEN(func_800C00E8);
+void loadEvt(int file, void* buffer);
+VS_HIDDEN(loadEvt);
 
 short getShort(u_char* arg0);
 VS_HIDDEN(getShort);

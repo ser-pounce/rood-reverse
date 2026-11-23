@@ -13,7 +13,7 @@ int findBoneIndex(int actorId, int id, int lookup);
 int func_800A1648(int, int, int);
 int func_800A1720(int, int, MATRIX*, int*);
 int func_800A1AF8(int, int, SVECTOR*, int);
-int func_800A190C(int arg0, int arg1, SVECTOR* arg2, int arg3);
+int getActorPoint(int actorId, int point, SVECTOR* position, int mode);
 int func_800A1B9C(int arg0, int arg1, SVECTOR* arg2, int arg3);
 void func_800A2574(int arg0, short arg1);
 void func_800A25EC(D_800F4538_t*);

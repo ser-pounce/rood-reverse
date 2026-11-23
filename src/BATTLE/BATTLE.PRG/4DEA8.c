@@ -143,7 +143,7 @@ typedef struct {
     SVECTOR shakeLookAt;
     short shakeEye[3];
     int unk1CC;
-    vs_ActorPosition unk1D0;
+    vs_ActorPosition actorPosition;
     int unk1E0[2];
     u_short attachedActor;
     u_short unk1EA;
@@ -152,7 +152,7 @@ typedef struct {
     ScreenEffectTween framebufferTint;
     ScreenEffectTween framebufferOffset;
     ScreenEffectTween lensDistortion;
-    VECTOR unk27C;
+    VECTOR terrainFollowLast;
 } ScriptCamera;
 
 typedef struct {
@@ -333,13 +333,13 @@ extern int weaponDrawnModes[];
 extern char animationBankBase[];
 extern char skipResetPaletteOp[];
 extern char skipTailMarkerOp[];
-extern u_char D_800E9BEC[];
+extern u_char textBoxPlacementDirections[];
 extern u_char cubePuzzleSubmenus[];
 extern short battleTimerModes[];
 extern short battleTimerLifetimes[];
 extern void sceneResetScript;
-extern short D_800E9C00[];
-extern u_char D_800E9C1C[];
+extern short cameraPitchPresets[];
+extern u_char returnCameraScripts[];
 extern short sweepHeightOffsets[];
 extern u_char sweepEyeScript[];
 extern u_char sweepLookAtScript[];
@@ -407,7 +407,7 @@ int vs_battle_script_yield(UNUSED u_char* arg0, UNUSED short arg1) { return scri
 int vs_battle_script_0A_waitEvtLoad(UNUSED u_char* arg0, UNUSED short arg1)
 {
     if ((evtCdSlot != 0) && (evtCdSlot->state != CdQueueStateLoaded)) {
-        return scriptRepeat;
+        return scriptWait;
     }
 
     return scriptNext;
@@ -425,6 +425,7 @@ int vs_battle_script_0C_waitGimLoad(UNUSED u_char* arg0, UNUSED short arg1)
  * Begins a section of the script that the player can skip with START.
  * @param script Opcode bytes:
  *   - [1] bit 0 = keep the music playing if the section is skipped
+ *   - [2] = unused
  */
 int vs_battle_script_0D_beginSkippable(u_char* script, UNUSED short arg1)
 {
@@ -457,7 +458,7 @@ static void endScriptSkip(u_char* script)
             vs_battle_setStateFlag(skippingScene, 0);
             return;
         }
-        script = &script[D_800E9C30[*script]];
+        script = &script[opcodeLengths[*script]];
     }
 
     func_80093A70();
@@ -565,7 +566,7 @@ int vs_battle_script_11_showTextBox(u_char* script, UNUSED short arg1)
 
         if (script[3] == 0) {
             textBoxStatuses[script[1]] = 1;
-            return scriptRepeat;
+            return scriptWait;
         }
 
         return scriptNext;
@@ -585,7 +586,7 @@ int vs_battle_script_11_showTextBox(u_char* script, UNUSED short arg1)
         return scriptNext;
     }
 
-    return scriptRepeat;
+    return scriptWait;
 }
 
 /**
@@ -672,7 +673,8 @@ int vs_battle_script_13_initTextBoxNearActor(u_char* script, UNUSED short arg1)
     origin.vz = ((origin.vz - ONE / 4) & 0xC00) >> 10;
 
     for (i = 0; i < 4; ++i) {
-        if (tryTextBoxPlacement(&origin, script, &placements[i], D_800E9BEC[i])) {
+        if (tryTextBoxPlacement(
+                &origin, script, &placements[i], textBoxPlacementDirections[i])) {
             best = &placements[i];
             break;
         }
@@ -711,7 +713,7 @@ int vs_battle_script_13_initTextBoxNearActor(u_char* script, UNUSED short arg1)
  */
 int vs_battle_script_14_dismissTextBoxAndWait(u_char* script, UNUSED short arg1)
 {
-    return vs_battle_dismissTextBox(script[1]) != 0 ? scriptRepeat : scriptNext;
+    return vs_battle_dismissTextBox(script[1]) != 0 ? scriptWait : scriptNext;
 }
 
 /**
@@ -725,7 +727,7 @@ int vs_battle_script_15_waitButtonPressed(u_char* script, UNUSED short arg1)
         return scriptYield;
     }
 
-    return scriptRepeat;
+    return scriptWait;
 }
 
 /**
@@ -800,7 +802,7 @@ int vs_battle_script_18_tweenGimImage(u_char* script, UNUSED short arg1)
     gim += script[5] >> 6;
 
     if (tween->duration != 0) {
-        return scriptRepeat;
+        return scriptWait;
     }
 
     tween->deltaX = (((signed char)script[1] * 2) - (tween->startX = gim->x));
@@ -830,7 +832,7 @@ int vs_battle_script_19_unloadGim(UNUSED u_char* arg0, UNUSED short arg1)
 int vs_battle_script_1A_waitGimTweens(UNUSED u_char* arg0, UNUSED short arg1)
 {
     return (gimTweens[0].duration | gimTweens[1].duration | gimTweens[2].duration) != 0
-             ? scriptRepeat
+             ? scriptWait
              : scriptNext;
 }
 
@@ -910,7 +912,7 @@ int vs_battle_script_1C_selectTextBox(u_char* script, UNUSED short arg1)
         textBoxSelectionPending = 1;
     }
 
-    return scriptRepeat;
+    return scriptWait;
 }
 
 /**
@@ -961,7 +963,7 @@ int vs_battle_script_1F_getActorTile(u_char* script, UNUSED short arg1)
         }
     } else {
 
-        actor = func_8007CF18(actor);
+        actor = getActorSlotById(actor);
 
         if (actor == 1) {
             vs_battle_setStateFlag(flag, 0xFF);
@@ -1022,7 +1024,7 @@ int vs_battle_script_21_walkActorToTile(u_char* script, UNUSED short arg1)
         walkActorToCoordinate(actor, &destination);
     }
 
-    func_8009DC8C(actor);
+    resetActorMotionState(actor);
 
     actorMoved[actor] = 1;
 
@@ -1159,7 +1161,7 @@ int vs_battle_script_25_moveActorToTile(u_char* script, UNUSED short arg1)
             script[8] != 0xFF ? script[8] : -1);
     }
 
-    func_8009DC8C(actor);
+    resetActorMotionState(actor);
 
     actorMoved[actor] = 1;
 
@@ -1207,7 +1209,7 @@ int vs_battle_script_26_moveActorToCoordinate(u_char* arg0, UNUSED short arg1)
             arg0[10] != 0xFF ? arg0[10] : -1, arg0[11] != 0xFF ? arg0[11] : -1);
     }
 
-    func_8009DC8C(actor);
+    resetActorMotionState(actor);
 
     actorMoved[actor] = 1;
 
@@ -1238,7 +1240,7 @@ int vs_battle_script_27_slideActorToTile(u_char* script, UNUSED short arg1)
         slideActorToTile(actor, tile, script[6] != 0xFF ? script[6] : -1);
     }
 
-    func_8009DC8C(actor);
+    resetActorMotionState(actor);
 
     actorMoved[actor] = 1;
 
@@ -1279,7 +1281,7 @@ int vs_battle_script_28_slideActorToCoordinate(u_char* script, UNUSED short arg1
             actor, &position.unk0.unk4, script[9] != 0xFF ? script[9] : -1);
     }
 
-    func_8009DC8C(actor);
+    resetActorMotionState(actor);
 
     actorMoved[actor] = 1;
 
@@ -1331,7 +1333,7 @@ int vs_battle_script_2A_walkActorToCoordinate(u_char* script, UNUSED short arg1)
         walkActorToCoordinate(actor, &destination);
     }
 
-    func_8009DC8C(actor);
+    resetActorMotionState(actor);
 
     actorMoved[actor] = 1;
 
@@ -1486,6 +1488,7 @@ int vs_battle_script_2F_despawnActor(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1-2] = actor selector
  *   - [3-4] = mask of the vs_battle_getActorFlags bits to wait for
+ *   - [5] = unused
  */
 int vs_battle_script_30_waitActorActivity(u_char* script, UNUSED short arg1)
 {
@@ -1499,7 +1502,7 @@ int vs_battle_script_30_waitActorActivity(u_char* script, UNUSED short arg1)
         }
     }
 
-    return (status & mask) != 0 ? scriptRepeat : scriptNext;
+    return (status & mask) != 0 ? scriptWait : scriptNext;
 }
 
 /**
@@ -1748,7 +1751,7 @@ int vs_battle_script_3A_enqueueEventData(u_char* script, UNUSED short arg1)
 int vs_battle_script_3B_waitDataQueueEmpty(UNUSED u_char* script, UNUSED short arg1)
 {
     // BUG: a full queue has no empty slot (-1), so this does not wait
-    return getEmptyObjectDataSlot() > 0 ? scriptRepeat : scriptNext;
+    return getEmptyObjectDataSlot() > 0 ? scriptWait : scriptNext;
 }
 
 /**
@@ -2279,6 +2282,7 @@ int vs_battle_script_56_setFlagToButtons(u_char* script, UNUSED short arg1)
  * delay to 0, and all status effects removed.
  * @param script Opcode bytes:
  *   - [1-2] = actor selector
+ *   - [3] = unused
  */
 int vs_battle_script_57_fullyRestoreActor(u_char* script, UNUSED short arg1)
 {
@@ -2307,6 +2311,7 @@ int vs_battle_script_58_setUiVisible(u_char* script, UNUSED short arg1)
  * screen with that id.
  * @param script Opcode bytes:
  *   - [1] = menu selector
+ *   - [2-3] = unused
  */
 int vs_battle_script_59_openMenu(u_char* script, UNUSED short arg1)
 {
@@ -2330,7 +2335,7 @@ int vs_battle_script_59_openMenu(u_char* script, UNUSED short arg1)
             func_8007B9A0();
             scriptMenuState = scriptMenuOpen;
 
-            return scriptRepeat;
+            return scriptWait;
         }
 
         // Fallthrough
@@ -2346,11 +2351,11 @@ int vs_battle_script_59_openMenu(u_char* script, UNUSED short arg1)
             scriptMusicSlot = 2;
             scriptMenuState = scriptMenuOpen;
 
-            return scriptRepeat;
+            return scriptWait;
         }
 
         if (updateScriptMenu() != 0) {
-            return scriptRepeat;
+            return scriptWait;
         }
 
         vs_battle_setStateFlag(menuFSubmenu, 0);
@@ -2364,7 +2369,7 @@ int vs_battle_script_59_openMenu(u_char* script, UNUSED short arg1)
             func_8007B9A0();
             scriptMenuState = scriptMenuOpen;
 
-            return scriptRepeat;
+            return scriptWait;
         }
 
         // Fallthrough
@@ -2373,7 +2378,7 @@ int vs_battle_script_59_openMenu(u_char* script, UNUSED short arg1)
             func_8007B9CC();
             scriptMenuState = scriptMenuOpen;
 
-            return scriptRepeat;
+            return scriptWait;
         }
 
         if (updateScriptMenu() == 0) {
@@ -2382,14 +2387,14 @@ int vs_battle_script_59_openMenu(u_char* script, UNUSED short arg1)
             return scriptYield;
         }
 
-        return scriptRepeat;
+        return scriptWait;
 
     default:
         if (scriptMenuState == scriptMenuClosed) {
             openMenu(script[1], 2);
             scriptMenuState = scriptMenuOpen;
 
-            return scriptRepeat;
+            return scriptWait;
         }
 
         updateMenu();
@@ -2401,7 +2406,7 @@ int vs_battle_script_59_openMenu(u_char* script, UNUSED short arg1)
             return scriptYield;
         }
 
-        return scriptRepeat;
+        return scriptWait;
     }
 }
 
@@ -2449,7 +2454,9 @@ int vs_battle_script_5B_setTextBoxSpeaker(u_char* script, UNUSED short arg1)
  *   - [1-2] = actor selector
  *   - [3] = blade model id, 0 = none, 0xFF = leave unchanged, 0xFE = take both weapons
  *     from the actor's equipment
+ *   - [4] = unused
  *   - [5] = shield model id, 0 = none, 0xFF = leave unchanged
+ *   - [6] = unused
  */
 int vs_battle_script_5C_setActorWeaponModels(u_char* script, UNUSED short arg1)
 {
@@ -2489,7 +2496,7 @@ int vs_battle_script_5E_waitFramesOrButton(u_char* script, short slot)
     if (scriptWaitFrames[slot] == 0) {
         scriptWaitFrames[slot] = script[2];
 
-        return scriptRepeat;
+        return scriptWait;
     }
 
     if ((vs_main_buttonsPressed.all & script[1]) || (--scriptWaitFrames[slot] <= 0)) {
@@ -2499,7 +2506,7 @@ int vs_battle_script_5E_waitFramesOrButton(u_char* script, short slot)
         return scriptNext;
     }
 
-    return scriptRepeat;
+    return scriptWait;
 }
 
 /**
@@ -2663,7 +2670,7 @@ int vs_battle_script_68_warp(u_char* script, UNUSED short arg1)
         if (script[1] == 0) {
             warpToMapThroughDoor(&warp, script[8], script[9]);
         } else {
-            func_8007BE10((script[7] >> 3) & 1);
+            setSwitchZoneMusic((script[7] >> 3) & 1);
             warpToZoneThroughDoor(&warp, script[8], script[9]);
         }
 
@@ -2676,7 +2683,7 @@ int vs_battle_script_68_warp(u_char* script, UNUSED short arg1)
         return scriptNext;
     }
 
-    return scriptRepeat;
+    return scriptWait;
 }
 
 /**
@@ -2695,7 +2702,7 @@ int vs_battle_script_69_screenTransitionOut(u_char* script, UNUSED short arg1)
             startScreenTransitionOut(script[1], script[2], script[3] * ONE / 256);
         }
 
-        return scriptRepeat;
+        return scriptWait;
     }
 
     return scriptNext;
@@ -2784,7 +2791,7 @@ int vs_battle_script_6D_setSceneVisibility(u_char* script, UNUSED short arg1)
  */
 int vs_battle_script_6E_waitForScreenTransition(UNUSED u_char* script, UNUSED short arg1)
 {
-    return getScreenTransitionPhase() != screenTransitionIdle ? scriptRepeat : scriptNext;
+    return getScreenTransitionPhase() != screenTransitionIdle ? scriptWait : scriptNext;
 }
 
 /**
@@ -2916,7 +2923,7 @@ int vs_battle_script_72_drawSheatheAshleyWeapon(u_char* script, UNUSED short arg
         }
     }
 
-    return scriptRepeat;
+    return scriptWait;
 }
 
 /**
@@ -2948,7 +2955,7 @@ int vs_battle_script_74_loadBackground(u_char* script, UNUSED short arg1)
  */
 int vs_battle_script_75_waitBackgroundLoad(UNUSED u_char* script, UNUSED short arg1)
 {
-    return pollBackgroundLoad() == 0 ? scriptRepeat : scriptNext;
+    return pollBackgroundLoad() == 0 ? scriptWait : scriptNext;
 }
 
 /**
@@ -3128,6 +3135,7 @@ int vs_battle_script_7D_adjustGeometryDepth(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = shift for horizontal turning (signed)
  *   - [2] = shift for vertical tilting (signed)
+ *   - [3] = unused
  */
 int vs_battle_script_7E_setBackgroundParallax(u_char* script, UNUSED short arg1)
 {
@@ -3232,7 +3240,7 @@ int vs_battle_script_85_loadSfxSlot(u_char* script, UNUSED short arg1)
  */
 int vs_battle_script_86_waitSfxLoad(u_char* script, UNUSED short arg1)
 {
-    return vs_main_finishSfxLoad(script[1]) != 0 ? scriptRepeat : scriptNext;
+    return vs_main_finishSfxLoad(script[1]) != 0 ? scriptWait : scriptNext;
 }
 
 /**
@@ -3389,7 +3397,7 @@ int vs_battle_script_97_waitMusicSilent(u_char* script, UNUSED short arg1)
 
     if (vs_main_getMusicSlotVolume2(slot) != 0) {
         if (vs_main_getMusicSlotVolume(slot) != 0) {
-            return scriptRepeat;
+            return scriptWait;
         }
 
         vs_main_stopMusicSlot(slot);
@@ -3415,7 +3423,7 @@ int vs_battle_script_98_pushMusicState(UNUSED u_char* arg0, UNUSED short arg1)
  */
 int vs_battle_script_99_waitMusicLoad(u_char* script, UNUSED short arg1)
 {
-    return vs_main_finishMusicLoad(script[1]) == 1 ? scriptRepeat : scriptNext;
+    return vs_main_finishMusicLoad(script[1]) == 1 ? scriptWait : scriptNext;
 }
 
 /**
@@ -3433,7 +3441,7 @@ int vs_battle_script_9D_loadInstrumentBank(u_char* script, UNUSED short arg1)
 /** Waits until the instrument bank started by opcode 9D or 89 is loaded and ready. */
 int vs_battle_script_9E_waitInstrumentBankLoad(UNUSED u_char* arg0, UNUSED short arg1)
 {
-    return vs_main_processInstrumentBankLoad() == 1 ? scriptRepeat : scriptNext;
+    return vs_main_processInstrumentBankLoad() == 1 ? scriptWait : scriptNext;
 }
 
 /**
@@ -3445,7 +3453,7 @@ int vs_battle_script_9A_waitMusicBar(u_char* script, UNUSED short arg1)
 {
     int bar = vs_main_getMusicPosition() >> 0x10;
 
-    return bar < getShort(script + 1) ? scriptRepeat : scriptNext;
+    return bar < getShort(script + 1) ? scriptWait : scriptNext;
 }
 
 /**
@@ -3543,10 +3551,10 @@ int vs_battle_script_A2_waitEffectState(u_char* script, UNUSED short arg1)
             effectCancelled = 1;
         }
 
-        return scriptRepeat;
+        return scriptWait;
     }
 
-    return getEffectState() != script[1] ? scriptRepeat : scriptNext;
+    return getEffectState() != script[1] ? scriptWait : scriptNext;
 }
 
 /**
@@ -3566,7 +3574,7 @@ int vs_battle_script_A3_yieldIfSkipping(UNUSED u_char* script, UNUSED short arg1
  */
 int vs_battle_script_A4_waitEffectStageReady(UNUSED u_char* script, UNUSED short arg1)
 {
-    return isEffectStageReady() != 1 ? scriptRepeat : scriptNext;
+    return isEffectStageReady() != 1 ? scriptWait : scriptNext;
 }
 
 /**
@@ -3584,7 +3592,7 @@ int vs_battle_script_A5_cancelEffect(UNUSED u_char* script, UNUSED short arg1)
         return scriptNext;
     }
 
-    return scriptRepeat;
+    return scriptWait;
 }
 
 /**
@@ -3737,7 +3745,7 @@ int vs_battle_script_B4_showMiscLoot(u_char* script, UNUSED short arg1)
         showMiscLoot(getShort(script + 1), script[3], getShort(script + 4), script[6]);
         scriptMenuState = scriptMenuOpen;
 
-        return scriptRepeat;
+        return scriptWait;
     }
 
     if (updateScriptMenu() == 0) {
@@ -3746,7 +3754,7 @@ int vs_battle_script_B4_showMiscLoot(u_char* script, UNUSED short arg1)
         return scriptYield;
     }
 
-    return scriptRepeat;
+    return scriptWait;
 }
 
 /**
@@ -3813,6 +3821,7 @@ void setAllActorsEnabledAndAwake(short awake)
  * @param script Opcode bytes:
  *   - [1] = sub-opcode
  *   - [2] = argument, if the sub-opcode takes one
+ *   - [3-5] = unused, the script resumes at [6]
  */
 int vs_battle_script_B7_specialOp(u_char* script, UNUSED short arg1)
 {
@@ -3874,7 +3883,7 @@ int vs_battle_script_B7_specialOp(u_char* script, UNUSED short arg1)
         if (scriptMenuState != scriptMenuClosed) {
 
             if (updateScriptMenu() != 0) {
-                return scriptRepeat;
+                return scriptWait;
             }
 
             vs_battle_setStateFlag(menuFSubmenu, 0);
@@ -3891,7 +3900,7 @@ int vs_battle_script_B7_specialOp(u_char* script, UNUSED short arg1)
 
         scriptMenuState = scriptMenuOpen;
 
-        return scriptRepeat;
+        return scriptWait;
 
     case specialSkipScene:
         skipRequested = 1;
@@ -3931,7 +3940,7 @@ int vs_battle_script_B7_specialOp(u_char* script, UNUSED short arg1)
         break;
 
     case specialSetCameraPitchPreset:
-        setCameraPitchPreset(D_800E9C00[script[2]]);
+        setCameraPitchPreset(cameraPitchPresets[script[2]]);
         break;
 
     case specialScaleCameraMoveDurationByDistance:
@@ -3976,7 +3985,7 @@ int vs_battle_script_B7_specialOp(u_char* script, UNUSED short arg1)
 int vs_battle_script_B8_waitScreenEffectsLoaded(UNUSED u_char* arg0, UNUSED short arg1)
 {
     if ((screenEffects != NULL) && (screenEffects->loading != 0)) {
-        return scriptRepeat;
+        return scriptWait;
     }
 
     return scriptNext;
@@ -4024,6 +4033,8 @@ int vs_battle_script_BE_unloadScreenEffects(UNUSED u_char* arg0, UNUSED short ar
 /**
  * Interrupts camera movement and drops the momentum carried over from the last move
  * (see opcode DF).
+ * @param script Opcode bytes:
+ *   - [1] = unused
  */
 int vs_battle_script_DE_stopCamera(UNUSED u_char* arg0, UNUSED short arg1)
 {
@@ -4085,7 +4096,7 @@ int vs_battle_script_E9_returnToGameplayCamera(u_char* script, UNUSED short arg1
  */
 int vs_battle_script_E0_waitCameraIdle(u_char* script, UNUSED short arg1)
 {
-    return script[1] != (script[1] & getCameraIdleFlags()) ? scriptRepeat : scriptNext;
+    return script[1] != (script[1] & getCameraIdleFlags()) ? scriptWait : scriptNext;
 }
 
 /**
@@ -4111,7 +4122,7 @@ int vs_battle_script_F0_waitFrames(u_char* script, short slot)
     if (scriptWaitFrames[slot] == 0) {
         scriptWaitFrames[slot] = script[1];
 
-        return scriptRepeat;
+        return scriptWait;
     }
 
     --scriptWaitFrames[slot];
@@ -4122,7 +4133,7 @@ int vs_battle_script_F0_waitFrames(u_char* script, short slot)
         return scriptNext;
     }
 
-    return scriptRepeat;
+    return scriptWait;
 }
 
 /**
@@ -4164,7 +4175,7 @@ int vs_battle_script_F4_joinScript(u_char* script, UNUSED short arg1)
         return scriptNext;
     }
 
-    return scriptSlots[slot] != 0 ? scriptRepeat : scriptNext;
+    return scriptSlots[slot] != 0 ? scriptWait : scriptNext;
 }
 
 /**
@@ -4201,7 +4212,7 @@ int vs_battle_script_F7_queueNextEvt(u_char* arg0, UNUSED short arg1)
     evtFile = getShort(arg0 + 1);
     nextEvtBuffer = vs_main_allocHeapR(0x1800);
 
-    func_800C00E8(evtFile, nextEvtBuffer);
+    loadEvt(evtFile, nextEvtBuffer);
 
     nextEvtQueued = 1;
 
@@ -4230,11 +4241,13 @@ int vs_battle_script_FE_FF_endScene(UNUSED u_char* script, UNUSED short arg1)
         return scriptFinish;
     }
 
-    return scriptRepeat;
+    return scriptWait;
 }
 
 /**
  * Plays the menu select sound effect. Unused.
+ * @param script Opcode bytes:
+ *   - [1-4] = unused
  */
 int vs_battle_script_F2_playMenuSelectSfx(UNUSED u_char* script, UNUSED short arg1)
 {
@@ -4363,68 +4376,82 @@ void drawScanlines(void)
     scratch->nextPrim = tpage;
 }
 
-void func_800BB9B0(void)
+/** Steps the tweens of the GIM images by a frame. */
+static void updateGimTweens(void)
 {
     short i;
-    short temp_a0;
     GimTween* tween = gimTweens;
     Gim* gim = gims;
 
     for (i = 0; i < 3; ++i, ++tween, ++gim) {
-        if (tween->duration != 0) {
-            tween->elapsed += vs_gametime_vblanksPerFrame >> 1;
-            temp_a0 = evaluateEasing(tween->curve, tween->elapsed, tween->duration);
-            if (gims != NULL) {
-                gim->x = (tween->startX + ((tween->deltaX * temp_a0) >> 0xC));
-                gim->y = (tween->startY + ((tween->deltaY * temp_a0) >> 0xC));
-                gim->scale = (tween->startScale + ((tween->deltaScale * temp_a0) >> 0xC));
-                gim->brightness =
-                    tween->startBrightness + ((tween->deltaBrightness * temp_a0) >> 0xC);
-            }
-            if (tween->elapsed >= tween->duration) {
-                tween->duration = 0;
-            }
+        short progress;
+
+        if (tween->duration == 0) {
+            continue;
+        }
+
+        tween->elapsed += vs_gametime_vblanksPerFrame >> 1;
+        progress = evaluateEasing(tween->curve, tween->elapsed, tween->duration);
+
+        if (gims != NULL) {
+            gim->x = (tween->startX + ((tween->deltaX * progress) >> 12));
+            gim->y = (tween->startY + ((tween->deltaY * progress) >> 12));
+            gim->scale = (tween->startScale + ((tween->deltaScale * progress) >> 12));
+            gim->brightness =
+                tween->startBrightness + ((tween->deltaBrightness * progress) >> 12);
+        }
+
+        if (tween->elapsed >= tween->duration) {
+            tween->duration = 0;
         }
     }
 }
 
-void func_800BBAFC(void)
+/** Steps the particle effect tween by a frame. */
+static void updateParticleTween(void)
 {
-    if (particleTween.duration != 0) {
-        short temp_lo = ((++particleTween.elapsed << 0xC) / particleTween.duration);
-        particleTween.direction = (particleTween.startDirection
-                                      + ((particleTween.deltaDirection * temp_lo) >> 0xC))
-                                & 0xFFF;
-        particleTween.fallAngle = particleTween.startFallAngle
-                                + ((particleTween.deltaFallAngle * temp_lo) >> 0xC);
-        particleTween.intensity = (particleTween.startIntensity
-                                   + ((particleTween.deltaIntensity * temp_lo) >> 0xC));
-        setParticleEffectDirection(particleTween.direction, particleTween.fallAngle);
-        setParticleEffectIntensity(particleTween.intensity);
-        if (particleTween.elapsed == particleTween.duration) {
-            particleTween.duration = 0;
-        }
+    short progress;
+
+    if (particleTween.duration == 0) {
+        return;
+    }
+
+    progress = ((++particleTween.elapsed << 12) / particleTween.duration);
+    particleTween.direction =
+        (particleTween.startDirection + ((particleTween.deltaDirection * progress) >> 12))
+        & 0xFFF;
+    particleTween.fallAngle =
+        particleTween.startFallAngle + ((particleTween.deltaFallAngle * progress) >> 12);
+    particleTween.intensity =
+        particleTween.startIntensity + ((particleTween.deltaIntensity * progress) >> 12);
+
+    setParticleEffectDirection(particleTween.direction, particleTween.fallAngle);
+    setParticleEffectIntensity(particleTween.intensity);
+
+    if (particleTween.elapsed == particleTween.duration) {
+        particleTween.duration = 0;
     }
 }
 
-extern CVECTOR D_800E9C08;
-extern VECTOR D_800E9C0C;
+extern CVECTOR neutralTint;
+extern VECTOR oneVector;
 
-void func_800BBBE8(void)
+/** Allocates the scripted camera, starting from the current view. */
+static void initScriptCamera(void)
 {
     UNUSED VECTOR _;
-    VECTOR sp20;
-    VECTOR sp30;
+    VECTOR eye;
+    VECTOR lookAt;
 
     scriptCamera = vs_main_allocHeapR(sizeof *scriptCamera);
     cameraFollowsAshley = 0;
 
-    getCameraPosition(&sp20);
-    getCameraLookAt(&sp30);
-    vectorCopy(&scriptCamera->eye.current, &sp20);
-    vectorCopy(&scriptCamera->lookAt.otherPosition, &sp20);
-    vectorCopy(&scriptCamera->lookAt.current, &sp30);
-    vectorCopy(&scriptCamera->eye.otherPosition, &sp30);
+    getCameraPosition(&eye);
+    getCameraLookAt(&lookAt);
+    vectorCopy(&scriptCamera->eye.current, &eye);
+    vectorCopy(&scriptCamera->lookAt.otherPosition, &eye);
+    vectorCopy(&scriptCamera->lookAt.current, &lookAt);
+    vectorCopy(&scriptCamera->eye.otherPosition, &lookAt);
 
     scriptCamera->lookAt.mode = cameraModeIdle;
     scriptCamera->lookAt.carryMomentum = scriptCamera->lookAt.carrying = 0;
@@ -4439,39 +4466,39 @@ void func_800BBBE8(void)
     scriptCamera->framebufferSpin.duration = 0;
     scriptCamera->framebufferSpin.value = 0;
 
-    func_8007DDAC(0);
+    vs_battle_setFramebufferEffectSpin(0);
 
     scriptCamera->framebufferSpin.changed = 1;
     scriptCamera->framebufferScale.value[1] = ONE;
     scriptCamera->framebufferScale.value[0] = ONE;
 
-    func_8007DDB8(&D_800E9C0C);
+    vs_battle_setFramebufferEffectScale(&oneVector);
 
     scriptCamera->framebufferTint.value[0] = scriptCamera->framebufferTint.value[1] =
         scriptCamera->framebufferTint.value[2] = scriptCamera->framebufferScale.duration =
             0;
 
-    func_8007DDD4(&D_800E9C08);
+    vs_battle_setFramebufferEffectTint(&neutralTint);
 
     scriptCamera->framebufferTint.duration = 0;
     scriptCamera->framebufferOffset.value[1] = ONE;
     scriptCamera->framebufferOffset.value[0] = ONE;
 
-    func_8007DDF8(&D_800E9C0C);
+    vs_battle_setFramebufferEffectOffset(&oneVector);
 
     scriptCamera->framebufferOffset.duration = 0;
 
-    func_8007DE2C(1);
+    vs_battle_setFramebufferEffectBlendMode(1);
 
     scriptCamera->lensDistortion.value[0] = ONE;
     scriptCamera->lensDistortion.duration = scriptCamera->lensDistortion.value[1] = 0;
-    scriptCamera->projectionDistance.value = 0x200;
+    scriptCamera->projectionDistance.value = ONE / 8;
     scriptCamera->projectionDistance.duration = 0;
     scriptCamera->projectionDistance.changed = 1;
-    scriptCamera->nearClip.value = 0x40;
+    scriptCamera->nearClip.value = 64;
     scriptCamera->nearClip.duration = 0;
     scriptCamera->nearClip.changed = 1;
-    scriptCamera->farClip.value = 0x1000;
+    scriptCamera->farClip.value = ONE;
     scriptCamera->farClip.duration = 0;
     scriptCamera->farClip.changed = 1;
     scriptCamera->shakeCount = 0;
@@ -4562,7 +4589,7 @@ static void applyCameraState(void)
         scriptCamera->roll.changed = 0;
     }
     if (scriptCamera->framebufferSpin.changed != 0) {
-        func_8007DDAC(scriptCamera->framebufferSpin.value);
+        vs_battle_setFramebufferEffectSpin(scriptCamera->framebufferSpin.value);
         scriptCamera->framebufferSpin.changed = 0;
     }
     if (scriptCamera->projectionDistance.changed != 0) {
@@ -4607,9 +4634,9 @@ void returnToGameplayCamera(short facing, int zoom)
                       &scriptCamera->lookAt.current, &scriptCamera->lookAt.position)))
             / 0x28000;
     if ((temp_v0 << 0x10) != 0) {
-        D_800E9C1C[2] = D_800E9C1C[6] = temp_v0;
-        vs_battle_script_Cx_Dx_camera(D_800E9C1C, 0);
-        vs_battle_script_Cx_Dx_camera(D_800E9C1C + 3, 0);
+        returnCameraScripts[2] = returnCameraScripts[6] = temp_v0;
+        vs_battle_script_Cx_Dx_camera(returnCameraScripts, 0);
+        vs_battle_script_Cx_Dx_camera(returnCameraScripts + 3, 0);
     }
 }
 
@@ -4803,7 +4830,7 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
     }
 
     case cameraSetDestinationToActorOffset:
-        func_800A190C(resolveActorId(getShort(script + 1)), script[3],
+        getActorPoint(resolveActorId(getShort(script + 1)), script[3],
             &CAMERA_SCRATCH->rotation, 2);
 
         sVectorToFixedPointVector(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->rotation);
@@ -4843,16 +4870,16 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
 
         CAMERA_SCRATCH->value = id;
 
-        vs_battle_getActorPosition(id, &scriptCamera->unk1D0);
+        vs_battle_getActorPosition(id, &scriptCamera->actorPosition);
 
         CAMERA_SCRATCH->rotation2.vz = 0;
         CAMERA_SCRATCH->rotation2.vx = 0;
-        CAMERA_SCRATCH->rotation2.vy = scriptCamera->unk1D0.unk0.unk4.pad;
+        CAMERA_SCRATCH->rotation2.vy = scriptCamera->actorPosition.unk0.unk4.pad;
 
         RotMatrix_gte(&CAMERA_SCRATCH->rotation2, &CAMERA_SCRATCH->matrix);
         readScriptVector(&CAMERA_SCRATCH->v1, script + 4);
         ApplyMatrixLV(&CAMERA_SCRATCH->matrix, &CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1);
-        func_800A190C(CAMERA_SCRATCH->value, script[3], &CAMERA_SCRATCH->rotation2, 2);
+        getActorPoint(CAMERA_SCRATCH->value, script[3], &CAMERA_SCRATCH->rotation2, 2);
 
         vectorAdd(&channel->position,
             sVectorToFixedPointVector(&CAMERA_SCRATCH->v2, &CAMERA_SCRATCH->rotation2),
@@ -4885,8 +4912,8 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
         channel->delta = vectorMagnitude(
             vectorSubtract(&CAMERA_SCRATCH->v1, &channel->position, &channel->computed));
         channel->value = channel->delta / script[2];
-        scriptCamera->unk27C.vx = scriptCamera->unk27C.vy = scriptCamera->unk27C.vz =
-            0x80000000;
+        scriptCamera->terrainFollowLast.vx = scriptCamera->terrainFollowLast.vy =
+            scriptCamera->terrainFollowLast.vz = 0x80000000;
 
         return scriptNext;
     }
@@ -5022,7 +5049,7 @@ static void stepCameraChannel(CameraChannel* channel, UNUSED CameraChannel* othe
     }
 
     case cameraModeFollowActor:
-        func_800A190C(channel->value, channel->delta, &CAMERA_SCRATCH->rotation, 2);
+        getActorPoint(channel->value, channel->delta, &CAMERA_SCRATCH->rotation, 2);
         vectorAdd(&channel->computed,
             sVectorToFixedPointVector(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->rotation),
             &channel->velocity);
@@ -5134,12 +5161,12 @@ static void stepCameraTerrainFollow(CameraChannel* channel)
     vectorAdd(&CAMERA_MOTION_SCRATCH->candidate, &CAMERA_MOTION_SCRATCH->delta,
         &channel->computed);
 
-    if (CAMERA_MOTION_SCRATCH->candidate.vx == scriptCamera->unk27C.vx
-        && CAMERA_MOTION_SCRATCH->candidate.vy == scriptCamera->unk27C.vy
-        && CAMERA_MOTION_SCRATCH->candidate.vz == scriptCamera->unk27C.vz) {
+    if (CAMERA_MOTION_SCRATCH->candidate.vx == scriptCamera->terrainFollowLast.vx
+        && CAMERA_MOTION_SCRATCH->candidate.vy == scriptCamera->terrainFollowLast.vy
+        && CAMERA_MOTION_SCRATCH->candidate.vz == scriptCamera->terrainFollowLast.vz) {
         channel->time = channel->duration;
     } else {
-        vectorCopy(&scriptCamera->unk27C, &channel->computed);
+        vectorCopy(&scriptCamera->terrainFollowLast, &channel->computed);
         vectorCopy(&channel->computed, &CAMERA_MOTION_SCRATCH->candidate);
     }
 }
@@ -5201,6 +5228,7 @@ static int getCameraTerrainHeight(MATRIX* camera)
  *   - [3] = low nibble the easing, high nibble the direction: 0 negative, 1 shortest,
  *     2 positive
  *   - [4] = duration, 0 sets the angle immediately
+ *   - [5] = unused
  */
 int vs_battle_script_E2_E3_camera(u_char* script, UNUSED short arg1)
 {
@@ -5327,14 +5355,14 @@ int vs_battle_script_B9_BA_BF_E4_E5_E6_E7_ED(u_char* script, UNUSED short arg1)
     // Sets the ordering table index the frame buffer effect is drawn at.
     // [1-2] = ordering table index.
     case 0xB9:
-        func_8007DE44(getShort(script + 1));
+        vs_battle_setFramebufferEffectDepth(getShort(script + 1));
 
         return scriptNext;
 
-    // Sets which half of the double buffer the frame buffer effect reads.
-    // [1] = flag selecting the half.
+    // Sets whether the frame buffer effect reads the previous frame.
+    // [1] = 1 for the previous frame, 0 for the current one.
     case 0xBA:
-        func_8007DE5C(script[1]);
+        vs_battle_setFramebufferEffectUsePreviousFrame(script[1]);
 
         return scriptNext;
 
@@ -5348,11 +5376,11 @@ int vs_battle_script_B9_BA_BF_E4_E5_E6_E7_ED(u_char* script, UNUSED short arg1)
             values.vx = (script[1] << 7);
             values.vy = (script[2] << 7);
 
-            func_8007DDB8(&values);
+            vs_battle_setFramebufferEffectScale(&values);
         } else {
             scriptCamera->framebufferScale.elapsed = 0;
 
-            func_8007DE88(&values);
+            getFramebufferEffectScale(&values);
 
             scriptCamera->framebufferScale.delta[0] =
                 (script[1] << 7) - (scriptCamera->framebufferScale.start[0] = values.vx);
@@ -5373,11 +5401,11 @@ int vs_battle_script_B9_BA_BF_E4_E5_E6_E7_ED(u_char* script, UNUSED short arg1)
             color.g = script[2];
             color.b = script[3];
 
-            func_8007DDD4(&color);
+            vs_battle_setFramebufferEffectTint(&color);
         } else {
             scriptCamera->framebufferTint.elapsed = 0;
 
-            func_8007DEA8(&color);
+            getFramebufferEffectTint(&color);
 
             scriptCamera->framebufferTint.delta[0] =
                 script[1] - (scriptCamera->framebufferTint.start[0] = color.r);
@@ -5400,11 +5428,11 @@ int vs_battle_script_B9_BA_BF_E4_E5_E6_E7_ED(u_char* script, UNUSED short arg1)
             values.vx = (signed char)script[1];
             values.vy = (signed char)script[2];
 
-            func_8007DDF8(&values);
+            vs_battle_setFramebufferEffectOffset(&values);
         } else {
             scriptCamera->framebufferOffset.elapsed = 0;
 
-            func_8007DECC(&values);
+            getFramebufferEffectOffset(&values);
 
             scriptCamera->framebufferOffset.delta[0] =
                 (signed char)script[1]
@@ -5420,7 +5448,7 @@ int vs_battle_script_B9_BA_BF_E4_E5_E6_E7_ED(u_char* script, UNUSED short arg1)
     // Sets the blend mode of the frame buffer effect.
     // [1] = blend mode.
     case 0xE7:
-        func_8007DE2C(script[1]);
+        vs_battle_setFramebufferEffectBlendMode(script[1]);
 
         return scriptNext;
 
@@ -5429,7 +5457,7 @@ int vs_battle_script_B9_BA_BF_E4_E5_E6_E7_ED(u_char* script, UNUSED short arg1)
     // duration, 0 = immediate. See setScreenLensDistortion.
     case 0xED:
         if (scriptCamera->lensDistortion.duration > 0) {
-            return scriptRepeat;
+            return scriptWait;
         }
 
         scriptCamera->lensDistortion.duration = script[4];
@@ -5461,40 +5489,40 @@ int vs_battle_script_B9_BA_BF_E4_E5_E6_E7_ED(u_char* script, UNUSED short arg1)
         mode = getShort(script + 1);
 
         if (!mode) {
-            func_8007DE2C(0);
+            vs_battle_setFramebufferEffectBlendMode(0);
 
             values.vx = values.vy = 0;
 
-            func_8007DDF8(&values);
+            vs_battle_setFramebufferEffectOffset(&values);
 
             values.vx = values.vy = ONE;
 
-            func_8007DDB8(&values);
+            vs_battle_setFramebufferEffectScale(&values);
 
             color.r = color.g = color.b = 128;
 
-            func_8007DDD4(&color);
-            func_8007DE44(0);
-            func_8007DE5C(0);
+            vs_battle_setFramebufferEffectTint(&color);
+            vs_battle_setFramebufferEffectDepth(0);
+            vs_battle_setFramebufferEffectUsePreviousFrame(0);
             setFramebufferEffect(0);
         } else {
             setFramebufferEffect(1);
-            func_8007DE2C(0);
+            vs_battle_setFramebufferEffectBlendMode(0);
 
             values.vx = 0;
             values.vy = 2;
 
-            func_8007DDF8(&values);
+            vs_battle_setFramebufferEffectOffset(&values);
 
             values.vx = values.vy = ONE;
 
-            func_8007DDB8(&values);
+            vs_battle_setFramebufferEffectScale(&values);
 
             color.r = color.g = color.b = 144;
 
-            func_8007DE5C(1);
-            func_8007DDD4(&color);
-            func_8007DE44(mode);
+            vs_battle_setFramebufferEffectUsePreviousFrame(1);
+            vs_battle_setFramebufferEffectTint(&color);
+            vs_battle_setFramebufferEffectDepth(mode);
         }
 
         return scriptNext;
@@ -5511,7 +5539,7 @@ static void updateScreenEffectTweens(void)
         vector.vx = scriptCamera->framebufferScale.value[0];
         vector.vy = scriptCamera->framebufferScale.value[1];
 
-        func_8007DDB8(&vector);
+        vs_battle_setFramebufferEffectScale(&vector);
     }
 
     if (stepScreenEffectTween(&scriptCamera->framebufferTint) != 0) {
@@ -5519,14 +5547,14 @@ static void updateScreenEffectTweens(void)
         color.g = scriptCamera->framebufferTint.value[1];
         color.b = scriptCamera->framebufferTint.value[2];
 
-        func_8007DDD4(&color);
+        vs_battle_setFramebufferEffectTint(&color);
     }
 
     if (stepScreenEffectTween(&scriptCamera->framebufferOffset) != 0) {
         vector.vx = scriptCamera->framebufferOffset.value[0];
         vector.vy = scriptCamera->framebufferOffset.value[1];
 
-        func_8007DDF8(&vector);
+        vs_battle_setFramebufferEffectOffset(&vector);
     }
 
     if (stepScreenEffectTween(&scriptCamera->lensDistortion) != 0) {
@@ -6388,7 +6416,7 @@ short requestEvent(short trigger, int arg1, int arg2, short mode)
                     if (getActor(left & 0x1F) != NULL) {
                         conditionMet = 1;
                     }
-                } else if (func_8007CF18(left) != 1) {
+                } else if (getActorSlotById(left) != 1) {
                     conditionMet = 1;
                 }
 
@@ -6431,7 +6459,7 @@ short requestEvent(short trigger, int arg1, int arg2, short mode)
                     break;
                 }
 
-                left = flagValue = func_8007C218(actorId);
+                left = flagValue = getActorHpPercent(actorId);
                 flagId = getShort(data + 3);
 
                 if (flagId != 0) {
@@ -6633,30 +6661,35 @@ static void initEvent(u_char* data)
     }
 }
 
-int func_800BF850(void)
+/**
+ * Starts or advances the event system by one frame.
+ * @return eventRequestBusy while an event is starting, loading or running, otherwise
+ * eventRequestNone.
+ */
+int updateEvent(void)
 {
     short i;
     UNUSED int _[2];
 
     if (eventState == eventIdle) {
-        return 0;
+        return eventRequestNone;
     }
 
     if (eventState == eventRequested) {
         if (eventReady != 0) {
             eventState = eventStarting;
             eventReady = 0;
-            func_800BBBE8();
+            initScriptCamera();
             func_8007CEC0();
 
             for (i = 0; i < 17; ++i) {
                 actorMoved[i] = 0;
             }
 
-            return 2;
+            return eventRequestBusy;
         }
 
-        return 0;
+        return eventRequestNone;
     }
 
     if (eventState == eventStarting) {
@@ -6675,35 +6708,38 @@ int func_800BF850(void)
             break;
 
         case eventFromEvt:
-            func_800C00E8(evtFile, evtBuffer);
+            loadEvt(evtFile, evtBuffer);
             eventState = eventLoading;
             break;
         }
 
-        return 2;
+        return eventRequestBusy;
     }
 
     if (eventState == eventLoading) {
         if (evtCdSlot->state == CdQueueStateLoaded) {
+
             vs_main_freeCdQueueSlot(evtCdSlot);
 
             if (nextEvtQueued != 0) {
                 vs_main_memcpy(evtBuffer, nextEvtBuffer, 0x1800);
                 vs_main_freeHeapR(nextEvtBuffer);
+
                 nextEvtQueued = 0;
             }
 
             initEvent(evtBuffer);
+
             eventState = eventRunning;
         }
 
-        return 2;
+        return eventRequestBusy;
     }
 
     updateCameraAttachment();
 
     if (mainScriptEnded == 0) {
-        if (func_800BFBB8(scriptSlots, 0) != 0) {
+        if (runScript(scriptSlots, 0) != 0) {
             if (cameraReturned == 0 && nextEvtQueued == 0
                 && scriptWarpState == scriptWarpIdle) {
                 returnToGameplayCamera(-1, -1);
@@ -6714,7 +6750,7 @@ int func_800BF850(void)
 
         for (i = 1; i < 4; ++i) {
             if (scriptSlots[i] != NULL) {
-                func_800BFBB8(&scriptSlots[i], i);
+                runScript(&scriptSlots[i], i);
             }
         }
     }
@@ -6722,8 +6758,8 @@ int func_800BF850(void)
     updateCamera();
     updateScreenEffectTweens();
     applyCameraState();
-    func_800BB9B0();
-    func_800BBAFC();
+    updateGimTweens();
+    updateParticleTween();
 
     if (scanlinesEnabled != 0) {
         drawScanlines();
@@ -6741,5 +6777,5 @@ int func_800BF850(void)
         mainScriptEnded = 0;
     }
 
-    return 2;
+    return eventRequestBusy;
 }

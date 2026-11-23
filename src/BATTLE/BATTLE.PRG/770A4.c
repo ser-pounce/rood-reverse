@@ -1822,4 +1822,273 @@ int func_800E2F5C(func_800E78F4_t* state, int (*test)(func_800E78F4_t*, int), in
     return -1;
 }
 
-INCLUDE_ASM("build/src/BATTLE/BATTLE.PRG/nonmatchings/770A4", func_800E3600);
+#ifdef NON_MATCHING
+#define VS_REG_VAR(type, name, reg) type name
+#else
+#define VS_REG_VAR(type, name, reg) register type name __asm__(reg)
+#endif
+
+extern int (*D_800F1760[][4])();
+
+void func_800E3600(func_800E78F4_t* state, u_int angle, int type)
+{
+    int (*test)(func_800E78F4_t*, int);
+    int mask;
+    int mode;
+    int diagonal;
+    int direction;
+    int clockwise;
+    int counter;
+    int blockedCw;
+    int blockedCcw;
+    VS_REG_VAR(int, step, "$5");
+    int distance;
+    VS_REG_VAR(int, limit, "$3");
+    VS_REG_VAR(u_int, value, "$2");
+    VS_REG_VAR(func_800E78F4_t*, self, "$4");
+    vs_TileWord point;
+    vs_TilePosition* pointer;
+    vs_TileWord probe1;
+    vs_TileWord probe2;
+    vs_TileWord probe3;
+
+    if ((type - 2) < 2u) {
+        test = func_800E0678;
+        mask = 12;
+    } else {
+        test = func_800D9B6C;
+        mask = 11;
+    }
+
+    if (state->unk190.unk0) {
+        mode = func_800E2F5C(state, test, mask);
+
+        if (mode < 0) {
+            func_800E4BB8(state);
+            goto stop;
+        }
+
+        state->unk188 = state->unk190.direction;
+        func_800DEEFC(state, mode);
+        return;
+    }
+
+    {
+        u_int quadrant = (angle & 0xFFF) >> 10;
+
+        direction = (angle & 0x3FF) > 0x200 ? ((quadrant + 1) & 3) * 2 : quadrant * 2;
+    }
+
+    point.fields = state->unk34;
+    pointer = &point.fields;
+    pointer->x += VS_SCRATCH_AT(D_800F16EC_t*, 0x3EC)[direction].dx;
+    pointer->z += VS_SCRATCH_AT(D_800F16EC_t*, 0x3EC)[direction].dz;
+
+    {
+        int from;
+        int to;
+
+        if (direction & 2) {
+            to = state->unk168.x;
+            from = state->unk34.x;
+        } else {
+            to = state->unk168.z;
+            from = state->unk34.z;
+        }
+
+        distance = abs(to - from);
+    }
+
+    limit = state->unkB2;
+
+    if (distance <= limit) {
+        limit = distance;
+    }
+
+    point.value = func_800E49D8(state, point.fields, direction, limit);
+
+    if (point.value) {
+        point.fields.surface = 0;
+        state->unk170 = point.fields;
+        func_800DEEFC(state, 14);
+        return;
+    }
+
+    self = state;
+
+    if (angle & 0x3FF) {
+        u_int quadrant = angle >> 10;
+
+        clockwise = ((quadrant + 1) * 2) & 7;
+        counter = (quadrant * 2) & 7;
+        diagonal = (quadrant * 2 + 1) & 7;
+        blockedCw = test(self, clockwise);
+        blockedCcw = test(state, counter);
+
+        if (!blockedCw && !blockedCcw) {
+            if (state->unk156 - 1u >= 0x7E) {
+                value = func_800D8400(state, clockwise, counter, angle);
+                probe1.value = value;
+
+                if ((&probe1)->fields.extra == 2) {
+                    if (!state->unk156) {
+                        state->unk156 = 0xFE;
+                    }
+
+                    goto stop;
+                }
+
+                if (value) {
+                    if (!func_800E47E4(state, value)
+                        || !func_800E4180(state, 0x80, 2, state->unk89)) {
+                        state->unk170 = probe1.fields;
+                        func_800DEEFC(state, 14);
+                        return;
+                    }
+
+                    return;
+                }
+            }
+
+            if (D_800F1760[0][type](state, clockwise, counter, test)) {
+                state->unk188 = state->unk190.direction;
+                func_800DEEFC(state, 5);
+                return;
+            }
+
+            goto stop;
+        }
+
+        if (blockedCw) {
+            if (blockedCcw) {
+                if (!test(state, diagonal)) {
+                    if (direction == clockwise) {
+                        state->unk188 = clockwise;
+                    } else {
+                        state->unk188 = counter;
+                    }
+
+                    func_800DEEFC(state, 5);
+                    return;
+                } else {
+                    state->unk188 = angle;
+                    func_800DEEFC(state, 7);
+                    return;
+                }
+            }
+
+            state->unk188 = clockwise;
+        } else {
+            state->unk188 = counter;
+        }
+
+        if (state->unk156 - 1u >= 0x7E) {
+            value = func_800D8400(state, 0, 0, blockedCw ? counter : clockwise);
+            probe2.value = value;
+
+            if ((&probe2)->fields.extra == 2) {
+                if (!state->unk156) {
+                    state->unk156 = 0xFE;
+                }
+
+                goto stop;
+            }
+
+            if (value) {
+                if (!func_800E47E4(state, value)
+                    || !func_800E4180(state, 0x80, 2, state->unk89)) {
+                    state->unk170 = probe2.fields;
+                    func_800DEEFC(state, 14);
+                    return;
+                }
+
+                return;
+            }
+        }
+
+        if (type == 0 || type == 2) {
+            step = 0;
+
+            if ((state->unk188 & 2) ? state->unk34.x == state->unk168.x
+                                    : state->unk34.z == state->unk168.z) {
+                step = 1;
+            }
+        } else {
+            step = 0;
+
+            if (state->unk4) {
+                step = rcos(((blockedCw ? counter : clockwise) * 512 - angle) & 0xFFF)
+                    >= 0xF77;
+            }
+        }
+
+        if (step) {
+            if (D_800F1760[1][type](state, state->unk188, blockedCw ? 1 : -1, test)) {
+                state->unk188 = state->unk190.direction;
+                func_800DEEFC(state, 5);
+                return;
+            }
+
+            goto stop;
+        }
+
+        func_800DEEFC(state, 5);
+        return;
+    }
+
+    clockwise = (angle >> 9) & 6;
+
+    if (test(self, clockwise)) {
+        state->unk188 = angle;
+        func_800DEEFC(state, 7);
+        return;
+    }
+
+    if (state->unk156 - 1u >= 0x7E) {
+        value = func_800D8400(state, 0, 0, clockwise);
+        probe3.value = value;
+
+        if ((&probe3)->fields.extra == 2) {
+#ifdef NON_MATCHING
+            if (!state->unk156) {
+#else
+            // Comparing against $zero assembles like bnez but keeps gcc from merging this
+            // body with the two identical ones above.
+            register int zero __asm__("$0");
+
+            if (state->unk156 == zero) {
+#endif
+                state->unk156 = 0xFE;
+            }
+
+            goto stop;
+        }
+
+        if (value) {
+            if (!func_800E47E4(state, value)
+                || !func_800E4180(state, 0x80, 2, state->unk89)) {
+                state->unk170 = probe3.fields;
+                func_800DEEFC(state, 14);
+                return;
+            }
+
+            return;
+        }
+    }
+
+    if (type != 1 || state->unk4) {
+        if (D_800F1760[2][type](state, clockwise, test)) {
+            goto found;
+        }
+    }
+
+stop:
+    func_800E2CCC(state);
+    return;
+
+found:
+    state->unk188 = state->unk190.direction;
+    func_800DEEFC(state, 5);
+}
+
+#undef VS_REG_VAR

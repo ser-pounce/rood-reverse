@@ -9,37 +9,45 @@ meta:
 seq:
   - id: num_bytes
     type: u2
-  - id: ofs_strings
-    type: u2
-  - id: ofs_shapes
-    type: u2
-  - id: ofs_vibration
-    type: u2
-  - id: reserved
-    contents: [0, 0, 0, 0, 0, 0, 0, 0]
-  - id: script
-    type: script
-    size: ofs_strings - 16
-  - id: strings
-    type: string_table(0)
-    size: ofs_shapes - ofs_strings
-    if: has_strings
-  - id: shapes
-    type: shape_table
-    size: ofs_vibration - ofs_shapes
-  - id: vibration
-    type: vibration_table
-    size: num_bytes - ofs_vibration
+  - id: body
+    type: body(num_bytes)
+    if: num_bytes != 0
   - id: padding
     size-eos: true
     valid:
       expr: _.length == 0 or _.max == 0
 
-instances:
-  has_strings:
-    value: ofs_shapes > ofs_strings
-
 types:
+  body:
+    params:
+      - id: num_bytes
+        type: u2
+    seq:
+      - id: ofs_strings
+        type: u2
+      - id: ofs_shapes
+        type: u2
+      - id: ofs_vibration
+        type: u2
+      - id: reserved
+        contents: [0, 0, 0, 0, 0, 0, 0, 0]
+      - id: script
+        type: script
+        size: ofs_strings - 16
+      - id: strings
+        type: string_table(0)
+        size: ofs_shapes - ofs_strings
+        if: has_strings
+      - id: shapes
+        type: shape_table
+        size: ofs_vibration - ofs_shapes
+      - id: vibration
+        type: vibration_table
+        size: num_bytes - ofs_vibration
+    instances:
+      has_strings:
+        value: ofs_shapes > ofs_strings
+
   script:
     seq:
       - id: ops

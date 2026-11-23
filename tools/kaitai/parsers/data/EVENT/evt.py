@@ -261,42 +261,22 @@ class Evt(KaitaiStruct):
 
     def _read(self):
         self.num_bytes = self._io.read_u2le()
-        self.ofs_strings = self._io.read_u2le()
-        self.ofs_shapes = self._io.read_u2le()
-        self.ofs_vibration = self._io.read_u2le()
-        self.reserved = self._io.read_bytes(8)
-        if not self.reserved == b"\x00\x00\x00\x00\x00\x00\x00\x00":
-            raise kaitaistruct.ValidationNotEqualError(b"\x00\x00\x00\x00\x00\x00\x00\x00", self.reserved, self._io, u"/seq/4")
-        self._raw_script = self._io.read_bytes(self.ofs_strings - 16)
-        _io__raw_script = KaitaiStream(BytesIO(self._raw_script))
-        self.script = Evt.Script(_io__raw_script, self, self._root)
-        if self.has_strings:
+        if self.num_bytes != 0:
             pass
-            self._raw_strings = self._io.read_bytes(self.ofs_shapes - self.ofs_strings)
-            _io__raw_strings = KaitaiStream(BytesIO(self._raw_strings))
-            self.strings = string_table.StringTable(0, _io__raw_strings)
+            self.body = Evt.Body(self.num_bytes, self._io, self, self._root)
 
-        self._raw_shapes = self._io.read_bytes(self.ofs_vibration - self.ofs_shapes)
-        _io__raw_shapes = KaitaiStream(BytesIO(self._raw_shapes))
-        self.shapes = Evt.ShapeTable(_io__raw_shapes, self, self._root)
-        self._raw_vibration = self._io.read_bytes(self.num_bytes - self.ofs_vibration)
-        _io__raw_vibration = KaitaiStream(BytesIO(self._raw_vibration))
-        self.vibration = Evt.VibrationTable(_io__raw_vibration, self, self._root)
         self.padding = self._io.read_bytes_full()
         _ = self.padding
         if not  ((len(_) == 0) or (KaitaiStream.byte_array_max(_) == 0)) :
-            raise kaitaistruct.ValidationExprError(self.padding, self._io, u"/seq/9")
+            raise kaitaistruct.ValidationExprError(self.padding, self._io, u"/seq/2")
 
 
     def _fetch_instances(self):
         pass
-        self.script._fetch_instances()
-        if self.has_strings:
+        if self.num_bytes != 0:
             pass
-            self.strings._fetch_instances()
+            self.body._fetch_instances()
 
-        self.shapes._fetch_instances()
-        self.vibration._fetch_instances()
 
     class ActorDeath(KaitaiStruct):
         def __init__(self, _io, _parent=None, _root=None):
@@ -412,6 +392,57 @@ class Evt(KaitaiStruct):
 
         def _fetch_instances(self):
             pass
+
+
+    class Body(KaitaiStruct):
+        def __init__(self, num_bytes, _io, _parent=None, _root=None):
+            super(Evt.Body, self).__init__(_io)
+            self._parent = _parent
+            self._root = _root
+            self.num_bytes = num_bytes
+            self._read()
+
+        def _read(self):
+            self.ofs_strings = self._io.read_u2le()
+            self.ofs_shapes = self._io.read_u2le()
+            self.ofs_vibration = self._io.read_u2le()
+            self.reserved = self._io.read_bytes(8)
+            if not self.reserved == b"\x00\x00\x00\x00\x00\x00\x00\x00":
+                raise kaitaistruct.ValidationNotEqualError(b"\x00\x00\x00\x00\x00\x00\x00\x00", self.reserved, self._io, u"/types/body/seq/3")
+            self._raw_script = self._io.read_bytes(self.ofs_strings - 16)
+            _io__raw_script = KaitaiStream(BytesIO(self._raw_script))
+            self.script = Evt.Script(_io__raw_script, self, self._root)
+            if self.has_strings:
+                pass
+                self._raw_strings = self._io.read_bytes(self.ofs_shapes - self.ofs_strings)
+                _io__raw_strings = KaitaiStream(BytesIO(self._raw_strings))
+                self.strings = string_table.StringTable(0, _io__raw_strings)
+
+            self._raw_shapes = self._io.read_bytes(self.ofs_vibration - self.ofs_shapes)
+            _io__raw_shapes = KaitaiStream(BytesIO(self._raw_shapes))
+            self.shapes = Evt.ShapeTable(_io__raw_shapes, self, self._root)
+            self._raw_vibration = self._io.read_bytes(self.num_bytes - self.ofs_vibration)
+            _io__raw_vibration = KaitaiStream(BytesIO(self._raw_vibration))
+            self.vibration = Evt.VibrationTable(_io__raw_vibration, self, self._root)
+
+
+        def _fetch_instances(self):
+            pass
+            self.script._fetch_instances()
+            if self.has_strings:
+                pass
+                self.strings._fetch_instances()
+
+            self.shapes._fetch_instances()
+            self.vibration._fetch_instances()
+
+        @property
+        def has_strings(self):
+            if hasattr(self, '_m_has_strings'):
+                return self._m_has_strings
+
+            self._m_has_strings = self.ofs_shapes > self.ofs_strings
+            return getattr(self, '_m_has_strings', None)
 
 
     class CameraFollowActor(KaitaiStruct):
@@ -4881,13 +4912,5 @@ class Evt(KaitaiStruct):
         def _fetch_instances(self):
             pass
 
-
-    @property
-    def has_strings(self):
-        if hasattr(self, '_m_has_strings'):
-            return self._m_has_strings
-
-        self._m_has_strings = self.ofs_shapes > self.ofs_strings
-        return getattr(self, '_m_has_strings', None)
 
 

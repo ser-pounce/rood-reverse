@@ -4988,7 +4988,6 @@ int func_80074860(int arg0)
 
     vs_battle_getActorPosition(arg0, &sp10);
     func_80074798(&sp10, sp20);
-    // BUG: arg2 should be an actor ID?
     return requestEvent(eventTriggerInteract, 0, (int)sp20, 1) == eventRequestMade;
 }
 

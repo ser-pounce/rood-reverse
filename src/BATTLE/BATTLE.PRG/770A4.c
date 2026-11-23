@@ -1876,8 +1876,7 @@ void func_800E3600(func_800E78F4_t* state, u_int angle, int type)
     {
         u_int quadrant = (angle & 0xFFF) >> 10;
 
-        direction =
-            (angle & 0x3FF) > 0x200 ? ((quadrant + 1) & 3) * 2 : quadrant * 2;
+        direction = (angle & 0x3FF) > 0x200 ? ((quadrant + 1) & 3) * 2 : quadrant * 2;
     }
 
     point.fields = state->unk34;

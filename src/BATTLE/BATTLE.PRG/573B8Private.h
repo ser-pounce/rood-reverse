@@ -11,8 +11,8 @@ VS_HIDDEN(func_800BFD9C);
 int resolveActorId(u_short);
 VS_HIDDEN(resolveActorId);
 
-int func_800BFEBC(short mode, short frame, short duration);
-VS_HIDDEN(func_800BFEBC);
+int evaluateEasing(short mode, short frame, short duration);
+VS_HIDDEN(evaluateEasing);
 
 void func_800C00E8(int, void*);
 VS_HIDDEN(func_800C00E8);

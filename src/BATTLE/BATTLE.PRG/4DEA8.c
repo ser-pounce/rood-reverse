@@ -70,6 +70,18 @@ enum {
     cameraModeIdle = 15
 };
 
+enum {
+    cameraIdleLookAt = 1 << 0,
+    cameraIdleEye = 1 << 1,
+    cameraIdleRoll = 1 << 2, // E2
+    cameraIdleProjectionDistance = 1 << 3, // EA
+    cameraIdleNearClip = 1 << 4, // EB
+    cameraIdleFarClip = 1 << 5, // EC
+    cameraIdleLensDistortion = 1 << 6, // ED
+    cameraIdleShake = 1 << 7, // EF
+    cameraIdleAll = 0xFF
+};
+
 typedef struct {
     char changed;
     char ease;
@@ -83,12 +95,12 @@ typedef struct {
 typedef struct {
     u_char unk0;
     u_char envelope;
-    short unk2;
-    short unk4;
-    short unk6;
-    char unk8;
-    char unk9;
-    char unkA;
+    short offset;
+    short cycles;
+    short amplitude;
+    char elapsed;
+    char duration;
+    char flags;
     char unkB;
 } ShakeEntry;
 
@@ -106,29 +118,23 @@ typedef struct {
 
 typedef struct {
     char unk0;
-    char unk1;
-    short unk2;
-    short unk4;
-    short unk6;
+    char ease;
+    short value[3];
     short unk8;
-    short unkA;
-    short unkC;
-    short unkE;
+    short start[3];
     short unk10;
-    short unk12;
-    short unk14;
-    short unk16;
+    short delta[3];
     short unk18;
     short unk1A;
-    short unk1C;
-    short unk1E;
-} func_800BDBB4_t;
+    short elapsed;
+    short duration;
+} ScreenEffectTween;
 
 typedef struct {
     CameraChannel lookAt;
     CameraChannel eye;
     AngleTween roll;
-    AngleTween unk174;
+    AngleTween framebufferSpin;
     ProjectionTween projectionDistance;
     ProjectionTween nearClip;
     ProjectionTween farClip;
@@ -142,10 +148,10 @@ typedef struct {
     u_short attachedActor;
     u_short unk1EA;
     VECTOR attachedPosition;
-    func_800BDBB4_t unk1FC;
-    func_800BDBB4_t unk21C;
-    func_800BDBB4_t unk23C;
-    func_800BDBB4_t unk25C;
+    ScreenEffectTween framebufferScale;
+    ScreenEffectTween framebufferTint;
+    ScreenEffectTween framebufferOffset;
+    ScreenEffectTween lensDistortion;
     VECTOR unk27C;
 } ScriptCamera;
 
@@ -303,11 +309,11 @@ void returnToGameplayCamera(short facing, int zoom);
 static int getCameraTerrainHeight(MATRIX*);
 static void stepAngleTween(AngleTween*);
 u_char getCameraIdleFlags(void);
-int func_800BDBB4(func_800BDBB4_t* arg0);
+static int stepScreenEffectTween(ScreenEffectTween*);
 static void stepProjectionTween(ProjectionTween*);
 static void updateCameraShake(void);
 void setCameraMomentum(int lookAt, int eye);
-void clearCameraMomentum(void);
+static void stopCamera(void);
 void sweepCameraToSavedPlayerView(char side);
 void scaleCameraMoveDurationByDistance(short target);
 VECTOR* vectorAdd(VECTOR* arg0, VECTOR* arg1, VECTOR* arg2);
@@ -334,9 +340,9 @@ extern short battleTimerLifetimes[];
 extern void sceneResetScript;
 extern short D_800E9C00[];
 extern u_char D_800E9C1C[];
-extern short D_800E9C24[];
-extern u_char D_800E9C28;
-extern u_char D_800E9C2C;
+extern short sweepHeightOffsets[];
+extern u_char sweepEyeScript[];
+extern u_char sweepLookAtScript[];
 extern u_short scanlinePhase;
 extern GimTween gimTweens[];
 extern ParticleTween particleTween;
@@ -2868,7 +2874,7 @@ int vs_battle_script_72_drawSheatheAshleyWeapon(u_char* script, UNUSED short arg
         int variantOffset;
         int animation;
 
-        if (!getStateFlag(0xAC)) {
+        if (!getStateFlag(savedWeaponDrawn)) {
             return scriptNext;
         }
 
@@ -3893,15 +3899,15 @@ int vs_battle_script_B7_specialOp(u_char* script, UNUSED short arg1)
 
     case specialUnlockAction:
         if (isActionUnlocked(script[2]) != 0) {
-            vs_battle_setStateFlag(0xB1, 0);
+            vs_battle_setStateFlag(specialOpResult, 0);
         } else {
             setActionUnlocked(script[2]);
-            vs_battle_setStateFlag(0xB1, 1);
+            vs_battle_setStateFlag(specialOpResult, 1);
         }
         break;
 
     case specialCountEngagedEnemies:
-        vs_battle_setStateFlag(0xB1, countActorsByRole(actorRoleEngagedEnemy));
+        vs_battle_setStateFlag(specialOpResult, countActorsByRole(actorRoleEngagedEnemy));
         break;
 
     case specialSetAllActorsEnabledAndAwake:
@@ -4019,9 +4025,9 @@ int vs_battle_script_BE_unloadScreenEffects(UNUSED u_char* arg0, UNUSED short ar
  * Interrupts camera movement and drops the momentum carried over from the last move
  * (see opcode DF).
  */
-int vs_battle_script_DE_clearCameraMomentum(UNUSED u_char* arg0, UNUSED short arg1)
+int vs_battle_script_DE_stopCamera(UNUSED u_char* arg0, UNUSED short arg1)
 {
-    clearCameraMomentum();
+    stopCamera();
 
     return scriptNext;
 }
@@ -4367,7 +4373,7 @@ void func_800BB9B0(void)
     for (i = 0; i < 3; ++i, ++tween, ++gim) {
         if (tween->duration != 0) {
             tween->elapsed += vs_gametime_vblanksPerFrame >> 1;
-            temp_a0 = func_800BFEBC(tween->curve, tween->elapsed, tween->duration);
+            temp_a0 = evaluateEasing(tween->curve, tween->elapsed, tween->duration);
             if (gims != NULL) {
                 gim->x = (tween->startX + ((tween->deltaX * temp_a0) >> 0xC));
                 gim->y = (tween->startY + ((tween->deltaY * temp_a0) >> 0xC));
@@ -4430,34 +4436,35 @@ void func_800BBBE8(void)
 
     setFramebufferEffect(0);
 
-    scriptCamera->unk174.duration = 0;
-    scriptCamera->unk174.value = 0;
+    scriptCamera->framebufferSpin.duration = 0;
+    scriptCamera->framebufferSpin.value = 0;
 
     func_8007DDAC(0);
 
-    scriptCamera->unk174.changed = 1;
-    scriptCamera->unk1FC.unk4 = ONE;
-    scriptCamera->unk1FC.unk2 = ONE;
+    scriptCamera->framebufferSpin.changed = 1;
+    scriptCamera->framebufferScale.value[1] = ONE;
+    scriptCamera->framebufferScale.value[0] = ONE;
 
     func_8007DDB8(&D_800E9C0C);
 
-    scriptCamera->unk21C.unk2 = scriptCamera->unk21C.unk4 = scriptCamera->unk21C.unk6 =
-        scriptCamera->unk1FC.unk1E = 0;
+    scriptCamera->framebufferTint.value[0] = scriptCamera->framebufferTint.value[1] =
+        scriptCamera->framebufferTint.value[2] = scriptCamera->framebufferScale.duration =
+            0;
 
     func_8007DDD4(&D_800E9C08);
 
-    scriptCamera->unk21C.unk1E = 0;
-    scriptCamera->unk23C.unk4 = ONE;
-    scriptCamera->unk23C.unk2 = ONE;
+    scriptCamera->framebufferTint.duration = 0;
+    scriptCamera->framebufferOffset.value[1] = ONE;
+    scriptCamera->framebufferOffset.value[0] = ONE;
 
     func_8007DDF8(&D_800E9C0C);
 
-    scriptCamera->unk23C.unk1E = 0;
+    scriptCamera->framebufferOffset.duration = 0;
 
     func_8007DE2C(1);
 
-    scriptCamera->unk25C.unk2 = ONE;
-    scriptCamera->unk25C.unk1E = scriptCamera->unk25C.unk4 = 0;
+    scriptCamera->lensDistortion.value[0] = ONE;
+    scriptCamera->lensDistortion.duration = scriptCamera->lensDistortion.value[1] = 0;
     scriptCamera->projectionDistance.value = 0x200;
     scriptCamera->projectionDistance.duration = 0;
     scriptCamera->projectionDistance.changed = 1;
@@ -4468,7 +4475,7 @@ void func_800BBBE8(void)
     scriptCamera->farClip.duration = 0;
     scriptCamera->farClip.changed = 1;
     scriptCamera->shakeCount = 0;
-    scriptCamera->shakeEntries[0].unk9 = scriptCamera->shakeEntries[1].unk9 = 0;
+    scriptCamera->shakeEntries[0].duration = scriptCamera->shakeEntries[1].duration = 0;
     scriptCamera->attachedActor = 0x2000;
 }
 
@@ -4553,9 +4560,9 @@ static void applyCameraState(void)
         setCameraRoll(scriptCamera->roll.value);
         scriptCamera->roll.changed = 0;
     }
-    if (scriptCamera->unk174.changed != 0) {
-        func_8007DDAC(scriptCamera->unk174.value);
-        scriptCamera->unk174.changed = 0;
+    if (scriptCamera->framebufferSpin.changed != 0) {
+        func_8007DDAC(scriptCamera->framebufferSpin.value);
+        scriptCamera->framebufferSpin.changed = 0;
     }
     if (scriptCamera->projectionDistance.changed != 0) {
         vs_battle_setProjectionDistance(scriptCamera->projectionDistance.value);
@@ -4898,7 +4905,7 @@ static void updateCamera(void)
     stepCameraChannel(&scriptCamera->lookAt, &scriptCamera->eye);
     stepCameraChannel(&scriptCamera->eye, &scriptCamera->lookAt);
     stepAngleTween(&scriptCamera->roll);
-    stepAngleTween(&scriptCamera->unk174);
+    stepAngleTween(&scriptCamera->framebufferSpin);
     stepProjectionTween(&scriptCamera->projectionDistance);
     stepProjectionTween(&scriptCamera->nearClip);
     stepProjectionTween(&scriptCamera->farClip);
@@ -4922,7 +4929,7 @@ static void stepCameraChannel(CameraChannel* channel, UNUSED CameraChannel* othe
     switch (channel->mode) {
     case cameraModeLerp:
         CAMERA_SCRATCH->value =
-            func_800BFEBC(channel->ease1, channel->time, channel->duration);
+            evaluateEasing(channel->ease1, channel->time, channel->duration);
 
         vectorFixedPointMult(
             &CAMERA_SCRATCH->v1, &channel->velocity, CAMERA_SCRATCH->value);
@@ -4932,7 +4939,7 @@ static void stepCameraChannel(CameraChannel* channel, UNUSED CameraChannel* othe
 
     case cameraModeArc: {
         CAMERA_SCRATCH->value =
-            func_800BFEBC(channel->ease1, channel->time, channel->duration);
+            evaluateEasing(channel->ease1, channel->time, channel->duration);
 
         vectorFixedPointMult(
             &CAMERA_SCRATCH->v1, &channel->velocity, CAMERA_SCRATCH->value);
@@ -4945,7 +4952,7 @@ static void stepCameraChannel(CameraChannel* channel, UNUSED CameraChannel* othe
         CAMERA_SCRATCH->value =
             channel->value
             + fixedPointMult(CAMERA_SCRATCH->distance - channel->value,
-                func_800BFEBC(channel->ease1, channel->time, channel->duration));
+                evaluateEasing(channel->ease1, channel->time, channel->duration));
 
         vectorFixedPointMult(
             &CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1, CAMERA_SCRATCH->value);
@@ -4960,7 +4967,7 @@ static void stepCameraChannel(CameraChannel* channel, UNUSED CameraChannel* othe
         CAMERA_SCRATCH->rotation.vy =
             channel->angle
             + ((channel->angleDelta
-                   * func_800BFEBC(channel->ease1, channel->time, channel->duration))
+                   * evaluateEasing(channel->ease1, channel->time, channel->duration))
                 >> 12);
 
         RotMatrix_gte(&CAMERA_SCRATCH->rotation, &CAMERA_SCRATCH->matrix);
@@ -4968,7 +4975,7 @@ static void stepCameraChannel(CameraChannel* channel, UNUSED CameraChannel* othe
         CAMERA_SCRATCH->v1.vz =
             channel->value
             + fixedPointMult(channel->delta,
-                func_800BFEBC(channel->ease2, channel->time, channel->duration));
+                evaluateEasing(channel->ease2, channel->time, channel->duration));
         CAMERA_SCRATCH->v1.vx = 0;
         CAMERA_SCRATCH->v1.vy = 0;
 
@@ -4977,7 +4984,7 @@ static void stepCameraChannel(CameraChannel* channel, UNUSED CameraChannel* othe
         CAMERA_SCRATCH->v1.vy =
             channel->aux.vy
             + fixedPointMult(channel->velocity.vy,
-                func_800BFEBC(channel->ease3, channel->time, channel->duration));
+                evaluateEasing(channel->ease3, channel->time, channel->duration));
         vectorAdd(&channel->computed, &channel->start, &CAMERA_SCRATCH->v1);
 
         break;
@@ -4989,7 +4996,7 @@ static void stepCameraChannel(CameraChannel* channel, UNUSED CameraChannel* othe
         CAMERA_SCRATCH->rotation.vy =
             channel->angle
             + ((channel->angleDelta
-                   * func_800BFEBC(channel->ease1, channel->time, channel->duration))
+                   * evaluateEasing(channel->ease1, channel->time, channel->duration))
                 >> 12);
 
         RotMatrix_gte(&CAMERA_SCRATCH->rotation, &CAMERA_SCRATCH->matrix);
@@ -4997,7 +5004,7 @@ static void stepCameraChannel(CameraChannel* channel, UNUSED CameraChannel* othe
         CAMERA_SCRATCH->v1.vz =
             channel->value
             + fixedPointMult(channel->delta,
-                func_800BFEBC(channel->ease2, channel->time, channel->duration));
+                evaluateEasing(channel->ease2, channel->time, channel->duration));
         CAMERA_SCRATCH->v1.vx = 0;
         CAMERA_SCRATCH->v1.vy = 0;
 
@@ -5008,7 +5015,7 @@ static void stepCameraChannel(CameraChannel* channel, UNUSED CameraChannel* othe
         channel->computed.vy =
             channel->start.vy
             + fixedPointMult(channel->velocity.vy,
-                func_800BFEBC(channel->ease3, channel->time, channel->duration));
+                evaluateEasing(channel->ease3, channel->time, channel->duration));
 
         break;
     }
@@ -5037,7 +5044,7 @@ static void stepCameraChannel(CameraChannel* channel, UNUSED CameraChannel* othe
             &channel->momentumStep);
 
         CAMERA_SCRATCH->value =
-            func_800BFEBC(easingSineOut, channel->time, channel->duration);
+            evaluateEasing(easingSineOut, channel->time, channel->duration);
 
         vectorSubtract(
             &CAMERA_SCRATCH->v1, &channel->computed, &channel->momentumPosition);
@@ -5187,7 +5194,7 @@ static int getCameraTerrainHeight(MATRIX* camera)
 }
 
 /**
- * Tweens an angle: the camera roll for E2, an angle of the framebuffer effect for E3.
+ * Tweens an angle: the camera roll for E2, the spin of the frame buffer effect for E3.
  * @param script Opcode bytes:
  *   - [1..2] = target angle
  *   - [3] = low nibble the easing, high nibble the direction: 0 negative, 1 shortest,
@@ -5203,7 +5210,7 @@ int vs_battle_script_E2_E3_camera(u_char* script, UNUSED short arg1)
         tween = &scriptCamera->roll;
         break;
     case 0xE3:
-        tween = &scriptCamera->unk174;
+        tween = &scriptCamera->framebufferSpin;
         break;
     }
 
@@ -5254,7 +5261,7 @@ static void stepAngleTween(AngleTween* tween)
 
     tween->value =
         tween->start
-        + ((tween->delta * func_800BFEBC(tween->ease, tween->elapsed, tween->duration))
+        + ((tween->delta * evaluateEasing(tween->ease, tween->elapsed, tween->duration))
             >> 0xC);
 
     if (tween->elapsed >= tween->duration) {
@@ -5266,144 +5273,205 @@ static void stepAngleTween(AngleTween* tween)
 
 /**
  * Gets which camera channels are idle.
- * @return Bit mask of the idle channels: 0x01 look-at, 0x02 eye, 0x04 roll (opcode E2),
- * 0x08 projection distance (EA), 0x10 near clip (EB), 0x20 far clip (EC), 0x40 lens
- * distortion (ED), 0x80 shake (EF).
+ * @return Bit mask of the idle channels, see the cameraIdle flags.
  */
 u_char getCameraIdleFlags(void)
 {
-    u_char temp_a2 = scriptCamera->lookAt.mode == cameraModeIdle;
+    u_char idle = scriptCamera->lookAt.mode == cameraModeIdle;
 
     if (scriptCamera->eye.mode == cameraModeIdle) {
-        temp_a2 = temp_a2 | 2;
+        idle |= cameraIdleEye;
     }
+
     if (scriptCamera->roll.duration == 0) {
-        temp_a2 |= 4;
+        idle |= cameraIdleRoll;
     }
+
     if (scriptCamera->projectionDistance.duration == 0) {
-        temp_a2 |= 8;
+        idle |= cameraIdleProjectionDistance;
     }
+
     if (scriptCamera->nearClip.duration == 0) {
-        temp_a2 |= 0x10;
+        idle |= cameraIdleNearClip;
     }
+
     if (scriptCamera->farClip.duration == 0) {
-        temp_a2 |= 0x20;
+        idle |= cameraIdleFarClip;
     }
-    if (scriptCamera->unk25C.unk1E == 0) {
-        temp_a2 |= 0x40;
+
+    if (scriptCamera->lensDistortion.duration == 0) {
+        idle |= cameraIdleLensDistortion;
     }
-    if ((scriptCamera->shakeEntries[0].unk9 + scriptCamera->shakeEntries[1].unk9) == 0) {
-        temp_a2 |= 0x80;
+
+    if ((scriptCamera->shakeEntries[0].duration + scriptCamera->shakeEntries[1].duration)
+        == 0) {
+        idle |= cameraIdleShake;
     }
-    return temp_a2;
+
+    return idle;
 }
 
+/**
+ * Sets the parameters of the frame buffer effect and the lens distortion.
+ * @param script Opcode bytes, see the comments on each opcode.
+ */
 int vs_battle_script_B9_BA_BF_E4_E5_E6_E7_ED(u_char* script, UNUSED short arg1)
 {
     VECTOR values;
     CVECTOR color;
     short mode;
     short effectValue;
+
     switch (script[0]) {
-    case 185:
+    // Sets the ordering table index the frame buffer effect is drawn at.
+    // [1-2] = ordering table index.
+    case 0xB9:
         func_8007DE44(getShort(script + 1));
+
         return scriptNext;
 
-    case 186:
+    // Sets which half of the double buffer the frame buffer effect reads.
+    // [1] = flag selecting the half.
+    case 0xBA:
         func_8007DE5C(script[1]);
+
         return scriptNext;
 
-    case 228:
-        scriptCamera->unk1FC.unk1E = script[4];
-        if (scriptCamera->unk1FC.unk1E == 0) {
+    // Tweens the scale of the frame buffer effect.
+    // [1-2] = x and y scale (<< 7), [3] = easing, [4] = tween duration, 0 =
+    // immediate.
+    case 0xE4:
+        scriptCamera->framebufferScale.duration = script[4];
+
+        if (scriptCamera->framebufferScale.duration == 0) {
             values.vx = (script[1] << 7);
             values.vy = (script[2] << 7);
+
             func_8007DDB8(&values);
         } else {
-            scriptCamera->unk1FC.unk1C = 0;
+            scriptCamera->framebufferScale.elapsed = 0;
+
             func_8007DE88(&values);
-            scriptCamera->unk1FC.unk12 =
-                (script[1] << 7) - (scriptCamera->unk1FC.unkA = values.vx);
-            scriptCamera->unk1FC.unk14 =
-                (script[2] << 7) - (scriptCamera->unk1FC.unkC = values.vy);
-            scriptCamera->unk1FC.unk1 = script[3];
+
+            scriptCamera->framebufferScale.delta[0] =
+                (script[1] << 7) - (scriptCamera->framebufferScale.start[0] = values.vx);
+            scriptCamera->framebufferScale.delta[1] =
+                (script[2] << 7) - (scriptCamera->framebufferScale.start[1] = values.vy);
+            scriptCamera->framebufferScale.ease = script[3];
         }
+
         return scriptNext;
 
-    case 229:
-        scriptCamera->unk21C.unk1E = script[5];
-        if (scriptCamera->unk21C.unk1E == 0) {
+    // Tweens the tint of the frame buffer effect.
+    // [1-3] = red, green and blue, [4] = easing, [5] = tween duration, 0 = immediate.
+    case 0xE5:
+        scriptCamera->framebufferTint.duration = script[5];
+
+        if (scriptCamera->framebufferTint.duration == 0) {
             color.r = script[1];
             color.g = script[2];
             color.b = script[3];
+
             func_8007DDD4(&color);
         } else {
-            scriptCamera->unk21C.unk1C = 0;
+            scriptCamera->framebufferTint.elapsed = 0;
+
             func_8007DEA8(&color);
-            scriptCamera->unk21C.unk12 =
-                script[1] - (scriptCamera->unk21C.unkA = color.r);
-            scriptCamera->unk21C.unk14 =
-                script[2] - (scriptCamera->unk21C.unkC = color.g);
-            scriptCamera->unk21C.unk16 =
-                script[3] - (scriptCamera->unk21C.unkE = color.b);
-            scriptCamera->unk21C.unk1 = script[4];
+
+            scriptCamera->framebufferTint.delta[0] =
+                script[1] - (scriptCamera->framebufferTint.start[0] = color.r);
+            scriptCamera->framebufferTint.delta[1] =
+                script[2] - (scriptCamera->framebufferTint.start[1] = color.g);
+            scriptCamera->framebufferTint.delta[2] =
+                script[3] - (scriptCamera->framebufferTint.start[2] = color.b);
+            scriptCamera->framebufferTint.ease = script[4];
         }
+
         return scriptNext;
 
-    case 230:
-        scriptCamera->unk23C.unk1E = script[4];
-        if (scriptCamera->unk23C.unk1E == 0) {
+    // Tweens the offset of the frame buffer effect.
+    // [1-2] = signed x and y offset, [3] = easing, [4] = tween duration, 0 =
+    // immediate.
+    case 0xE6:
+        scriptCamera->framebufferOffset.duration = script[4];
+
+        if (scriptCamera->framebufferOffset.duration == 0) {
             values.vx = (signed char)script[1];
             values.vy = (signed char)script[2];
+
             func_8007DDF8(&values);
         } else {
-            scriptCamera->unk23C.unk1C = 0;
+            scriptCamera->framebufferOffset.elapsed = 0;
+
             func_8007DECC(&values);
-            scriptCamera->unk23C.unk12 =
-                (signed char)script[1] - (scriptCamera->unk23C.unkA = values.vx);
-            scriptCamera->unk23C.unk14 =
-                (signed char)script[2] - (scriptCamera->unk23C.unkC = values.vy);
-            scriptCamera->unk23C.unk1 = script[3];
+
+            scriptCamera->framebufferOffset.delta[0] =
+                (signed char)script[1]
+                - (scriptCamera->framebufferOffset.start[0] = values.vx);
+            scriptCamera->framebufferOffset.delta[1] =
+                (signed char)script[2]
+                - (scriptCamera->framebufferOffset.start[1] = values.vy);
+            scriptCamera->framebufferOffset.ease = script[3];
         }
+
         return scriptNext;
 
-    case 231:
+    // Sets the blend mode of the frame buffer effect.
+    // [1] = blend mode.
+    case 0xE7:
         func_8007DE2C(script[1]);
+
         return scriptNext;
 
-    // [1] = zoom (<< 6), [2] = distortion (signed), [3] = tween type, [4] = tween
+    // Tweens the lens distortion, waiting for a previous tween to finish.
+    // [1] = zoom (<< 6), [2] = distortion (signed), [3] = easing, [4] = tween
     // duration, 0 = immediate. See setScreenLensDistortion.
-    case 237:
-        if (scriptCamera->unk25C.unk1E > 0) {
+    case 0xED:
+        if (scriptCamera->lensDistortion.duration > 0) {
             return scriptRepeat;
         }
 
-        scriptCamera->unk25C.unk1E = script[4];
-        if (scriptCamera->unk25C.unk1E == 0) {
-            scriptCamera->unk25C.unk2 = effectValue = script[1] << 6;
-            scriptCamera->unk25C.unk4 = (signed char)script[2];
-            setScreenLensDistortion(effectValue, scriptCamera->unk25C.unk4);
+        scriptCamera->lensDistortion.duration = script[4];
+
+        if (scriptCamera->lensDistortion.duration == 0) {
+            scriptCamera->lensDistortion.value[0] = effectValue = script[1] << 6;
+            scriptCamera->lensDistortion.value[1] = (signed char)script[2];
+
+            setScreenLensDistortion(effectValue, scriptCamera->lensDistortion.value[1]);
         } else {
-            scriptCamera->unk25C.unk1C = 0;
-            scriptCamera->unk25C.unk12 =
+            scriptCamera->lensDistortion.elapsed = 0;
+            scriptCamera->lensDistortion.delta[0] =
                 (script[1] << 6)
-                - (scriptCamera->unk25C.unkA = scriptCamera->unk25C.unk2);
-            scriptCamera->unk25C.unk14 =
+                - (scriptCamera->lensDistortion.start[0] =
+                        scriptCamera->lensDistortion.value[0]);
+            scriptCamera->lensDistortion.delta[1] =
                 (signed char)script[2]
-                - (scriptCamera->unk25C.unkC = scriptCamera->unk25C.unk4);
-            scriptCamera->unk25C.unk1 = script[3];
+                - (scriptCamera->lensDistortion.start[1] =
+                        scriptCamera->lensDistortion.value[1]);
+            scriptCamera->lensDistortion.ease = script[3];
         }
+
         return scriptNext;
 
-    case 191:
+    // Turns the frame buffer effect on or off with a preset and resets its parameters.
+    // [1-2] = 0 to turn off, else the ordering table index of the effect.
+    case 0xBF:
+
         mode = getShort(script + 1);
+
         if (!mode) {
             func_8007DE2C(0);
+
             values.vx = values.vy = 0;
+
             func_8007DDF8(&values);
+
             values.vx = values.vy = ONE;
+
             func_8007DDB8(&values);
+
             color.r = color.g = color.b = 128;
+
             func_8007DDD4(&color);
             func_8007DE44(0);
             func_8007DE5C(0);
@@ -5411,72 +5479,98 @@ int vs_battle_script_B9_BA_BF_E4_E5_E6_E7_ED(u_char* script, UNUSED short arg1)
         } else {
             setFramebufferEffect(1);
             func_8007DE2C(0);
+
             values.vx = 0;
             values.vy = 2;
+
             func_8007DDF8(&values);
+
             values.vx = values.vy = ONE;
+
             func_8007DDB8(&values);
+
             color.r = color.g = color.b = 144;
+
             func_8007DE5C(1);
             func_8007DDD4(&color);
             func_8007DE44(mode);
         }
+
         return scriptNext;
     }
 }
 
-void func_800BDAB4(void)
+/** Steps the tweens of the frame buffer effect and the lens distortion. */
+static void updateScreenEffectTweens(void)
 {
-    VECTOR sp10;
-    CVECTOR sp20;
+    VECTOR vector;
+    CVECTOR color;
 
-    if (func_800BDBB4(&scriptCamera->unk1FC) != 0) {
-        sp10.vx = scriptCamera->unk1FC.unk2;
-        sp10.vy = scriptCamera->unk1FC.unk4;
-        func_8007DDB8(&sp10);
+    if (stepScreenEffectTween(&scriptCamera->framebufferScale) != 0) {
+        vector.vx = scriptCamera->framebufferScale.value[0];
+        vector.vy = scriptCamera->framebufferScale.value[1];
+
+        func_8007DDB8(&vector);
     }
-    if (func_800BDBB4(&scriptCamera->unk21C) != 0) {
-        sp20.r = scriptCamera->unk21C.unk2;
-        sp20.g = scriptCamera->unk21C.unk4;
-        sp20.b = scriptCamera->unk21C.unk6;
-        func_8007DDD4(&sp20);
+
+    if (stepScreenEffectTween(&scriptCamera->framebufferTint) != 0) {
+        color.r = scriptCamera->framebufferTint.value[0];
+        color.g = scriptCamera->framebufferTint.value[1];
+        color.b = scriptCamera->framebufferTint.value[2];
+
+        func_8007DDD4(&color);
     }
-    if (func_800BDBB4(&scriptCamera->unk23C) != 0) {
-        sp10.vx = scriptCamera->unk23C.unk2;
-        sp10.vy = scriptCamera->unk23C.unk4;
-        func_8007DDF8(&sp10);
+
+    if (stepScreenEffectTween(&scriptCamera->framebufferOffset) != 0) {
+        vector.vx = scriptCamera->framebufferOffset.value[0];
+        vector.vy = scriptCamera->framebufferOffset.value[1];
+
+        func_8007DDF8(&vector);
     }
-    if (func_800BDBB4(&scriptCamera->unk25C) != 0) {
-        setScreenLensDistortion(scriptCamera->unk25C.unk2, scriptCamera->unk25C.unk4);
+
+    if (stepScreenEffectTween(&scriptCamera->lensDistortion) != 0) {
+        setScreenLensDistortion(
+            scriptCamera->lensDistortion.value[0], scriptCamera->lensDistortion.value[1]);
     }
 }
 
-int func_800BDBB4(func_800BDBB4_t* arg0)
+/** Steps a screen effect tween by one frame, returns whether it has a new value. */
+static int stepScreenEffectTween(ScreenEffectTween* tween)
 {
-
-    if (arg0->unk1E == 0) {
+    if (tween->duration == 0) {
         return 0;
     }
 
-    arg0->unk1C = arg0->unk1C + (vs_gametime_vblanksPerFrame >> 1);
+    tween->elapsed += vs_gametime_vblanksPerFrame >> 1;
 
-    CAMERA_SCRATCH->value = func_800BFEBC(arg0->unk1, arg0->unk1C, arg0->unk1E);
-    arg0->unk2 = (arg0->unkA + ((arg0->unk12 * CAMERA_SCRATCH->value) >> 0xC));
-    arg0->unk4 = (arg0->unkC + ((arg0->unk14 * CAMERA_SCRATCH->value) >> 0xC));
-    arg0->unk6 = (arg0->unkE + ((arg0->unk16 * CAMERA_SCRATCH->value) >> 0xC));
+    CAMERA_SCRATCH->value = evaluateEasing(tween->ease, tween->elapsed, tween->duration);
 
-    if (arg0->unk1C == arg0->unk1E) {
-        arg0->unk1E = 0;
+    tween->value[0] = tween->start[0] + ((tween->delta[0] * CAMERA_SCRATCH->value) >> 12);
+    tween->value[1] = tween->start[1] + ((tween->delta[1] * CAMERA_SCRATCH->value) >> 12);
+    tween->value[2] = tween->start[2] + ((tween->delta[2] * CAMERA_SCRATCH->value) >> 12);
+
+    if (tween->elapsed == tween->duration) {
+        tween->duration = 0;
     }
+
     return 1;
 }
 
+/**
+ * Sets the projection distance, clip distances and shake of the camera. Opcode EE also
+ * uses this handler, but does nothing and does not return a result.
+ * @param script Opcode bytes, see the comments on each opcode.
+ */
 int vs_battle_script_EA_EB_EC_EE_EF_camera(u_char* script, UNUSED short arg1)
 {
     ShakeEntry* entry;
     short i;
+
     switch (script[0]) {
-    case 234:
+    // Tweens the projection distance.
+    // [1] = projection distance (<< 2), 0 = default, [2] = easing, [3] = tween duration,
+    // 0 = immediate.
+    case 0xEA:
         if ((scriptCamera->projectionDistance.duration = script[3]) == 0) {
             scriptCamera->projectionDistance.value =
                 script[1] ? (script[1] << 2) : ONE / 8;
@@ -5490,8 +5584,12 @@ int vs_battle_script_EA_EB_EC_EE_EF_camera(u_char* script, UNUSED short arg1)
             scriptCamera->projectionDistance.ease = script[2];
             scriptCamera->projectionDistance.elapsed = 0;
         }
+
         return scriptNext;
-    case 235:
+
+    // Tweens the near clip distance.
+    // [1] = distance, 0 = default, [2] = easing, [3] = tween duration, 0 = immediate.
+    case 0xEB:
         if ((scriptCamera->nearClip.duration = script[3]) == 0) {
             scriptCamera->nearClip.value = script[1] ? script[1] : 64;
             scriptCamera->nearClip.changed = 1;
@@ -5502,8 +5600,13 @@ int vs_battle_script_EA_EB_EC_EE_EF_camera(u_char* script, UNUSED short arg1)
             scriptCamera->nearClip.ease = script[2];
             scriptCamera->nearClip.elapsed = 0;
         }
+
         return scriptNext;
-    case 236:
+
+    // Tweens the far clip distance.
+    // [1] = distance (<< 7), 0 = default, [2] = easing, [3] = tween duration, 0 =
+    // immediate.
+    case 0xEC:
         if ((scriptCamera->farClip.duration = script[3]) == 0) {
             scriptCamera->farClip.value = script[1] ? (script[1] << 7) : ONE;
             scriptCamera->farClip.changed = 1;
@@ -5516,24 +5619,37 @@ int vs_battle_script_EA_EB_EC_EE_EF_camera(u_char* script, UNUSED short arg1)
             scriptCamera->farClip.ease = script[2];
             scriptCamera->farClip.elapsed = 0;
         }
+
         return scriptNext;
-    case 239:
+
+    // Starts a camera shake in one of the two slots, or stops all shakes.
+    // [1] = number of oscillations, [2] = amplitude in world units, 0 stops all shakes,
+    // [3] = bit 0 shakes the look-at, bit 1 shakes the eye, bits 2-3, 4-5 and 6-7 are the
+    // weights of the shake along x, y and z, minus 1. The shake is turned by the heading
+    // of the camera, so x is sideways and z along the view.
+    // [4] = envelope, 0 = constant, 1 = fades out, 2 = swells then fades, 3 = fades in,
+    // [5] = duration.
+    case 0xEF:
         entry = scriptCamera->shakeEntries;
+
         if (script[2] == 0) {
-            entry[0].unk9 = entry[1].unk9 = 0;
+            entry[0].duration = entry[1].duration = 0;
+
             return scriptNext;
         }
+
         for (i = 0; i < 2; ++i, ++entry) {
-            if (entry->unk9 == 0) {
-                entry->unk4 = script[1];
-                entry->unk6 = script[2];
-                entry->unkA = script[3];
+            if (entry->duration == 0) {
+                entry->cycles = script[1];
+                entry->amplitude = script[2];
+                entry->flags = script[3];
                 entry->envelope = script[4];
-                entry->unk9 = script[5];
-                entry->unk8 = 0;
+                entry->duration = script[5];
+                entry->elapsed = 0;
                 break;
             }
         }
+
         return scriptNext;
     }
 }
@@ -5551,7 +5667,7 @@ static void stepProjectionTween(ProjectionTween* tween)
         tween->elapsed = tween->duration;
     }
 
-    CAMERA_SCRATCH->value = func_800BFEBC(tween->ease, tween->elapsed, tween->duration);
+    CAMERA_SCRATCH->value = evaluateEasing(tween->ease, tween->elapsed, tween->duration);
 
     tween->value = tween->start + ((tween->delta * CAMERA_SCRATCH->value) >> 0xC);
 
@@ -5562,40 +5678,50 @@ static void stepProjectionTween(ProjectionTween* tween)
     tween->changed = 1;
 }
 
-int func_800BE01C(ShakeEntry* arg0)
+/** Steps a shake entry by one frame, returns whether it is active. */
+static int stepShakeEntry(ShakeEntry* entry)
 {
-    int temp_s1 = arg0->unk4 << 0xC;
+    int angleRange = entry->cycles * ONE;
 
-    if (arg0->unk9 == 0) {
+    if (entry->duration == 0) {
         return 0;
     }
 
-    arg0->unk8 += vs_gametime_vblanksPerFrame >> 1;
+    entry->elapsed += vs_gametime_vblanksPerFrame >> 1;
 
-    if (arg0->unk9 < arg0->unk8) {
-        arg0->unk8 = arg0->unk9;
+    if (entry->duration < entry->elapsed) {
+        entry->elapsed = entry->duration;
     }
 
-    switch (arg0->envelope) {
+    switch (entry->envelope) {
     case 0:
-        CAMERA_SCRATCH->value = 0x1000;
+        CAMERA_SCRATCH->value = ONE;
         break;
+
     case 1:
-        CAMERA_SCRATCH->value = rsin(((arg0->unk8 << 0xA) / arg0->unk9) + 0x400);
+        CAMERA_SCRATCH->value =
+            rsin(entry->elapsed * (ONE / 4) / entry->duration + ONE / 4);
         break;
+
     case 2:
-        CAMERA_SCRATCH->value = rsin((arg0->unk8 << 0xB) / arg0->unk9);
+        CAMERA_SCRATCH->value = rsin(entry->elapsed * (ONE / 2) / entry->duration);
         break;
+
     case 3:
-        CAMERA_SCRATCH->value = rsin((arg0->unk8 << 0xA) / arg0->unk9);
+        CAMERA_SCRATCH->value = rsin(entry->elapsed * (ONE / 4) / entry->duration);
         break;
     }
-    arg0->unk2 = (((rsin((temp_s1 * arg0->unk8) / arg0->unk9) * arg0->unk6) >> 0xC)
-                     * CAMERA_SCRATCH->value)
-              >> 0xC;
-    if (arg0->unk8 == arg0->unk9) {
-        arg0->unk9 = 0;
+
+    entry->offset =
+        (((rsin((angleRange * entry->elapsed) / entry->duration) * entry->amplitude)
+             >> 12)
+            * CAMERA_SCRATCH->value)
+        >> 12;
+
+    if (entry->elapsed == entry->duration) {
+        entry->duration = 0;
     }
+
     return 1;
 }
 
@@ -5618,24 +5744,24 @@ static void updateCameraShake(void)
         int y;
         int z;
 
-        if (!func_800BE01C(entry)) {
+        if (!stepShakeEntry(entry)) {
             continue;
         }
 
-        x = entry->unk2 * (((entry->unkA >> 2) & 3) - 1);
+        x = entry->offset * (((entry->flags >> 2) & 3) - 1);
         scratch->c.vx = x;
 
-        y = entry->unk2 * (((entry->unkA >> 4) & 3) - 1);
+        y = entry->offset * (((entry->flags >> 4) & 3) - 1);
         scratch->c.vy = y;
 
-        z = entry->unk2 * ((entry->unkA >> 6) - 1);
+        z = entry->offset * ((entry->flags >> 6) - 1);
         scratch->c.vz = z;
 
-        if (entry->unkA & 1) {
+        if (entry->flags & 1) {
             applyVector(&scratch->a, x, y, z, +=);
         }
 
-        if (entry->unkA & 2) {
+        if (entry->flags & 2) {
             addVector(&scratch->b, &scratch->c);
         }
 
@@ -5656,6 +5782,12 @@ static void updateCameraShake(void)
     }
 }
 
+/**
+ * Sets whether the look-at and eye carry their momentum over from the end of a move into
+ * the next one, see opcode DF.
+ * @param lookAt 1 to carry the look-at's momentum.
+ * @param eye 1 to carry the eye's momentum.
+ */
 void setCameraMomentum(int lookAt, int eye)
 {
     scriptCamera->lookAt.carryMomentum = lookAt;
@@ -5664,13 +5796,20 @@ void setCameraMomentum(int lookAt, int eye)
     scriptCamera->eye.carrying = 0;
 }
 
-void clearCameraMomentum(void)
+/**
+ * Stops the look-at and eye wherever they are, cancelling their moves and dropping any
+ * momentum.
+ */
+static void stopCamera(void)
 {
     ScriptCamera* c1 = scriptCamera;
     ScriptCamera* c2;
+
     c1->eye.mode = cameraModeIdle;
     c1->lookAt.mode = cameraModeIdle;
+
     c2 = scriptCamera;
+
     c2->eye.carrying = 0;
     c2->eye.carryMomentum = 0;
     c2->lookAt.carrying = 0;
@@ -5679,41 +5818,40 @@ void clearCameraMomentum(void)
 
 /**
  * Sweeps the camera into the view the player had before the scene (the facing and zoom
- * saved in state flags 0xAF and 0xB0), coming in from above and from one side.
+ * saved in state flags 0xAF and 0xB0), coming in from above and from one side: the eye
+ * orbits and the look-at moves to it.
  * @param side 0 or 1, which side the camera comes in from.
  */
 void sweepCameraToSavedPlayerView(char side)
 {
-    VECTOR sp10;
-    VECTOR sp20;
-    VECTOR sp30;
-    VECTOR sp40;
-    u_char temp_s0;
-    u_char temp_s3;
-    int new_var;
+    VECTOR startLookAt;
+    VECTOR endLookAt;
+    VECTOR startEye;
+    VECTOR endEye;
+    u_char facing = getStateFlag(savedCameraFacing);
+    u_char zoom = getStateFlag(savedCameraZoom);
+    int startFacing = facing - 1;
 
-    temp_s3 = getStateFlag(0xAF);
-    temp_s0 = getStateFlag(0xB0);
-    new_var = temp_s3 - 1;
-    initialiseCameraFromSpherical(&sp30, &sp10, (new_var + (side * 2)) & 7, temp_s0 + 1);
+    initialiseCameraFromSpherical(
+        &startEye, &startLookAt, (startFacing + (side * 2)) & 7, zoom + 1);
 
-    sp30.vy += D_800E9C24[temp_s0] << 0xC;
-    sp10.vy += D_800E9C24[temp_s0] << 0xC;
+    startEye.vy += sweepHeightOffsets[zoom] * ONE;
+    startLookAt.vy += sweepHeightOffsets[zoom] * ONE;
 
-    vectorCopy(&scriptCamera->lookAt.current, &sp10);
-    vectorCopy(&scriptCamera->lookAt.otherPosition, &sp30);
-    vectorCopy(&scriptCamera->eye.otherPosition, &sp10);
-    vectorCopy(&scriptCamera->eye.current, &sp30);
+    vectorCopy(&scriptCamera->lookAt.current, &startLookAt);
+    vectorCopy(&scriptCamera->lookAt.otherPosition, &startEye);
+    vectorCopy(&scriptCamera->eye.otherPosition, &startLookAt);
+    vectorCopy(&scriptCamera->eye.current, &startEye);
 
     scriptCamera->lookAt.mode = cameraModeIdle;
 
-    initialiseCameraFromSpherical(&sp40, &sp20, temp_s3, temp_s0 + 1);
+    initialiseCameraFromSpherical(&endEye, &endLookAt, facing, zoom + 1);
 
-    vectorCopy(&scriptCamera->eye.position, &sp40);
-    vectorCopy(&scriptCamera->lookAt.position, &sp20);
+    vectorCopy(&scriptCamera->eye.position, &endEye);
+    vectorCopy(&scriptCamera->lookAt.position, &endLookAt);
 
-    vs_battle_script_Cx_Dx_camera(&D_800E9C28, 0);
-    vs_battle_script_Cx_Dx_camera(&D_800E9C2C, 0);
+    vs_battle_script_Cx_Dx_camera(sweepEyeScript, 0);
+    vs_battle_script_Cx_Dx_camera(sweepLookAtScript, 0);
 }
 
 /**
@@ -6433,7 +6571,7 @@ int func_800BF850(void)
     }
 
     updateCamera();
-    func_800BDAB4();
+    updateScreenEffectTweens();
     applyCameraState();
     func_800BB9B0();
     func_800BBAFC();
@@ -6442,7 +6580,7 @@ int func_800BF850(void)
         drawScanlines();
     }
 
-    if (D_800F4C22 != 0 && getCameraIdleFlags() == 255) {
+    if (D_800F4C22 != 0 && getCameraIdleFlags() == cameraIdleAll) {
         if (nextEvtQueued != 0) {
             D_800F4C34 = 3;
             D_800F4BE0 = 0;

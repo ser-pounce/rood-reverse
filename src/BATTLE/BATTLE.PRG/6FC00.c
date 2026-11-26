@@ -130,7 +130,7 @@ int func_800D85D8(func_800E78F4_t* arg0)
 done:
     if (!arg0->unk470) {
         for (actor = vs_battle_actors[0]; actor != NULL; actor = actor->next) {
-            if (arg0->unk1A4[actor->id].unk0_6 == 3) {
+            if (arg0->unk1A4[actor->slot].unk0_6 == 3) {
                 break;
             }
         }
@@ -266,7 +266,7 @@ void func_800D87E8(func_800E78F4_t* arg0, int id)
     }
 
     for (actor = vs_battle_actors[0]; actor != NULL; actor = actor->next) {
-        int candidate = actor->id;
+        int candidate = actor->slot;
         int angle;
         int distance;
 
@@ -349,7 +349,7 @@ void func_800D8EF4(void)
         u_int z;
 
         actor->unkB_0 = 0;
-        id = actor->id;
+        id = actor->slot;
         state = VS_SCRATCH_AT(func_800E78F4_t**, 0x37C)[id];
         state->unk1D[0] = 0;
         object = state->unk58;
@@ -516,8 +516,8 @@ void func_800D8EF4(void)
                 alert = 1;
             } else {
                 for (other = vs_battle_actors[0]; other != NULL; other = other->next) {
-                    if (state->unk1A4[other->id].unk0_5
-                        && (state->unk1A4[other->id].unk0_6 == 3)) {
+                    if (state->unk1A4[other->slot].unk0_5
+                        && (state->unk1A4[other->slot].unk0_6 == 3)) {
                         alert = 1;
                         break;
                     }

@@ -15,6 +15,7 @@
 #include "battleEffect.h"
 #include "battleUnk.h"
 #include "cameraPrivate.h"
+#include "gim.h"
 #include "src/SLUS_010.40/main.h"
 #include "src/SLUS_010.40/31724.h"
 #include "src/SLUS_010.40/32154.h"
@@ -88,31 +89,6 @@ typedef struct {
     u_char unk2;
     u_char unk3;
 } func_800D6894_t;
-
-typedef struct {
-    u_int visible : 1;
-    u_int loading : 1;
-    u_int unk0_2 : 1;
-    u_int drawMode : 3;
-    u_int loadState : 3;
-    u_int pageCount : 3;
-    u_int unk0_12 : 1;
-    u_int unk0_13 : 3;
-    char vramSlot;
-    char brightness;
-    u_char columns;
-    u_char rows;
-    short id;
-    short x;
-    short y;
-    short scale;
-    u_short unkE;
-    u_short* data;
-    vs_CdQueueSlot* cdQueueSlot;
-    u_short widths[240];
-    u_short imageTable[254];
-    int unk3F4;
-} Gim;
 
 typedef struct {
     ActionEffectTarget* unk0;
@@ -290,7 +266,7 @@ int func_800CABE0(int);
 void func_800CCA90(int);
 void func_800CBBCC(Gim* arg0, int arg1, u_long* arg2);
 void func_800CD158(int);
-void func_800CD3E4(int);
+void drawTextBoxShape(int);
 int breakArtsUnlocked(void);
 typedef struct {
     u_int unk60_0 : 8;
@@ -2352,17 +2328,17 @@ void func_800C8778(void)
 
             switch (current->imageTable[2]) {
             case 0:
-                current->unk0_2 = 0;
-                current->unkE = gim->data[count + j * 16];
+                current->is8Bit = 0;
+                current->backdropColor = gim->data[count + j * 16];
                 break;
             case 1:
-                current->unk0_2 = 1;
-                current->unkE = gim->data[count + 64];
+                current->is8Bit = 1;
+                current->backdropColor = gim->data[count + 64];
                 break;
             case 2:
-                current->unk0_2 = 1;
-                current->unkE = gim->data[count + 320];
-                current->unk0_12 = 1;
+                current->is8Bit = 1;
+                current->backdropColor = gim->data[count + 320];
+                current->slotClut = 1;
                 vs_battle_renderImage(
                     (width + 512) | 0x1FF0000, gim->data + (count + 320), 0x10100);
                 break;
@@ -3879,7 +3855,7 @@ void func_800CB83C(void)
             break;
         case 2:
         case 7:
-            func_800CD3E4(id);
+            drawTextBoxShape(id);
 
         default:
         text:
@@ -3932,7 +3908,7 @@ void func_800CBBCC(Gim* image, int clut, u_long* ot)
         rowY[i] = (((i * 2 - rows) * scale * 15) >> 13) + j;
     }
 
-    color = image->unkE;
+    color = image->backdropColor;
 
     if (color) {
         int r = ((color << 3) & 0xF8) * alpha;
@@ -4008,7 +3984,7 @@ void func_800CBBCC(Gim* image, int clut, u_long* ot)
                 int tpage;
 
                 v = (v & 0x1F00) * 15;
-                tpage = getTPage(image->unk0_2, 1,
+                tpage = getTPage(image->is8Bit, 1,
                     ((image->vramSlot - 18) * 64) + ((tile >> 2) & 0x1C0), 256);
 
                 if (scale == ONE) {
@@ -4076,10 +4052,10 @@ void func_800CC204(Gim* image, int clut, u_long* ot)
     short left[240];
     short right[240];
     u_short* tiles = &image->imageTable[4];
-    int mode = image->unk0_2;
+    int mode = image->is8Bit;
     u_short* widths = image->widths;
     int page = image->vramSlot - 18;
-    int color = image->unkE;
+    int color = image->backdropColor;
     int y;
     int column;
     int end = image->brightness;
@@ -4187,7 +4163,7 @@ void func_800CC600(Gim* image, int clut, u_long* ot)
     int alpha;
     int inverse;
     u_short* tiles = &image->imageTable[4];
-    int mode = image->unk0_2;
+    int mode = image->is8Bit;
     int columns;
     int column;
     int top;
@@ -4289,8 +4265,8 @@ void func_800CCA90(int arg0)
         return;
     }
 
-    if (gim->unk0_2) {
-        if (gim->unk0_12) {
+    if (gim->is8Bit) {
+        if (gim->slotClut) {
             clut = getClut(clut, 511);
         } else {
             clut = getClut(768, 227);
@@ -4551,7 +4527,12 @@ void func_800CD158(int id)
     }
 }
 
-int func_800CD3A0(int arg0, int arg1)
+/**
+ * Mirrors a shape vertex.
+ * @param arg0 Vertex, x in the low byte and y in the high byte.
+ * @param arg1 Bit 0 flips y, bit 1 flips x.
+ */
+int flipShapeVertex(int arg0, int arg1)
 {
     int var_v1 = arg0;
 
@@ -4569,12 +4550,16 @@ int func_800CD3A0(int arg0, int arg1)
 #define POINT_X(p) (((short*)&points[p])[0])
 #define POINT_Y(p) (((short*)&points[p])[1])
 
-void func_800CD3E4(int index)
+/**
+ * Draws a text box from its shape, see the format in EVT.
+ * @param index Text box.
+ */
+void drawTextBoxShape(int index)
 {
     u_long* ot = D_800F51B8 + index * 4;
-    u_int part;
+    u_int tailInfo;
     vs_TextBox* box = &vs_battle_textBoxes[index];
-    u_short* verts = (u_short*)D_800EB588[box->unk0.shape];
+    u_short* vertices = (u_short*)textBoxShapes[box->unk0.shape];
     u_char* shape;
     int header;
     int* points = VS_SCRATCH_AT(int*, 0x88);
@@ -4587,32 +4572,32 @@ void func_800CD3E4(int index)
     int flip;
     int i;
     int n;
-    u_char count;
+    u_char outlineCount;
     int k;
     int v;
 
-    if (verts == NULL) {
+    if (vertices == NULL) {
         return;
     }
 
     out = VS_SCRATCH_AT(short*, 0x88);
     flip = box->unk0.flip;
-    shape = (u_char*)verts;
-    part = ((int*)shape)[box->unk0.tail];
-    verts = (u_short*)(shape + (shape[1] + 1) * 4);
-    count = shape[2];
+    shape = (u_char*)vertices;
+    tailInfo = ((int*)shape)[box->unk0.tail];
+    vertices = (u_short*)(shape + (shape[1] + 1) * 4);
+    outlineCount = shape[2];
     header = *(int*)shape;
 
-    for (i = 0; i < count; ++i) {
-        v = func_800CD3A0(verts[i], flip);
+    for (i = 0; i < outlineCount; ++i) {
+        v = flipShapeVertex(vertices[i], flip);
         *out++ = x + (((v & 0xFF) * w) >> 8);
         *out++ = y + (((v >> 8) * h) >> 8);
     }
     if ((u_int)(box->unk0.tail - 1) < ((header >> 8) & 0xFF)) {
-        v = func_800CD3A0(verts[part & 0xFF], flip);
+        v = flipShapeVertex(vertices[tailInfo & 0xFF], flip);
 
         for (; i < (header & 0xFF); ++i) {
-            n = func_800CD3A0(verts[i], flip);
+            n = flipShapeVertex(vertices[i], flip);
             k = n >> 8;
             n &= 0xFF;
 
@@ -4627,15 +4612,15 @@ void func_800CD3E4(int index)
             *out++ = y + (((k + (v >> 8)) * h) >> 8);
         }
     } else {
-        part = 0xFFFF;
+        tailInfo = 0xFFFF;
     }
 
-    verts += header & 0xFF;
+    vertices += header & 0xFF;
 
     i = (header >> 16) & 0xFF;
 
     for (n = 0; n < i; ++n) {
-        if (n == (part & 0xFF)) {
+        if (n == (tailInfo & 0xFF)) {
             v = 0;
 
             for (k = 0; k < box->unk0.tail; ++k) {
@@ -4648,7 +4633,7 @@ void func_800CD3E4(int index)
             }
 
             v = n;
-            n = (part >> 8) & 0xFF;
+            n = (tailInfo >> 8) & 0xFF;
             vs_battle_addTile(
                 ot + 2, vs_getRGB0(primLineF2, 48, 48, 48), points[n], points[v]);
         }
@@ -4658,7 +4643,7 @@ void func_800CD3E4(int index)
             ot + 2, vs_getRGB0(primLineF2, 48, 48, 48), points[n], points[v]);
     }
 
-    vs_battle_insertTpage(0xE2000000, ot + 2);
+    vs_battle_insertTpage(vs_getTexWindow(0, 0, 256, 256), ot + 2);
 
     prim = vs_scratch.nextPrim;
     flip = box->brightness;
@@ -4669,15 +4654,15 @@ void func_800CD3E4(int index)
             int quad;
 
             if ((n != 0) && (n != box->unk0.tail)) {
-                verts += 2;
+                vertices += 2;
                 continue;
             }
 
-            v = ((u_char*)verts)[0];
-            i = ((u_char*)verts)[1];
-            w = ((u_char*)verts)[2];
-            h = ((u_char*)verts)[3];
-            verts += 2;
+            v = ((u_char*)vertices)[0];
+            i = ((u_char*)vertices)[1];
+            w = ((u_char*)vertices)[2];
+            h = ((u_char*)vertices)[3];
+            vertices += 2;
 
             x = POINT_X(v);
 
@@ -4729,24 +4714,26 @@ void func_800CD3E4(int index)
 
             prim[0] = (ot[1] & 0xFFFFFF) | 0x0C000000;
             prim[1] = (quad + 8) << 26;
-            prim[2] = ((POINT_X(v) + 2) & 0xFFFF) | ((POINT_Y(v) + 2) << 16);
-            prim[3] = ((POINT_X(i) + 2) & 0xFFFF) | ((POINT_Y(i) + 2) << 16);
-            prim[4] = ((POINT_X(w) + 2) & 0xFFFF) | ((POINT_Y(w) + 2) << 16);
-            prim[5] = quad ? ((POINT_X(h) + 2) & 0xFFFF) | ((POINT_Y(h) + 2) << 16) : 0;
-            prim[6] = 0x48000000;
+            prim[2] = vs_getXY_2(POINT_X(v) + 2, POINT_Y(v) + 2);
+            prim[3] = vs_getXY_2(POINT_X(i) + 2, POINT_Y(i) + 2);
+            prim[4] = vs_getXY_2(POINT_X(w) + 2, POINT_Y(w) + 2);
+            prim[5] = quad ? vs_getXY_2(POINT_X(h) + 2, POINT_Y(h) + 2) : 0;
+            prim[6] = vs_getRGB0(primLineF3, 0, 0, 0);
             prim[7] = prim[2];
             prim[8] = prim[3];
             prim[9] = prim[quad + 3];
             prim[10] = prim[4];
             prim[11] = prim[2];
-            prim[12] = 0x55555555;
+            prim[12] = primPolylineEnd;
             ot[1] = ((u_long)prim << 8) >> 8;
             prim += 13;
         }
     }
 
     vs_scratch.nextPrim = prim;
-    vs_battle_addTile(ot + 2, _get_mode(0, 0, getTPage(0, 0, 448, 256)), 0xE2000318, 0);
+
+    vs_battle_addTile(ot + 2, _get_mode(0, 0, getTPage(0, 0, 448, 256)),
+        vs_getTexWindow(0, 0, 64, 64), 0);
 }
 
 #undef POINT_X

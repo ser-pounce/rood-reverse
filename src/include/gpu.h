@@ -14,7 +14,11 @@ enum vs_semiTransparencyRate {
 
 enum vs_dithering { ditheringOff = 0, ditheringOn = 1 };
 
-enum vs_primAddr { primAddrNull = 0, primAddrEnd = 0xFFFFFF };
+enum vs_primTerminator {
+    primAddrNull = 0,
+    primAddrEnd = 0xFFFFFF,
+    primPolylineEnd = 0x55555555
+};
 
 enum vs_primType {
     primShadeTex = 1,
@@ -31,6 +35,7 @@ enum vs_primType {
     primPolyGT4SemiTrans = primPolyGT4 | primSemiTrans,
     primLineF2 = 0x40,
     primLineF2SemiTrans = primLineF2 | primSemiTrans,
+    primLineF3 = 0x48,
     primLineG2 = 0x50,
     primLineG2SemiTrans = primLineG2 | primSemiTrans,
     primTile = 0x60,
@@ -103,6 +108,9 @@ typedef struct {
 #define vs_getTpage(x, y, tp, abr, dtd)                                                  \
     ((0xE1 << 24) | (((dtd) & 1) << 9) | getTPage((tp), (abr), (x), (y)))
 #define vs_getTpageRaw(tpageVal) ((0xE1 << 24) | ((tpageVal) & 0xFFFF))
+#define vs_getTexWindow(x, y, w, h)                                                      \
+    ((0xE2 << 24) | ((((y) & 0xFF) >> 3) << 15) | ((((x) & 0xFF) >> 3) << 10)            \
+        | (((~((h) - 1) & 0xFF) >> 3) << 5) | ((~((w) - 1) & 0xFF) >> 3))
 #define vs_getRGB(r, g, b) vs_getRGB0(0, (r), (g), (b))
 #define vs_getRGB0(code, r, g, b)                                                        \
     (((code) << 24) | (((b) & 0xFF) << 16) | (((g) & 0xFF) << 8) | ((r) & 0xFF))

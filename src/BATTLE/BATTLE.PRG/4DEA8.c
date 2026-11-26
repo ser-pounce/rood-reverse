@@ -13,6 +13,7 @@
 #include "battleUnk.h"
 #include "cameraPrivate.h"
 #include "entity.h"
+#include "gim.h"
 #include "src/SLUS_010.40/main.h"
 #include "src/SLUS_010.40/32154.h"
 #include "src/SLUS_010.40/cd.h"
@@ -33,6 +34,69 @@
 #include <stddef.h>
 #include <abs.h>
 #include <inline_c.h>
+
+typedef struct {
+    u_char changed;
+    u_char ease;
+    short value;
+    short start;
+    short delta;
+    short elapsed;
+    short duration;
+} AngleTween;
+
+typedef struct {
+    u_char changed;
+    u_char ease;
+    short value;
+    short start;
+    short delta;
+    u_char elapsed;
+    u_char duration;
+    UNUSED u_char _;
+} ProjectionTween;
+
+typedef struct {
+    UNUSED u_char _0;
+    u_char ease;
+    SVECTOR value;
+    SVECTOR start;
+    SVECTOR delta;
+    UNUSED short _1;
+    short elapsed;
+    short duration;
+} ScreenEffectTween;
+
+typedef struct {
+    UNUSED u_char _;
+    u_char curve;
+    u_char elapsed;
+    u_char duration;
+    short startX;
+    short startY;
+    short deltaX;
+    short deltaY;
+    short startScale;
+    short deltaScale;
+    short startBrightness;
+    short deltaBrightness;
+} GimTween;
+
+typedef struct {
+    UNUSED u_char _0;
+    UNUSED u_char _1;
+    u_char elapsed;
+    u_char duration;
+    short direction;
+    short startDirection;
+    short deltaDirection;
+    short fallAngle;
+    short startFallAngle;
+    short deltaFallAngle;
+    short intensity;
+    short startIntensity;
+    short deltaIntensity;
+} ParticleTween;
 
 typedef struct {
     u_char mode;
@@ -59,142 +123,85 @@ typedef struct {
     VECTOR otherPosition;
 } CameraChannel;
 
-typedef struct {
-    char unk0;
-    char unk1;
-    short unk2;
-    short unk4;
-    short unk6;
-    short unk8;
-    short unkA;
-} func_800BD57C_t;
+enum {
+    cameraModeLerp = 2,
+    cameraModeArc = 3,
+    cameraModeOrbitTo = 4,
+    cameraModeOrbitBy = 5,
+    cameraModeFollowActor = 8,
+    cameraModeLockOffset = 9,
+    cameraModeTerrainFollow = 11,
+    cameraModeIdle = 15
+};
+
+enum {
+    cameraIdleLookAt = 1 << 0,
+    cameraIdleEye = 1 << 1,
+    cameraIdleRoll = 1 << 2, // E2
+    cameraIdleProjectionDistance = 1 << 3, // EA
+    cameraIdleNearClip = 1 << 4, // EB
+    cameraIdleFarClip = 1 << 5, // EC
+    cameraIdleLensDistortion = 1 << 6, // ED
+    cameraIdleShake = 1 << 7, // EF
+    cameraIdleAll = 0xFF
+};
 
 typedef struct {
-    union {
-        u_char u8[2];
-        short s16;
-    } unk0;
-    short unk2;
-    short unk4;
-    short unk6;
-    char unk8;
-    char unk9;
-    char unkA;
-    char unkB;
-} func_800BDF6C_t;
-
-typedef struct {
-    char unk0;
-    char unk1;
-    short unk2;
-    short unk4;
-    short unk6;
-    char unk8;
-    char unk9;
-    char unkA;
-    char unkB;
-} func_800BDF6C_unk180_t;
-
-typedef struct {
-    char unk0;
-    char unk1;
-    short unk2;
-    short unk4;
-    short unk6;
-    short unk8;
-    short unkA;
-    short unkC;
-    short unkE;
-    short unk10;
-    short unk12;
-    short unk14;
-    short unk16;
-    short unk18;
-    short unk1A;
-    short unk1C;
-    short unk1E;
-} func_800BDBB4_t;
+    UNUSED u_char _;
+    u_char envelope;
+    short offset;
+    short cycles;
+    short amplitude;
+    u_char elapsed;
+    u_char duration;
+    u_char flags;
+} ShakeEntry;
 
 typedef struct {
     CameraChannel lookAt;
     CameraChannel eye;
-    func_800BD57C_t unk168;
-    func_800BD57C_t unk174;
-    func_800BDF6C_unk180_t projectionDistance;
-    func_800BDF6C_unk180_t nearClip;
-    func_800BDF6C_unk180_t farClip;
-    func_800BDF6C_t unk1A4;
-    func_800BDF6C_t unk1B0;
-    short unk1BC;
-    short unk1BE;
-    short unk1C0;
-    short unk1C2;
-    short unk1C4;
-    short unk1C6;
-    short unk1C8;
-    short unk1CA;
-    int unk1CC;
-    vs_ActorPosition unk1D0;
-    int unk1E0[2];
+    AngleTween roll;
+    AngleTween framebufferSpin;
+    ProjectionTween projectionDistance;
+    ProjectionTween nearClip;
+    ProjectionTween farClip;
+    short shakeCount;
+    ShakeEntry shakeEntries[2];
+    SVECTOR shakeLookAt;
+    SVECTOR shakeEye;
+    vs_ActorPosition actorPosition;
+    UNUSED int _[2];
     u_short attachedActor;
-    u_short unk1EA;
     VECTOR attachedPosition;
-    func_800BDBB4_t unk1FC;
-    func_800BDBB4_t unk21C;
-    func_800BDBB4_t unk23C;
-    func_800BDBB4_t unk25C;
-    VECTOR unk27C;
-} D_800F4BA4_t;
+    ScreenEffectTween framebufferScale;
+    ScreenEffectTween framebufferTint;
+    ScreenEffectTween framebufferOffset;
+    ScreenEffectTween lensDistortion;
+    VECTOR terrainFollowLast;
+} ScriptCamera;
 
 typedef struct {
-    u_int visible : 1;
-    u_int loading : 1;
-    u_int unk0_2 : 1;
-    u_int drawMode : 3;
-    u_int unk0_6 : 18;
-    u_int brightness : 8;
-    int unk4;
-    short x;
-    short y;
-    short scale;
-    int unk10[0xFA];
-} Gim;
+    int i1;
+    int i2;
+    UNUSED int i3;
+    UNUSED int i4;
+    VECTOR v1;
+    VECTOR v2;
+    VECTOR v3;
+    UNUSED VECTOR v4;
+    SVECTOR s1;
+    SVECTOR s2;
+    SVECTOR s3;
+    UNUSED SVECTOR s4;
+    MATRIX matrix;
+} CameraScratch;
+
+#define CAMERA_SCRATCH VS_SCRATCH_AT(CameraScratch*, 0x88)
 
 typedef struct {
-    char unk0;
-    char curve;
-    char elapsed;
-    char duration;
-    short startX;
-    short startY;
-    short deltaX;
-    short deltaY;
-    short startScale;
-    short deltaScale;
-    short startBrightness;
-    short deltaBrightness;
-} GimTween;
-
-typedef struct {
-    char unk0;
-    char unk1;
-    char elapsed;
-    char duration;
-    short direction;
-    short startDirection;
-    short deltaDirection;
-    short fallAngle;
-    short startFallAngle;
-    short deltaFallAngle;
-    short intensity;
-    short startIntensity;
-    short deltaIntensity;
-} ParticleTween;
-
-typedef struct {
-    char remaining;
-    char next;
-    char actors[17];
+    u_char remaining;
+    u_char next;
+    u_char actors[17];
 } ActorList;
 
 typedef struct {
@@ -204,63 +211,6 @@ typedef struct {
     int distance;
 } TextPlacement;
 
-typedef struct {
-    int value;
-    int distance;
-    char unk8[8];
-    VECTOR v1;
-    VECTOR v2;
-    VECTOR v3;
-    char unk40[16];
-    SVECTOR rotation;
-    SVECTOR rotation2;
-    SVECTOR unk60;
-    char unk68[8];
-    MATRIX matrix;
-} CameraScratch;
-
-/**
- * The camera code's workspace in the scratchpad. The three structs overlay each other,
- * and are three names for the same slots.
- */
-#define CAMERA_SCRATCH VS_SCRATCH_AT(CameraScratch*, 0x88)
-
-typedef struct {
-    int distance;
-    int steps;
-    char unk8[8];
-    VECTOR delta;
-    VECTOR candidate;
-    VECTOR direction;
-    char unk40[16];
-    SVECTOR unk50;
-    SVECTOR unk58;
-    SVECTOR unk60;
-    char unk68[8];
-    MATRIX matrix;
-} CameraMotionScratch;
-
-#define CAMERA_MOTION_SCRATCH VS_SCRATCH_AT(CameraMotionScratch*, 0x88)
-
-typedef struct {
-    int unk0;
-    int unk4;
-    char unk8[8];
-    VECTOR unk10;
-    VECTOR unk20;
-    VECTOR unk30;
-    char unk40[16];
-    SVECTOR a;
-    SVECTOR b;
-    SVECTOR c;
-    char unk68[8];
-    MATRIX unk70;
-} CameraShakeScratch;
-
-#define CAMERA_SHAKE_SCRATCH VS_SCRATCH_AT(CameraShakeScratch*, 0x88)
-
-// Comparison selected by the high nibble of a conditional opcode's second byte, applied
-// as `flag <op> operand`
 enum flagComparison {
     flagComparisonLe = 0x00,
     flagComparisonGe = 0x10,
@@ -271,8 +221,6 @@ enum flagComparison {
     flagComparisonAnd = 0x60
 };
 
-// Operation selected by the high nibble of a flag modifying opcode's second byte,
-// applied as `flag = flag <op> operand`
 enum flagOperation {
     flagOperationAdd = 0x00,
     flagOperationSubtract = 0x10,
@@ -294,90 +242,90 @@ int getActorScreenPositionAndUpAngle(int actorId, SVECTOR* position);
 void attachCameraToActor(u_short actor);
 void setCameraFollowsAshley(int follows);
 void updateCameraAttachment(void);
-void func_800BCA8C(CameraChannel*, CameraChannel*);
-void func_800BCFB4(CameraChannel*);
+static void stepCameraChannel(CameraChannel*, CameraChannel*);
+static void stepCameraTerrainFollow(CameraChannel*);
 void returnToGameplayCamera(short facing, int zoom);
-int func_800BD2B8(MATRIX*);
-void func_800BD57C(func_800BD57C_t* arg0);
+static int getCameraTerrainHeight(MATRIX*);
+static void stepAngleTween(AngleTween*);
 u_char getCameraIdleFlags(void);
-int func_800BDBB4(func_800BDBB4_t* arg0);
-void func_800BDF6C(func_800BDF6C_unk180_t* arg0);
-void func_800BE180(void);
+static int stepScreenEffectTween(ScreenEffectTween*);
+static void stepProjectionTween(ProjectionTween*);
+static void updateCameraShake(void);
 void setCameraMomentum(int lookAt, int eye);
-void clearCameraMomentum(void);
-void sweepCameraToSavedPlayerView(char side);
+static void stopCamera(void);
+void sweepCameraToSavedPlayerView(u_char side);
 void scaleCameraMoveDurationByDistance(short target);
-VECTOR* vectorAdd(VECTOR* arg0, VECTOR* arg1, VECTOR* arg2);
-VECTOR* vectorSubtract(VECTOR* arg0, VECTOR* arg1, VECTOR* arg2);
-VECTOR* setVectorImm(VECTOR*, u_char*);
-VECTOR* vectorFixedPointMult(VECTOR*, VECTOR*, int);
-void vecToRotMatrix(VECTOR*, MATRIX*);
-int atan2FixedPoint(int arg0, int arg1);
+static VECTOR* vectorAdd(VECTOR* result, VECTOR* a, VECTOR* b);
+static VECTOR* vectorSubtract(VECTOR* result, VECTOR* a, VECTOR* b);
+static VECTOR* readScriptVector(VECTOR* result, u_char* script);
+static VECTOR* vectorFixedPointMult(VECTOR* result, VECTOR* vector, int scalar);
+static void vectorToLookMatrix(VECTOR* direction, MATRIX* matrix);
+static int yawFromOffset(int x, int z);
 static int fixedPointMult(int a, int b);
-static int vectorMagnitude(VECTOR*);
-static VECTOR* vectorCopy(VECTOR* arg0, VECTOR* arg1);
-static VECTOR* sVectorToFixedPointVector(VECTOR* arg0, SVECTOR* arg1);
-static void toNormalIntegerVector(VECTOR*, VECTOR*);
+static int vectorMagnitude(VECTOR* vector);
+static VECTOR* vectorCopy(VECTOR* destination, VECTOR* source);
+static VECTOR* sVectorToFixedPointVector(VECTOR* result, SVECTOR* integer);
+static void normalizeVector(VECTOR* vector, VECTOR* result);
 
 extern int scriptSfxGroups[];
 extern int weaponDrawnModes[];
-extern char animationBankBase[];
-extern char skipResetPaletteOp[];
-extern char skipTailMarkerOp[];
-extern u_char D_800E9BEC[];
+extern u_char animationBankBase[];
+extern u_char skipResetPaletteOp[];
+extern u_char skipTailMarkerOp[];
+extern u_char textBoxPlacementDirections[];
 extern u_char cubePuzzleSubmenus[];
 extern short battleTimerModes[];
 extern short battleTimerLifetimes[];
 extern void sceneResetScript;
-extern short D_800E9C00[];
-extern u_char D_800E9C1C[];
-extern short D_800E9C24[];
-extern u_char D_800E9C28;
-extern u_char D_800E9C2C;
+extern short cameraPitchPresets[];
+extern u_char returnCameraScripts[];
+extern short sweepHeightOffsets[];
+extern u_char sweepEyeScript[];
+extern u_char sweepLookAtScript[];
 extern u_short scanlinePhase;
 extern GimTween gimTweens[];
 extern ParticleTween particleTween;
-extern char D_800F4B8B;
-extern char cameraFollowsAshley;
-extern D_800F4BA4_t* D_800F4BA4;
-extern char D_800F4BA8;
-extern void* mpdClearedSection;
+extern u_char D_800F4B8B;
+extern u_char cameraFollowsAshley;
+extern ScriptCamera* scriptCamera;
+extern u_char D_800F4BA8;
+extern void* mpdTriggerSection;
 extern u_short* scriptStrings;
-extern char switchValue;
+extern u_char switchValue;
 extern short cameraReturned;
-extern char D_800F4BB8;
+extern u_char eventReady;
 extern u_char effectCancelled;
 extern char* vibrationPatterns[];
-extern short D_800F4BE0;
-extern char scanlinesEnabled;
-extern void* mpdRoomDoorSection;
-extern char scriptMenuState;
-extern char loopCounters[];
-extern short D_800F4C22;
+extern short eventSource;
+extern u_char scanlinesEnabled;
+extern void* mpdTriggeredScripts;
+extern u_char scriptMenuState;
+extern u_char loopCounters[];
+extern short mainScriptEnded;
 extern void* nextEvtBuffer;
-extern char D_800F4C34;
+extern u_char eventState;
 /** Next opcode of the code running in each script slot, NULL if it isn't running. */
 extern u_char* scriptSlots[];
 extern short particleEffectSoundToRestore;
-extern char weaponAnimating;
-extern short mpdScriptSection;
+extern u_char weaponAnimating;
+extern short mpdEntryScriptPending;
 extern short nextEvtQueued;
-extern char textBoxSelectionPending;
+extern u_char textBoxSelectionPending;
 extern int scriptReturnAddress;
-extern char scriptMusicSlot;
-extern char fogDepthOverridden;
+extern u_char scriptMusicSlot;
+extern u_char fogDepthOverridden;
 
-extern char D_800F4B70[];
+extern u_char actorMoved[];
 extern Gim* gims;
 
 /**
  * Handler for opcode values that are not defined.
  */
-int vs_battle_script_invalidOpcode(u_char* arg0, short arg1)
+int vs_battle_script_invalidOpcode(u_char* script, short slot)
 {
     char buf[64];
 
-    sprintf(buf, "unknown code detected:%d,$%08x,$%02x", arg1, (u_int)arg0, *arg0);
+    sprintf(buf, "unknown code detected:%d,$%08x,$%02x", slot, (u_int)script, *script);
     // Debug printing presumably ifdef'd out
     return scriptNext;
 }
@@ -385,20 +333,23 @@ int vs_battle_script_invalidOpcode(u_char* arg0, short arg1)
 /**
  * Does nothing.
  */
-int vs_battle_script_nop(UNUSED u_char* arg0, UNUSED short arg1) { return scriptNext; }
+int vs_battle_script_nop(UNUSED u_char* script, UNUSED short slot) { return scriptNext; }
 
 /**
  * Does nothing and waits until the next frame before carrying on.
  */
-int vs_battle_script_yield(UNUSED u_char* arg0, UNUSED short arg1) { return scriptYield; }
+int vs_battle_script_yield(UNUSED u_char* script, UNUSED short slot)
+{
+    return scriptYield;
+}
 
 /**
  * Waits until the event file that is being loaded, if any, has finished loading.
  */
-int vs_battle_script_0A_waitEvtLoad(UNUSED u_char* arg0, UNUSED short arg1)
+int vs_battle_script_0A_waitEvtLoad(UNUSED u_char* script, UNUSED short slot)
 {
     if ((evtCdSlot != 0) && (evtCdSlot->state != CdQueueStateLoaded)) {
-        return scriptRepeat;
+        return scriptWait;
     }
 
     return scriptNext;
@@ -407,7 +358,7 @@ int vs_battle_script_0A_waitEvtLoad(UNUSED u_char* arg0, UNUSED short arg1)
 /**
  * Waits until the GIM that is being loaded has finished loading.
  */
-int vs_battle_script_0C_waitGimLoad(UNUSED u_char* arg0, UNUSED short arg1)
+int vs_battle_script_0C_waitGimLoad(UNUSED u_char* script, UNUSED short slot)
 {
     return gims->loading;
 }
@@ -416,8 +367,9 @@ int vs_battle_script_0C_waitGimLoad(UNUSED u_char* arg0, UNUSED short arg1)
  * Begins a section of the script that the player can skip with START.
  * @param script Opcode bytes:
  *   - [1] bit 0 = keep the music playing if the section is skipped
+ *   - [2] = unused
  */
-int vs_battle_script_0D_beginSkippable(u_char* script, UNUSED short arg1)
+int vs_battle_script_0D_beginSkippable(u_char* script, UNUSED short slot)
 {
     scriptSkipMode = scriptSkippable;
     stopMusicOnSkip = !(script[1] & 1);
@@ -445,14 +397,14 @@ static void endScriptSkip(u_char* script)
 
     while (*script != endOpcode) {
         if (memcmp(script, skipTailMarkerOp, 4) == 0) {
-            vs_battle_setStateFlag(0xA8, 0);
+            vs_battle_setStateFlag(skippingScene, 0);
             return;
         }
-        script = &script[D_800E9C30[*script]];
+        script = &script[opcodeLengths[*script]];
     }
 
     func_80093A70();
-    vs_battle_setStateFlag(0xA8, 0);
+    vs_battle_setStateFlag(skippingScene, 0);
 }
 
 /**
@@ -464,9 +416,9 @@ static void endScriptSkip(u_char* script)
  * @return scriptYield if the section was skipped, otherwise the address to
  * jump to.
  */
-int vs_battle_script_0E_endSkippableBody(u_char* script, UNUSED short arg1)
+int vs_battle_script_0E_endSkippableBody(u_char* script, UNUSED short slot)
 {
-    char prevMode = scriptSkipMode;
+    u_char prevMode = scriptSkipMode;
     scriptSkipMode = scriptSkipOff;
 
     if (prevMode == scriptSkipping) {
@@ -481,13 +433,13 @@ int vs_battle_script_0E_endSkippableBody(u_char* script, UNUSED short arg1)
  * Ends the skip handler of a skippable section. Only has an effect if the section was
  * being skipped, in which case it finishes the skip like 0E.
  */
-int vs_battle_script_0F_endSkipHandler(u_char* arg0, UNUSED short arg1)
+int vs_battle_script_0F_endSkipHandler(u_char* script, UNUSED short slot)
 {
-    char prevMode = scriptSkipMode;
+    u_char prevMode = scriptSkipMode;
     scriptSkipMode = scriptSkipOff;
 
     if (prevMode == scriptSkipping) {
-        endScriptSkip(arg0);
+        endScriptSkip(script);
         return scriptYield;
     }
 
@@ -506,7 +458,7 @@ int vs_battle_script_0F_endSkipHandler(u_char* arg0, UNUSED short arg1)
  *   - [8-9] = speaker actor (actorSelectorNone: none)
  *   - [10] = speaker animation
  */
-int vs_battle_script_10_initTextBox(u_char* script, UNUSED short arg1)
+int vs_battle_script_10_initTextBox(u_char* script, UNUSED short slot)
 {
     vs_TextBox* box;
     short speakerSelector;
@@ -546,7 +498,7 @@ int vs_battle_script_10_initTextBox(u_char* script, UNUSED short arg1)
  *   - [2] = string index
  *   - [3] = nonzero: do not wait for the player to advance the text
  */
-int vs_battle_script_11_showTextBox(u_char* script, UNUSED short arg1)
+int vs_battle_script_11_showTextBox(u_char* script, UNUSED short slot)
 {
     int printStatus;
 
@@ -556,7 +508,7 @@ int vs_battle_script_11_showTextBox(u_char* script, UNUSED short arg1)
 
         if (script[3] == 0) {
             textBoxStatuses[script[1]] = 1;
-            return scriptRepeat;
+            return scriptWait;
         }
 
         return scriptNext;
@@ -576,7 +528,7 @@ int vs_battle_script_11_showTextBox(u_char* script, UNUSED short arg1)
         return scriptNext;
     }
 
-    return scriptRepeat;
+    return scriptWait;
 }
 
 /**
@@ -584,7 +536,7 @@ int vs_battle_script_11_showTextBox(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = boxId
  */
-int vs_battle_script_12_dismissTextBox(u_char* script, UNUSED short arg1)
+int vs_battle_script_12_dismissTextBox(u_char* script, UNUSED short slot)
 {
     vs_battle_dismissTextBox(script[1]);
 
@@ -647,7 +599,7 @@ static int tryTextBoxPlacement(
  *   - [7] = height in lines
  *   - [8] = speaker animation
  */
-int vs_battle_script_13_initTextBoxNearActor(u_char* script, UNUSED short arg1)
+int vs_battle_script_13_initTextBoxNearActor(u_char* script, UNUSED short slot)
 {
     TextPlacement placements[4];
     SVECTOR origin;
@@ -663,7 +615,8 @@ int vs_battle_script_13_initTextBoxNearActor(u_char* script, UNUSED short arg1)
     origin.vz = ((origin.vz - ONE / 4) & 0xC00) >> 10;
 
     for (i = 0; i < 4; ++i) {
-        if (tryTextBoxPlacement(&origin, script, &placements[i], D_800E9BEC[i])) {
+        if (tryTextBoxPlacement(
+                &origin, script, &placements[i], textBoxPlacementDirections[i])) {
             best = &placements[i];
             break;
         }
@@ -700,9 +653,9 @@ int vs_battle_script_13_initTextBoxNearActor(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = boxId
  */
-int vs_battle_script_14_dismissTextBoxAndWait(u_char* script, UNUSED short arg1)
+int vs_battle_script_14_dismissTextBoxAndWait(u_char* script, UNUSED short slot)
 {
-    return vs_battle_dismissTextBox(script[1]) != 0 ? scriptRepeat : scriptNext;
+    return vs_battle_dismissTextBox(script[1]) != 0 ? scriptWait : scriptNext;
 }
 
 /**
@@ -710,13 +663,13 @@ int vs_battle_script_14_dismissTextBoxAndWait(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = mask of pad buttons, only the low byte (L2, R2, L1, R1 and the face buttons)
  */
-int vs_battle_script_15_waitButtonPressed(u_char* script, UNUSED short arg1)
+int vs_battle_script_15_waitButtonPressed(u_char* script, UNUSED short slot)
 {
     if (vs_main_buttonsPressed.all & script[1]) {
         return scriptYield;
     }
 
-    return scriptRepeat;
+    return scriptWait;
 }
 
 /**
@@ -725,7 +678,7 @@ int vs_battle_script_15_waitButtonPressed(u_char* script, UNUSED short arg1)
  *   - [1-2] = GIM index
  *   - [3] = first VRAM page slot
  */
-int vs_battle_script_16_loadGim(u_char* script, UNUSED short arg1)
+int vs_battle_script_16_loadGim(u_char* script, UNUSED short slot)
 {
     loadGim(getShort(script + 1), script[3]);
 
@@ -742,7 +695,7 @@ int vs_battle_script_16_loadGim(u_char* script, UNUSED short arg1)
  *   - [4] = scale, 0x20 is full size
  *   - [5] = brightness, 0x80 is normal
  */
-int vs_battle_script_17_showGimImage(u_char* script, UNUSED short arg1)
+int vs_battle_script_17_showGimImage(u_char* script, UNUSED short slot)
 {
     GimTween* tween;
 
@@ -779,7 +732,7 @@ int vs_battle_script_17_showGimImage(u_char* script, UNUSED short arg1)
  *   - [5] = (image << 6) | curve, curve 0-3 are built in and 4-7 are set up by script
  *   - [6] = duration
  */
-int vs_battle_script_18_tweenGimImage(u_char* script, UNUSED short arg1)
+int vs_battle_script_18_tweenGimImage(u_char* script, UNUSED short slot)
 {
     Gim* gim = gims;
     GimTween* tween = &gimTweens[script[5] >> 6];
@@ -791,7 +744,7 @@ int vs_battle_script_18_tweenGimImage(u_char* script, UNUSED short arg1)
     gim += script[5] >> 6;
 
     if (tween->duration != 0) {
-        return scriptRepeat;
+        return scriptWait;
     }
 
     tween->deltaX = (((signed char)script[1] * 2) - (tween->startX = gim->x));
@@ -808,7 +761,7 @@ int vs_battle_script_18_tweenGimImage(u_char* script, UNUSED short arg1)
 /**
  * Unloads the GIM.
  */
-int vs_battle_script_19_unloadGim(UNUSED u_char* arg0, UNUSED short arg1)
+int vs_battle_script_19_unloadGim(UNUSED u_char* script, UNUSED short slot)
 {
     unloadGim();
 
@@ -818,10 +771,10 @@ int vs_battle_script_19_unloadGim(UNUSED u_char* arg0, UNUSED short arg1)
 /**
  * Waits until all the GIM image tweens have finished.
  */
-int vs_battle_script_1A_waitGimTweens(UNUSED u_char* arg0, UNUSED short arg1)
+int vs_battle_script_1A_waitGimTweens(UNUSED u_char* script, UNUSED short slot)
 {
     return (gimTweens[0].duration | gimTweens[1].duration | gimTweens[2].duration) != 0
-             ? scriptRepeat
+             ? scriptWait
              : scriptNext;
 }
 
@@ -833,7 +786,7 @@ int vs_battle_script_1A_waitGimTweens(UNUSED u_char* arg0, UNUSED short arg1)
  *     1 = signed byte, 2 = unsigned 16 bits, 3 = signed 16 bits. 2 and 3 read
  *     two sequential state flags.
  */
-int vs_battle_script_1B_setPrintfArgInt(u_char* script, UNUSED short arg1)
+int vs_battle_script_1B_setPrintfArgInt(u_char* script, UNUSED short slot)
 {
     int flag = getShort(script + 2) & 0x3FF;
 
@@ -865,7 +818,7 @@ int vs_battle_script_1B_setPrintfArgInt(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = (boxId << 5) | animation duration (0-31)
  */
-int vs_battle_script_1D_setTextBoxAnimationDuration(u_char* script, UNUSED short arg1)
+int vs_battle_script_1D_setTextBoxAnimationDuration(u_char* script, UNUSED short slot)
 {
     vs_battle_getTextBox(script[1] >> 5)->animationDuration = script[1] & 0x1F;
 
@@ -878,7 +831,7 @@ int vs_battle_script_1D_setTextBoxAnimationDuration(u_char* script, UNUSED short
  * @param script Opcode bytes:
  *   - [1] = mask of the text boxes to choose between, bit n is box n
  */
-int vs_battle_script_1C_selectTextBox(u_char* script, UNUSED short arg1)
+int vs_battle_script_1C_selectTextBox(u_char* script, UNUSED short slot)
 {
     if (scriptSkipMode == scriptSkipping) {
         return scriptNext;
@@ -901,7 +854,7 @@ int vs_battle_script_1C_selectTextBox(u_char* script, UNUSED short arg1)
         textBoxSelectionPending = 1;
     }
 
-    return scriptRepeat;
+    return scriptWait;
 }
 
 /**
@@ -910,7 +863,7 @@ int vs_battle_script_1C_selectTextBox(u_char* script, UNUSED short arg1)
  *   - [1-2] = actor selector, a single actor or a group
  *   - [3] = nonzero: play the death animation first, 0: start the fade-out directly
  */
-int vs_battle_script_1E_actorDeath(u_char* script, UNUSED short arg1)
+int vs_battle_script_1E_actorDeath(u_char* script, UNUSED short slot)
 {
     ActorList actors;
 
@@ -936,7 +889,7 @@ int vs_battle_script_1E_actorDeath(u_char* script, UNUSED short arg1)
  *   - [3-4] = first of three consecutive state flags that receive the actor's tile
  *     x, surface and z. The first flag is set to 0xFF if the actor does not exist.
  */
-int vs_battle_script_1F_getActorTile(u_char* script, UNUSED short arg1)
+int vs_battle_script_1F_getActorTile(u_char* script, UNUSED short slot)
 {
     vs_ActorPosition position;
     u_short actor = getShort(script + 1);
@@ -952,7 +905,7 @@ int vs_battle_script_1F_getActorTile(u_char* script, UNUSED short arg1)
         }
     } else {
 
-        actor = func_8007CF18(actor);
+        actor = getActorSlotById(actor);
 
         if (actor == 1) {
             vs_battle_setStateFlag(flag, 0xFF);
@@ -975,7 +928,7 @@ int vs_battle_script_1F_getActorTile(u_char* script, UNUSED short arg1)
  *   - [3-4] = model index (OBJ/xx.SHP), doubles as the id the actor is looked up by
  *   - [5-8] = tile to spawn on and facing: x, surface, z and facing (1/256 turn)
  */
-int vs_battle_script_20_spawnActor(u_char* script, UNUSED short arg1)
+int vs_battle_script_20_spawnActor(u_char* script, UNUSED short slot)
 {
     vs_TilePosition tile[3];
 
@@ -997,7 +950,7 @@ int vs_battle_script_20_spawnActor(u_char* script, UNUSED short arg1)
  *   - [4] = unused
  *   - [5] = tile z
  */
-int vs_battle_script_21_walkActorToTile(u_char* script, UNUSED short arg1)
+int vs_battle_script_21_walkActorToTile(u_char* script, UNUSED short slot)
 {
     SVECTOR destination;
     u_short actor = resolveActorId(getShort(script + 1));
@@ -1013,9 +966,9 @@ int vs_battle_script_21_walkActorToTile(u_char* script, UNUSED short arg1)
         walkActorToCoordinate(actor, &destination);
     }
 
-    func_8009DC8C(actor);
+    resetActorMotionState(actor);
 
-    D_800F4B70[actor] = 1;
+    actorMoved[actor] = 1;
 
     return scriptNext;
 }
@@ -1028,7 +981,7 @@ int vs_battle_script_21_walkActorToTile(u_char* script, UNUSED short arg1)
  *   - [4] = unused
  *   - [5] = (bank << 6) | blend frames, the bank selects the base id in animationBankBase
  */
-int vs_battle_script_22_playAnimation(u_char* script, UNUSED short arg1)
+int vs_battle_script_22_playAnimation(u_char* script, UNUSED short slot)
 {
     vs_battle_setActorAnimation(resolveActorId(getShort(script + 1)),
         animationBankBase[script[5] >> 6] + script[3], script[4], script[5] & 0x3F);
@@ -1049,7 +1002,7 @@ int vs_battle_script_22_playAnimation(u_char* script, UNUSED short arg1)
  *     - bit 3: leave the shield model's flag unchanged (ignores bit 2)
  *     - bit 5: toggle actor deactivation
  */
-int vs_battle_script_23_setActorFlags(u_char* script, UNUSED short arg1)
+int vs_battle_script_23_setActorFlags(u_char* script, UNUSED short slot)
 {
     ActorList actors;
 
@@ -1099,7 +1052,7 @@ int vs_battle_script_23_setActorFlags(u_char* script, UNUSED short arg1)
  *   - [5] = volume, 0x7F is maximum
  *   - [6] = ramp duration in frames, 0 applies immediately
  */
-int vs_battle_script_24_setActorSfxPanVolume(u_char* script, UNUSED short arg1)
+int vs_battle_script_24_setActorSfxPanVolume(u_char* script, UNUSED short slot)
 {
     SfxOverride override;
     int actorId;
@@ -1133,7 +1086,7 @@ int vs_battle_script_24_setActorSfxPanVolume(u_char* script, UNUSED short arg1)
  *   - [8] = turn frame count, 0 = immediately, 0xFF = default (from angle and the
  *     actor's unk5C0)
  */
-int vs_battle_script_25_moveActorToTile(u_char* script, UNUSED short arg1)
+int vs_battle_script_25_moveActorToTile(u_char* script, UNUSED short slot)
 {
     vs_TilePosition tile[3];
     u_short actor = resolveActorId(getShort(script + 1));
@@ -1150,9 +1103,9 @@ int vs_battle_script_25_moveActorToTile(u_char* script, UNUSED short arg1)
             script[8] != 0xFF ? script[8] : -1);
     }
 
-    func_8009DC8C(actor);
+    resetActorMotionState(actor);
 
-    D_800F4B70[actor] = 1;
+    actorMoved[actor] = 1;
 
     return scriptNext;
 }
@@ -1170,23 +1123,23 @@ int vs_battle_script_25_moveActorToTile(u_char* script, UNUSED short arg1)
  *   - [10] = movement frame count, 0 = immediately, 0xFF = default
  *   - [11] = turn frame count, 0 = immediately, 0xFF = default
  */
-int vs_battle_script_26_moveActorToCoordinate(u_char* arg0, UNUSED short arg1)
+int vs_battle_script_26_moveActorToCoordinate(u_char* script, UNUSED short slot)
 {
     vs_ActorPosition position;
-    u_short actor = resolveActorId(getShort(arg0 + 1));
-    short x = getShort(arg0 + 3) >> 1;
-    short y = getShort(arg0 + 5);
-    short z = getShort(arg0 + 7);
+    u_short actor = resolveActorId(getShort(script + 1));
+    short x = getShort(script + 3) >> 1;
+    short y = getShort(script + 5);
+    short z = getShort(script + 7);
 
-    if (arg0[3] & 1) {
+    if (script[3] & 1) {
         vs_battle_getActorPosition(actor, &position);
         applyVector(&position.unk0.unk4, x, y, z, +=);
     } else {
         setVector(&position.unk0.unk4, x, y, z);
     }
 
-    if (arg0[9] != 0xFF) {
-        position.unk0.unk4.pad = arg0[9] << 4;
+    if (script[9] != 0xFF) {
+        position.unk0.unk4.pad = script[9] << 4;
     } else {
         position.unk0.unk4.pad = -0x8000;
     }
@@ -1195,12 +1148,12 @@ int vs_battle_script_26_moveActorToCoordinate(u_char* arg0, UNUSED short arg1)
         moveActorToCoordinate(actor, &position.unk0.unk4, 0, 0);
     } else {
         moveActorToCoordinate(actor, &position.unk0.unk4,
-            arg0[10] != 0xFF ? arg0[10] : -1, arg0[11] != 0xFF ? arg0[11] : -1);
+            script[10] != 0xFF ? script[10] : -1, script[11] != 0xFF ? script[11] : -1);
     }
 
-    func_8009DC8C(actor);
+    resetActorMotionState(actor);
 
-    D_800F4B70[actor] = 1;
+    actorMoved[actor] = 1;
 
     return scriptNext;
 }
@@ -1213,7 +1166,7 @@ int vs_battle_script_26_moveActorToCoordinate(u_char* arg0, UNUSED short arg1)
  *   - [3-5] = tile x, surface and z
  *   - [6] = frame count, 0xFF = default (from distance and the actor's unk5C2)
  */
-int vs_battle_script_27_slideActorToTile(u_char* script, UNUSED short arg1)
+int vs_battle_script_27_slideActorToTile(u_char* script, UNUSED short slot)
 {
     vs_TilePosition tile[4];
     u_short actor = resolveActorId(getShort(script + 1));
@@ -1229,9 +1182,9 @@ int vs_battle_script_27_slideActorToTile(u_char* script, UNUSED short arg1)
         slideActorToTile(actor, tile, script[6] != 0xFF ? script[6] : -1);
     }
 
-    func_8009DC8C(actor);
+    resetActorMotionState(actor);
 
-    D_800F4B70[actor] = 1;
+    actorMoved[actor] = 1;
 
     return scriptNext;
 }
@@ -1246,7 +1199,7 @@ int vs_battle_script_27_slideActorToTile(u_char* script, UNUSED short arg1)
  *   - [7-8] = z
  *   - [9] = frame count, 0xFF = default (from distance and the actor's unk5C2)
  */
-int vs_battle_script_28_slideActorToCoordinate(u_char* script, UNUSED short arg1)
+int vs_battle_script_28_slideActorToCoordinate(u_char* script, UNUSED short slot)
 {
     vs_ActorPosition position;
     u_short actor = resolveActorId(getShort(script + 1));
@@ -1270,9 +1223,9 @@ int vs_battle_script_28_slideActorToCoordinate(u_char* script, UNUSED short arg1
             actor, &position.unk0.unk4, script[9] != 0xFF ? script[9] : -1);
     }
 
-    func_8009DC8C(actor);
+    resetActorMotionState(actor);
 
-    D_800F4B70[actor] = 1;
+    actorMoved[actor] = 1;
 
     return scriptNext;
 }
@@ -1286,7 +1239,7 @@ int vs_battle_script_28_slideActorToCoordinate(u_char* script, UNUSED short arg1
  *   - [5] = bone index in the parent
  *   - [6] = unused
  */
-int vs_battle_script_29_attachActor(u_char* script, UNUSED short arg1)
+int vs_battle_script_29_attachActor(u_char* script, UNUSED short slot)
 {
     u_short actor = resolveActorId(getShort(script + 1));
     u_short parent = resolveActorId(getShort(script + 3));
@@ -1307,7 +1260,7 @@ int vs_battle_script_29_attachActor(u_char* script, UNUSED short arg1)
  *   - [3-4] = x
  *   - [5-6] = z
  */
-int vs_battle_script_2A_walkActorToCoordinate(u_char* script, UNUSED short arg1)
+int vs_battle_script_2A_walkActorToCoordinate(u_char* script, UNUSED short slot)
 {
     SVECTOR destination;
     u_short actor = resolveActorId(getShort(script + 1));
@@ -1322,9 +1275,9 @@ int vs_battle_script_2A_walkActorToCoordinate(u_char* script, UNUSED short arg1)
         walkActorToCoordinate(actor, &destination);
     }
 
-    func_8009DC8C(actor);
+    resetActorMotionState(actor);
 
-    D_800F4B70[actor] = 1;
+    actorMoved[actor] = 1;
 
     return scriptNext;
 }
@@ -1338,7 +1291,7 @@ int vs_battle_script_2A_walkActorToCoordinate(u_char* script, UNUSED short arg1)
  *   - [5] = frame count, 0 = immediately, 0xFF = default (from angle and the actor's
  *     unk5C0)
  */
-int vs_battle_script_2B_turnActorToFacing(u_char* script, UNUSED short arg1)
+int vs_battle_script_2B_turnActorToFacing(u_char* script, UNUSED short slot)
 {
     vs_ActorPosition position;
     u_short actor = resolveActorId(getShort(script + 1));
@@ -1377,7 +1330,7 @@ int vs_battle_script_2B_turnActorToFacing(u_char* script, UNUSED short arg1)
         turnActorToFacing(actor, script[3] << 4, frames);
     }
 
-    D_800F4B70[actor] = 1;
+    actorMoved[actor] = 1;
 
     return scriptNext;
 }
@@ -1390,7 +1343,7 @@ int vs_battle_script_2B_turnActorToFacing(u_char* script, UNUSED short arg1)
  *   - [5] = frame count, 0 = immediately, 0xFF = default (from angle and the actor's
  *     unk5C0)
  */
-int vs_battle_script_2C_turnActorToFaceActor(u_char* script, UNUSED short arg1)
+int vs_battle_script_2C_turnActorToFaceActor(u_char* script, UNUSED short slot)
 {
     vs_ActorPosition position;
     u_short actor = resolveActorId(getShort(script + 1));
@@ -1398,7 +1351,7 @@ int vs_battle_script_2C_turnActorToFaceActor(u_char* script, UNUSED short arg1)
     vs_battle_getActorPosition(resolveActorId(getShort(script + 3)), &position);
     turnActorToFaceTile(actor, &position.unk0.unk0, script[5] != 0xFF ? script[5] : -1);
 
-    D_800F4B70[actor] = 1;
+    actorMoved[actor] = 1;
 
     return scriptNext;
 }
@@ -1411,7 +1364,7 @@ int vs_battle_script_2C_turnActorToFaceActor(u_char* script, UNUSED short arg1)
  *   - [6] = frame count, 0 = immediately, 0xFF = default (from angle and the actor's
  *     unk5C0)
  */
-int vs_battle_script_2D_turnActorToFaceTile(u_char* script, UNUSED short arg1)
+int vs_battle_script_2D_turnActorToFaceTile(u_char* script, UNUSED short slot)
 {
     vs_TilePosition tile;
     u_short actor = resolveActorId(getShort(script + 1));
@@ -1423,7 +1376,7 @@ int vs_battle_script_2D_turnActorToFaceTile(u_char* script, UNUSED short arg1)
     // BUG: tile.extra is uninitialised, but used as the facing if already on the tile
     turnActorToFaceTile(actor, &tile, script[6] != 0xFF ? script[6] : -1);
 
-    D_800F4B70[actor] = 1;
+    actorMoved[actor] = 1;
 
     return scriptNext;
 }
@@ -1432,12 +1385,12 @@ int vs_battle_script_2D_turnActorToFaceTile(u_char* script, UNUSED short arg1)
  * Sets the scale of an actor, per axis.
  * @param script Opcode bytes:
  *   - [1-2] = actor selector
- *   - [3-4] = x scale (0x1000 = normal size)
+ *   - [3-4] = x scale (ONE = normal size)
  *   - [5-6] = y scale
  *   - [7-8] = z scale
  *   - [9] = frame count to change over, 0 = immediately
  */
-int vs_battle_script_2E_setActorScale(u_char* script, UNUSED short arg1)
+int vs_battle_script_2E_setActorScale(u_char* script, UNUSED short slot)
 {
     SVECTOR scale;
     setVector(&scale, getShort(script + 3), getShort(script + 5), getShort(script + 7));
@@ -1453,7 +1406,7 @@ int vs_battle_script_2E_setActorScale(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1-2] = actor selector
  */
-int vs_battle_script_2F_despawnActor(u_char* script, UNUSED short arg1)
+int vs_battle_script_2F_despawnActor(u_char* script, UNUSED short slot)
 {
     ActorList actors;
 
@@ -1477,8 +1430,9 @@ int vs_battle_script_2F_despawnActor(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1-2] = actor selector
  *   - [3-4] = mask of the vs_battle_getActorFlags bits to wait for
+ *   - [5] = unused
  */
-int vs_battle_script_30_waitActorActivity(u_char* script, UNUSED short arg1)
+int vs_battle_script_30_waitActorActivity(u_char* script, UNUSED short slot)
 {
     u_short actor = resolveActorId(getShort(script + 1)) & 0xFFFF;
     u_short status = vs_battle_getActorFlags(actor) ^ 0x81;
@@ -1490,7 +1444,7 @@ int vs_battle_script_30_waitActorActivity(u_char* script, UNUSED short arg1)
         }
     }
 
-    return (status & mask) != 0 ? scriptRepeat : scriptNext;
+    return (status & mask) != 0 ? scriptWait : scriptNext;
 }
 
 /**
@@ -1500,7 +1454,7 @@ int vs_battle_script_30_waitActorActivity(u_char* script, UNUSED short arg1)
  *   - [1-2] = actor selector
  *   - [3-5] = red, green and blue (0x80 = neutral)
  */
-int vs_battle_script_31_setActorLightColor(u_char* script, UNUSED short arg1)
+int vs_battle_script_31_setActorLightColor(u_char* script, UNUSED short slot)
 {
     CVECTOR color;
 
@@ -1525,7 +1479,7 @@ int vs_battle_script_31_setActorLightColor(u_char* script, UNUSED short arg1)
  *   - [4] = unused
  *   - [5] = (bank << 6) | blend frames, as for playAnimation
  */
-int vs_battle_script_32_queueAnimation(u_char* script, UNUSED short arg1)
+int vs_battle_script_32_queueAnimation(u_char* script, UNUSED short slot)
 {
     queueActorAnimation(resolveActorId(getShort(script + 1)),
         animationBankBase[script[5] >> 6] + script[3], script[5] & 0x3F, 0);
@@ -1538,13 +1492,13 @@ int vs_battle_script_32_queueAnimation(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1-2] = actor selector
  *   - [3] = 0: rotate to the given absolute rotation, otherwise rotate by it
- *   - [4-5] = x rotation (1/4096 turn)
+ *   - [4-5] = x rotation (1/ONE turn)
  *   - [6-7] = y rotation (the facing)
  *   - [8-9] = z rotation
  *   - [10] = frame count, 0 = immediately, 0xFF = default (from angle and the actor's
  *     unk5C0)
  */
-int vs_battle_script_33_rotateActor(u_char* script, UNUSED short arg1)
+int vs_battle_script_33_rotateActor(u_char* script, UNUSED short slot)
 {
     SVECTOR rotation;
     u_short actor = resolveActorId(getShort(script + 1));
@@ -1560,7 +1514,7 @@ int vs_battle_script_33_rotateActor(u_char* script, UNUSED short arg1)
         func_800A9FD0(actor, &rotation, frames);
     }
 
-    D_800F4B70[actor] = 1;
+    actorMoved[actor] = 1;
 
     return scriptNext;
 }
@@ -1569,11 +1523,11 @@ int vs_battle_script_33_rotateActor(u_char* script, UNUSED short arg1)
  * Turns the actor's head to the given angles.
  * @param script Opcode bytes:
  *   - [1-2] = actor selector
- *   - [3-4] = pitch (1/4096 turn)
+ *   - [3-4] = pitch (1/ONE turn)
  *   - [5-6] = yaw
  *   - [7] = speed, 0 = unlimited
  */
-int vs_battle_script_34_setActorLookAngles(u_char* script, UNUSED short arg1)
+int vs_battle_script_34_setActorLookAngles(u_char* script, UNUSED short slot)
 {
     SVECTOR angles;
     int actor;
@@ -1603,7 +1557,7 @@ int vs_battle_script_34_setActorLookAngles(u_char* script, UNUSED short arg1)
  *   - [5] = unused
  *   - [6] = (bank << 6) | blend frames
  */
-int vs_battle_script_35_playAnimationFromFrame(u_char* script, UNUSED short arg1)
+int vs_battle_script_35_playAnimationFromFrame(u_char* script, UNUSED short slot)
 {
     setActorAnimationFromFrame(resolveActorId(getShort(script + 1)),
         animationBankBase[script[6] >> 6] + script[3], script[6] & 0x3F, script[4]);
@@ -1615,7 +1569,7 @@ int vs_battle_script_35_playAnimationFromFrame(u_char* script, UNUSED short arg1
  * Like queueAnimation, but the queued animation starts part way through.
  * @param script Opcode bytes: as for playAnimationFromFrame
  */
-int vs_battle_script_36_queueAnimationFromFrame(u_char* script, UNUSED short arg1)
+int vs_battle_script_36_queueAnimationFromFrame(u_char* script, UNUSED short slot)
 {
     queueActorAnimation(resolveActorId(getShort(script + 1)),
         animationBankBase[script[6] >> 6] + script[3], script[6] & 0x3F, script[4]);
@@ -1631,7 +1585,7 @@ int vs_battle_script_36_queueAnimationFromFrame(u_char* script, UNUSED short arg
  *   - [3] = animation bank, selects the base id in animationBankBase
  *   - [4] = animation index within the bank, 0xFF = the default
  */
-int vs_battle_script_37_setActorMoveAnimation(u_char* script, UNUSED short arg1)
+int vs_battle_script_37_setActorMoveAnimation(u_char* script, UNUSED short slot)
 {
     int actor = resolveActorId(getShort(script + 1));
 
@@ -1651,7 +1605,7 @@ int vs_battle_script_37_setActorMoveAnimation(u_char* script, UNUSED short arg1)
  *   - [3-4] = target actor selector, actorSelectorNone = stop looking at anything
  *   - [5] = speed, 0 = unlimited
  */
-int vs_battle_script_38_setActorLookTarget(u_char* script, UNUSED short arg1)
+int vs_battle_script_38_setActorLookTarget(u_char* script, UNUSED short slot)
 {
     int speed;
 
@@ -1684,7 +1638,7 @@ int vs_battle_script_38_setActorLookTarget(u_char* script, UNUSED short arg1)
  *   - [7-8] = z
  *   - [9] = speed, 0 = unlimited
  */
-int vs_battle_script_39_setActorLookPosition(u_char* script, UNUSED short arg1)
+int vs_battle_script_39_setActorLookPosition(u_char* script, UNUSED short slot)
 {
     SVECTOR position;
     int actor;
@@ -1714,7 +1668,7 @@ int vs_battle_script_39_setActorLookPosition(u_char* script, UNUSED short arg1)
  *   - [3] = bits 0-1: slot, bits 2-3: what to load (0 the ESQ, 1 the ESQ and then the
  *     ETM, 2 the ETM), bits 4-7: selects the VRAM slot of the ETM
  */
-int vs_battle_script_3A_enqueueEventData(u_char* script, UNUSED short arg1)
+int vs_battle_script_3A_enqueueEventData(u_char* script, UNUSED short slot)
 {
     switch ((script[3] >> 2) & 3) {
     case 0:
@@ -1736,10 +1690,10 @@ int vs_battle_script_3A_enqueueEventData(u_char* script, UNUSED short arg1)
 /**
  * Waits until the object data queue is empty.
  */
-int vs_battle_script_3B_waitDataQueueEmpty(UNUSED u_char* script, UNUSED short arg1)
+int vs_battle_script_3B_waitDataQueueEmpty(UNUSED u_char* script, UNUSED short slot)
 {
     // BUG: a full queue has no empty slot (-1), so this does not wait
-    return getEmptyObjectDataSlot() > 0 ? scriptRepeat : scriptNext;
+    return getEmptyObjectDataSlot() > 0 ? scriptWait : scriptNext;
 }
 
 /**
@@ -1747,7 +1701,7 @@ int vs_battle_script_3B_waitDataQueueEmpty(UNUSED u_char* script, UNUSED short a
  * @param script Opcode bytes:
  *   - [1] = bits 0-1: slot, bit 2: unload only the ETM, otherwise the ESQ and its ETM
  */
-int vs_battle_script_3C_unloadEventData(u_char* script, UNUSED short arg1)
+int vs_battle_script_3C_unloadEventData(u_char* script, UNUSED short slot)
 {
     if (script[1] & 4) {
         unloadEtm(script[1] & 3);
@@ -1763,7 +1717,7 @@ int vs_battle_script_3C_unloadEventData(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = slot (1-3)
  */
-int vs_battle_script_3D_selectEventData(u_char* script, UNUSED short arg1)
+int vs_battle_script_3D_selectEventData(u_char* script, UNUSED short slot)
 {
     selectEventData(script[1]);
 
@@ -1779,7 +1733,7 @@ int vs_battle_script_3D_selectEventData(u_char* script, UNUSED short arg1)
  *   - [6] = number of ordering table entries to push the copy back
  *   - [7-9] = red, green and blue of the copy, all zero = no edge highlight
  */
-int vs_battle_script_3E_setActorEdgeHighlight(u_char* script, UNUSED short arg1)
+int vs_battle_script_3E_setActorEdgeHighlight(u_char* script, UNUSED short slot)
 {
 // `offset` below appers to have been defined as a flat array of bytes in the original
 #ifdef NON_MATCHING
@@ -1824,7 +1778,7 @@ int vs_battle_script_3E_setActorEdgeHighlight(u_char* script, UNUSED short arg1)
  *   - [1-2] = actor selector
  *   - [3] = 0 = sheathe, 1 = draw, 2 = toggle
  */
-int vs_battle_script_3F_setWeaponDrawn(u_char* script, UNUSED short arg1)
+int vs_battle_script_3F_setWeaponDrawn(u_char* script, UNUSED short slot)
 {
     ActorList actors;
 
@@ -1849,13 +1803,13 @@ int vs_battle_script_3F_setWeaponDrawn(u_char* script, UNUSED short arg1)
  *   - [1] = comparison in the high nibble (flagComparison*), bits 6-9 of the flag id in
  *     the low nibble
  *   - [2] = bits 0-5 of the flag id in bits 2-7
- *   - [3] = value to compare with (signed)
+ *   - [3] = value to compare with (unsigned)
  *   - [4-5] = offset from this opcode to jump to if the comparison is false
  */
-int vs_battle_script_40_jumpFwdUnlessFlagImm(u_char* script, UNUSED short arg1)
+int vs_battle_script_40_jumpFwdUnlessFlagImm(u_char* script, UNUSED short slot)
 {
     char flag = getStateFlag(((u_char)script[2] >> 2) | ((script[1] & 0xF) << 6));
-    char value = script[3];
+    u_char value = script[3];
 
     switch (script[1] & 0xF0) {
     case flagComparisonLe:
@@ -1916,10 +1870,10 @@ int vs_battle_script_40_jumpFwdUnlessFlagImm(u_char* script, UNUSED short arg1)
  *   - [3] = bits 0-7 of the second flag id
  *   - [4-5] = offset from this opcode to jump to if the comparison is false
  */
-int vs_battle_script_41_jumpFwdUnlessFlag(u_char* script, UNUSED short arg1)
+int vs_battle_script_41_jumpFwdUnlessFlag(u_char* script, UNUSED short slot)
 {
     char flag = getStateFlag(((u_char)script[2] >> 2) | ((script[1] & 0xF) << 6));
-    char other = getStateFlag(script[3] | ((script[2] & 3) << 8));
+    u_char other = getStateFlag(script[3] | ((script[2] & 3) << 8));
 
     switch (script[1] & 0xF0) {
     case flagComparisonLe:
@@ -1968,7 +1922,7 @@ int vs_battle_script_41_jumpFwdUnlessFlag(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1-2] = target offset from this opcode
  */
-int vs_battle_script_42_jumpFwdElse(u_char* script, UNUSED short arg1)
+int vs_battle_script_42_jumpFwdElse(u_char* script, UNUSED short slot)
 {
     return (long)&script[getShort(script + 1)];
 }
@@ -1978,7 +1932,7 @@ int vs_battle_script_42_jumpFwdElse(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1-2] = target offset from this opcode
  */
-int vs_battle_script_45_jumpFwd(u_char* script, UNUSED short arg1)
+int vs_battle_script_45_jumpFwd(u_char* script, UNUSED short slot)
 {
     return (long)&script[getShort(script + 1)];
 }
@@ -1989,7 +1943,7 @@ int vs_battle_script_45_jumpFwd(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1-2] = state flag id
  */
-int vs_battle_script_46_switchOnFlag(u_char* script, UNUSED short arg1)
+int vs_battle_script_46_switchOnFlag(u_char* script, UNUSED short slot)
 {
     switchValue = getStateFlag(getShort(script + 1));
 
@@ -2002,7 +1956,7 @@ int vs_battle_script_46_switchOnFlag(u_char* script, UNUSED short arg1)
  *   - [1] = value to compare
  *   - [2-3] = target offset from this opcode
  */
-int vs_battle_script_47_jumpFwdCase(u_char* script, UNUSED short arg1)
+int vs_battle_script_47_jumpFwdCase(u_char* script, UNUSED short slot)
 {
     if (switchValue == script[1]) {
         return (long)&script[getShort(script + 2)];
@@ -2014,7 +1968,7 @@ int vs_battle_script_47_jumpFwdCase(u_char* script, UNUSED short arg1)
 /**
  * Ends sceneResetScript.
  */
-int vs_battle_script_48_endSceneReset(UNUSED u_char* script, UNUSED short arg1)
+int vs_battle_script_48_endSceneReset(UNUSED u_char* script, UNUSED short slot)
 {
     return scriptReturnAddress;
 }
@@ -2026,7 +1980,7 @@ int vs_battle_script_48_endSceneReset(UNUSED u_char* script, UNUSED short arg1)
  *   - [1] = counter index (0-15), 0xFF = none
  *   - [2] = number of times to loop
  */
-int vs_battle_script_49_setLoopCounter(u_char* script, UNUSED short arg1)
+int vs_battle_script_49_setLoopCounter(u_char* script, UNUSED short slot)
 {
     if (script[1] != 0xFF) {
         loopCounters[script[1]] = script[2];
@@ -2041,7 +1995,7 @@ int vs_battle_script_49_setLoopCounter(u_char* script, UNUSED short arg1)
  *   - [1] = counter index (0-15), 0xFF = unconditional jump back (i.e. infinite loop)
  *   - [2-3] = target offset before this opcode
  */
-int vs_battle_script_4A_loopCondition(u_char* script, UNUSED short arg1)
+int vs_battle_script_4A_loopCondition(u_char* script, UNUSED short slot)
 {
     if (script[1] == 0xFF) {
         return (long)&script[-getShort(script + 2)];
@@ -2059,7 +2013,7 @@ int vs_battle_script_4A_loopCondition(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1-2] = target offset from this opcode
  */
-int vs_battle_script_4C_jumpFwdUnused(u_char* script, UNUSED short arg1)
+int vs_battle_script_4C_jumpFwdUnused(u_char* script, UNUSED short slot)
 {
     return (long)&script[getShort(script + 1)];
 }
@@ -2069,7 +2023,7 @@ int vs_battle_script_4C_jumpFwdUnused(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1-2] = target offset from this opcode
  */
-int vs_battle_script_4B_break(u_char* script, UNUSED short arg1)
+int vs_battle_script_4B_break(u_char* script, UNUSED short slot)
 {
     return (long)&script[getShort(script + 1)];
 }
@@ -2083,7 +2037,7 @@ int vs_battle_script_4B_break(u_char* script, UNUSED short arg1)
  *   - [2] = bits 0-5 of the flag id in bits 2-7
  *   - [3] = value
  */
-int vs_battle_script_50_modifyFlagImm(u_char* script, UNUSED short arg1)
+int vs_battle_script_50_modifyFlagImm(u_char* script, UNUSED short slot)
 {
     int operationAndFlag = script[1];
     short value = script[3];
@@ -2136,10 +2090,10 @@ int vs_battle_script_50_modifyFlagImm(u_char* script, UNUSED short arg1)
  *     bits 0-1
  *   - [3] = bits 0-7 of the second flag id
  */
-int vs_battle_script_51_modifyFlag(u_char* script, UNUSED short arg1)
+int vs_battle_script_51_modifyFlag(u_char* script, UNUSED short slot)
 {
     int tmp;
-    char prev;
+    u_char prev;
 
     int flag0 = (script[2] >> 2) + ((script[1] & 0xF) << 6);
     int flag1 = script[3] + ((script[2] & 3) << 8);
@@ -2198,7 +2152,7 @@ int vs_battle_script_51_modifyFlag(u_char* script, UNUSED short arg1)
  *   - [1-2] = item id
  *   - [3-4] = state flag id
  */
-int vs_battle_script_52_setFlagToItemCount(u_char* script, UNUSED short arg1)
+int vs_battle_script_52_setFlagToItemCount(u_char* script, UNUSED short slot)
 {
     vs_battle_setStateFlag(
         getShort(script + 3), itemIdIsInInventory(getShort(script + 1)));
@@ -2213,7 +2167,7 @@ int vs_battle_script_52_setFlagToItemCount(u_char* script, UNUSED short arg1)
  *   - [1] = zone id (ZND)
  *   - [2] = map id (MPD)
  */
-int vs_battle_script_53_forgetZoneEnemies(u_char* script, UNUSED short arg1)
+int vs_battle_script_53_forgetZoneEnemies(u_char* script, UNUSED short slot)
 {
     vs_battle_forgetZoneEnemies(script[2], script[1]);
 
@@ -2227,7 +2181,7 @@ int vs_battle_script_53_forgetZoneEnemies(u_char* script, UNUSED short arg1)
  *   - [1-2] = actor selector
  *   - [3] = 0 = draw, 1 = sheathe
  */
-int vs_battle_script_54_playWeaponSfx(u_char* script, UNUSED short arg1)
+int vs_battle_script_54_playWeaponSfx(u_char* script, UNUSED short slot)
 {
     playWeaponSfx(resolveActorId(getShort(script + 1)), script[3]);
 
@@ -2240,7 +2194,7 @@ int vs_battle_script_54_playWeaponSfx(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = 0 = dormant, nonzero = awake
  */
-int vs_battle_script_55_setActorsAwake(u_char* script, UNUSED short arg1)
+int vs_battle_script_55_setActorsAwake(u_char* script, UNUSED short slot)
 {
     setActorsAwake(script[1]);
 
@@ -2254,7 +2208,7 @@ int vs_battle_script_55_setActorsAwake(u_char* script, UNUSED short arg1)
  *   - [1-2] = bits 0-9: state flag id, bit 15: 1 = buttons newly pressed this frame,
  *     0 = buttons held
  */
-int vs_battle_script_56_setFlagToButtons(u_char* script, UNUSED short arg1)
+int vs_battle_script_56_setFlagToButtons(u_char* script, UNUSED short slot)
 {
     short flagAndMode = getShort(script + 1);
 
@@ -2270,8 +2224,9 @@ int vs_battle_script_56_setFlagToButtons(u_char* script, UNUSED short arg1)
  * delay to 0, and all status effects removed.
  * @param script Opcode bytes:
  *   - [1-2] = actor selector
+ *   - [3] = unused
  */
-int vs_battle_script_57_fullyRestoreActor(u_char* script, UNUSED short arg1)
+int vs_battle_script_57_fullyRestoreActor(u_char* script, UNUSED short slot)
 {
     fullyRestoreActor(resolveActorId(getShort(script + 1)));
 
@@ -2284,7 +2239,7 @@ int vs_battle_script_57_fullyRestoreActor(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = 0 = hide, 1 = show
  */
-int vs_battle_script_58_setUiVisible(u_char* script, UNUSED short arg1)
+int vs_battle_script_58_setUiVisible(u_char* script, UNUSED short slot)
 {
     setUiHidden(script[1] ^ 1);
 
@@ -2298,8 +2253,9 @@ int vs_battle_script_58_setUiVisible(u_char* script, UNUSED short arg1)
  * screen with that id.
  * @param script Opcode bytes:
  *   - [1] = menu selector
+ *   - [2-3] = unused
  */
-int vs_battle_script_59_openMenu(u_char* script, UNUSED short arg1)
+int vs_battle_script_59_openMenu(u_char* script, UNUSED short slot)
 {
     // Values of script[1]. The first three are in the order of cubePuzzleSubmenus.
     enum {
@@ -2321,7 +2277,7 @@ int vs_battle_script_59_openMenu(u_char* script, UNUSED short arg1)
             func_8007B9A0();
             scriptMenuState = scriptMenuOpen;
 
-            return scriptRepeat;
+            return scriptWait;
         }
 
         // Fallthrough
@@ -2337,11 +2293,11 @@ int vs_battle_script_59_openMenu(u_char* script, UNUSED short arg1)
             scriptMusicSlot = 2;
             scriptMenuState = scriptMenuOpen;
 
-            return scriptRepeat;
+            return scriptWait;
         }
 
         if (updateScriptMenu() != 0) {
-            return scriptRepeat;
+            return scriptWait;
         }
 
         vs_battle_setStateFlag(menuFSubmenu, 0);
@@ -2355,7 +2311,7 @@ int vs_battle_script_59_openMenu(u_char* script, UNUSED short arg1)
             func_8007B9A0();
             scriptMenuState = scriptMenuOpen;
 
-            return scriptRepeat;
+            return scriptWait;
         }
 
         // Fallthrough
@@ -2364,7 +2320,7 @@ int vs_battle_script_59_openMenu(u_char* script, UNUSED short arg1)
             func_8007B9CC();
             scriptMenuState = scriptMenuOpen;
 
-            return scriptRepeat;
+            return scriptWait;
         }
 
         if (updateScriptMenu() == 0) {
@@ -2373,14 +2329,14 @@ int vs_battle_script_59_openMenu(u_char* script, UNUSED short arg1)
             return scriptYield;
         }
 
-        return scriptRepeat;
+        return scriptWait;
 
     default:
         if (scriptMenuState == scriptMenuClosed) {
             openMenu(script[1], 2);
             scriptMenuState = scriptMenuOpen;
 
-            return scriptRepeat;
+            return scriptWait;
         }
 
         updateMenu();
@@ -2392,7 +2348,7 @@ int vs_battle_script_59_openMenu(u_char* script, UNUSED short arg1)
             return scriptYield;
         }
 
-        return scriptRepeat;
+        return scriptWait;
     }
 }
 
@@ -2404,7 +2360,7 @@ int vs_battle_script_59_openMenu(u_char* script, UNUSED short arg1)
  *   - [3] = mode index, 0 = counts up, 1 = counts down
  *   - [4-6] = hours, minutes and seconds to count down from
  */
-int vs_battle_script_5A_setBattleTimer(u_char* script, UNUSED short arg1)
+int vs_battle_script_5A_setBattleTimer(u_char* script, UNUSED short slot)
 {
     if (script[1] != 0) {
         startBattleTimer(battleTimerModes[script[3]], battleTimerLifetimes[script[2]],
@@ -2422,7 +2378,7 @@ int vs_battle_script_5A_setBattleTimer(u_char* script, UNUSED short arg1)
  *   - [1] = box id in the low nibble, speaker animation in the high nibble
  *   - [2-3] = actor selector, or actorSelectorNone for no speaker
  */
-int vs_battle_script_5B_setTextBoxSpeaker(u_char* script, UNUSED short arg1)
+int vs_battle_script_5B_setTextBoxSpeaker(u_char* script, UNUSED short slot)
 {
     u_short speakerSelector = getShort(script + 2);
     vs_TextBox* box = vs_battle_getTextBox(script[1] & 0xF);
@@ -2440,9 +2396,11 @@ int vs_battle_script_5B_setTextBoxSpeaker(u_char* script, UNUSED short arg1)
  *   - [1-2] = actor selector
  *   - [3] = blade model id, 0 = none, 0xFF = leave unchanged, 0xFE = take both weapons
  *     from the actor's equipment
+ *   - [4] = unused
  *   - [5] = shield model id, 0 = none, 0xFF = leave unchanged
+ *   - [6] = unused
  */
-int vs_battle_script_5C_setActorWeaponModels(u_char* script, UNUSED short arg1)
+int vs_battle_script_5C_setActorWeaponModels(u_char* script, UNUSED short slot)
 {
     u_short actor = resolveActorId(getShort(script + 1));
 
@@ -2459,9 +2417,9 @@ int vs_battle_script_5C_setActorWeaponModels(u_char* script, UNUSED short arg1)
  * Gives an actor a slight swaying motion.
  * @param script Opcode bytes:
  *   - [1-2] = actor selector
- *   - [3] = sway angle at its peak, in 1/4096 of a full turn, 0 = stop swaying
+ *   - [3] = sway angle at its peak, in 1/ONE of a full turn, 0 = stop swaying
  */
-int vs_battle_script_5D_setActorSway(u_char* script, UNUSED short arg1)
+int vs_battle_script_5D_setActorSway(u_char* script, UNUSED short slot)
 {
     setActorSway(resolveActorId(getShort(script + 1)), script[3]);
 
@@ -2480,7 +2438,7 @@ int vs_battle_script_5E_waitFramesOrButton(u_char* script, short slot)
     if (scriptWaitFrames[slot] == 0) {
         scriptWaitFrames[slot] = script[2];
 
-        return scriptRepeat;
+        return scriptWait;
     }
 
     if ((vs_main_buttonsPressed.all & script[1]) || (--scriptWaitFrames[slot] <= 0)) {
@@ -2490,7 +2448,7 @@ int vs_battle_script_5E_waitFramesOrButton(u_char* script, short slot)
         return scriptNext;
     }
 
-    return scriptRepeat;
+    return scriptWait;
 }
 
 /**
@@ -2500,7 +2458,7 @@ int vs_battle_script_5E_waitFramesOrButton(u_char* script, short slot)
  *   - [1] = (slot << 6) | (base curve << 4) | squarings, where squarings is a signed 4
  *     bit number, an ease-in if positive and an ease-out if negative
  */
-int vs_battle_script_5F_defineEasing(u_char* script, UNUSED short arg1)
+int vs_battle_script_5F_defineEasing(u_char* script, UNUSED short slot)
 {
     int power;
     CustomEasing* base = customEasings;
@@ -2525,7 +2483,7 @@ int vs_battle_script_5F_defineEasing(u_char* script, UNUSED short arg1)
  *   - [1] = index of the cloudstone in the room data
  *   - [2] = 1 = moving, 0 = stopped
  */
-int vs_battle_script_60_setCloudstoneMoving(u_char* script, UNUSED short arg1)
+int vs_battle_script_60_setCloudstoneMoving(u_char* script, UNUSED short slot)
 {
     setCloudstoneMoving(script[1], script[2]);
 
@@ -2537,7 +2495,7 @@ int vs_battle_script_60_setCloudstoneMoving(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1..2] = depth, with bit 15 toggling the override
  */
-int vs_battle_script_61_overrideFogDepth(u_char* script, UNUSED short arg1)
+int vs_battle_script_61_overrideFogDepth(u_char* script, UNUSED short slot)
 {
     short depth = getShort(script + 1);
 
@@ -2557,7 +2515,7 @@ int vs_battle_script_61_overrideFogDepth(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = 1 = enabled, 0 = disabled
  */
-int vs_battle_script_62_setFirstPersonRendering(u_char* script, UNUSED short arg1)
+int vs_battle_script_62_setFirstPersonRendering(u_char* script, UNUSED short slot)
 {
     firstPersonRendering = script[1];
 
@@ -2565,7 +2523,7 @@ int vs_battle_script_62_setFirstPersonRendering(u_char* script, UNUSED short arg
 }
 
 /** Clears no statuses (empty mask), so it has no effect. Probably unused. */
-int vs_battle_script_63_statusUnk(UNUSED u_char* script, UNUSED short arg1)
+int vs_battle_script_63_statusUnk(UNUSED u_char* script, UNUSED short slot)
 {
     func_8007C31C();
 
@@ -2577,7 +2535,7 @@ int vs_battle_script_63_statusUnk(UNUSED u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = geometry object id
  */
-int vs_battle_script_64_showGeometry(u_char* script, UNUSED short arg1)
+int vs_battle_script_64_showGeometry(u_char* script, UNUSED short slot)
 {
     showGeometryObject(script[1]);
 
@@ -2589,7 +2547,7 @@ int vs_battle_script_64_showGeometry(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = geometry object id
  */
-int vs_battle_script_65_hideGeometry(u_char* script, UNUSED short arg1)
+int vs_battle_script_65_hideGeometry(u_char* script, UNUSED short slot)
 {
     hideGeometryObject(script[1]);
 
@@ -2601,7 +2559,7 @@ int vs_battle_script_65_hideGeometry(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1], [2] = geometry object ids
  */
-int vs_battle_script_66_swapGeometryFlags(u_char* script, UNUSED short arg1)
+int vs_battle_script_66_swapGeometryFlags(u_char* script, UNUSED short slot)
 {
     swapGeometryFlags(script[1], script[2]);
 
@@ -2616,7 +2574,7 @@ int vs_battle_script_66_swapGeometryFlags(u_char* script, UNUSED short arg1)
  *   - [3] = tile row
  *   - [4] = 1 = blocked, 0 = open
  */
-int vs_battle_script_67_setTileBlocked(u_char* script, UNUSED short arg1)
+int vs_battle_script_67_setTileBlocked(u_char* script, UNUSED short slot)
 {
     setTileBlocked(script[1], script[3], script[2], script[4]);
 
@@ -2637,7 +2595,7 @@ int vs_battle_script_67_setTileBlocked(u_char* script, UNUSED short arg1)
  *   - [8] = screen transition effect
  *   - [9] = screen transition speed
  */
-int vs_battle_script_68_warp(u_char* script, UNUSED short arg1)
+int vs_battle_script_68_warp(u_char* script, UNUSED short slot)
 {
     if (scriptWarpState == scriptWarpIdle) {
         vs_Warp warp;
@@ -2654,7 +2612,7 @@ int vs_battle_script_68_warp(u_char* script, UNUSED short arg1)
         if (script[1] == 0) {
             warpToMapThroughDoor(&warp, script[8], script[9]);
         } else {
-            func_8007BE10((script[7] >> 3) & 1);
+            setSwitchZoneMusic((script[7] >> 3) & 1);
             warpToZoneThroughDoor(&warp, script[8], script[9]);
         }
 
@@ -2667,7 +2625,7 @@ int vs_battle_script_68_warp(u_char* script, UNUSED short arg1)
         return scriptNext;
     }
 
-    return scriptRepeat;
+    return scriptWait;
 }
 
 /**
@@ -2677,7 +2635,7 @@ int vs_battle_script_68_warp(u_char* script, UNUSED short arg1)
  *   - [2] = speed
  *   - [3] = wipe angle, in 1/256ths of a turn
  */
-int vs_battle_script_69_screenTransitionOut(u_char* script, UNUSED short arg1)
+int vs_battle_script_69_screenTransitionOut(u_char* script, UNUSED short slot)
 {
     int phase = getScreenTransitionPhase();
 
@@ -2686,7 +2644,7 @@ int vs_battle_script_69_screenTransitionOut(u_char* script, UNUSED short arg1)
             startScreenTransitionOut(script[1], script[2], script[3] * ONE / 256);
         }
 
-        return scriptRepeat;
+        return scriptWait;
     }
 
     return scriptNext;
@@ -2699,7 +2657,7 @@ int vs_battle_script_69_screenTransitionOut(u_char* script, UNUSED short arg1)
  *   - [2] = speed
  *   - [3] = wipe angle, in 1/256ths of a turn
  */
-int vs_battle_script_6A_screenTransitionIn(u_char* script, UNUSED short arg1)
+int vs_battle_script_6A_screenTransitionIn(u_char* script, UNUSED short slot)
 {
     startScreenTransitionIn(script[1], script[2], script[3] * ONE / 256);
 
@@ -2711,7 +2669,7 @@ int vs_battle_script_6A_screenTransitionIn(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = wipe angle, in 1/256ths of a turn
  */
-int vs_battle_script_6B_setScreenTransitionWipeAngle(u_char* script, UNUSED short arg1)
+int vs_battle_script_6B_setScreenTransitionWipeAngle(u_char* script, UNUSED short slot)
 {
     setScreenTransitionWipeAngle(script[1] * ONE / 256);
 
@@ -2725,7 +2683,7 @@ int vs_battle_script_6B_setScreenTransitionWipeAngle(u_char* script, UNUSED shor
  *   - [2] = speed
  *   - [3] = wipe angle, in 1/256ths of a turn
  */
-int vs_battle_script_6C_setScreenTransition(u_char* script, UNUSED short arg1)
+int vs_battle_script_6C_setScreenTransition(u_char* script, UNUSED short slot)
 {
     setScreenTransition(script[1], script[2], script[3] * ONE / 256);
 
@@ -2738,7 +2696,7 @@ int vs_battle_script_6C_setScreenTransition(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = bits 0-1 screen output, bits 2-3 room geometry, bits 4-5 all actors
  */
-int vs_battle_script_6D_setSceneVisibility(u_char* script, UNUSED short arg1)
+int vs_battle_script_6D_setSceneVisibility(u_char* script, UNUSED short slot)
 {
     switch (script[1] & 3) {
     case 0:
@@ -2773,16 +2731,16 @@ int vs_battle_script_6D_setSceneVisibility(u_char* script, UNUSED short arg1)
 /**
  * Waits until the screen transition has finished.
  */
-int vs_battle_script_6E_waitForScreenTransition(UNUSED u_char* script, UNUSED short arg1)
+int vs_battle_script_6E_waitForScreenTransition(UNUSED u_char* script, UNUSED short slot)
 {
-    return getScreenTransitionPhase() != screenTransitionIdle ? scriptRepeat : scriptNext;
+    return getScreenTransitionPhase() != screenTransitionIdle ? scriptWait : scriptNext;
 }
 
 /**
  * Turns something unknown on (nonzero operand) or off. Both handlers are empty, so it has
  * no effect. Only used with [1] = 0xF6, in events 5, 14 and 15.
  */
-int vs_battle_script_6F_setUnk(u_char* script, UNUSED short arg1)
+int vs_battle_script_6F_setUnk(u_char* script, UNUSED short slot)
 {
     if (script[1] != 0) {
         func_8007B104();
@@ -2803,7 +2761,7 @@ int vs_battle_script_6F_setUnk(u_char* script, UNUSED short arg1)
  *   - [4] = duration in frames as a power of two, 0 to 4, anything higher is instant
  *   - [5-7] = signed red, green and blue offsets
  */
-int vs_battle_script_70_transformColors(u_char* script, UNUSED short arg1)
+int vs_battle_script_70_transformColors(u_char* script, UNUSED short slot)
 {
     ActorList actors;
 
@@ -2841,7 +2799,7 @@ int vs_battle_script_70_transformColors(u_char* script, UNUSED short arg1)
  *   - [1-2] = actor
  *   - [3] = 1 fades out, 2 fades in. 0 is not used by any script (renders invisible).
  */
-int vs_battle_script_71_fadeActor(u_char* script, UNUSED short arg1)
+int vs_battle_script_71_fadeActor(u_char* script, UNUSED short slot)
 {
     fadeActor(resolveActorId(getShort(script + 1)), script[3]);
 
@@ -2859,13 +2817,13 @@ static inline void setWeaponAnimating(int animating) { weaponAnimating = animati
  *   - [2] = 0 changes at once, 1 plays the quick animation the player uses, 2 plays
  *     a slower one seen only in cutscenes
  */
-int vs_battle_script_72_drawSheatheAshleyWeapon(u_char* script, UNUSED short arg1)
+int vs_battle_script_72_drawSheatheAshleyWeapon(u_char* script, UNUSED short slot)
 {
     if (weaponAnimating == 0) {
         int variantOffset;
         int animation;
 
-        if (!getStateFlag(0xAC)) {
+        if (!getStateFlag(savedWeaponDrawn)) {
             return scriptNext;
         }
 
@@ -2907,7 +2865,7 @@ int vs_battle_script_72_drawSheatheAshleyWeapon(u_char* script, UNUSED short arg
         }
     }
 
-    return scriptRepeat;
+    return scriptWait;
 }
 
 /**
@@ -2915,7 +2873,7 @@ int vs_battle_script_72_drawSheatheAshleyWeapon(u_char* script, UNUSED short arg
  * @param script Opcode bytes:
  *   - [1] = 0 == hide, !0 == show
  */
-int vs_battle_script_73_setBackgroundVisible(u_char* script, UNUSED short arg1)
+int vs_battle_script_73_setBackgroundVisible(u_char* script, UNUSED short slot)
 {
     setBackgroundVisible(script[1]);
 
@@ -2927,7 +2885,7 @@ int vs_battle_script_73_setBackgroundVisible(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = texture page slot
  */
-int vs_battle_script_74_loadBackground(u_char* script, UNUSED short arg1)
+int vs_battle_script_74_loadBackground(u_char* script, UNUSED short slot)
 {
     loadBackground(script[1]);
 
@@ -2937,15 +2895,15 @@ int vs_battle_script_74_loadBackground(u_char* script, UNUSED short arg1)
 /**
  * Waits until the background image started by opcode 74 has finished loading.
  */
-int vs_battle_script_75_waitBackgroundLoad(UNUSED u_char* script, UNUSED short arg1)
+int vs_battle_script_75_waitBackgroundLoad(UNUSED u_char* script, UNUSED short slot)
 {
-    return pollBackgroundLoad() == 0 ? scriptRepeat : scriptNext;
+    return pollBackgroundLoad() == 0 ? scriptWait : scriptNext;
 }
 
 /**
  * Hides the background image and frees its texture page(s).
  */
-int vs_battle_script_76_unloadBackground(UNUSED u_char* script, UNUSED short arg1)
+int vs_battle_script_76_unloadBackground(UNUSED u_char* script, UNUSED short slot)
 {
     unloadBackground();
 
@@ -2963,7 +2921,7 @@ int vs_battle_script_76_unloadBackground(UNUSED u_char* script, UNUSED short arg
  *   - [3] = fall angle, 0x80 falls straight down
  *   - [4] = 0 sets the values at once, otherwise the number of frames to blend over
  */
-int vs_battle_script_77_setParticleEffect(u_char* script, UNUSED short arg1)
+int vs_battle_script_77_setParticleEffect(u_char* script, UNUSED short slot)
 {
     setParticleEffect(script[1] >> 4);
 
@@ -3009,7 +2967,7 @@ int vs_battle_script_77_setParticleEffect(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = 1 stops the drift, 0 resumes it
  */
-int vs_battle_script_78_freezeParticleEffect(u_char* script, UNUSED short arg1)
+int vs_battle_script_78_freezeParticleEffect(u_char* script, UNUSED short slot)
 {
     setParticleEffectDrift(script[1] ^ 1);
 
@@ -3022,7 +2980,7 @@ int vs_battle_script_78_freezeParticleEffect(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = !0 acquires control, 0 returns control
  */
-int vs_battle_script_7A_setParticleEffectSoundScripted(u_char* script, UNUSED short arg1)
+int vs_battle_script_7A_setParticleEffectSoundScripted(u_char* script, UNUSED short slot)
 {
     if (script[1] != 0) {
 
@@ -3053,7 +3011,7 @@ int vs_battle_script_7A_setParticleEffectSoundScripted(u_char* script, UNUSED sh
  *     first), 1 pauses or resumes
  *   - [2] = task index, with the room's scripted tasks starting at 0x40
  */
-int vs_battle_script_79_controlRoomTask(u_char* script, UNUSED short arg1)
+int vs_battle_script_79_controlRoomTask(u_char* script, UNUSED short slot)
 {
     int task = script[2];
 
@@ -3080,7 +3038,7 @@ int vs_battle_script_79_controlRoomTask(u_char* script, UNUSED short arg1)
  *   - [1..2] = horizontal offset (signed)
  *   - [3..4] = vertical offset (signed)
  */
-int vs_battle_script_7B_setBackgroundOffset(u_char* script, UNUSED short arg1)
+int vs_battle_script_7B_setBackgroundOffset(u_char* script, UNUSED short slot)
 {
     setBackgroundOffset(getShort(script + 1), getShort(script + 3));
 
@@ -3093,7 +3051,7 @@ int vs_battle_script_7B_setBackgroundOffset(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = 0 renders all geometry, anything else culls by camera angle
  */
-int vs_battle_script_7C_cullOccludingGeometry(u_char* script, UNUSED short arg1)
+int vs_battle_script_7C_cullOccludingGeometry(u_char* script, UNUSED short slot)
 {
     cullOccludingGeometry(script[1] != 0);
 
@@ -3107,7 +3065,7 @@ int vs_battle_script_7C_cullOccludingGeometry(u_char* script, UNUSED short arg1)
  *   - [1] = geometry object index
  *   - [2] = amount to add (signed)
  */
-int vs_battle_script_7D_adjustGeometryDepth(u_char* script, UNUSED short arg1)
+int vs_battle_script_7D_adjustGeometryDepth(u_char* script, UNUSED short slot)
 {
     adjustGeometryObjectDepth(script[1], (signed char)script[2]);
 
@@ -3119,8 +3077,9 @@ int vs_battle_script_7D_adjustGeometryDepth(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = shift for horizontal turning (signed)
  *   - [2] = shift for vertical tilting (signed)
+ *   - [3] = unused
  */
-int vs_battle_script_7E_setBackgroundParallax(u_char* script, UNUSED short arg1)
+int vs_battle_script_7E_setBackgroundParallax(u_char* script, UNUSED short slot)
 {
     setBackgroundParallax(
         (signed char)script[1] * (ONE / 32), (signed char)script[2] * (ONE / 32));
@@ -3138,7 +3097,7 @@ int vs_battle_script_7E_setBackgroundParallax(u_char* script, UNUSED short arg1)
  *   - [3] = pan, 0x80 is centre
  *   - [4] = volume, up to 0x7F
  */
-int vs_battle_script_80_playSfx(u_char* script, UNUSED short arg1)
+int vs_battle_script_80_playSfx(u_char* script, UNUSED short slot)
 {
     if (script[1] == 2 && particleEffectSoundScripted == 0) {
         return scriptNext;
@@ -3159,7 +3118,7 @@ int vs_battle_script_80_playSfx(u_char* script, UNUSED short arg1)
  *   - [1..2] = actor ID
  *   - [3] = sound effect type
  */
-int vs_battle_script_81_playActorSfx(u_char* script, UNUSED short arg1)
+int vs_battle_script_81_playActorSfx(u_char* script, UNUSED short slot)
 {
     playActorSfx(resolveActorId(getShort(script + 1)), script[3]);
 
@@ -3174,7 +3133,7 @@ int vs_battle_script_81_playActorSfx(u_char* script, UNUSED short arg1)
  *   - [3] = target volume
  *   - [4] = fade duration
  */
-int vs_battle_script_82_fadeSfxVolume(u_char* script, UNUSED short arg1)
+int vs_battle_script_82_fadeSfxVolume(u_char* script, UNUSED short slot)
 {
     vs_main_fadeSfxVolume(scriptSfxGroups[script[1]], script[2], script[3], script[4]);
 
@@ -3182,7 +3141,7 @@ int vs_battle_script_82_fadeSfxVolume(u_char* script, UNUSED short arg1)
 }
 
 /** Stops all sound effects. */
-int vs_battle_script_83_stopAllSfx(UNUSED u_char* arg0, UNUSED short arg1)
+int vs_battle_script_83_stopAllSfx(UNUSED u_char* script, UNUSED short slot)
 {
     vs_main_stopAllSfx();
 
@@ -3195,7 +3154,7 @@ int vs_battle_script_83_stopAllSfx(UNUSED u_char* arg0, UNUSED short arg1)
  *   - [1] = sound group, as in opcode 80
  *   - [2] = sound ID
  */
-int vs_battle_script_84_stopSfx(u_char* script, UNUSED short arg1)
+int vs_battle_script_84_stopSfx(u_char* script, UNUSED short slot)
 {
     vs_main_stopSfx(scriptSfxGroups[script[1]], script[2]);
 
@@ -3209,7 +3168,7 @@ int vs_battle_script_84_stopSfx(u_char* script, UNUSED short arg1)
  *   - [1] = sound effect file ID
  *   - [2] = slot, 1 to 3
  */
-int vs_battle_script_85_loadSfxSlot(u_char* script, UNUSED short arg1)
+int vs_battle_script_85_loadSfxSlot(u_char* script, UNUSED short slot)
 {
     vs_main_loadSfxSlot(script[1], script[2]);
 
@@ -3221,9 +3180,9 @@ int vs_battle_script_85_loadSfxSlot(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = slot, 1 to 3
  */
-int vs_battle_script_86_waitSfxLoad(u_char* script, UNUSED short arg1)
+int vs_battle_script_86_waitSfxLoad(u_char* script, UNUSED short slot)
 {
-    return vs_main_finishSfxLoad(script[1]) != 0 ? scriptRepeat : scriptNext;
+    return vs_main_finishSfxLoad(script[1]) != 0 ? scriptWait : scriptNext;
 }
 
 /**
@@ -3231,7 +3190,7 @@ int vs_battle_script_86_waitSfxLoad(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = slot, 1 to 3
  */
-int vs_battle_script_87_freeSfx(u_char* script, UNUSED short arg1)
+int vs_battle_script_87_freeSfx(u_char* script, UNUSED short slot)
 {
     vs_main_freeSfx(script[1]);
 
@@ -3243,7 +3202,7 @@ int vs_battle_script_87_freeSfx(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = slot, 1 to 3
  */
-int vs_battle_script_88_setCurrentSfx(u_char* script, UNUSED short arg1)
+int vs_battle_script_88_setCurrentSfx(u_char* script, UNUSED short slot)
 {
     vs_main_setCurrentSfx(script[1]);
 
@@ -3254,7 +3213,7 @@ int vs_battle_script_88_setCurrentSfx(u_char* script, UNUSED short arg1)
  * Starts loading the area's music into music slot 3, along with its instrument bank.
  * Scripts use it to bring the area music back after a cutscene track.
  */
-int vs_battle_script_89_loadAreaMusic(UNUSED u_char* script, UNUSED short arg1)
+int vs_battle_script_89_loadAreaMusic(UNUSED u_char* script, UNUSED short slot)
 {
     short musicId = func_80089104();
     vs_main_loadMusicSlot(musicId, 3);
@@ -3271,7 +3230,7 @@ int vs_battle_script_89_loadAreaMusic(UNUSED u_char* script, UNUSED short arg1)
  *   - [3] = fade in duration
  *   - [4] = fade out duration
  */
-int vs_battle_script_8F_crossfadeMusic(u_char* script, UNUSED short arg1)
+int vs_battle_script_8F_crossfadeMusic(u_char* script, UNUSED short slot)
 {
     vs_main_fadeMusicVolume(scriptMusicSlot, 0, script[4]);
     vs_main_playMusicSlotFadeIn(scriptMusicSlot = script[1], script[2], script[3]);
@@ -3286,7 +3245,7 @@ int vs_battle_script_8F_crossfadeMusic(u_char* script, UNUSED short arg1)
  *   - [1] = music ID
  *   - [2] = slot, 1 to 4
  */
-int vs_battle_script_90_loadMusicSlot(u_char* script, UNUSED short arg1)
+int vs_battle_script_90_loadMusicSlot(u_char* script, UNUSED short slot)
 {
     vs_main_loadMusicSlot(script[1], script[2]);
 
@@ -3298,7 +3257,7 @@ int vs_battle_script_90_loadMusicSlot(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = slot, 1 to 4
  */
-int vs_battle_script_91_freeMusic(u_char* script, UNUSED short arg1)
+int vs_battle_script_91_freeMusic(u_char* script, UNUSED short slot)
 {
     vs_main_freeMusic(script[1]);
 
@@ -3312,7 +3271,7 @@ int vs_battle_script_91_freeMusic(u_char* script, UNUSED short arg1)
  *   - [2] = volume
  *   - [3] = fade duration
  */
-int vs_battle_script_92_playMusic(u_char* script, UNUSED short arg1)
+int vs_battle_script_92_playMusic(u_char* script, UNUSED short slot)
 {
     vs_main_playMusicSlot(scriptMusicSlot = script[1], script[2], script[3]);
 
@@ -3325,7 +3284,7 @@ int vs_battle_script_92_playMusic(u_char* script, UNUSED short arg1)
  *   - [1] = target volume
  *   - [2] = fade duration
  */
-int vs_battle_script_93_fadeMusicVolume(u_char* script, UNUSED short arg1)
+int vs_battle_script_93_fadeMusicVolume(u_char* script, UNUSED short slot)
 {
     vs_main_fadeMusicVolume(scriptMusicSlot, script[1], script[2]);
 
@@ -3339,7 +3298,7 @@ int vs_battle_script_93_fadeMusicVolume(u_char* script, UNUSED short arg1)
  *     slower and positive is faster
  *   - [2] = ramp duration
  */
-int vs_battle_script_94_rampMusicTempo(u_char* script, UNUSED short arg1)
+int vs_battle_script_94_rampMusicTempo(u_char* script, UNUSED short slot)
 {
     vs_main_rampMusicTempo(scriptMusicSlot, (signed char)script[1], script[2]);
 
@@ -3352,7 +3311,7 @@ int vs_battle_script_94_rampMusicTempo(u_char* script, UNUSED short arg1)
  *   - [1] = target pitch (signed)
  *   - [2] = ramp duration
  */
-int vs_battle_script_95_rampMusicPitch(u_char* script, UNUSED short arg1)
+int vs_battle_script_95_rampMusicPitch(u_char* script, UNUSED short slot)
 {
     vs_main_rampMusicPitch(scriptMusicSlot, (signed char)script[1], script[2]);
 
@@ -3362,7 +3321,7 @@ int vs_battle_script_95_rampMusicPitch(u_char* script, UNUSED short arg1)
 /**
  * Stops the script music.
  */
-int vs_battle_script_96_stopMusic(UNUSED u_char* arg0, UNUSED short arg1)
+int vs_battle_script_96_stopMusic(UNUSED u_char* script, UNUSED short slot)
 {
     vs_main_stopMusicSlot(scriptMusicSlot);
 
@@ -3374,16 +3333,16 @@ int vs_battle_script_96_stopMusic(UNUSED u_char* arg0, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = slot, 1 to 4
  */
-int vs_battle_script_97_waitMusicSilent(u_char* script, UNUSED short arg1)
+int vs_battle_script_97_waitMusicSilent(u_char* script, UNUSED short slot)
 {
-    int slot = script[1];
+    int musicSlot = script[1];
 
-    if (vs_main_getMusicSlotVolume2(slot) != 0) {
-        if (vs_main_getMusicSlotVolume(slot) != 0) {
-            return scriptRepeat;
+    if (vs_main_getMusicSlotVolume2(musicSlot) != 0) {
+        if (vs_main_getMusicSlotVolume(musicSlot) != 0) {
+            return scriptWait;
         }
 
-        vs_main_stopMusicSlot(slot);
+        vs_main_stopMusicSlot(musicSlot);
     }
 
     return scriptNext;
@@ -3392,7 +3351,7 @@ int vs_battle_script_97_waitMusicSilent(u_char* script, UNUSED short arg1)
 /**
  * Saves a copy of the playing music's state.
  */
-int vs_battle_script_98_pushMusicState(UNUSED u_char* arg0, UNUSED short arg1)
+int vs_battle_script_98_pushMusicState(UNUSED u_char* script, UNUSED short slot)
 {
     vs_main_pushMusicState();
 
@@ -3404,9 +3363,9 @@ int vs_battle_script_98_pushMusicState(UNUSED u_char* arg0, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = slot, 1 to 4
  */
-int vs_battle_script_99_waitMusicLoad(u_char* script, UNUSED short arg1)
+int vs_battle_script_99_waitMusicLoad(u_char* script, UNUSED short slot)
 {
-    return vs_main_finishMusicLoad(script[1]) == 1 ? scriptRepeat : scriptNext;
+    return vs_main_finishMusicLoad(script[1]) == 1 ? scriptWait : scriptNext;
 }
 
 /**
@@ -3415,16 +3374,16 @@ int vs_battle_script_99_waitMusicLoad(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = music ID
  */
-int vs_battle_script_9D_loadInstrumentBank(u_char* script, UNUSED short arg1)
+int vs_battle_script_9D_loadInstrumentBank(u_char* script, UNUSED short slot)
 {
     vs_main_loadInstrumentBank(script[1]);
     return scriptNext;
 }
 
 /** Waits until the instrument bank started by opcode 9D or 89 is loaded and ready. */
-int vs_battle_script_9E_waitInstrumentBankLoad(UNUSED u_char* arg0, UNUSED short arg1)
+int vs_battle_script_9E_waitInstrumentBankLoad(UNUSED u_char* script, UNUSED short slot)
 {
-    return vs_main_processInstrumentBankLoad() == 1 ? scriptRepeat : scriptNext;
+    return vs_main_processInstrumentBankLoad() == 1 ? scriptWait : scriptNext;
 }
 
 /**
@@ -3432,11 +3391,11 @@ int vs_battle_script_9E_waitInstrumentBankLoad(UNUSED u_char* arg0, UNUSED short
  * @param script Opcode bytes:
  *   - [1..2] = bar number
  */
-int vs_battle_script_9A_waitMusicBar(u_char* script, UNUSED short arg1)
+int vs_battle_script_9A_waitMusicBar(u_char* script, UNUSED short slot)
 {
     int bar = vs_main_getMusicPosition() >> 0x10;
 
-    return bar < getShort(script + 1) ? scriptRepeat : scriptNext;
+    return bar < getShort(script + 1) ? scriptWait : scriptNext;
 }
 
 /**
@@ -3447,7 +3406,7 @@ int vs_battle_script_9A_waitMusicBar(u_char* script, UNUSED short arg1)
  *   - [3] = target pitch (signed)
  *   - [4] = ramp duration
  */
-int vs_battle_script_9B_rampSfxPitch(u_char* script, UNUSED short arg1)
+int vs_battle_script_9B_rampSfxPitch(u_char* script, UNUSED short slot)
 {
     vs_main_rampSfxPitch(
         scriptSfxGroups[script[1]], script[2], (signed char)script[3], script[4]);
@@ -3463,7 +3422,7 @@ int vs_battle_script_9B_rampSfxPitch(u_char* script, UNUSED short arg1)
  *   - [3] = target pan, 0x80 is centre
  *   - [4] = ramp duration
  */
-int vs_battle_script_9C_rampSfxPan(u_char* script, UNUSED short arg1)
+int vs_battle_script_9C_rampSfxPan(u_char* script, UNUSED short slot)
 {
     vs_main_rampSfxPan(scriptSfxGroups[script[1]], script[2], script[3], script[4]);
 
@@ -3475,7 +3434,7 @@ int vs_battle_script_9C_rampSfxPan(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = slot, 1 to 4
  */
-int vs_battle_script_9F_queueMusic(u_char* script, UNUSED short arg1)
+int vs_battle_script_9F_queueMusic(u_char* script, UNUSED short slot)
 {
     vs_main_queueMusicSlot(scriptMusicSlot = script[1]);
 
@@ -3490,7 +3449,7 @@ int vs_battle_script_9F_queueMusic(u_char* script, UNUSED short arg1)
  *   - [1-2] = effect ID
  *   - [3-4] = target actor
  */
-int vs_battle_script_A0_startEffect(u_char* script, UNUSED short arg1)
+int vs_battle_script_A0_startEffect(u_char* script, UNUSED short slot)
 {
     startEffect(getShort(script + 1), resolveActorId(getShort(script + 3)));
 
@@ -3502,7 +3461,7 @@ int vs_battle_script_A0_startEffect(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = stage index
  */
-int vs_battle_script_A1_triggerEffectStage(u_char* script, UNUSED short arg1)
+int vs_battle_script_A1_triggerEffectStage(u_char* script, UNUSED short slot)
 {
     triggerEffectStage(script[1]);
 
@@ -3520,7 +3479,7 @@ int vs_battle_script_A1_triggerEffectStage(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = state to wait for
  */
-int vs_battle_script_A2_waitEffectState(u_char* script, UNUSED short arg1)
+int vs_battle_script_A2_waitEffectState(u_char* script, UNUSED short slot)
 {
     if ((scriptSkipMode == scriptSkipping) && ((script[1] == 0) || (script[1] == 5))) {
 
@@ -3534,17 +3493,17 @@ int vs_battle_script_A2_waitEffectState(u_char* script, UNUSED short arg1)
             effectCancelled = 1;
         }
 
-        return scriptRepeat;
+        return scriptWait;
     }
 
-    return getEffectState() != script[1] ? scriptRepeat : scriptNext;
+    return getEffectState() != script[1] ? scriptWait : scriptNext;
 }
 
 /**
  * Yields for a frame while skipping, otherwise does nothing.
  * @param script Opcode bytes: none
  */
-int vs_battle_script_A3_yieldIfSkipping(UNUSED u_char* script, UNUSED short arg1)
+int vs_battle_script_A3_yieldIfSkipping(UNUSED u_char* script, UNUSED short slot)
 {
     effectNop();
 
@@ -3555,9 +3514,9 @@ int vs_battle_script_A3_yieldIfSkipping(UNUSED u_char* script, UNUSED short arg1
  * Waits until the visual effect is loaded and has stages left to trigger.
  * @param script Opcode bytes: none
  */
-int vs_battle_script_A4_waitEffectStageReady(UNUSED u_char* script, UNUSED short arg1)
+int vs_battle_script_A4_waitEffectStageReady(UNUSED u_char* script, UNUSED short slot)
 {
-    return isEffectStageReady() != 1 ? scriptRepeat : scriptNext;
+    return isEffectStageReady() != 1 ? scriptWait : scriptNext;
 }
 
 /**
@@ -3565,7 +3524,7 @@ int vs_battle_script_A4_waitEffectStageReady(UNUSED u_char* script, UNUSED short
  * waiting for a stage to be triggered.
  * @param script Opcode bytes: none
  */
-int vs_battle_script_A5_cancelEffect(UNUSED u_char* script, UNUSED short arg1)
+int vs_battle_script_A5_cancelEffect(UNUSED u_char* script, UNUSED short slot)
 {
     if (effectCancelled == 0) {
         cancelEffects();
@@ -3575,7 +3534,7 @@ int vs_battle_script_A5_cancelEffect(UNUSED u_char* script, UNUSED short arg1)
         return scriptNext;
     }
 
-    return scriptRepeat;
+    return scriptWait;
 }
 
 /**
@@ -3583,7 +3542,7 @@ int vs_battle_script_A5_cancelEffect(UNUSED u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = stage index
  */
-int vs_battle_script_A6_rearmEffectStage(u_char* script, UNUSED short arg1)
+int vs_battle_script_A6_rearmEffectStage(u_char* script, UNUSED short slot)
 {
     rearmEffectStage(script[1]);
 
@@ -3596,7 +3555,7 @@ int vs_battle_script_A6_rearmEffectStage(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = cue
  */
-int vs_battle_script_A8_setMusicTargetCue(u_char* script, UNUSED short arg1)
+int vs_battle_script_A8_setMusicTargetCue(u_char* script, UNUSED short slot)
 {
     vs_main_setMusicTargetCue(script[1]);
 
@@ -3609,7 +3568,7 @@ int vs_battle_script_A8_setMusicTargetCue(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = pattern index, or 0xFF to stop vibration
  */
-int vs_battle_script_A9_playVibration(u_char* script, UNUSED short arg1)
+int vs_battle_script_A9_playVibration(u_char* script, UNUSED short slot)
 {
     short pattern = script[1];
 
@@ -3633,7 +3592,7 @@ int vs_battle_script_A9_playVibration(u_char* script, UNUSED short arg1)
  *   - [2-3] = actor
  *   - [4] = bone
  */
-int vs_battle_script_AA_setActorTrail(u_char* script, UNUSED short arg1)
+int vs_battle_script_AA_setActorTrail(u_char* script, UNUSED short slot)
 {
     short actor = resolveActorId(getShort(script + 2));
 
@@ -3651,7 +3610,7 @@ int vs_battle_script_AA_setActorTrail(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = door index
  */
-int vs_battle_script_B1_setEnteredDoor(u_char* script, UNUSED short arg1)
+int vs_battle_script_B1_setEnteredDoor(u_char* script, UNUSED short slot)
 {
     setEnteredDoor(script[1]);
 
@@ -3666,7 +3625,7 @@ int vs_battle_script_B1_setEnteredDoor(u_char* script, UNUSED short arg1)
  *   - [5] = distance scale
  *   - [6-7] = state flag id for the distance, the angle is placed in the following flag
  */
-int vs_battle_script_B2_setFlagsToActorDistanceAndAngle(u_char* script, UNUSED short arg1)
+int vs_battle_script_B2_setFlagsToActorDistanceAndAngle(u_char* script, UNUSED short slot)
 {
     vs_ActorPosition first;
     vs_ActorPosition second;
@@ -3694,7 +3653,7 @@ int vs_battle_script_B2_setFlagsToActorDistanceAndAngle(u_char* script, UNUSED s
  *   - [1-2] = actor selector
  *   - [3] = 0 = dormant, nonzero = awake
  */
-int vs_battle_script_B3_setActorAwake(u_char* script, UNUSED short arg1)
+int vs_battle_script_B3_setActorAwake(u_char* script, UNUSED short slot)
 {
     ActorList actors;
 
@@ -3722,13 +3681,13 @@ int vs_battle_script_B3_setActorAwake(u_char* script, UNUSED short arg1)
  *   - [4-5] = second item id
  *   - [6] = second item count
  */
-int vs_battle_script_B4_showMiscLoot(u_char* script, UNUSED short arg1)
+int vs_battle_script_B4_showMiscLoot(u_char* script, UNUSED short slot)
 {
     if (scriptMenuState == scriptMenuClosed) {
         showMiscLoot(getShort(script + 1), script[3], getShort(script + 4), script[6]);
         scriptMenuState = scriptMenuOpen;
 
-        return scriptRepeat;
+        return scriptWait;
     }
 
     if (updateScriptMenu() == 0) {
@@ -3737,7 +3696,7 @@ int vs_battle_script_B4_showMiscLoot(u_char* script, UNUSED short arg1)
         return scriptYield;
     }
 
-    return scriptRepeat;
+    return scriptWait;
 }
 
 /**
@@ -3745,7 +3704,7 @@ int vs_battle_script_B4_showMiscLoot(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1-2] = item id
  */
-int vs_battle_script_B5_removeMiscItem(u_char* script, UNUSED short arg1)
+int vs_battle_script_B5_removeMiscItem(u_char* script, UNUSED short slot)
 {
     removeMiscItem(getShort(script + 1));
 
@@ -3759,7 +3718,7 @@ int vs_battle_script_B5_removeMiscItem(u_char* script, UNUSED short arg1)
  *   - [3-4] = second actor
  *   - [5-6] = state flag id
  */
-int vs_battle_script_B6_setFlagToActorDistance(u_char* script, UNUSED short arg1)
+int vs_battle_script_B6_setFlagToActorDistance(u_char* script, UNUSED short slot)
 {
     vs_ActorPosition first;
     vs_ActorPosition second;
@@ -3804,8 +3763,9 @@ void setAllActorsEnabledAndAwake(short awake)
  * @param script Opcode bytes:
  *   - [1] = sub-opcode
  *   - [2] = argument, if the sub-opcode takes one
+ *   - [3-5] = unused, the script resumes at [6]
  */
-int vs_battle_script_B7_specialOp(u_char* script, UNUSED short arg1)
+int vs_battle_script_B7_specialOp(u_char* script, UNUSED short slot)
 {
     enum {
         // Starts loading an SHP model. [2] = model id. Unused.
@@ -3865,7 +3825,7 @@ int vs_battle_script_B7_specialOp(u_char* script, UNUSED short arg1)
         if (scriptMenuState != scriptMenuClosed) {
 
             if (updateScriptMenu() != 0) {
-                return scriptRepeat;
+                return scriptWait;
             }
 
             vs_battle_setStateFlag(menuFSubmenu, 0);
@@ -3882,7 +3842,7 @@ int vs_battle_script_B7_specialOp(u_char* script, UNUSED short arg1)
 
         scriptMenuState = scriptMenuOpen;
 
-        return scriptRepeat;
+        return scriptWait;
 
     case specialSkipScene:
         skipRequested = 1;
@@ -3890,15 +3850,15 @@ int vs_battle_script_B7_specialOp(u_char* script, UNUSED short arg1)
 
     case specialUnlockAction:
         if (isActionUnlocked(script[2]) != 0) {
-            vs_battle_setStateFlag(0xB1, 0);
+            vs_battle_setStateFlag(specialOpResult, 0);
         } else {
             setActionUnlocked(script[2]);
-            vs_battle_setStateFlag(0xB1, 1);
+            vs_battle_setStateFlag(specialOpResult, 1);
         }
         break;
 
     case specialCountEngagedEnemies:
-        vs_battle_setStateFlag(0xB1, countActorsByRole(actorRoleEngagedEnemy));
+        vs_battle_setStateFlag(specialOpResult, countActorsByRole(actorRoleEngagedEnemy));
         break;
 
     case specialSetAllActorsEnabledAndAwake:
@@ -3922,7 +3882,7 @@ int vs_battle_script_B7_specialOp(u_char* script, UNUSED short arg1)
         break;
 
     case specialSetCameraPitchPreset:
-        setCameraPitchPreset(D_800E9C00[script[2]]);
+        setCameraPitchPreset(cameraPitchPresets[script[2]]);
         break;
 
     case specialScaleCameraMoveDurationByDistance:
@@ -3964,10 +3924,10 @@ int vs_battle_script_B7_specialOp(u_char* script, UNUSED short arg1)
 /**
  * Waits until the screen effects overlay, started by opcode BC, has finished loading.
  */
-int vs_battle_script_B8_waitScreenEffectsLoaded(UNUSED u_char* arg0, UNUSED short arg1)
+int vs_battle_script_B8_waitScreenEffectsLoaded(UNUSED u_char* script, UNUSED short slot)
 {
     if ((screenEffects != NULL) && (screenEffects->loading != 0)) {
-        return scriptRepeat;
+        return scriptWait;
     }
 
     return scriptNext;
@@ -3979,7 +3939,7 @@ int vs_battle_script_B8_waitScreenEffectsLoaded(UNUSED u_char* arg0, UNUSED shor
  * @param script Opcode bytes:
  *   - [1-2] = depth in the ordering table, 0 = off
  */
-int vs_battle_script_BB_setScreenBlur(u_char* script, UNUSED short arg1)
+int vs_battle_script_BB_setScreenBlur(u_char* script, UNUSED short slot)
 {
     setScreenBlurDepth(getShort(script + 1));
 
@@ -3989,7 +3949,7 @@ int vs_battle_script_BB_setScreenBlur(u_char* script, UNUSED short arg1)
 /**
  * Starts loading the screen effects overlay (SCREFF2.PRG).
  */
-int vs_battle_script_BC_loadScreenEffects(UNUSED u_char* arg0, UNUSED short arg1)
+int vs_battle_script_BC_loadScreenEffects(UNUSED u_char* script, UNUSED short slot)
 {
     loadScreenEffects();
 
@@ -4000,12 +3960,15 @@ int vs_battle_script_BC_loadScreenEffects(UNUSED u_char* arg0, UNUSED short arg1
  * Does nothing. Only the room scripts of MAP101 and MAP213 use it, with the byte 0x0C,
  * right after setEnteredDoor.
  */
-int vs_battle_script_BD_nop(UNUSED u_char* arg0, UNUSED short arg1) { return scriptNext; }
+int vs_battle_script_BD_nop(UNUSED u_char* script, UNUSED short slot)
+{
+    return scriptNext;
+}
 
 /**
  * Releases the screen effects overlay.
  */
-int vs_battle_script_BE_unloadScreenEffects(UNUSED u_char* arg0, UNUSED short arg1)
+int vs_battle_script_BE_unloadScreenEffects(UNUSED u_char* script, UNUSED short slot)
 {
     unloadScreenEffects();
 
@@ -4015,10 +3978,12 @@ int vs_battle_script_BE_unloadScreenEffects(UNUSED u_char* arg0, UNUSED short ar
 /**
  * Interrupts camera movement and drops the momentum carried over from the last move
  * (see opcode DF).
+ * @param script Opcode bytes:
+ *   - [1] = unused
  */
-int vs_battle_script_DE_clearCameraMomentum(UNUSED u_char* arg0, UNUSED short arg1)
+int vs_battle_script_DE_stopCamera(UNUSED u_char* script, UNUSED short slot)
 {
-    clearCameraMomentum();
+    stopCamera();
 
     return scriptNext;
 }
@@ -4030,7 +3995,7 @@ int vs_battle_script_DE_clearCameraMomentum(UNUSED u_char* arg0, UNUSED short ar
  * @param script Opcode bytes:
  *   - [1] = bit 0 for the look-at, bit 1 for the eye
  */
-int vs_battle_script_DF_setCameraMomentum(u_char* script, UNUSED short arg1)
+int vs_battle_script_DF_setCameraMomentum(u_char* script, UNUSED short slot)
 {
     int eye = script[1] & 2;
     setCameraMomentum(script[1] & 1, eye != 0);
@@ -4043,7 +4008,7 @@ int vs_battle_script_DF_setCameraMomentum(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1-2] = actor id, 0x2000 = detach
  */
-int vs_battle_script_E8_attachCameraToActor(u_char* script, UNUSED short arg1)
+int vs_battle_script_E8_attachCameraToActor(u_char* script, UNUSED short slot)
 {
     attachCameraToActor(resolveActorId(getShort(script + 1)));
 
@@ -4058,7 +4023,7 @@ int vs_battle_script_E8_attachCameraToActor(u_char* script, UNUSED short arg1)
  *   - [1] = facing of the camera in 45 degree steps, 0xFF = unchanged
  *   - [2] = zoom, 1 = normal, 2 = zoomed out, 0 = unchanged
  */
-int vs_battle_script_E9_returnToGameplayCamera(u_char* script, UNUSED short arg1)
+int vs_battle_script_E9_returnToGameplayCamera(u_char* script, UNUSED short slot)
 {
     returnToGameplayCamera(
         script[1] != 0xFF ? ((script[1] + 4) & 7) : -1, script[2] != 0 ? script[2] : -1);
@@ -4070,13 +4035,13 @@ int vs_battle_script_E9_returnToGameplayCamera(u_char* script, UNUSED short arg1
 
 /**
  * Waits until the camera channels in a mask have finished moving, see getCameraIdleFlags.
- * The look-at and eye moves are started by vs_battle_script_Cx_Dx_camera.
+ * The look-at and eye moves are started by vs_battle_script_controlCameraChannel.
  * @param script Opcode bytes:
  *   - [1] = mask of the channels to wait for
  */
-int vs_battle_script_E0_waitCameraIdle(u_char* script, UNUSED short arg1)
+int vs_battle_script_E0_waitCameraIdle(u_char* script, UNUSED short slot)
 {
-    return script[1] != (script[1] & getCameraIdleFlags()) ? scriptRepeat : scriptNext;
+    return script[1] != (script[1] & getCameraIdleFlags()) ? scriptWait : scriptNext;
 }
 
 /**
@@ -4084,7 +4049,7 @@ int vs_battle_script_E0_waitCameraIdle(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = 1 for on, 0 for off
  */
-int vs_battle_script_E1_setFramebufferEffect(u_char* script, UNUSED short arg1)
+int vs_battle_script_E1_setFramebufferEffect(u_char* script, UNUSED short slot)
 {
     setFramebufferEffect(script[1]);
 
@@ -4102,7 +4067,7 @@ int vs_battle_script_F0_waitFrames(u_char* script, short slot)
     if (scriptWaitFrames[slot] == 0) {
         scriptWaitFrames[slot] = script[1];
 
-        return scriptRepeat;
+        return scriptWait;
     }
 
     --scriptWaitFrames[slot];
@@ -4113,7 +4078,7 @@ int vs_battle_script_F0_waitFrames(u_char* script, short slot)
         return scriptNext;
     }
 
-    return scriptRepeat;
+    return scriptWait;
 }
 
 /**
@@ -4121,7 +4086,7 @@ int vs_battle_script_F0_waitFrames(u_char* script, short slot)
  * @param script Opcode bytes:
  *   - [1] = 2 for full rate, 4 for half, else ignored
  */
-int vs_battle_script_F1_setFrameRate(u_char* script, UNUSED short arg1)
+int vs_battle_script_F1_setFrameRate(u_char* script, UNUSED short slot)
 {
     setFrameRate(script[1]);
 
@@ -4133,7 +4098,7 @@ int vs_battle_script_F1_setFrameRate(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = 1 for on, 0 for off
  */
-int vs_battle_script_F3_setScanlines(u_char* script, UNUSED short arg1)
+int vs_battle_script_F3_setScanlines(u_char* script, UNUSED short slot)
 {
     scanlinesEnabled = script[1];
 
@@ -4145,17 +4110,17 @@ int vs_battle_script_F3_setScanlines(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = slot in the low 2 bits, bit 7 set to stop the slot instead of waiting
  */
-int vs_battle_script_F4_joinScript(u_char* script, UNUSED short arg1)
+int vs_battle_script_F4_joinScript(u_char* script, UNUSED short slot)
 {
-    u_short slot = script[1] & 3;
+    u_short joinSlot = script[1] & 3;
 
     if ((script[1] & 0x80)) {
-        scriptSlots[slot] = 0;
+        scriptSlots[joinSlot] = 0;
 
         return scriptNext;
     }
 
-    return scriptSlots[slot] != 0 ? scriptRepeat : scriptNext;
+    return scriptSlots[joinSlot] != 0 ? scriptWait : scriptNext;
 }
 
 /**
@@ -4165,7 +4130,7 @@ int vs_battle_script_F4_joinScript(u_char* script, UNUSED short arg1)
  *   - [1] = slot to run the forked script in, 1 to 3
  *   - [2-3] = Current script continues from this offset
  */
-int vs_battle_script_F5_forkAndJump(u_char* script, UNUSED short arg1)
+int vs_battle_script_F5_forkAndJump(u_char* script, UNUSED short slot)
 {
     scriptSlots[script[1]] = script + 4;
 
@@ -4177,7 +4142,7 @@ int vs_battle_script_F5_forkAndJump(u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1] = slot identifier, unused
  */
-int vs_battle_script_F6_endScript(UNUSED u_char* script, UNUSED short arg1)
+int vs_battle_script_F6_endScript(UNUSED u_char* script, UNUSED short slot)
 {
     return scriptEnd;
 }
@@ -4187,12 +4152,12 @@ int vs_battle_script_F6_endScript(UNUSED u_char* script, UNUSED short arg1)
  * @param script Opcode bytes:
  *   - [1-2] = EVT file number
  */
-int vs_battle_script_F7_queueNextEvt(u_char* arg0, UNUSED short arg1)
+int vs_battle_script_F7_queueNextEvt(u_char* script, UNUSED short slot)
 {
-    evtFile = getShort(arg0 + 1);
+    evtFile = getShort(script + 1);
     nextEvtBuffer = vs_main_allocHeapR(0x1800);
 
-    func_800C00E8(evtFile, nextEvtBuffer);
+    loadEvt(evtFile, nextEvtBuffer);
 
     nextEvtQueued = 1;
 
@@ -4204,7 +4169,7 @@ int vs_battle_script_F7_queueNextEvt(u_char* arg0, UNUSED short arg1)
  * Restores the full frame rate. No discernable difference in usage
  * between 0xFE and 0xFF.
  */
-int vs_battle_script_FE_FF_endScene(UNUSED u_char* script, UNUSED short arg1)
+int vs_battle_script_endScene(UNUSED u_char* script, UNUSED short slot)
 {
     int i;
     int boxesClosing = 0;
@@ -4221,13 +4186,15 @@ int vs_battle_script_FE_FF_endScene(UNUSED u_char* script, UNUSED short arg1)
         return scriptFinish;
     }
 
-    return scriptRepeat;
+    return scriptWait;
 }
 
 /**
  * Plays the menu select sound effect. Unused.
+ * @param script Opcode bytes:
+ *   - [1-4] = unused
  */
-int vs_battle_script_F2_playMenuSelectSfx(UNUSED u_char* script, UNUSED short arg1)
+int vs_battle_script_F2_playMenuSelectSfx(UNUSED u_char* script, UNUSED short slot)
 {
     vs_main_playSfxDefault(0x7E, VS_SFX_MENUSELECT);
     return scriptNext;
@@ -4354,122 +4321,138 @@ void drawScanlines(void)
     scratch->nextPrim = tpage;
 }
 
-void func_800BB9B0(void)
+/** Steps the tweens of the GIM images by a frame. */
+static void updateGimTweens(void)
 {
     short i;
-    short temp_a0;
     GimTween* tween = gimTweens;
     Gim* gim = gims;
 
     for (i = 0; i < 3; ++i, ++tween, ++gim) {
-        if (tween->duration != 0) {
-            tween->elapsed += vs_gametime_vblanksPerFrame >> 1;
-            temp_a0 = func_800BFEBC(tween->curve, tween->elapsed, tween->duration);
-            if (gims != NULL) {
-                gim->x = (tween->startX + ((tween->deltaX * temp_a0) >> 0xC));
-                gim->y = (tween->startY + ((tween->deltaY * temp_a0) >> 0xC));
-                gim->scale = (tween->startScale + ((tween->deltaScale * temp_a0) >> 0xC));
-                gim->brightness =
-                    tween->startBrightness + ((tween->deltaBrightness * temp_a0) >> 0xC);
-            }
-            if (tween->elapsed >= tween->duration) {
-                tween->duration = 0;
-            }
+        short progress;
+
+        if (tween->duration == 0) {
+            continue;
+        }
+
+        tween->elapsed += vs_gametime_vblanksPerFrame >> 1;
+        progress = evaluateEasing(tween->curve, tween->elapsed, tween->duration);
+
+        if (gims != NULL) {
+            gim->x = (tween->startX + ((tween->deltaX * progress) >> 12));
+            gim->y = (tween->startY + ((tween->deltaY * progress) >> 12));
+            gim->scale = (tween->startScale + ((tween->deltaScale * progress) >> 12));
+            gim->brightness =
+                tween->startBrightness + ((tween->deltaBrightness * progress) >> 12);
+        }
+
+        if (tween->elapsed >= tween->duration) {
+            tween->duration = 0;
         }
     }
 }
 
-void func_800BBAFC(void)
+/** Steps the particle effect tween by a frame. */
+static void updateParticleTween(void)
 {
-    if (particleTween.duration != 0) {
-        short temp_lo = ((++particleTween.elapsed << 0xC) / particleTween.duration);
-        particleTween.direction = (particleTween.startDirection
-                                      + ((particleTween.deltaDirection * temp_lo) >> 0xC))
-                                & 0xFFF;
-        particleTween.fallAngle = particleTween.startFallAngle
-                                + ((particleTween.deltaFallAngle * temp_lo) >> 0xC);
-        particleTween.intensity = (particleTween.startIntensity
-                                   + ((particleTween.deltaIntensity * temp_lo) >> 0xC));
-        setParticleEffectDirection(particleTween.direction, particleTween.fallAngle);
-        setParticleEffectIntensity(particleTween.intensity);
-        if (particleTween.elapsed == particleTween.duration) {
-            particleTween.duration = 0;
-        }
+    short progress;
+
+    if (particleTween.duration == 0) {
+        return;
+    }
+
+    progress = ((++particleTween.elapsed << 12) / particleTween.duration);
+    particleTween.direction =
+        (particleTween.startDirection + ((particleTween.deltaDirection * progress) >> 12))
+        & 0xFFF;
+    particleTween.fallAngle =
+        particleTween.startFallAngle + ((particleTween.deltaFallAngle * progress) >> 12);
+    particleTween.intensity =
+        particleTween.startIntensity + ((particleTween.deltaIntensity * progress) >> 12);
+
+    setParticleEffectDirection(particleTween.direction, particleTween.fallAngle);
+    setParticleEffectIntensity(particleTween.intensity);
+
+    if (particleTween.elapsed == particleTween.duration) {
+        particleTween.duration = 0;
     }
 }
 
-extern CVECTOR D_800E9C08;
-extern VECTOR D_800E9C0C;
+extern CVECTOR neutralTint;
+extern VECTOR oneVector;
 
-void func_800BBBE8(void)
+/** Allocates the scripted camera, starting from the current view. */
+static void initScriptCamera(void)
 {
     UNUSED VECTOR _;
-    VECTOR sp20;
-    VECTOR sp30;
+    VECTOR eye;
+    VECTOR lookAt;
 
-    D_800F4BA4 = vs_main_allocHeapR(sizeof *D_800F4BA4);
+    scriptCamera = vs_main_allocHeapR(sizeof *scriptCamera);
     cameraFollowsAshley = 0;
 
-    getCameraPosition(&sp20);
-    getCameraLookAt(&sp30);
-    vectorCopy(&D_800F4BA4->eye.current, &sp20);
-    vectorCopy(&D_800F4BA4->lookAt.otherPosition, &sp20);
-    vectorCopy(&D_800F4BA4->lookAt.current, &sp30);
-    vectorCopy(&D_800F4BA4->eye.otherPosition, &sp30);
+    getCameraPosition(&eye);
+    getCameraLookAt(&lookAt);
+    vectorCopy(&scriptCamera->eye.current, &eye);
+    vectorCopy(&scriptCamera->lookAt.otherPosition, &eye);
+    vectorCopy(&scriptCamera->lookAt.current, &lookAt);
+    vectorCopy(&scriptCamera->eye.otherPosition, &lookAt);
 
-    D_800F4BA4->lookAt.mode = 0xF;
-    D_800F4BA4->lookAt.carryMomentum = D_800F4BA4->lookAt.carrying = 0;
-    D_800F4BA4->eye.mode = 0xF;
-    D_800F4BA4->eye.carryMomentum = D_800F4BA4->eye.carrying = 0;
-    D_800F4BA4->unk168.unkA = 0;
-    D_800F4BA4->unk168.unk2 = 0;
-    D_800F4BA4->unk168.unk0 = 1;
+    scriptCamera->lookAt.mode = cameraModeIdle;
+    scriptCamera->lookAt.carryMomentum = scriptCamera->lookAt.carrying = 0;
+    scriptCamera->eye.mode = cameraModeIdle;
+    scriptCamera->eye.carryMomentum = scriptCamera->eye.carrying = 0;
+    scriptCamera->roll.duration = 0;
+    scriptCamera->roll.value = 0;
+    scriptCamera->roll.changed = 1;
 
     setFramebufferEffect(0);
 
-    D_800F4BA4->unk174.unkA = 0;
-    D_800F4BA4->unk174.unk2 = 0;
+    scriptCamera->framebufferSpin.duration = 0;
+    scriptCamera->framebufferSpin.value = 0;
 
-    func_8007DDAC(0);
+    vs_battle_setFramebufferEffectSpin(0);
 
-    D_800F4BA4->unk174.unk0 = 1;
-    D_800F4BA4->unk1FC.unk4 = ONE;
-    D_800F4BA4->unk1FC.unk2 = ONE;
+    scriptCamera->framebufferSpin.changed = 1;
+    scriptCamera->framebufferScale.value.vy = ONE;
+    scriptCamera->framebufferScale.value.vx = ONE;
 
-    func_8007DDB8(&D_800E9C0C);
+    vs_battle_setFramebufferEffectScale(&oneVector);
 
-    D_800F4BA4->unk21C.unk2 = D_800F4BA4->unk21C.unk4 = D_800F4BA4->unk21C.unk6 =
-        D_800F4BA4->unk1FC.unk1E = 0;
+    scriptCamera->framebufferTint.value.vx = scriptCamera->framebufferTint.value.vy =
+        scriptCamera->framebufferTint.value.vz = scriptCamera->framebufferScale.duration =
+            0;
 
-    func_8007DDD4(&D_800E9C08);
+    vs_battle_setFramebufferEffectTint(&neutralTint);
 
-    D_800F4BA4->unk21C.unk1E = 0;
-    D_800F4BA4->unk23C.unk4 = ONE;
-    D_800F4BA4->unk23C.unk2 = ONE;
+    scriptCamera->framebufferTint.duration = 0;
+    scriptCamera->framebufferOffset.value.vy = ONE;
+    scriptCamera->framebufferOffset.value.vx = ONE;
 
-    func_8007DDF8(&D_800E9C0C);
+    vs_battle_setFramebufferEffectOffset(&oneVector);
 
-    D_800F4BA4->unk23C.unk1E = 0;
+    scriptCamera->framebufferOffset.duration = 0;
 
-    func_8007DE2C(1);
+    vs_battle_setFramebufferEffectBlendMode(1);
 
-    D_800F4BA4->unk25C.unk2 = ONE;
-    D_800F4BA4->unk25C.unk1E = D_800F4BA4->unk25C.unk4 = 0;
-    D_800F4BA4->projectionDistance.unk2 = 0x200;
-    D_800F4BA4->projectionDistance.unk9 = 0;
-    D_800F4BA4->projectionDistance.unk0 = 1;
-    D_800F4BA4->nearClip.unk2 = 0x40;
-    D_800F4BA4->nearClip.unk9 = 0;
-    D_800F4BA4->nearClip.unk0 = 1;
-    D_800F4BA4->farClip.unk2 = 0x1000;
-    D_800F4BA4->farClip.unk9 = 0;
-    D_800F4BA4->farClip.unk0 = 1;
-    D_800F4BA4->unk1A4.unk0.s16 = 0;
-    D_800F4BA4->unk1A4.unkB = D_800F4BA4->unk1B0.unkB = 0;
-    D_800F4BA4->attachedActor = 0x2000;
+    scriptCamera->lensDistortion.value.vx = ONE;
+    scriptCamera->lensDistortion.duration = scriptCamera->lensDistortion.value.vy = 0;
+    scriptCamera->projectionDistance.value = ONE / 8;
+    scriptCamera->projectionDistance.duration = 0;
+    scriptCamera->projectionDistance.changed = 1;
+    scriptCamera->nearClip.value = 64;
+    scriptCamera->nearClip.duration = 0;
+    scriptCamera->nearClip.changed = 1;
+    scriptCamera->farClip.value = ONE;
+    scriptCamera->farClip.duration = 0;
+    scriptCamera->farClip.changed = 1;
+    scriptCamera->shakeCount = 0;
+    scriptCamera->shakeEntries[0].duration = scriptCamera->shakeEntries[1].duration = 0;
+    scriptCamera->attachedActor = 0x2000;
 }
 
-void func_800BBDDC(void) { vs_main_freeHeapR(D_800F4BA4); }
+/** Frees the scripted camera. */
+void freeScriptCamera(void) { vs_main_freeHeapR(scriptCamera); }
 
 /**
  * Makes the scripted camera follow Ashley with the gameplay camera's view, until the
@@ -4486,14 +4469,14 @@ void attachCameraToActor(u_short actor)
 {
     int _[4];
     if (actor == 0x2000) {
-        if (D_800F4BA4->attachedActor != actor) {
-            vectorAdd(&D_800F4BA4->eye.current, &D_800F4BA4->eye.current,
-                &D_800F4BA4->attachedPosition);
-            vectorAdd(&D_800F4BA4->lookAt.current, &D_800F4BA4->lookAt.current,
-                &D_800F4BA4->attachedPosition);
+        if (scriptCamera->attachedActor != actor) {
+            vectorAdd(&scriptCamera->eye.current, &scriptCamera->eye.current,
+                &scriptCamera->attachedPosition);
+            vectorAdd(&scriptCamera->lookAt.current, &scriptCamera->lookAt.current,
+                &scriptCamera->attachedPosition);
         }
     }
-    D_800F4BA4->attachedActor = actor;
+    scriptCamera->attachedActor = actor;
     updateCameraAttachment();
 }
 
@@ -4502,16 +4485,16 @@ void updateCameraAttachment(void)
 {
     vs_ActorPosition sp10;
 
-    if (D_800F4BA4->attachedActor == 0x2000) {
-        D_800F4BA4->attachedPosition.vz = 0;
-        D_800F4BA4->attachedPosition.vy = 0;
-        D_800F4BA4->attachedPosition.vx = 0;
+    if (scriptCamera->attachedActor == 0x2000) {
+        scriptCamera->attachedPosition.vz = 0;
+        scriptCamera->attachedPosition.vy = 0;
+        scriptCamera->attachedPosition.vx = 0;
         return;
     }
-    vs_battle_getActorPosition(D_800F4BA4->attachedActor, &sp10);
-    D_800F4BA4->attachedPosition.vx = sp10.unk0.unk4.vx * ONE;
-    D_800F4BA4->attachedPosition.vy = sp10.unk0.unk4.vy * ONE;
-    D_800F4BA4->attachedPosition.vz = sp10.unk0.unk4.vz * ONE;
+    vs_battle_getActorPosition(scriptCamera->attachedActor, &sp10);
+    scriptCamera->attachedPosition.vx = sp10.unk0.unk4.vx * ONE;
+    scriptCamera->attachedPosition.vy = sp10.unk0.unk4.vy * ONE;
+    scriptCamera->attachedPosition.vz = sp10.unk0.unk4.vz * ONE;
 }
 
 static void applyCameraState(void)
@@ -4521,24 +4504,24 @@ static void applyCameraState(void)
 
     if (cameraFollowsAshley != 0) {
         initialiseCameraFromSpherical(&cameraPos, &cameraLookAt, -1, -1);
-        vectorCopy(&D_800F4BA4->lookAt.current, &cameraLookAt);
-        vectorCopy(&D_800F4BA4->eye.current, &cameraPos);
+        vectorCopy(&scriptCamera->lookAt.current, &cameraLookAt);
+        vectorCopy(&scriptCamera->eye.current, &cameraPos);
     } else {
-        vectorCopy(&cameraLookAt, &D_800F4BA4->lookAt.current);
-        vectorCopy(&cameraPos, &D_800F4BA4->eye.current);
-        if (D_800F4BA4->attachedActor != 0x2000) {
-            vectorAdd(&cameraLookAt, &cameraLookAt, &D_800F4BA4->attachedPosition);
-            vectorAdd(&cameraPos, &cameraPos, &D_800F4BA4->attachedPosition);
+        vectorCopy(&cameraLookAt, &scriptCamera->lookAt.current);
+        vectorCopy(&cameraPos, &scriptCamera->eye.current);
+        if (scriptCamera->attachedActor != 0x2000) {
+            vectorAdd(&cameraLookAt, &cameraLookAt, &scriptCamera->attachedPosition);
+            vectorAdd(&cameraPos, &cameraPos, &scriptCamera->attachedPosition);
         }
     }
-    if (*(short*)&D_800F4BA4->unk1A4.unk0 != 0) {
-        sVectorToFixedPointVector(&CAMERA_SCRATCH->v1, (SVECTOR*)&D_800F4BA4->unk1BE);
-        sVectorToFixedPointVector(&CAMERA_SCRATCH->v2, (SVECTOR*)&D_800F4BA4->unk1C6);
-        CAMERA_SCRATCH->rotation.vz = 0;
-        CAMERA_SCRATCH->rotation.vx = 0;
-        CAMERA_SCRATCH->rotation.vy = atan2FixedPoint(
-            cameraLookAt.vx - cameraPos.vx, cameraLookAt.vz - cameraPos.vz);
-        RotMatrix_gte(&CAMERA_SCRATCH->rotation, &CAMERA_SCRATCH->matrix);
+    if (scriptCamera->shakeCount != 0) {
+        sVectorToFixedPointVector(&CAMERA_SCRATCH->v1, &scriptCamera->shakeLookAt);
+        sVectorToFixedPointVector(&CAMERA_SCRATCH->v2, &scriptCamera->shakeEye);
+        CAMERA_SCRATCH->s1.vz = 0;
+        CAMERA_SCRATCH->s1.vx = 0;
+        CAMERA_SCRATCH->s1.vy =
+            yawFromOffset(cameraLookAt.vx - cameraPos.vx, cameraLookAt.vz - cameraPos.vz);
+        RotMatrix_gte(&CAMERA_SCRATCH->s1, &CAMERA_SCRATCH->matrix);
         ApplyMatrixLV(&CAMERA_SCRATCH->matrix, &CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1);
         ApplyMatrixLV(&CAMERA_SCRATCH->matrix, &CAMERA_SCRATCH->v2, &CAMERA_SCRATCH->v2);
         vectorAdd(&cameraLookAt, &cameraLookAt, &CAMERA_SCRATCH->v1);
@@ -4546,25 +4529,25 @@ static void applyCameraState(void)
     }
     setCameraLookAt(&cameraLookAt);
     setCameraPosition(&cameraPos);
-    if (D_800F4BA4->unk168.unk0 != 0) {
-        setCameraRoll(D_800F4BA4->unk168.unk2);
-        D_800F4BA4->unk168.unk0 = 0;
+    if (scriptCamera->roll.changed != 0) {
+        setCameraRoll(scriptCamera->roll.value);
+        scriptCamera->roll.changed = 0;
     }
-    if (D_800F4BA4->unk174.unk0 != 0) {
-        func_8007DDAC(D_800F4BA4->unk174.unk2);
-        D_800F4BA4->unk174.unk0 = 0;
+    if (scriptCamera->framebufferSpin.changed != 0) {
+        vs_battle_setFramebufferEffectSpin(scriptCamera->framebufferSpin.value);
+        scriptCamera->framebufferSpin.changed = 0;
     }
-    if (D_800F4BA4->projectionDistance.unk0 != 0) {
-        vs_battle_setProjectionDistance(D_800F4BA4->projectionDistance.unk2);
-        D_800F4BA4->projectionDistance.unk0 = 0;
+    if (scriptCamera->projectionDistance.changed != 0) {
+        vs_battle_setProjectionDistance(scriptCamera->projectionDistance.value);
+        scriptCamera->projectionDistance.changed = 0;
     }
-    if (D_800F4BA4->nearClip.unk0 != 0) {
-        setNearClip(D_800F4BA4->nearClip.unk2);
-        D_800F4BA4->nearClip.unk0 = 0;
+    if (scriptCamera->nearClip.changed != 0) {
+        setNearClip(scriptCamera->nearClip.value);
+        scriptCamera->nearClip.changed = 0;
     }
-    if (D_800F4BA4->farClip.unk0 != 0) {
-        setFarClip(D_800F4BA4->farClip.unk2, fogDepthOverridden);
-        D_800F4BA4->farClip.unk0 = 0;
+    if (scriptCamera->farClip.changed != 0) {
+        setFarClip(scriptCamera->farClip.value, fogDepthOverridden);
+        scriptCamera->farClip.changed = 0;
     }
 }
 
@@ -4587,28 +4570,28 @@ void returnToGameplayCamera(short facing, int zoom)
         return;
     }
     initialiseCameraFromSpherical(&sp10, &sp20, facing, (short)zoom);
-    vectorCopy(&D_800F4BA4->eye.position, &sp10);
-    vectorCopy(&D_800F4BA4->lookAt.position, &sp20);
+    vectorCopy(&scriptCamera->eye.position, &sp10);
+    vectorCopy(&scriptCamera->lookAt.position, &sp20);
     temp_s0 = vectorMagnitude(vectorSubtract(
-        &CAMERA_SCRATCH->v1, &D_800F4BA4->eye.current, &D_800F4BA4->eye.position));
+        &CAMERA_SCRATCH->v1, &scriptCamera->eye.current, &scriptCamera->eye.position));
     temp_v0 = (temp_s0
                   + vectorMagnitude(vectorSubtract(&CAMERA_SCRATCH->v1,
-                      &D_800F4BA4->lookAt.current, &D_800F4BA4->lookAt.position)))
+                      &scriptCamera->lookAt.current, &scriptCamera->lookAt.position)))
             / 0x28000;
     if ((temp_v0 << 0x10) != 0) {
-        D_800E9C1C[2] = D_800E9C1C[6] = temp_v0;
-        vs_battle_script_Cx_Dx_camera(D_800E9C1C, 0);
-        vs_battle_script_Cx_Dx_camera(D_800E9C1C + 3, 0);
+        returnCameraScripts[2] = returnCameraScripts[6] = temp_v0;
+        vs_battle_script_controlCameraChannel(returnCameraScripts, 0);
+        vs_battle_script_controlCameraChannel(returnCameraScripts + 3, 0);
     }
 }
 
 /**
  * Controls the look-at (opcodes 0xC0 to 0xCB) or eye (0xD0 to 0xDB) camera channel, as
  * chosen by bit 4. The low nibble is the sub-opcode. An easing is a value of enum Easing,
- * a duration is in steps of 1/30 s, and an angle is in 4096 per turn.
+ * a duration is in steps of 1/30 s, and an angle is in ONE per turn.
  * @param script Opcode bytes, which depend on the sub-opcode.
  */
-int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
+int vs_battle_script_controlCameraChannel(u_char* script, UNUSED short unused)
 {
     enum {
         // Stores a destination for the channel.
@@ -4656,21 +4639,21 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
     CameraChannel* otherChannel;
 
     if (!(script[0] & 16)) {
-        channel = &D_800F4BA4->lookAt;
-        otherChannel = &D_800F4BA4->eye;
+        channel = &scriptCamera->lookAt;
+        otherChannel = &scriptCamera->eye;
     } else {
-        channel = &D_800F4BA4->eye;
-        otherChannel = &D_800F4BA4->lookAt;
+        channel = &scriptCamera->eye;
+        otherChannel = &scriptCamera->lookAt;
     }
 
     switch (script[0] & 15) {
     case cameraSetDestination:
-        setVectorImm(&channel->position, script + 1);
+        readScriptVector(&channel->position, script + 1);
 
         return scriptNext;
 
     case cameraCut:
-        channel->mode = 15;
+        channel->mode = cameraModeIdle;
 
         vectorCopy(&channel->current, &channel->position);
         vectorCopy(&otherChannel->otherPosition, &channel->position);
@@ -4678,7 +4661,7 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
         return scriptNext;
 
     case cameraLerpTo:
-        channel->mode = 2;
+        channel->mode = cameraModeLerp;
         channel->time = 0;
         channel->ease1 = script[1];
         channel->duration = script[2];
@@ -4689,7 +4672,7 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
         return scriptNext;
 
     case cameraArcTo:
-        channel->mode = 3;
+        channel->mode = cameraModeArc;
         channel->time = 0;
         channel->ease1 = script[1];
         channel->duration = script[2];
@@ -4704,7 +4687,7 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
 
     case cameraOrbitTo: {
         CameraScratch* s;
-        channel->mode = 4;
+        channel->mode = cameraModeOrbitTo;
         channel->time = 0;
         channel->duration = script[3];
         channel->ease1 = script[1] >> 4;
@@ -4719,40 +4702,40 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
             channel->current.vz - channel->otherPosition.vz);
 
         channel->value = vectorMagnitude(&CAMERA_SCRATCH->v1);
-        channel->angle = atan2FixedPoint(s->v1.vx, s->v1.vz) & 4095;
+        channel->angle = yawFromOffset(s->v1.vx, s->v1.vz) & 4095;
 
         setVector(&s->v2, channel->position.vx - channel->otherPosition.vx, 0,
             channel->position.vz - channel->otherPosition.vz);
 
         channel->delta = vectorMagnitude(&CAMERA_SCRATCH->v2) - channel->value;
-        s->value = (atan2FixedPoint(s->v2.vx, s->v2.vz) & 4095) - channel->angle;
+        s->i1 = (yawFromOffset(s->v2.vx, s->v2.vz) & 4095) - channel->angle;
 
-        if (s->value < -ONE / 2) {
-            s->value += ONE;
+        if (s->i1 < -ONE / 2) {
+            s->i1 += ONE;
         }
-        if (s->value > ONE / 2) {
-            s->value -= ONE;
+        if (s->i1 > ONE / 2) {
+            s->i1 -= ONE;
         }
 
         switch (script[1] & 15) {
         case 15:
-            if (s->value == 0) {
-                s->value = -ONE;
-            } else if (s->value > 0) {
-                s->value -= ONE;
+            if (s->i1 == 0) {
+                s->i1 = -ONE;
+            } else if (s->i1 > 0) {
+                s->i1 -= ONE;
             }
             break;
 
         case 1:
-            if (s->value == 0) {
-                s->value = ONE;
-            } else if (s->value < 0) {
-                s->value += ONE;
+            if (s->i1 == 0) {
+                s->i1 = ONE;
+            } else if (s->i1 < 0) {
+                s->i1 += ONE;
             }
             break;
         }
 
-        channel->angleDelta = CAMERA_SCRATCH->value;
+        channel->angleDelta = CAMERA_SCRATCH->i1;
         channel->aux.vy = channel->current.vy - channel->otherPosition.vy;
         channel->velocity.vy =
             channel->position.vy - channel->otherPosition.vy - channel->aux.vy;
@@ -4764,7 +4747,7 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
         CameraScratch* s;
         int height;
 
-        channel->mode = 5;
+        channel->mode = cameraModeOrbitBy;
         channel->time = 0;
         channel->duration = script[8];
         channel->ease1 = script[6] & 15;
@@ -4780,7 +4763,7 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
 
         channel->value = vectorMagnitude(&CAMERA_SCRATCH->v1);
         channel->delta = ((channel->value * script[5]) >> 6) - channel->value;
-        channel->angle = atan2FixedPoint(s->v1.vx, s->v1.vz);
+        channel->angle = yawFromOffset(s->v1.vx, s->v1.vz);
         channel->angleDelta = getShort(script + 1);
 
         height = getShort(script + 3) * ONE;
@@ -4792,34 +4775,34 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
     }
 
     case cameraSetDestinationToActorOffset:
-        func_800A190C(resolveActorId(getShort(script + 1)), script[3],
-            &CAMERA_SCRATCH->rotation, 2);
+        getActorPoint(
+            resolveActorId(getShort(script + 1)), script[3], &CAMERA_SCRATCH->s1, 2);
 
-        sVectorToFixedPointVector(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->rotation);
+        sVectorToFixedPointVector(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->s1);
 
-        setVectorImm(&CAMERA_SCRATCH->v2, script + 4);
+        readScriptVector(&CAMERA_SCRATCH->v2, script + 4);
         vectorAdd(&channel->position, &CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v2);
 
-        if (D_800F4BA4->attachedActor != 0x2000) {
+        if (scriptCamera->attachedActor != 0x2000) {
             vectorSubtract(
-                &channel->position, &channel->position, &D_800F4BA4->attachedPosition);
+                &channel->position, &channel->position, &scriptCamera->attachedPosition);
         }
 
         return scriptNext;
 
     case cameraFollowActor:
-        channel->mode = 8;
+        channel->mode = cameraModeFollowActor;
         channel->value = resolveActorId(getShort(script + 1));
         channel->delta = script[3];
         channel->time = 0;
         channel->duration = script[10];
 
-        setVectorImm(&channel->velocity, script + 4);
+        readScriptVector(&channel->velocity, script + 4);
 
         return scriptNext;
 
     case cameraLockOffset:
-        channel->mode = 9;
+        channel->mode = cameraModeLockOffset;
         channel->time = 0;
         channel->duration = script[1];
 
@@ -4830,738 +4813,970 @@ int vs_battle_script_Cx_Dx_camera(u_char* script, UNUSED short unused)
     case cameraSetDestinationToActorLocalOffset: {
         int id = resolveActorId(getShort(script + 1));
 
-        CameraScratch* s = CAMERA_SCRATCH;
-        s->value = id;
+        CAMERA_SCRATCH->i1 = id;
 
-        vs_battle_getActorPosition(id, &D_800F4BA4->unk1D0);
+        vs_battle_getActorPosition(id, &scriptCamera->actorPosition);
 
-        s->rotation2.vz = 0;
-        s->rotation2.vx = 0;
-        s->rotation2.vy = D_800F4BA4->unk1D0.unk0.unk4.pad;
+        CAMERA_SCRATCH->s2.vz = 0;
+        CAMERA_SCRATCH->s2.vx = 0;
+        CAMERA_SCRATCH->s2.vy = scriptCamera->actorPosition.unk0.unk4.pad;
 
-        RotMatrix_gte(&CAMERA_SCRATCH->rotation2, &CAMERA_SCRATCH->matrix);
-        setVectorImm(&CAMERA_SCRATCH->v1, script + 4);
+        RotMatrix_gte(&CAMERA_SCRATCH->s2, &CAMERA_SCRATCH->matrix);
+        readScriptVector(&CAMERA_SCRATCH->v1, script + 4);
         ApplyMatrixLV(&CAMERA_SCRATCH->matrix, &CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1);
-        func_800A190C(s->value, script[3], &CAMERA_SCRATCH->rotation2, 2);
+        getActorPoint(CAMERA_SCRATCH->i1, script[3], &CAMERA_SCRATCH->s2, 2);
 
         vectorAdd(&channel->position,
-            sVectorToFixedPointVector(&CAMERA_SCRATCH->v2, &CAMERA_SCRATCH->rotation2),
+            sVectorToFixedPointVector(&CAMERA_SCRATCH->v2, &CAMERA_SCRATCH->s2),
             &CAMERA_SCRATCH->v1);
 
-        if (D_800F4BA4->attachedActor != 0x2000) {
+        if (scriptCamera->attachedActor != 0x2000) {
             vectorSubtract(
-                &channel->position, &channel->position, &D_800F4BA4->attachedPosition);
+                &channel->position, &channel->position, &scriptCamera->attachedPosition);
         }
 
         return scriptNext;
     }
 
     case cameraTerrainFollowTo: {
-        CameraScratch* s;
-
-        channel->mode = 11;
+        channel->mode = cameraModeTerrainFollow;
         channel->time = 0;
         channel->ease1 = easingLinear;
         channel->duration = script[2];
 
         vectorSubtract(&CAMERA_SCRATCH->v1, &channel->otherPosition, &channel->current);
-        vecToRotMatrix(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->matrix);
+        vectorToLookMatrix(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->matrix);
 
-        s = CAMERA_SCRATCH;
-
-        s->matrix.t[0] = channel->current.vx >> 12;
-        s->matrix.t[1] = channel->current.vy >> 12;
-        s->matrix.t[2] = channel->current.vz >> 12;
-        channel->current.vy = func_800BD2B8(&CAMERA_SCRATCH->matrix);
+        CAMERA_SCRATCH->matrix.t[0] = channel->current.vx >> 12;
+        CAMERA_SCRATCH->matrix.t[1] = channel->current.vy >> 12;
+        CAMERA_SCRATCH->matrix.t[2] = channel->current.vz >> 12;
+        channel->current.vy = getCameraTerrainHeight(&CAMERA_SCRATCH->matrix);
 
         vectorCopy(&channel->computed, &channel->current);
 
         channel->delta = vectorMagnitude(
             vectorSubtract(&CAMERA_SCRATCH->v1, &channel->position, &channel->computed));
         channel->value = channel->delta / script[2];
-        D_800F4BA4->unk27C.vx = D_800F4BA4->unk27C.vy = D_800F4BA4->unk27C.vz =
-            0x80000000;
+        scriptCamera->terrainFollowLast.vx = scriptCamera->terrainFollowLast.vy =
+            scriptCamera->terrainFollowLast.vz = 0x80000000;
 
         return scriptNext;
     }
     }
 }
 
-void func_800BC9E0(void)
+/** Advances the camera by one frame. */
+static void updateCamera(void)
 {
-    D_800F4BA4->eye.otherPosition.vx = D_800F4BA4->lookAt.current.vx;
-    D_800F4BA4->eye.otherPosition.vy = D_800F4BA4->lookAt.current.vy;
-    D_800F4BA4->eye.otherPosition.vz = D_800F4BA4->lookAt.current.vz;
-    D_800F4BA4->lookAt.otherPosition.vx = D_800F4BA4->eye.current.vx;
-    D_800F4BA4->lookAt.otherPosition.vy = D_800F4BA4->eye.current.vy;
-    D_800F4BA4->lookAt.otherPosition.vz = D_800F4BA4->eye.current.vz;
-    func_800BCA8C(&D_800F4BA4->lookAt, &D_800F4BA4->eye);
-    func_800BCA8C(&D_800F4BA4->eye, &D_800F4BA4->lookAt);
-    func_800BD57C(&D_800F4BA4->unk168);
-    func_800BD57C(&D_800F4BA4->unk174);
-    func_800BDF6C(&D_800F4BA4->projectionDistance);
-    func_800BDF6C(&D_800F4BA4->nearClip);
-    func_800BDF6C(&D_800F4BA4->farClip);
-    func_800BE180();
+    scriptCamera->eye.otherPosition.vx = scriptCamera->lookAt.current.vx;
+    scriptCamera->eye.otherPosition.vy = scriptCamera->lookAt.current.vy;
+    scriptCamera->eye.otherPosition.vz = scriptCamera->lookAt.current.vz;
+    scriptCamera->lookAt.otherPosition.vx = scriptCamera->eye.current.vx;
+    scriptCamera->lookAt.otherPosition.vy = scriptCamera->eye.current.vy;
+    scriptCamera->lookAt.otherPosition.vz = scriptCamera->eye.current.vz;
+
+    stepCameraChannel(&scriptCamera->lookAt, &scriptCamera->eye);
+    stepCameraChannel(&scriptCamera->eye, &scriptCamera->lookAt);
+    stepAngleTween(&scriptCamera->roll);
+    stepAngleTween(&scriptCamera->framebufferSpin);
+    stepProjectionTween(&scriptCamera->projectionDistance);
+    stepProjectionTween(&scriptCamera->nearClip);
+    stepProjectionTween(&scriptCamera->farClip);
+    updateCameraShake();
 }
 
-void func_800BCA8C(CameraChannel* c, CameraChannel* other)
+/** Steps one camera channel by a frame, evaluating its current mode. */
+static void stepCameraChannel(CameraChannel* channel, UNUSED CameraChannel* other)
 {
-    if (c->mode == 15) {
+    if (channel->mode == cameraModeIdle) {
         return;
     }
-    if (c->mode != 11) {
-        c->time += vs_gametime_vblanksPerFrame >> 1;
-        if (c->time > c->duration) {
-            c->time = c->duration;
+
+    if (channel->mode != cameraModeTerrainFollow) {
+        channel->time += vs_gametime_vblanksPerFrame >> 1;
+        if (channel->time > channel->duration) {
+            channel->time = channel->duration;
         }
     }
-    switch (c->mode) {
-    case 2:
-        CAMERA_SCRATCH->value = func_800BFEBC(c->ease1, c->time, c->duration);
-        vectorFixedPointMult(&CAMERA_SCRATCH->v1, &c->velocity, CAMERA_SCRATCH->value);
-        vectorAdd(&c->computed, &c->start, &CAMERA_SCRATCH->v1);
+
+    switch (channel->mode) {
+    case cameraModeLerp:
+        CAMERA_SCRATCH->i1 =
+            evaluateEasing(channel->ease1, channel->time, channel->duration);
+
+        vectorFixedPointMult(&CAMERA_SCRATCH->v1, &channel->velocity, CAMERA_SCRATCH->i1);
+        vectorAdd(&channel->computed, &channel->start, &CAMERA_SCRATCH->v1);
+
         break;
-    case 3: {
-        CameraScratch* s = CAMERA_SCRATCH;
-        s->value = func_800BFEBC(c->ease1, c->time, c->duration);
-        vectorFixedPointMult(&CAMERA_SCRATCH->v1, &c->velocity, s->value);
-        vectorAdd(&CAMERA_SCRATCH->v2, &c->start, &CAMERA_SCRATCH->v1);
-        vectorSubtract(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v2, &c->otherPosition);
-        toNormalIntegerVector(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1);
-        s->distance = vectorMagnitude(
-            vectorSubtract(&CAMERA_SCRATCH->v2, &c->otherPosition, &c->position));
-        s->value = c->value
-                 + fixedPointMult(s->distance - c->value,
-                     func_800BFEBC(c->ease1, c->time, c->duration));
-        vectorFixedPointMult(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1, s->value);
-        vectorAdd(&c->computed, &c->otherPosition, &CAMERA_SCRATCH->v1);
+
+    case cameraModeArc: {
+        CAMERA_SCRATCH->i1 =
+            evaluateEasing(channel->ease1, channel->time, channel->duration);
+
+        vectorFixedPointMult(&CAMERA_SCRATCH->v1, &channel->velocity, CAMERA_SCRATCH->i1);
+        vectorAdd(&CAMERA_SCRATCH->v2, &channel->start, &CAMERA_SCRATCH->v1);
+        vectorSubtract(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v2, &channel->otherPosition);
+        normalizeVector(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1);
+
+        CAMERA_SCRATCH->i2 = vectorMagnitude(vectorSubtract(
+            &CAMERA_SCRATCH->v2, &channel->otherPosition, &channel->position));
+        CAMERA_SCRATCH->i1 =
+            channel->value
+            + fixedPointMult(CAMERA_SCRATCH->i2 - channel->value,
+                evaluateEasing(channel->ease1, channel->time, channel->duration));
+
+        vectorFixedPointMult(
+            &CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1, CAMERA_SCRATCH->i1);
+        vectorAdd(&channel->computed, &channel->otherPosition, &CAMERA_SCRATCH->v1);
+
         break;
     }
-    case 4: {
-        CameraScratch* s = CAMERA_SCRATCH;
-        s->rotation.vz = 0;
-        s->rotation.vx = 0;
-        s->rotation.vy =
-            c->angle
-            + ((c->angleDelta * func_800BFEBC(c->ease1, c->time, c->duration)) >> 12);
-        RotMatrix_gte(&CAMERA_SCRATCH->rotation, &CAMERA_SCRATCH->matrix);
-        s->v1.vz =
-            c->value
-            + fixedPointMult(c->delta, func_800BFEBC(c->ease2, c->time, c->duration));
-        s->v1.vx = 0;
-        s->v1.vy = 0;
+
+    case cameraModeOrbitTo: {
+        CAMERA_SCRATCH->s1.vz = 0;
+        CAMERA_SCRATCH->s1.vx = 0;
+        CAMERA_SCRATCH->s1.vy =
+            channel->angle
+            + ((channel->angleDelta
+                   * evaluateEasing(channel->ease1, channel->time, channel->duration))
+                >> 12);
+
+        RotMatrix_gte(&CAMERA_SCRATCH->s1, &CAMERA_SCRATCH->matrix);
+
+        CAMERA_SCRATCH->v1.vz =
+            channel->value
+            + fixedPointMult(channel->delta,
+                evaluateEasing(channel->ease2, channel->time, channel->duration));
+        CAMERA_SCRATCH->v1.vx = 0;
+        CAMERA_SCRATCH->v1.vy = 0;
+
         ApplyMatrixLV(&CAMERA_SCRATCH->matrix, &CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1);
-        s->v1.vy = c->aux.vy
-                 + fixedPointMult(
-                     c->velocity.vy, func_800BFEBC(c->ease3, c->time, c->duration));
-        vectorAdd(&c->computed, &c->start, &CAMERA_SCRATCH->v1);
+
+        CAMERA_SCRATCH->v1.vy =
+            channel->aux.vy
+            + fixedPointMult(channel->velocity.vy,
+                evaluateEasing(channel->ease3, channel->time, channel->duration));
+        vectorAdd(&channel->computed, &channel->start, &CAMERA_SCRATCH->v1);
+
         break;
     }
-    case 5: {
-        CameraScratch* s = CAMERA_SCRATCH;
-        s->rotation.vz = 0;
-        s->rotation.vx = 0;
-        s->rotation.vy =
-            c->angle
-            + ((c->angleDelta * func_800BFEBC(c->ease1, c->time, c->duration)) >> 12);
-        RotMatrix_gte(&CAMERA_SCRATCH->rotation, &CAMERA_SCRATCH->matrix);
-        s->v1.vz =
-            c->value
-            + fixedPointMult(c->delta, func_800BFEBC(c->ease2, c->time, c->duration));
-        s->v1.vx = 0;
-        s->v1.vy = 0;
+
+    case cameraModeOrbitBy: {
+        CAMERA_SCRATCH->s1.vz = 0;
+        CAMERA_SCRATCH->s1.vx = 0;
+        CAMERA_SCRATCH->s1.vy =
+            channel->angle
+            + ((channel->angleDelta
+                   * evaluateEasing(channel->ease1, channel->time, channel->duration))
+                >> 12);
+
+        RotMatrix_gte(&CAMERA_SCRATCH->s1, &CAMERA_SCRATCH->matrix);
+
+        CAMERA_SCRATCH->v1.vz =
+            channel->value
+            + fixedPointMult(channel->delta,
+                evaluateEasing(channel->ease2, channel->time, channel->duration));
+        CAMERA_SCRATCH->v1.vx = 0;
+        CAMERA_SCRATCH->v1.vy = 0;
+
         ApplyMatrixLV(&CAMERA_SCRATCH->matrix, &CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1);
-        c->computed.vx = c->position.vx + s->v1.vx;
-        c->computed.vz = c->position.vz + s->v1.vz;
-        c->computed.vy = c->start.vy
-                       + fixedPointMult(
-                           c->velocity.vy, func_800BFEBC(c->ease3, c->time, c->duration));
+
+        channel->computed.vx = channel->position.vx + CAMERA_SCRATCH->v1.vx;
+        channel->computed.vz = channel->position.vz + CAMERA_SCRATCH->v1.vz;
+        channel->computed.vy =
+            channel->start.vy
+            + fixedPointMult(channel->velocity.vy,
+                evaluateEasing(channel->ease3, channel->time, channel->duration));
+
         break;
     }
-    case 8:
-        func_800A190C(c->value, c->delta, &CAMERA_SCRATCH->rotation, 2);
-        vectorAdd(&c->computed,
-            sVectorToFixedPointVector(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->rotation),
-            &c->velocity);
+
+    case cameraModeFollowActor:
+        getActorPoint(channel->value, channel->delta, &CAMERA_SCRATCH->s1, 2);
+        vectorAdd(&channel->computed,
+            sVectorToFixedPointVector(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->s1),
+            &channel->velocity);
         break;
-    case 9:
-        vectorAdd(&c->computed, &c->velocity, &c->otherPosition);
+
+    case cameraModeLockOffset:
+        vectorAdd(&channel->computed, &channel->velocity, &channel->otherPosition);
         break;
-    case 11:
-        func_800BCFB4(c);
+
+    case cameraModeTerrainFollow:
+        stepCameraTerrainFollow(channel);
         break;
     }
-    vectorCopy(&c->previousCamera, &c->current);
-    if (c->carryMomentum & c->carrying) {
-        int fraction;
-        CameraScratch* s;
-        vectorAdd(&c->momentumPosition, &c->momentumPosition, &c->momentumStep);
-        fraction = func_800BFEBC(easingSineOut, c->time, c->duration);
-        s = CAMERA_SCRATCH;
-        s->value = fraction;
-        vectorSubtract(&CAMERA_SCRATCH->v1, &c->computed, &c->momentumPosition);
-        vectorFixedPointMult(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1, s->value);
-        vectorAdd(&c->current, &c->momentumPosition, &CAMERA_SCRATCH->v1);
+
+    vectorCopy(&channel->previousCamera, &channel->current);
+
+    if (channel->carryMomentum & channel->carrying) {
+
+        vectorAdd(&channel->momentumPosition, &channel->momentumPosition,
+            &channel->momentumStep);
+
+        CAMERA_SCRATCH->i1 =
+            evaluateEasing(easingSineOut, channel->time, channel->duration);
+
+        vectorSubtract(
+            &CAMERA_SCRATCH->v1, &channel->computed, &channel->momentumPosition);
+        vectorFixedPointMult(
+            &CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1, CAMERA_SCRATCH->i1);
+        vectorAdd(&channel->current, &channel->momentumPosition, &CAMERA_SCRATCH->v1);
     } else {
-        vectorCopy(&c->current, &c->computed);
+        vectorCopy(&channel->current, &channel->computed);
     }
-    if (c->time == c->duration) {
-        c->mode = 15;
-        if (c->carryMomentum) {
-            c->carrying = 1;
-            vectorCopy(&c->momentumPosition, &c->current);
-            vectorSubtract(&c->momentumStep, &c->current, &c->previousCamera);
+
+    if (channel->time == channel->duration) {
+
+        channel->mode = cameraModeIdle;
+
+        if (channel->carryMomentum) {
+            channel->carrying = 1;
+
+            vectorCopy(&channel->momentumPosition, &channel->current);
+            vectorSubtract(
+                &channel->momentumStep, &channel->current, &channel->previousCamera);
         }
     }
 }
 
-void func_800BCFB4(CameraChannel* c)
+/**
+ * Steps a terrain-following channel, keeping its position above the ground.
+ */
+static void stepCameraTerrainFollow(CameraChannel* channel)
 {
-    CameraMotionScratch* scratch;
-    CameraMotionScratch* finalScratch;
+    CameraScratch* scratch;
     short i;
-    int height;
-    vectorSubtract(&CAMERA_MOTION_SCRATCH->delta, &c->otherPosition, &c->position);
-    vecToRotMatrix(&CAMERA_MOTION_SCRATCH->delta, &CAMERA_MOTION_SCRATCH->matrix);
-    scratch = CAMERA_MOTION_SCRATCH;
-    scratch->matrix.t[0] = c->position.vx >> 12;
-    scratch->matrix.t[1] = c->position.vy >> 12;
-    scratch->matrix.t[2] = c->position.vz >> 12;
-    setVector(&scratch->delta, c->position.vx - c->computed.vx,
-        func_800BD2B8(&CAMERA_MOTION_SCRATCH->matrix) - c->computed.vy,
-        c->position.vz - c->computed.vz);
-    scratch->distance = vectorMagnitude(&CAMERA_MOTION_SCRATCH->delta);
-    scratch->steps = scratch->distance / c->value;
-    if (scratch->steps < 2) {
-        c->time = c->duration;
-    } else if (scratch->steps > 10) {
-        scratch->steps = 10;
+
+    vectorSubtract(&CAMERA_SCRATCH->v1, &channel->otherPosition, &channel->position);
+    vectorToLookMatrix(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->matrix);
+
+    scratch = CAMERA_SCRATCH;
+
+    scratch->matrix.t[0] = channel->position.vx >> 12;
+    scratch->matrix.t[1] = channel->position.vy >> 12;
+    scratch->matrix.t[2] = channel->position.vz >> 12;
+
+    setVector(&scratch->v1, channel->position.vx - channel->computed.vx,
+        getCameraTerrainHeight(&scratch->matrix) - channel->computed.vy,
+        channel->position.vz - channel->computed.vz);
+
+    scratch->i1 = vectorMagnitude(&scratch->v1);
+    scratch->i2 = scratch->i1 / channel->value;
+
+    if (scratch->i2 < 2) {
+        channel->time = channel->duration;
+    } else if (scratch->i2 > 10) {
+        scratch->i2 = 10;
     }
-    toNormalIntegerVector(&CAMERA_MOTION_SCRATCH->delta, &CAMERA_MOTION_SCRATCH->delta);
-    vectorFixedPointMult(
-        &CAMERA_MOTION_SCRATCH->delta, &CAMERA_MOTION_SCRATCH->delta, c->value);
-    vectorCopy(&CAMERA_MOTION_SCRATCH->candidate, &c->computed);
-    for (i = 1; i <= CAMERA_MOTION_SCRATCH->steps; ++i) {
-        scratch = CAMERA_MOTION_SCRATCH;
-        vectorAdd(&CAMERA_MOTION_SCRATCH->candidate, &CAMERA_MOTION_SCRATCH->candidate,
-            &CAMERA_MOTION_SCRATCH->delta);
-        vectorSubtract(&CAMERA_MOTION_SCRATCH->direction, &c->otherPosition,
-            &CAMERA_MOTION_SCRATCH->candidate);
-        vecToRotMatrix(&CAMERA_MOTION_SCRATCH->direction, &CAMERA_MOTION_SCRATCH->matrix);
-        scratch->matrix.t[0] = scratch->candidate.vx >> 12;
-        scratch->matrix.t[1] = scratch->candidate.vy >> 12;
-        scratch->matrix.t[2] = scratch->candidate.vz >> 12;
-        height = func_800BD2B8(&CAMERA_MOTION_SCRATCH->matrix);
-        if (height < scratch->candidate.vy) {
-            setVector(&scratch->delta, scratch->candidate.vx - c->computed.vx,
-                height - c->computed.vy, scratch->candidate.vz - c->computed.vz);
-            toNormalIntegerVector(
-                &CAMERA_MOTION_SCRATCH->delta, &CAMERA_MOTION_SCRATCH->delta);
-            vectorFixedPointMult(
-                &CAMERA_MOTION_SCRATCH->delta, &CAMERA_MOTION_SCRATCH->delta, c->value);
+
+    normalizeVector(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1);
+    vectorFixedPointMult(&CAMERA_SCRATCH->v1, &CAMERA_SCRATCH->v1, channel->value);
+    vectorCopy(&CAMERA_SCRATCH->v2, &channel->computed);
+
+    for (i = 1; i <= CAMERA_SCRATCH->i2; ++i) {
+        int height;
+        scratch = CAMERA_SCRATCH;
+
+        vectorAdd(&scratch->v2, &scratch->v2, &scratch->v1);
+        vectorSubtract(&scratch->v3, &channel->otherPosition, &scratch->v2);
+        vectorToLookMatrix(&scratch->v3, &scratch->matrix);
+
+        scratch->matrix.t[0] = scratch->v2.vx >> 12;
+        scratch->matrix.t[1] = scratch->v2.vy >> 12;
+        scratch->matrix.t[2] = scratch->v2.vz >> 12;
+
+        height = getCameraTerrainHeight(&scratch->matrix);
+
+        if (height < scratch->v2.vy) {
+            setVector(&scratch->v1, scratch->v2.vx - channel->computed.vx,
+                height - channel->computed.vy, scratch->v2.vz - channel->computed.vz);
+            normalizeVector(&scratch->v1, &scratch->v1);
+            vectorFixedPointMult(&scratch->v1, &scratch->v1, channel->value);
+
             break;
         }
     }
-    vectorAdd(
-        &CAMERA_MOTION_SCRATCH->candidate, &CAMERA_MOTION_SCRATCH->delta, &c->computed);
-    finalScratch = CAMERA_MOTION_SCRATCH;
-    if (finalScratch->candidate.vx == D_800F4BA4->unk27C.vx
-        && finalScratch->candidate.vy == D_800F4BA4->unk27C.vy
-        && finalScratch->candidate.vz == D_800F4BA4->unk27C.vz) {
-        c->time = c->duration;
+
+    vectorAdd(&CAMERA_SCRATCH->v2, &CAMERA_SCRATCH->v1, &channel->computed);
+
+    if (CAMERA_SCRATCH->v2.vx == scriptCamera->terrainFollowLast.vx
+        && CAMERA_SCRATCH->v2.vy == scriptCamera->terrainFollowLast.vy
+        && CAMERA_SCRATCH->v2.vz == scriptCamera->terrainFollowLast.vz) {
+        channel->time = channel->duration;
     } else {
-        vectorCopy(&D_800F4BA4->unk27C, &c->computed);
-        vectorCopy(&c->computed, &CAMERA_MOTION_SCRATCH->candidate);
+        vectorCopy(&scriptCamera->terrainFollowLast, &channel->computed);
+        vectorCopy(&channel->computed, &CAMERA_SCRATCH->v2);
     }
 }
 
-int func_800BD2B8(MATRIX* arg0)
+/**
+ * Lowest terrain height under a square of four points just ahead of the camera, with
+ * some clearance.
+ */
+static int getCameraTerrainHeight(MATRIX* camera)
 {
     VECTOR pos;
     SVECTOR offset;
     long flag;
     int first;
     int second;
-    int h;
+    int third;
+    int fourth;
     short lowest;
 
-    SetRotMatrix(arg0);
-    SetTransMatrix(arg0);
+#define SAMPLE_HEIGHT(result, x, y)                                                     \
+    setVector(&offset, x, y, 150);                                                      \
+    RotTrans(&offset, &pos, &flag);                                                     \
+    result = ((getTerrainHeight(pos.vx, pos.vz) << 17) >> 17) - 200
 
-    setVector(&offset, 80, 80, 150);
-    RotTrans(&offset, &pos, &flag);
-    first = ((func_8008DC7C(pos.vx, pos.vz) << 0x11) >> 0x11) - 200;
+    SetRotMatrix(camera);
+    SetTransMatrix(camera);
+
+    SAMPLE_HEIGHT(first, 80, 80);
+
     lowest = first;
 
-    setVector(&offset, -80, 80, 150);
-    RotTrans(&offset, &pos, &flag);
-    second = ((func_8008DC7C(pos.vx, pos.vz) << 0x11) >> 0x11) - 200;
+    SAMPLE_HEIGHT(second, -80, 80);
 
     if (second < first) {
         lowest = second;
     }
 
-    setVector(&offset, 80, -80, 150);
-    RotTrans(&offset, &pos, &flag);
-    h = ((func_8008DC7C(pos.vx, pos.vz) << 0x11) >> 0x11) - 200;
+    SAMPLE_HEIGHT(third, 80, -80);
 
-    if (h < lowest) {
-        lowest = h;
+    if (third < lowest) {
+        lowest = third;
     }
 
-    setVector(&offset, -80, -80, 150);
-    RotTrans(&offset, &pos, &flag);
-    h = ((func_8008DC7C(pos.vx, pos.vz) << 0x11) >> 0x11) - 200;
+    SAMPLE_HEIGHT(fourth, -80, -80);
 
-    if (h < lowest) {
-        lowest = h;
+    if (fourth < lowest) {
+        lowest = fourth;
     }
 
     return lowest * ONE;
+
+#undef SAMPLE_HEIGHT
 }
 
-int vs_battle_script_E2_E3_camera(u_char* arg0, UNUSED short arg1)
+/**
+ * Tweens an angle: the camera roll for E2, the spin of the frame buffer effect for E3.
+ * @param script Opcode bytes:
+ *   - [1..2] = target angle
+ *   - [3] = low nibble the easing, high nibble the direction: 0 negative, 1 shortest,
+ *     2 positive
+ *   - [4] = duration, 0 sets the angle immediately
+ *   - [5] = unused
+ */
+int vs_battle_script_tweenAngle(u_char* script, UNUSED short slot)
 {
-    func_800BD57C_t* var_s0;
+    AngleTween* tween;
 
-    switch (arg0[0]) {
+    switch (script[0]) {
     case 0xE2:
-        var_s0 = &D_800F4BA4->unk168;
+        tween = &scriptCamera->roll;
         break;
     case 0xE3:
-        var_s0 = &D_800F4BA4->unk174;
+        tween = &scriptCamera->framebufferSpin;
         break;
     }
 
-    var_s0->unkA = arg0[4];
+    tween->duration = script[4];
 
-    if (var_s0->unkA == 0) {
-        var_s0->unk2 = getShort(arg0 + 1);
-        var_s0->unk0 = 1;
+    if (tween->duration == 0) {
+        tween->value = getShort(script + 1);
+        tween->changed = 1;
     } else {
-        var_s0->unk4 = var_s0->unk2;
-        var_s0->unk6 = getShort(arg0 + 1) - var_s0->unk2;
-        if (var_s0->unk6 < -(ONE / 2)) {
-            var_s0->unk6 += ONE;
-        } else if (var_s0->unk6 > (ONE / 2)) {
-            var_s0->unk6 -= ONE;
+
+        tween->start = tween->value;
+        tween->delta = getShort(script + 1) - tween->value;
+
+        if (tween->delta < -(ONE / 2)) {
+            tween->delta += ONE;
+        } else if (tween->delta > (ONE / 2)) {
+            tween->delta -= ONE;
         }
 
-        switch (arg0[3] >> 4) {
+        switch (script[3] >> 4) {
         case 0:
-            if (var_s0->unk6 > 0) {
-                var_s0->unk6 -= ONE;
+            if (tween->delta > 0) {
+                tween->delta -= ONE;
             }
             break;
         case 2:
-            if (var_s0->unk6 < 0) {
-                var_s0->unk6 += ONE;
+            if (tween->delta < 0) {
+                tween->delta += ONE;
             }
             break;
         }
 
-        var_s0->unk1 = arg0[3] & 0xF;
-        var_s0->unk8 = 0;
+        tween->ease = script[3] & 0xF;
+        tween->elapsed = 0;
     }
+
     return scriptNext;
 }
 
-void func_800BD57C(func_800BD57C_t* arg0)
+/** Steps an angle tween by one frame. */
+static void stepAngleTween(AngleTween* tween)
 {
-    if (arg0->unkA > 0) {
-        arg0->unk8 += vs_gametime_vblanksPerFrame >> 1;
-
-        arg0->unk2 = (arg0->unk4
-                      + ((arg0->unk6 * func_800BFEBC(arg0->unk1, arg0->unk8, arg0->unkA))
-                          >> 0xC));
-
-        if (arg0->unk8 >= arg0->unkA) {
-            arg0->unkA = 0;
-        }
-        arg0->unk0 = 1;
+    if (tween->duration <= 0) {
+        return;
     }
+
+    tween->elapsed += vs_gametime_vblanksPerFrame >> 1;
+
+    tween->value =
+        tween->start
+        + ((tween->delta * evaluateEasing(tween->ease, tween->elapsed, tween->duration))
+            >> 0xC);
+
+    if (tween->elapsed >= tween->duration) {
+        tween->duration = 0;
+    }
+
+    tween->changed = 1;
 }
 
 /**
  * Gets which camera channels are idle.
- * @return Bit mask of the idle channels: 0x01 look-at, 0x02 eye, 0x04 roll (opcode E2),
- * 0x08 projection distance (EA), 0x10 near clip (EB), 0x20 far clip (EC), 0x40 lens
- * distortion (ED), 0x80 shake (EF).
+ * @return Bit mask of the idle channels, see the cameraIdle flags.
  */
 u_char getCameraIdleFlags(void)
 {
-    u_char temp_a2 = D_800F4BA4->lookAt.mode == 0xF;
+    u_char idle = scriptCamera->lookAt.mode == cameraModeIdle;
 
-    if (D_800F4BA4->eye.mode == 0xF) {
-        temp_a2 = temp_a2 | 2;
+    if (scriptCamera->eye.mode == cameraModeIdle) {
+        idle |= cameraIdleEye;
     }
-    if (D_800F4BA4->unk168.unkA == 0) {
-        temp_a2 |= 4;
+
+    if (scriptCamera->roll.duration == 0) {
+        idle |= cameraIdleRoll;
     }
-    if (D_800F4BA4->projectionDistance.unk9 == 0) {
-        temp_a2 |= 8;
+
+    if (scriptCamera->projectionDistance.duration == 0) {
+        idle |= cameraIdleProjectionDistance;
     }
-    if (D_800F4BA4->nearClip.unk9 == 0) {
-        temp_a2 |= 0x10;
+
+    if (scriptCamera->nearClip.duration == 0) {
+        idle |= cameraIdleNearClip;
     }
-    if (D_800F4BA4->farClip.unk9 == 0) {
-        temp_a2 |= 0x20;
+
+    if (scriptCamera->farClip.duration == 0) {
+        idle |= cameraIdleFarClip;
     }
-    if (D_800F4BA4->unk25C.unk1E == 0) {
-        temp_a2 |= 0x40;
+
+    if (scriptCamera->lensDistortion.duration == 0) {
+        idle |= cameraIdleLensDistortion;
     }
-    if ((D_800F4BA4->unk1A4.unkB + D_800F4BA4->unk1B0.unkB) == 0) {
-        temp_a2 |= 0x80;
+
+    if ((scriptCamera->shakeEntries[0].duration + scriptCamera->shakeEntries[1].duration)
+        == 0) {
+        idle |= cameraIdleShake;
     }
-    return temp_a2;
+
+    return idle;
 }
 
-int vs_battle_script_B9_BA_BF_E4_E5_E6_E7_ED(u_char* script, UNUSED short arg1)
+/**
+ * Sets the parameters of the frame buffer effect and the lens distortion.
+ * @param script Opcode bytes, see the comments on each opcode.
+ */
+int vs_battle_script_framebufferEffectParams(u_char* script, UNUSED short slot)
 {
     VECTOR values;
     CVECTOR color;
     short mode;
     short effectValue;
+
     switch (script[0]) {
-    case 185:
-        func_8007DE44(getShort(script + 1));
+    // Sets the ordering table index the frame buffer effect is drawn at.
+    // [1-2] = ordering table index.
+    case 0xB9:
+        vs_battle_setFramebufferEffectDepth(getShort(script + 1));
+
         return scriptNext;
 
-    case 186:
-        func_8007DE5C(script[1]);
+    // Sets whether the frame buffer effect reads the previous frame.
+    // [1] = 1 for the previous frame, 0 for the current one.
+    case 0xBA:
+        vs_battle_setFramebufferEffectUsePreviousFrame(script[1]);
+
         return scriptNext;
 
-    case 228:
-        D_800F4BA4->unk1FC.unk1E = script[4];
-        if (D_800F4BA4->unk1FC.unk1E == 0) {
+    // Tweens the scale of the frame buffer effect.
+    // [1-2] = x and y scale (<< 7), [3] = easing, [4] = tween duration, 0 =
+    // immediate.
+    case 0xE4:
+        scriptCamera->framebufferScale.duration = script[4];
+
+        if (scriptCamera->framebufferScale.duration == 0) {
             values.vx = (script[1] << 7);
             values.vy = (script[2] << 7);
-            func_8007DDB8(&values);
+
+            vs_battle_setFramebufferEffectScale(&values);
         } else {
-            D_800F4BA4->unk1FC.unk1C = 0;
-            func_8007DE88(&values);
-            D_800F4BA4->unk1FC.unk12 =
-                (script[1] << 7) - (D_800F4BA4->unk1FC.unkA = values.vx);
-            D_800F4BA4->unk1FC.unk14 =
-                (script[2] << 7) - (D_800F4BA4->unk1FC.unkC = values.vy);
-            D_800F4BA4->unk1FC.unk1 = script[3];
+            scriptCamera->framebufferScale.elapsed = 0;
+
+            getFramebufferEffectScale(&values);
+
+            scriptCamera->framebufferScale.delta.vx =
+                (script[1] << 7) - (scriptCamera->framebufferScale.start.vx = values.vx);
+            scriptCamera->framebufferScale.delta.vy =
+                (script[2] << 7) - (scriptCamera->framebufferScale.start.vy = values.vy);
+            scriptCamera->framebufferScale.ease = script[3];
         }
+
         return scriptNext;
 
-    case 229:
-        D_800F4BA4->unk21C.unk1E = script[5];
-        if (D_800F4BA4->unk21C.unk1E == 0) {
+    // Tweens the tint of the frame buffer effect.
+    // [1-3] = red, green and blue, [4] = easing, [5] = tween duration, 0 = immediate.
+    case 0xE5:
+        scriptCamera->framebufferTint.duration = script[5];
+
+        if (scriptCamera->framebufferTint.duration == 0) {
             color.r = script[1];
             color.g = script[2];
             color.b = script[3];
-            func_8007DDD4(&color);
+
+            vs_battle_setFramebufferEffectTint(&color);
         } else {
-            D_800F4BA4->unk21C.unk1C = 0;
-            func_8007DEA8(&color);
-            D_800F4BA4->unk21C.unk12 = script[1] - (D_800F4BA4->unk21C.unkA = color.r);
-            D_800F4BA4->unk21C.unk14 = script[2] - (D_800F4BA4->unk21C.unkC = color.g);
-            D_800F4BA4->unk21C.unk16 = script[3] - (D_800F4BA4->unk21C.unkE = color.b);
-            D_800F4BA4->unk21C.unk1 = script[4];
+            scriptCamera->framebufferTint.elapsed = 0;
+
+            getFramebufferEffectTint(&color);
+
+            scriptCamera->framebufferTint.delta.vx =
+                script[1] - (scriptCamera->framebufferTint.start.vx = color.r);
+            scriptCamera->framebufferTint.delta.vy =
+                script[2] - (scriptCamera->framebufferTint.start.vy = color.g);
+            scriptCamera->framebufferTint.delta.vz =
+                script[3] - (scriptCamera->framebufferTint.start.vz = color.b);
+            scriptCamera->framebufferTint.ease = script[4];
         }
+
         return scriptNext;
 
-    case 230:
-        D_800F4BA4->unk23C.unk1E = script[4];
-        if (D_800F4BA4->unk23C.unk1E == 0) {
+    // Tweens the offset of the frame buffer effect.
+    // [1-2] = signed x and y offset, [3] = easing, [4] = tween duration, 0 =
+    // immediate.
+    case 0xE6:
+        scriptCamera->framebufferOffset.duration = script[4];
+
+        if (scriptCamera->framebufferOffset.duration == 0) {
             values.vx = (signed char)script[1];
             values.vy = (signed char)script[2];
-            func_8007DDF8(&values);
+
+            vs_battle_setFramebufferEffectOffset(&values);
         } else {
-            D_800F4BA4->unk23C.unk1C = 0;
-            func_8007DECC(&values);
-            D_800F4BA4->unk23C.unk12 =
-                (signed char)script[1] - (D_800F4BA4->unk23C.unkA = values.vx);
-            D_800F4BA4->unk23C.unk14 =
-                (signed char)script[2] - (D_800F4BA4->unk23C.unkC = values.vy);
-            D_800F4BA4->unk23C.unk1 = script[3];
-        }
-        return scriptNext;
+            scriptCamera->framebufferOffset.elapsed = 0;
 
-    case 231:
-        func_8007DE2C(script[1]);
-        return scriptNext;
+            getFramebufferEffectOffset(&values);
 
-    // [1] = zoom (<< 6), [2] = distortion (signed), [3] = tween type, [4] = tween
-    // duration, 0 = immediate. See setScreenLensDistortion.
-    case 237:
-        if (D_800F4BA4->unk25C.unk1E > 0) {
-            return scriptRepeat;
-        }
-
-        D_800F4BA4->unk25C.unk1E = script[4];
-        if (D_800F4BA4->unk25C.unk1E == 0) {
-            D_800F4BA4->unk25C.unk2 = effectValue = script[1] << 6;
-            D_800F4BA4->unk25C.unk4 = (signed char)script[2];
-            setScreenLensDistortion(effectValue, D_800F4BA4->unk25C.unk4);
-        } else {
-            D_800F4BA4->unk25C.unk1C = 0;
-            D_800F4BA4->unk25C.unk12 =
-                (script[1] << 6) - (D_800F4BA4->unk25C.unkA = D_800F4BA4->unk25C.unk2);
-            D_800F4BA4->unk25C.unk14 =
+            scriptCamera->framebufferOffset.delta.vx =
+                (signed char)script[1]
+                - (scriptCamera->framebufferOffset.start.vx = values.vx);
+            scriptCamera->framebufferOffset.delta.vy =
                 (signed char)script[2]
-                - (D_800F4BA4->unk25C.unkC = D_800F4BA4->unk25C.unk4);
-            D_800F4BA4->unk25C.unk1 = script[3];
+                - (scriptCamera->framebufferOffset.start.vy = values.vy);
+            scriptCamera->framebufferOffset.ease = script[3];
         }
+
         return scriptNext;
 
-    case 191:
+    // Sets the blend mode of the frame buffer effect.
+    // [1] = blend mode.
+    case 0xE7:
+        vs_battle_setFramebufferEffectBlendMode(script[1]);
+
+        return scriptNext;
+
+    // Tweens the lens distortion, waiting for a previous tween to finish.
+    // [1] = zoom (<< 6), [2] = distortion (signed), [3] = easing, [4] = tween
+    // duration, 0 = immediate. See setScreenLensDistortion.
+    case 0xED:
+        if (scriptCamera->lensDistortion.duration > 0) {
+            return scriptWait;
+        }
+
+        scriptCamera->lensDistortion.duration = script[4];
+
+        if (scriptCamera->lensDistortion.duration == 0) {
+            scriptCamera->lensDistortion.value.vx = effectValue = script[1] << 6;
+            scriptCamera->lensDistortion.value.vy = (signed char)script[2];
+
+            setScreenLensDistortion(effectValue, scriptCamera->lensDistortion.value.vy);
+        } else {
+            scriptCamera->lensDistortion.elapsed = 0;
+            scriptCamera->lensDistortion.delta.vx =
+                (script[1] << 6)
+                - (scriptCamera->lensDistortion.start.vx =
+                        scriptCamera->lensDistortion.value.vx);
+            scriptCamera->lensDistortion.delta.vy =
+                (signed char)script[2]
+                - (scriptCamera->lensDistortion.start.vy =
+                        scriptCamera->lensDistortion.value.vy);
+            scriptCamera->lensDistortion.ease = script[3];
+        }
+
+        return scriptNext;
+
+    // Turns the frame buffer effect on or off with a preset and resets its parameters.
+    // [1-2] = 0 to turn off, else the ordering table index of the effect.
+    case 0xBF:
+
         mode = getShort(script + 1);
+
         if (!mode) {
-            func_8007DE2C(0);
+            vs_battle_setFramebufferEffectBlendMode(0);
+
             values.vx = values.vy = 0;
-            func_8007DDF8(&values);
+
+            vs_battle_setFramebufferEffectOffset(&values);
+
             values.vx = values.vy = ONE;
-            func_8007DDB8(&values);
+
+            vs_battle_setFramebufferEffectScale(&values);
+
             color.r = color.g = color.b = 128;
-            func_8007DDD4(&color);
-            func_8007DE44(0);
-            func_8007DE5C(0);
+
+            vs_battle_setFramebufferEffectTint(&color);
+            vs_battle_setFramebufferEffectDepth(0);
+            vs_battle_setFramebufferEffectUsePreviousFrame(0);
             setFramebufferEffect(0);
         } else {
             setFramebufferEffect(1);
-            func_8007DE2C(0);
+            vs_battle_setFramebufferEffectBlendMode(0);
+
             values.vx = 0;
             values.vy = 2;
-            func_8007DDF8(&values);
+
+            vs_battle_setFramebufferEffectOffset(&values);
+
             values.vx = values.vy = ONE;
-            func_8007DDB8(&values);
+
+            vs_battle_setFramebufferEffectScale(&values);
+
             color.r = color.g = color.b = 144;
-            func_8007DE5C(1);
-            func_8007DDD4(&color);
-            func_8007DE44(mode);
+
+            vs_battle_setFramebufferEffectUsePreviousFrame(1);
+            vs_battle_setFramebufferEffectTint(&color);
+            vs_battle_setFramebufferEffectDepth(mode);
         }
+
         return scriptNext;
     }
 }
 
-void func_800BDAB4(void)
+/** Steps the tweens of the frame buffer effect and the lens distortion. */
+static void updateScreenEffectTweens(void)
 {
-    VECTOR sp10;
-    CVECTOR sp20;
+    VECTOR vector;
+    CVECTOR color;
 
-    if (func_800BDBB4(&D_800F4BA4->unk1FC) != 0) {
-        sp10.vx = D_800F4BA4->unk1FC.unk2;
-        sp10.vy = D_800F4BA4->unk1FC.unk4;
-        func_8007DDB8(&sp10);
+    if (stepScreenEffectTween(&scriptCamera->framebufferScale) != 0) {
+        vector.vx = scriptCamera->framebufferScale.value.vx;
+        vector.vy = scriptCamera->framebufferScale.value.vy;
+
+        vs_battle_setFramebufferEffectScale(&vector);
     }
-    if (func_800BDBB4(&D_800F4BA4->unk21C) != 0) {
-        sp20.r = D_800F4BA4->unk21C.unk2;
-        sp20.g = D_800F4BA4->unk21C.unk4;
-        sp20.b = D_800F4BA4->unk21C.unk6;
-        func_8007DDD4(&sp20);
+
+    if (stepScreenEffectTween(&scriptCamera->framebufferTint) != 0) {
+        color.r = scriptCamera->framebufferTint.value.vx;
+        color.g = scriptCamera->framebufferTint.value.vy;
+        color.b = scriptCamera->framebufferTint.value.vz;
+
+        vs_battle_setFramebufferEffectTint(&color);
     }
-    if (func_800BDBB4(&D_800F4BA4->unk23C) != 0) {
-        sp10.vx = D_800F4BA4->unk23C.unk2;
-        sp10.vy = D_800F4BA4->unk23C.unk4;
-        func_8007DDF8(&sp10);
+
+    if (stepScreenEffectTween(&scriptCamera->framebufferOffset) != 0) {
+        vector.vx = scriptCamera->framebufferOffset.value.vx;
+        vector.vy = scriptCamera->framebufferOffset.value.vy;
+
+        vs_battle_setFramebufferEffectOffset(&vector);
     }
-    if (func_800BDBB4(&D_800F4BA4->unk25C) != 0) {
-        setScreenLensDistortion(D_800F4BA4->unk25C.unk2, D_800F4BA4->unk25C.unk4);
+
+    if (stepScreenEffectTween(&scriptCamera->lensDistortion) != 0) {
+        setScreenLensDistortion(
+            scriptCamera->lensDistortion.value.vx, scriptCamera->lensDistortion.value.vy);
     }
 }
 
-int func_800BDBB4(func_800BDBB4_t* arg0)
+/** Steps a screen effect tween by one frame, returns whether it has a new value. */
+static int stepScreenEffectTween(ScreenEffectTween* tween)
 {
-    CameraScratch* a0;
-    int v0;
-
-    if (arg0->unk1E == 0) {
+    if (tween->duration == 0) {
         return 0;
     }
 
-    arg0->unk1C = arg0->unk1C + (vs_gametime_vblanksPerFrame >> 1);
+    tween->elapsed += vs_gametime_vblanksPerFrame >> 1;
 
-    v0 = func_800BFEBC(arg0->unk1, arg0->unk1C, arg0->unk1E);
-    a0 = CAMERA_SCRATCH;
-    a0->value = v0;
-    arg0->unk2 = (arg0->unkA + ((arg0->unk12 * a0->value) >> 0xC));
-    arg0->unk4 = (arg0->unkC + ((arg0->unk14 * a0->value) >> 0xC));
-    arg0->unk6 = (arg0->unkE + ((arg0->unk16 * a0->value) >> 0xC));
+    CAMERA_SCRATCH->i1 = evaluateEasing(tween->ease, tween->elapsed, tween->duration);
 
-    if (arg0->unk1C == arg0->unk1E) {
-        arg0->unk1E = 0;
+    tween->value.vx = tween->start.vx + ((tween->delta.vx * CAMERA_SCRATCH->i1) >> 12);
+    tween->value.vy = tween->start.vy + ((tween->delta.vy * CAMERA_SCRATCH->i1) >> 12);
+    tween->value.vz = tween->start.vz + ((tween->delta.vz * CAMERA_SCRATCH->i1) >> 12);
+
+    if (tween->elapsed == tween->duration) {
+        tween->duration = 0;
     }
+
     return 1;
 }
 
-int vs_battle_script_EA_EB_EC_EE_EF_camera(u_char* script, UNUSED short arg1)
+/**
+ * Sets the projection distance, clip distances and shake of the camera. Opcode EE also
+ * uses this handler, but does nothing and does not return a result.
+ * @param script Opcode bytes, see the comments on each opcode.
+ */
+int vs_battle_script_setProjectionClipAndShake(u_char* script, UNUSED short slot)
 {
-    func_800BDF6C_t* entry;
+    ShakeEntry* entry;
     short i;
+
     switch (script[0]) {
-    case 234:
-        if ((D_800F4BA4->projectionDistance.unk9 = script[3]) == 0) {
-            D_800F4BA4->projectionDistance.unk2 = script[1] ? (script[1] << 2) : ONE / 8;
-            D_800F4BA4->projectionDistance.unk0 = 1;
+    // Tweens the projection distance.
+    // [1] = projection distance (<< 2), 0 = default, [2] = easing, [3] = tween duration,
+    // 0 = immediate.
+    case 0xEA:
+        if ((scriptCamera->projectionDistance.duration = script[3]) == 0) {
+            scriptCamera->projectionDistance.value =
+                script[1] ? (script[1] << 2) : ONE / 8;
+            scriptCamera->projectionDistance.changed = 1;
         } else {
-            D_800F4BA4->projectionDistance.unk6 =
+            scriptCamera->projectionDistance.delta =
                 script[1] ? (script[1] << 2)
-                                - (D_800F4BA4->projectionDistance.unk4 =
-                                        D_800F4BA4->projectionDistance.unk2)
+                                - (scriptCamera->projectionDistance.start =
+                                        scriptCamera->projectionDistance.value)
                           : ONE / 8;
-            D_800F4BA4->projectionDistance.unk1 = script[2];
-            D_800F4BA4->projectionDistance.unk8 = 0;
+            scriptCamera->projectionDistance.ease = script[2];
+            scriptCamera->projectionDistance.elapsed = 0;
         }
+
         return scriptNext;
-    case 235:
-        if ((D_800F4BA4->nearClip.unk9 = script[3]) == 0) {
-            D_800F4BA4->nearClip.unk2 = script[1] ? script[1] : 64;
-            D_800F4BA4->nearClip.unk0 = 1;
+
+    // Tweens the near clip distance.
+    // [1] = distance, 0 = default, [2] = easing, [3] = tween duration, 0 = immediate.
+    case 0xEB:
+        if ((scriptCamera->nearClip.duration = script[3]) == 0) {
+            scriptCamera->nearClip.value = script[1] ? script[1] : 64;
+            scriptCamera->nearClip.changed = 1;
         } else {
-            D_800F4BA4->nearClip.unk6 =
+            scriptCamera->nearClip.delta =
                 (script[1] ? script[1] : 64)
-                - (D_800F4BA4->nearClip.unk4 = D_800F4BA4->nearClip.unk2);
-            D_800F4BA4->nearClip.unk1 = script[2];
-            D_800F4BA4->nearClip.unk8 = 0;
+                - (scriptCamera->nearClip.start = scriptCamera->nearClip.value);
+            scriptCamera->nearClip.ease = script[2];
+            scriptCamera->nearClip.elapsed = 0;
         }
+
         return scriptNext;
-    case 236:
-        if ((D_800F4BA4->farClip.unk9 = script[3]) == 0) {
-            D_800F4BA4->farClip.unk2 = script[1] ? (script[1] << 7) : ONE;
-            D_800F4BA4->farClip.unk0 = 1;
+
+    // Tweens the far clip distance.
+    // [1] = distance (<< 7), 0 = default, [2] = easing, [3] = tween duration, 0 =
+    // immediate.
+    case 0xEC:
+        if ((scriptCamera->farClip.duration = script[3]) == 0) {
+            scriptCamera->farClip.value = script[1] ? (script[1] << 7) : ONE;
+            scriptCamera->farClip.changed = 1;
         } else {
-            D_800F4BA4->farClip.unk6 =
-                script[1] ? (script[1] << 7)
-                                - (D_800F4BA4->farClip.unk4 = D_800F4BA4->farClip.unk2)
-                          : ONE;
-            D_800F4BA4->farClip.unk1 = script[2];
-            D_800F4BA4->farClip.unk8 = 0;
+            scriptCamera->farClip.delta =
+                script[1]
+                    ? (script[1] << 7)
+                          - (scriptCamera->farClip.start = scriptCamera->farClip.value)
+                    : ONE;
+            scriptCamera->farClip.ease = script[2];
+            scriptCamera->farClip.elapsed = 0;
         }
+
         return scriptNext;
-    case 239:
-        entry = (func_800BDF6C_t*)&D_800F4BA4->unk1A4.unk2;
+
+    // Starts a camera shake in one of the two slots, or stops all shakes.
+    // [1] = number of oscillations, [2] = amplitude in world units, 0 stops all shakes,
+    // [3] = bit 0 shakes the look-at, bit 1 shakes the eye, bits 2-3, 4-5 and 6-7 are the
+    // weights of the shake along x, y and z, minus 1. The shake is turned by the heading
+    // of the camera, so x is sideways and z along the view.
+    // [4] = envelope, 0 = constant, 1 = fades out, 2 = swells then fades, 3 = fades in,
+    // [5] = duration.
+    case 0xEF:
+        entry = scriptCamera->shakeEntries;
+
         if (script[2] == 0) {
-            entry[0].unk9 = entry[1].unk9 = 0;
+            entry[0].duration = entry[1].duration = 0;
+
             return scriptNext;
         }
+
         for (i = 0; i < 2; ++i, ++entry) {
-            if (entry->unk9 == 0) {
-                entry->unk4 = script[1];
-                entry->unk6 = script[2];
-                entry->unkA = script[3];
-                entry->unk0.u8[1] = script[4];
-                entry->unk9 = script[5];
-                entry->unk8 = 0;
+            if (entry->duration == 0) {
+                entry->cycles = script[1];
+                entry->amplitude = script[2];
+                entry->flags = script[3];
+                entry->envelope = script[4];
+                entry->duration = script[5];
+                entry->elapsed = 0;
                 break;
             }
         }
+
         return scriptNext;
     }
 }
 
-void func_800BDF6C(func_800BDF6C_unk180_t* arg0)
+/** Steps a projection parameter tween by a frame. */
+static void stepProjectionTween(ProjectionTween* tween)
 {
-    if (arg0->unk9 != 0) {
-        short* new_var;
-        arg0->unk8 += vs_gametime_vblanksPerFrame >> 1;
-        if (arg0->unk9 < arg0->unk8) {
-            arg0->unk8 = arg0->unk9;
-        }
-        CAMERA_SCRATCH->value = func_800BFEBC(arg0->unk1, arg0->unk8, arg0->unk9);
-        new_var = &arg0->unk6;
-        arg0->unk2 = arg0->unk4 + ((*new_var * CAMERA_SCRATCH->value) >> 0xC);
-        if (arg0->unk8 == arg0->unk9) {
-            arg0->unk9 = 0;
-        }
-        arg0->unk0 = 1;
+    if (tween->duration == 0) {
+        return;
     }
+
+    tween->elapsed += vs_gametime_vblanksPerFrame >> 1;
+
+    if (tween->duration < tween->elapsed) {
+        tween->elapsed = tween->duration;
+    }
+
+    CAMERA_SCRATCH->i1 = evaluateEasing(tween->ease, tween->elapsed, tween->duration);
+
+    tween->value = tween->start + ((tween->delta * CAMERA_SCRATCH->i1) >> 0xC);
+
+    if (tween->elapsed == tween->duration) {
+        tween->duration = 0;
+    }
+
+    tween->changed = 1;
 }
 
-int func_800BE01C(func_800BDF6C_t* arg0)
+/** Steps a shake entry by one frame, returns whether it is active. */
+static int stepShakeEntry(ShakeEntry* entry)
 {
-    int temp_s1 = arg0->unk4 << 0xC;
+    int angleRange = entry->cycles * ONE;
 
-    if (arg0->unk9 == 0) {
+    if (entry->duration == 0) {
         return 0;
     }
 
-    arg0->unk8 += vs_gametime_vblanksPerFrame >> 1;
+    entry->elapsed += vs_gametime_vblanksPerFrame >> 1;
 
-    if (arg0->unk9 < arg0->unk8) {
-        arg0->unk8 = arg0->unk9;
+    if (entry->duration < entry->elapsed) {
+        entry->elapsed = entry->duration;
     }
 
-    switch (arg0->unk0.u8[1]) {
+    switch (entry->envelope) {
     case 0:
-        CAMERA_SCRATCH->value = 0x1000;
+        CAMERA_SCRATCH->i1 = ONE;
         break;
+
     case 1:
-        CAMERA_SCRATCH->value = rsin(((arg0->unk8 << 0xA) / arg0->unk9) + 0x400);
+        CAMERA_SCRATCH->i1 = rsin(entry->elapsed * (ONE / 4) / entry->duration + ONE / 4);
         break;
+
     case 2:
-        CAMERA_SCRATCH->value = rsin((arg0->unk8 << 0xB) / arg0->unk9);
+        CAMERA_SCRATCH->i1 = rsin(entry->elapsed * (ONE / 2) / entry->duration);
         break;
+
     case 3:
-        CAMERA_SCRATCH->value = rsin((arg0->unk8 << 0xA) / arg0->unk9);
+        CAMERA_SCRATCH->i1 = rsin(entry->elapsed * (ONE / 4) / entry->duration);
         break;
     }
-    arg0->unk2 = (((rsin((temp_s1 * arg0->unk8) / arg0->unk9) * arg0->unk6) >> 0xC)
-                     * CAMERA_SCRATCH->value)
-              >> 0xC;
-    if (arg0->unk8 == arg0->unk9) {
-        arg0->unk9 = 0;
+
+    entry->offset =
+        (((rsin((angleRange * entry->elapsed) / entry->duration) * entry->amplitude)
+             >> 12)
+            * CAMERA_SCRATCH->i1)
+        >> 12;
+
+    if (entry->elapsed == entry->duration) {
+        entry->duration = 0;
     }
+
     return 1;
 }
 
-// The totals in a and b are read back at their fixed addresses and not as members, which
-// the match needs.
-void func_800BE180(void)
+/**
+ * Sums the active shake entries for the look-at and the eye.
+ */
+static void updateCameraShake(void)
 {
     short count = 0;
-    CameraShakeScratch* clear = CAMERA_SHAKE_SCRATCH;
+    CameraScratch* clear = CAMERA_SCRATCH;
     short i = 0;
-    int x, y, z;
-    CameraShakeScratch* scratch;
-    func_800BDF6C_t* entry = (func_800BDF6C_t*)&D_800F4BA4->unk1A4.unk2;
-    clear->a.vx = clear->a.vy = clear->a.vz = clear->b.vx = clear->b.vy = clear->b.vz = 0;
-    scratch = CAMERA_SHAKE_SCRATCH;
+    CameraScratch* scratch;
+    ShakeEntry* entry = scriptCamera->shakeEntries;
+    clear->s2.vx = clear->s2.vy = clear->s2.vz = 0;
+    clear->s1.vx = clear->s1.vy = clear->s1.vz = 0;
+    scratch = CAMERA_SCRATCH;
+
     for (; i < 2; ++entry, ++i) {
-        if (func_800BE01C(entry)) {
-            setVector(&scratch->c, x = entry->unk2 * (((entry->unkA >> 2) & 3) - 1),
-                y = entry->unk2 * (((entry->unkA >> 4) & 3) - 1),
-                z = entry->unk2 * ((entry->unkA >> 6) - 1));
-            if (entry->unkA & 1) {
-                applyVector(&scratch->a, x, y, z, +=);
-            }
-            if (entry->unkA & 2) {
-                addVector(&scratch->b, &scratch->c);
-            }
-            ++count;
+        int x;
+        int y;
+        int z;
+
+        if (!stepShakeEntry(entry)) {
+            continue;
         }
+
+        x = entry->offset * (((entry->flags >> 2) & 3) - 1);
+        scratch->s3.vx = x;
+
+        y = entry->offset * (((entry->flags >> 4) & 3) - 1);
+        scratch->s3.vy = y;
+
+        z = entry->offset * ((entry->flags >> 6) - 1);
+        scratch->s3.vz = z;
+
+        if (entry->flags & 1) {
+            applyVector(&scratch->s1, x, y, z, +=);
+        }
+
+        if (entry->flags & 2) {
+            addVector(&scratch->s2, &scratch->s3);
+        }
+
+        ++count;
     }
-    D_800F4BA4->unk1A4.unk0.s16 = count;
+
+    scriptCamera->shakeCount = count;
+
     if (count) {
-        D_800F4BA4->unk1BE = VS_SCRATCH_AT(SVECTOR*, 0xD8)->vx;
-        D_800F4BA4->unk1C0 = VS_SCRATCH_AT(SVECTOR*, 0xD8)->vy;
-        D_800F4BA4->unk1C2 = VS_SCRATCH_AT(SVECTOR*, 0xD8)->vz;
-        D_800F4BA4->unk1C6 = VS_SCRATCH_AT(SVECTOR*, 0xE0)->vx;
-        D_800F4BA4->unk1C8 = VS_SCRATCH_AT(SVECTOR*, 0xE0)->vy;
-        D_800F4BA4->unk1CA = VS_SCRATCH_AT(SVECTOR*, 0xE0)->vz;
+        // The totals in lookAt and eye are read back at their fixed addresses and not as
+        // members, which the match needs.
+        scriptCamera->shakeLookAt.vx = VS_SCRATCH_AT(SVECTOR*, 0xD8)->vx;
+        scriptCamera->shakeLookAt.vy = VS_SCRATCH_AT(SVECTOR*, 0xD8)->vy;
+        scriptCamera->shakeLookAt.vz = VS_SCRATCH_AT(SVECTOR*, 0xD8)->vz;
+        scriptCamera->shakeEye.vx = VS_SCRATCH_AT(SVECTOR*, 0xE0)->vx;
+        scriptCamera->shakeEye.vy = VS_SCRATCH_AT(SVECTOR*, 0xE0)->vy;
+        scriptCamera->shakeEye.vz = VS_SCRATCH_AT(SVECTOR*, 0xE0)->vz;
     }
 }
 
+/**
+ * Sets whether the look-at and eye carry their momentum over from the end of a move into
+ * the next one, see opcode DF.
+ * @param lookAt 1 to carry the look-at's momentum.
+ * @param eye 1 to carry the eye's momentum.
+ */
 void setCameraMomentum(int lookAt, int eye)
 {
-    D_800F4BA4->lookAt.carryMomentum = lookAt;
-    D_800F4BA4->lookAt.carrying = 0;
-    D_800F4BA4->eye.carryMomentum = eye;
-    D_800F4BA4->eye.carrying = 0;
+    scriptCamera->lookAt.carryMomentum = lookAt;
+    scriptCamera->lookAt.carrying = 0;
+    scriptCamera->eye.carryMomentum = eye;
+    scriptCamera->eye.carrying = 0;
 }
 
-void clearCameraMomentum(void)
+/**
+ * Stops the look-at and eye wherever they are, cancelling their moves and dropping any
+ * momentum.
+ */
+static void stopCamera(void)
 {
-    D_800F4BA4_t* c1 = D_800F4BA4;
-    D_800F4BA4_t* c2;
-    c1->eye.mode = 0xF;
-    c1->lookAt.mode = 0xF;
-    c2 = D_800F4BA4;
+    ScriptCamera* c1 = scriptCamera;
+    ScriptCamera* c2;
+
+    c1->eye.mode = cameraModeIdle;
+    c1->lookAt.mode = cameraModeIdle;
+
+    c2 = scriptCamera;
+
     c2->eye.carrying = 0;
     c2->eye.carryMomentum = 0;
     c2->lookAt.carrying = 0;
@@ -5570,203 +5785,272 @@ void clearCameraMomentum(void)
 
 /**
  * Sweeps the camera into the view the player had before the scene (the facing and zoom
- * saved in state flags 0xAF and 0xB0), coming in from above and from one side.
+ * saved in state flags 0xAF and 0xB0), coming in from above and from one side: the eye
+ * orbits and the look-at moves to it.
  * @param side 0 or 1, which side the camera comes in from.
  */
-void sweepCameraToSavedPlayerView(char side)
+void sweepCameraToSavedPlayerView(u_char side)
 {
-    VECTOR sp10;
-    VECTOR sp20;
-    VECTOR sp30;
-    VECTOR sp40;
-    u_char temp_s0;
-    u_char temp_s3;
-    int new_var;
+    VECTOR startLookAt;
+    VECTOR endLookAt;
+    VECTOR startEye;
+    VECTOR endEye;
+    u_char facing = getStateFlag(savedCameraFacing);
+    u_char zoom = getStateFlag(savedCameraZoom);
+    int startFacing = facing - 1;
 
-    temp_s3 = getStateFlag(0xAF);
-    temp_s0 = getStateFlag(0xB0);
-    new_var = temp_s3 - 1;
-    initialiseCameraFromSpherical(&sp30, &sp10, (new_var + (side * 2)) & 7, temp_s0 + 1);
+    initialiseCameraFromSpherical(
+        &startEye, &startLookAt, (startFacing + (side * 2)) & 7, zoom + 1);
 
-    sp30.vy += D_800E9C24[temp_s0] << 0xC;
-    sp10.vy += D_800E9C24[temp_s0] << 0xC;
+    startEye.vy += sweepHeightOffsets[zoom] * ONE;
+    startLookAt.vy += sweepHeightOffsets[zoom] * ONE;
 
-    vectorCopy(&D_800F4BA4->lookAt.current, &sp10);
-    vectorCopy(&D_800F4BA4->lookAt.otherPosition, &sp30);
-    vectorCopy(&D_800F4BA4->eye.otherPosition, &sp10);
-    vectorCopy(&D_800F4BA4->eye.current, &sp30);
+    vectorCopy(&scriptCamera->lookAt.current, &startLookAt);
+    vectorCopy(&scriptCamera->lookAt.otherPosition, &startEye);
+    vectorCopy(&scriptCamera->eye.otherPosition, &startLookAt);
+    vectorCopy(&scriptCamera->eye.current, &startEye);
 
-    D_800F4BA4->lookAt.mode = 0xF;
+    scriptCamera->lookAt.mode = cameraModeIdle;
 
-    initialiseCameraFromSpherical(&sp40, &sp20, temp_s3, temp_s0 + 1);
+    initialiseCameraFromSpherical(&endEye, &endLookAt, facing, zoom + 1);
 
-    vectorCopy(&D_800F4BA4->eye.position, &sp40);
-    vectorCopy(&D_800F4BA4->lookAt.position, &sp20);
+    vectorCopy(&scriptCamera->eye.position, &endEye);
+    vectorCopy(&scriptCamera->lookAt.position, &endLookAt);
 
-    vs_battle_script_Cx_Dx_camera(&D_800E9C28, 0);
-    vs_battle_script_Cx_Dx_camera(&D_800E9C2C, 0);
+    vs_battle_script_controlCameraChannel(sweepEyeScript, 0);
+    vs_battle_script_controlCameraChannel(sweepLookAtScript, 0);
 }
 
 /**
- * Multiplies a camera move's duration by the distance left to travel, in units per 1000.
+ * Rescales a camera move's duration, which is for a distance of 1000, to the distance
+ * it has left to travel.
  */
-static void scaleMoveDurationByDistance(CameraChannel* camera)
+static void scaleMoveDurationByDistance(CameraChannel* channel)
 {
     VECTOR remaining;
 
-    vectorSubtract(&remaining, &camera->current, &camera->position);
-    camera->duration = ((vectorMagnitude(&remaining) >> 0xC) * camera->duration) / 1000;
+    vectorSubtract(&remaining, &channel->current, &channel->position);
+    channel->duration = ((vectorMagnitude(&remaining) >> 12) * channel->duration) / 1000;
 }
 
 /**
- * Scales the duration of a camera move by the distance it has left to travel, see
- * scaleMoveDurationByDistance.
- * @param target 0 = look-at, 2 = both (taking the average duration), anything else =
- * eye.
+ * Scales the duration of a running camera move by the distance it has left to travel,
+ * see scaleMoveDurationByDistance.
+ * @param target 0 = look-at, 2 = both (taking the average of the two durations),
+ * anything else = eye.
  */
 void scaleCameraMoveDurationByDistance(short target)
 {
-    CameraChannel* temp_s0;
-    CameraChannel* var_a0;
-    CameraChannel* temp_s1;
-
-    temp_s0 = &D_800F4BA4->lookAt;
-    temp_s1 = &D_800F4BA4->eye;
+    CameraChannel* lookAt = &scriptCamera->lookAt;
+    CameraChannel* eye = &scriptCamera->eye;
 
     if (target == 2) {
-        scaleMoveDurationByDistance(temp_s0);
-        scaleMoveDurationByDistance(temp_s1);
-        temp_s0->duration = temp_s1->duration =
-            (temp_s0->duration + temp_s1->duration) >> 1;
+        scaleMoveDurationByDistance(lookAt);
+        scaleMoveDurationByDistance(eye);
+        lookAt->duration = eye->duration = (lookAt->duration + eye->duration) >> 1;
 
         return;
     }
-    var_a0 = temp_s0;
-    if (target != 0) {
-        var_a0 = temp_s1;
-    }
-    scaleMoveDurationByDistance(var_a0);
+
+    scaleMoveDurationByDistance(target != 0 ? eye : lookAt);
 }
 
-VECTOR* vectorAdd(VECTOR* arg0, VECTOR* arg1, VECTOR* arg2)
+/**
+ * Adds two fixed-point vectors.
+ * @param result Receives the sum, may be one of the operands.
+ * @return result
+ */
+static VECTOR* vectorAdd(VECTOR* result, VECTOR* a, VECTOR* b)
 {
-    setVector(arg0, arg1->vx + arg2->vx, arg1->vy + arg2->vy, arg1->vz + arg2->vz);
-    return arg0;
-}
+    setVector(result, a->vx + b->vx, a->vy + b->vy, a->vz + b->vz);
 
-VECTOR* vectorSubtract(VECTOR* arg0, VECTOR* arg1, VECTOR* arg2)
-{
-    setVector(arg0, arg1->vx - arg2->vx, arg1->vy - arg2->vy, arg1->vz - arg2->vz);
-    return arg0;
-}
-
-VECTOR* vectorFixedPointMult(VECTOR* arg0, VECTOR* arg1, int arg2)
-{
-    setVector(arg0, fixedPointMult(arg1->vx, arg2), fixedPointMult(arg1->vy, arg2),
-        fixedPointMult(arg1->vz, arg2));
-    return arg0;
-}
-
-static VECTOR* vectorCopy(VECTOR* arg0, VECTOR* arg1)
-{
-    copyVector(arg0, arg1);
-    return arg0;
-}
-
-static int vectorMagnitude(VECTOR* arg0)
-{
-    VECTOR sp10;
-    int temp_lo;
-    int temp_lo_2;
-    int temp_v0;
-
-    vectorCopy(&sp10, arg0);
-    temp_lo = (sp10.vx >> 0xC) * (sp10.vx >> 0xC);
-    temp_lo_2 = (sp10.vy >> 0xC) * (sp10.vy >> 0xC);
-    temp_v0 = (sp10.vz >> 0xC) * (sp10.vz >> 0xC);
-    sp10.vx = sp10.vx >> 0xC;
-    sp10.vy = sp10.vy >> 0xC;
-    sp10.vz = sp10.vz >> 0xC;
-    return SquareRoot0(temp_lo + temp_lo_2 + temp_v0) * ONE;
-}
-
-VECTOR* setVectorImm(VECTOR* arg0, u_char* arg1)
-{
-    setVector(
-        arg0, getShort(arg1) * ONE, getShort(arg1 + 2) * ONE, getShort(arg1 + 4) * ONE);
-    return arg0;
-}
-
-static VECTOR* sVectorToFixedPointVector(VECTOR* arg0, SVECTOR* arg1)
-{
-    arg0->vx = arg1->vx * ONE;
-    arg0->vy = arg1->vy * ONE;
-    arg0->vz = arg1->vz * ONE;
-    return arg0;
-}
-
-static int fixedPointMult(int a, int b)
-{
-    int result;
-    __asm__("mult       %1, %2;"
-            "mflo       $t0;"
-            "mfhi       $t1;"
-            "srl        $t0, 12;"
-            "sll        $t1, 20;"
-            "or         %0, $t0, $t1;"
-        : "=r"(result)
-        : "r"(a), "r"(b));
     return result;
 }
 
-int atan2FixedPoint(int arg0, int arg1) { return ratan2(arg0 >> 6, arg1 >> 6); }
-
-void vecToRotMatrix(VECTOR* arg0, MATRIX* arg1)
+/**
+ * Subtracts one fixed-point vector from another.
+ * @param result Receives a - b, may be one of the operands.
+ * @return result
+ */
+static VECTOR* vectorSubtract(VECTOR* result, VECTOR* a, VECTOR* b)
 {
-    SVECTOR sp10;
-    SVECTOR sp18;
+    setVector(result, a->vx - b->vx, a->vy - b->vy, a->vz - b->vz);
 
-    sp18.vx = arg0->vx >> 0xC;
-    sp18.vy = arg0->vy >> 0xC;
-    sp18.vz = arg0->vz >> 0xC;
-    sp10.vy = ratan2(sp18.vx, sp18.vz);
-    sp10.vx = ratan2(sp18.vy, SquareRoot0((sp18.vx * sp18.vx) + (sp18.vz * sp18.vz)));
-    sp10.vz = 0;
-    RotMatrix_gte(&sp10, arg1);
+    return result;
 }
 
-static void toNormalIntegerVector(VECTOR* arg0, VECTOR* arg1)
+/**
+ * Multiplies a fixed-point vector by a fixed-point scalar.
+ * @param result Receives the product, may be the same as vector.
+ * @return result
+ */
+static VECTOR* vectorFixedPointMult(VECTOR* result, VECTOR* vector, int scalar)
 {
-    VECTOR sp10;
+    setVector(result, fixedPointMult(vector->vx, scalar),
+        fixedPointMult(vector->vy, scalar), fixedPointMult(vector->vz, scalar));
 
-    setVector(&sp10, arg0->vx >> 0xC, arg0->vy >> 0xC, arg0->vz >> 0xC);
-    VectorNormal(&sp10, arg1);
+    return result;
 }
 
-int loadMpdClearedScriptDoorSections(void* clearedSection, u_short clearedSectionLen,
-    void* scriptSection, u_short scriptSectionLen, void* doorSection,
-    u_short doorSectionLen, int startState)
+/**
+ * Copies a vector.
+ * @return destination
+ */
+static VECTOR* vectorCopy(VECTOR* destination, VECTOR* source)
+{
+    copyVector(destination, source);
+
+    return destination;
+}
+
+/**
+ * Gets the length of a fixed-point vector, as a fixed-point value.
+ */
+static int vectorMagnitude(VECTOR* vector)
+{
+    VECTOR integer;
+
+    vectorCopy(&integer, vector);
+    applyVector(&integer, 12, 12, 12, >>=);
+
+    return SquareRoot0((integer.vx * integer.vx) + (integer.vy * integer.vy)
+                       + (integer.vz * integer.vz))
+         * ONE;
+}
+
+/**
+ * Reads a vector of three 16-bit world coordinates from script bytes into a fixed-point
+ * vector.
+ * @param result Receives the vector.
+ * @param script The six bytes.
+ * @return result
+ */
+static VECTOR* readScriptVector(VECTOR* result, u_char* script)
+{
+    setVector(result, getShort(script) * ONE, getShort(script + 2) * ONE,
+        getShort(script + 4) * ONE);
+
+    return result;
+}
+
+/**
+ * Converts an integer vector to a fixed-point one.
+ * @return result
+ */
+static VECTOR* sVectorToFixedPointVector(VECTOR* result, SVECTOR* integer)
+{
+    result->vx = integer->vx * ONE;
+    result->vy = integer->vy * ONE;
+    result->vz = integer->vz * ONE;
+    return result;
+}
+
+/**
+ * Multiplies two fixed-point values, using a 64-bit intermediate product.
+ */
+static int fixedPointMult(int a, int b)
+{
+#ifdef NON_MATCHING
+#define MULTIPLY_SHIFT_12(result, a, b) result = ((long long)(a) * (b)) >> 12
+#else
+#define MULTIPLY_SHIFT_12(result, a, b)                                                  \
+    __asm__("mult       %1, %2;"                                                         \
+            "mflo       $t0;"                                                            \
+            "mfhi       $t1;"                                                            \
+            "srl        $t0, 12;"                                                        \
+            "sll        $t1, 20;"                                                        \
+            "or         %0, $t0, $t1;"                                                   \
+        : "=r"(result)                                                                   \
+        : "r"(a), "r"(b))
+#endif
+
+    int result;
+    MULTIPLY_SHIFT_12(result, a, b);
+    return result;
+#undef MULTIPLY_SHIFT_12
+}
+
+/**
+ * Gets the angle of a fixed-point offset on the x and z axes, measured from the z axis
+ * towards the x axis. A full turn is ONE.
+ * @param x Offset along x.
+ * @param z Offset along z.
+ */
+static int yawFromOffset(int x, int z) { return ratan2(x >> 6, z >> 6); }
+
+/**
+ * Builds the rotation for looking along a fixed-point vector, from its heading and pitch,
+ * with no roll.
+ * @param direction The vector to point along.
+ * @param matrix Receives the rotation.
+ */
+static void vectorToLookMatrix(VECTOR* direction, MATRIX* matrix)
+{
+    SVECTOR angles;
+    SVECTOR integer;
+
+    integer.vx = direction->vx >> 12;
+    integer.vy = direction->vy >> 12;
+    integer.vz = direction->vz >> 12;
+    angles.vy = ratan2(integer.vx, integer.vz);
+    angles.vx = ratan2(
+        integer.vy, SquareRoot0((integer.vx * integer.vx) + (integer.vz * integer.vz)));
+    angles.vz = 0;
+
+    RotMatrix_gte(&angles, matrix);
+}
+
+/**
+ * Normalises a fixed-point vector, discarding its fractional part first.
+ * @param vector The vector.
+ * @param result Receives a vector of length ONE pointing the same way.
+ */
+static void normalizeVector(VECTOR* vector, VECTOR* result)
+{
+    VECTOR integer;
+
+    setVector(&integer, vector->vx >> 12, vector->vy >> 12, vector->vz >> 12);
+    VectorNormal(&integer, result);
+}
+
+/**
+ * Loads the event data of a map.
+ * @param triggerSection The map's table of event triggers, see requestEvent.
+ * @param triggerSectionLen Size of triggerSection, 0 if there is none.
+ * @param entryScript The script run when the map loads.
+ * @param entryScriptLen Size of entryScript, 0 if there is none.
+ * @param triggeredScripts A table of up to 16 scripts that the triggers can start, those
+ * with bit 15 set in their event id.
+ * @param triggeredScriptsLen Size of triggeredScripts, 0 if there is none.
+ * @param firstLoad 1 for the first map loaded after entering the battle overlay.
+ * @return 1 if the map was loaded by a warp that continues the running script, otherwise
+ * 0.
+ */
+int loadMpdEventSections(void* triggerSection, u_short triggerSectionLen,
+    void* entryScript, u_short entryScriptLen, void* triggeredScripts,
+    u_short triggeredScriptsLen, int firstLoad)
 {
     vs_battle_setStateFlag(0xA9, 0);
-    if (startState == 0) {
+
+    if (firstLoad == 0) {
         short i;
         for (i = 32; i < 64; ++i) {
             vs_battle_setStateFlag(i, 0);
         }
     }
 
-    if (clearedSectionLen != 0) {
-        mpdClearedSection = vs_main_allocHeap(clearedSectionLen);
-        memcpy(mpdClearedSection, clearedSection, clearedSectionLen);
+    if (triggerSectionLen != 0) {
+        mpdTriggerSection = vs_main_allocHeap(triggerSectionLen);
+        memcpy(mpdTriggerSection, triggerSection, triggerSectionLen);
     } else {
-        mpdClearedSection = NULL;
+        mpdTriggerSection = NULL;
     }
 
-    if (doorSectionLen != 0) {
-        mpdRoomDoorSection = vs_main_allocHeap(doorSectionLen);
-        memcpy(mpdRoomDoorSection, doorSection, doorSectionLen);
+    if (triggeredScriptsLen != 0) {
+        mpdTriggeredScripts = vs_main_allocHeap(triggeredScriptsLen);
+        memcpy(mpdTriggeredScripts, triggeredScripts, triggeredScriptsLen);
     } else {
-        mpdRoomDoorSection = NULL;
+        mpdTriggeredScripts = NULL;
     }
 
     if (scriptWarpState == scriptWarpResume) {
@@ -5775,39 +6059,56 @@ int loadMpdClearedScriptDoorSections(void* clearedSection, u_short clearedSectio
     }
 
     if (scriptWarpState == scriptWarpEnd) {
-        D_800F4C34 = 0;
+        eventState = eventIdle;
         scriptWarpState = scriptWarpIdle;
-        D_800F4BB8 = 0;
+        eventReady = 0;
     }
 
-    mpdScriptSection = scriptSectionLen != 0;
+    mpdEntryScriptPending = entryScriptLen != 0;
 
-    if (mpdScriptSection != 0) {
-        memcpy(evtBuffer, scriptSection, scriptSectionLen);
+    if (mpdEntryScriptPending != 0) {
+        memcpy(evtBuffer, entryScript, entryScriptLen);
     }
+
     return 0;
 }
 
-short func_800BEB00(void) { return D_800F4C34; }
+/**
+ * Gets the state of the current event.
+ * @return An EventState value.
+ */
+short getEventState(void) { return eventState; }
 
-short func_800BEB10(void) { return (D_800F4BE0 << 0xC) | evtFile; }
+/**
+ * Gets an id for the current event.
+ * @return The EventSource in the top nibble, below it the number of the EVT file or
+ * triggered script, if relevant.
+ */
+short getEventId(void) { return (eventSource << 12) | evtFile; }
 
-void func_800BEB34(void)
+/**
+ * Releases the event data of the current map, the counterpart of loadMpdEventSections.
+ */
+void unloadMpdEventSections(void)
 {
     if (scriptWarpState == scriptWarpEnd) {
-        func_800BFD9C();
+        releaseScriptControl();
     }
-    if (mpdClearedSection != 0) {
-        vs_main_freeHeap(mpdClearedSection);
+    if (mpdTriggerSection != 0) {
+        vs_main_freeHeap(mpdTriggerSection);
     }
-    if (mpdRoomDoorSection != 0) {
-        vs_main_freeHeap(mpdRoomDoorSection);
+    if (mpdTriggeredScripts != 0) {
+        vs_main_freeHeap(mpdTriggeredScripts);
     }
 }
 
-void func_800BEB9C(int arg0)
+/**
+ * Clears the zone flags.
+ * @param firstLoad If nonzero, does nothing.
+ */
+void resetZoneFlags(int firstLoad)
 {
-    if (arg0 == 0) {
+    if (firstLoad == 0) {
         short i;
         for (i = 64; i < 128; ++i) {
             vs_battle_setStateFlag(i, 0);
@@ -5815,31 +6116,79 @@ void func_800BEB9C(int arg0)
     }
 }
 
-void func_800BEBEC(void) { }
+void zoneUnloadNop(void) { }
 
-char getStateFlag(short arg0)
+/**
+ * Gets a state flag.
+ * @param id Index of the flag, see vs_Flags.
+ */
+char getStateFlag(short id)
 {
     char* flags = (char*)&vs_main_stateFlags;
-    return flags[arg0];
+
+    return flags[id];
 }
 
+/**
+ * Sets a state flag.
+ * @param id Index of the flag, see vs_Flags.
+ */
 void vs_battle_setStateFlag(short id, char value)
 {
     char* flags = (char*)&vs_main_stateFlags;
+
     flags[id] = value;
 }
 
-int func_800BEC30(void)
+/**
+ * Signals that the game is ready for the requested event to start. Does nothing if no
+ * event is requested.
+ * @return Always 1.
+ */
+int signalEventReady(void)
 {
-    if (D_800F4C34 == 1) {
-        D_800F4BB8 = D_800F4C34;
+    if (eventState == eventRequested) {
+        eventReady = 1;
         return 1;
     }
     return 1;
 }
 
-short func_800BEC58(short type, int arg1, int arg2, short mode)
+/**
+ * Requests the event of the first of the map's triggers that matches a kind of check, or
+ * a specific event.
+ *
+ * @param trigger One or more EventTrigger values.
+ * @param arg1 With eventTriggerForced, the EVT file. With eventTriggerInteract and mode
+ * 0, the actor that interacted.
+ * @param arg2 With eventTriggerInteract, the actor that was interacted with if mode is 0,
+ * or a pointer to the tile if mode is 1.
+ * @param mode 0 or 1, see arg2.
+ * @return An EventRequestResult.
+ */
+short requestEvent(short trigger, int arg1, int arg2, short mode)
 {
+    enum {
+        conditionPlayerOnTile = 1,
+        conditionPlayerInRectangle,
+        conditionFlagVsValue,
+        conditionActorExists,
+        conditionActorRoleCount,
+        conditionInteractActors,
+        conditionActorHpPercent,
+        conditionInteractFacingTile,
+        conditionPlayerStopped,
+        conditionItemOwned,
+        conditionUnk11,
+        conditionUnk12,
+        conditionActorOnTile,
+        conditionActorInRectangle,
+        conditionFlagVsFlag,
+        conditionUnk16,
+        conditionNot = 0xFE,
+        conditionsEnd = 0xFF,
+    };
+
     char buf[64];
     vs_ActorPosition position;
     short i;
@@ -5847,273 +6196,278 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
     short flagId;
     short actorId;
     short flagValue;
-    int result;
+    int conditionMet;
     short negate;
     short eventId;
-    u_char* p;
+    u_char* data;
     short left;
     int right;
 
-    if (type == 255) {
-        if (D_800F4C34 == 0) {
-            return 0;
+    if (trigger == eventTriggerPoll) {
+        if (eventState == eventIdle) {
+            return eventRequestNone;
         }
 
-        return 2;
+        return eventRequestBusy;
     }
 
-    if (type == 1) {
-        int scriptSection = mpdScriptSection;
+    if (trigger == eventTriggerMapLoad) {
+        int pending = mpdEntryScriptPending;
 
-        if (scriptSection & 1) {
-            mpdScriptSection = 0;
-            D_800F4C34 = 1;
-            D_800F4BE0 = 1;
+        if (pending & 1) {
+            mpdEntryScriptPending = 0;
+            eventState = eventRequested;
+            eventSource = eventFromEntryScript;
             D_800F4BA8 = 1;
-            return 1;
+
+            return eventRequestMade;
         }
     }
 
-    if (type == 64) {
+    if (trigger == eventTriggerForced) {
         evtFile = arg1;
-        D_800F4BE0 = 0;
-        D_800F4C34 = 1;
+        eventSource = eventFromEvt;
+        eventState = eventRequested;
         D_800F4BA8 = 1;
-        return 1;
+
+        return eventRequestMade;
     }
 
-    if (D_800F4C34 != 0 && D_800F4BA8 != 0) {
-        return 2;
+    if (eventState != eventIdle && D_800F4BA8 != 0) {
+        return eventRequestBusy;
     }
 
     for (i = 0; i < 16; ++i) {
-        u_short offset = ((u_short*)mpdClearedSection)[i];
+        u_short offset = ((u_short*)mpdTriggerSection)[i];
 
         if (offset == 0xFFFF) {
-            return 0;
+            return eventRequestNone;
         }
 
-        p = mpdClearedSection + offset;
+        data = mpdTriggerSection + offset;
 
-        if (!(*p & type)) {
+        if (!(*data & trigger)) {
             continue;
         }
 
-        ++p;
-        eventId = getShort(p);
-        p += 2;
+        ++data;
+        eventId = getShort(data);
+        data += 2;
         negate = 0;
 
         while (1) {
-            result = 0;
+            conditionMet = 0;
 
-            switch (*p) {
-            case 0xFF:
+            switch (*data) {
+            case conditionsEnd:
                 if (eventId & 0x8000) {
                     evtFile = eventId & 0xF;
-                    D_800F4BE0 = 2;
+                    eventSource = eventFromTriggeredScripts;
                 } else {
                     evtFile = eventId;
-                    D_800F4BE0 = 0;
+                    eventSource = eventFromEvt;
                 }
 
-                D_800F4C34 = 1;
+                eventState = eventRequested;
                 D_800F4BA8 = 0;
-                return 1;
 
-            case 1:
+                return eventRequestMade;
+
+            case conditionPlayerOnTile:
                 vs_battle_getActorPosition(0, &position);
 
-                if (position.unk0.unk0.x == p[1] && position.unk0.unk0.z == p[2]) {
-                    result = 1;
+                if (position.unk0.unk0.x == data[1] && position.unk0.unk0.z == data[2]) {
+                    conditionMet = 1;
                 }
 
-                p += 3;
+                data += 3;
                 break;
 
-            case 2:
+            case conditionPlayerInRectangle:
                 vs_battle_getActorPosition(0, &position);
 
-                if (position.unk0.unk0.x >= p[1] && position.unk0.unk0.x < p[1] + p[3]
-                    && position.unk0.unk0.z >= p[2]
-                    && position.unk0.unk0.z < p[2] + p[4]) {
-                    result = 1;
+                if (position.unk0.unk0.x >= data[1]
+                    && position.unk0.unk0.x < data[1] + data[3]
+                    && position.unk0.unk0.z >= data[2]
+                    && position.unk0.unk0.z < data[2] + data[4]) {
+                    conditionMet = 1;
                 }
 
-                p += 5;
+                data += 5;
                 break;
 
-            case 3:
-                left = getStateFlag(((p[1] & 0xF) << 6) | (p[2] >> 2));
-                right = p[3];
+            case conditionFlagVsValue:
+                left = getStateFlag(((data[1] & 0xF) << 6) | (data[2] >> 2));
+                right = data[3];
                 goto compare;
 
-            case 15:
-                left = getStateFlag(((p[1] & 0xF) << 6) | (p[2] >> 2));
-                right = getStateFlag(((p[2] & 3) << 8) | p[3]);
+            case conditionFlagVsFlag:
+                left = getStateFlag(((data[1] & 0xF) << 6) | (data[2] >> 2));
+                right = getStateFlag(((data[2] & 3) << 8) | data[3]);
+
             compare:
-                switch (p[1] & 0xF0) {
-                case 0x00:
+                switch (data[1] & 0xF0) {
+                case flagComparisonLe:
                     if (left <= right) {
-                        result = 1;
+                        conditionMet = 1;
                     }
                     break;
 
-                case 0x10:
+                case flagComparisonGe:
                     if (left >= right) {
-                        result = 1;
+                        conditionMet = 1;
                     }
                     break;
 
-                case 0x20:
+                case flagComparisonEq:
                     if (left == right) {
-                        result = 1;
+                        conditionMet = 1;
                     }
                     break;
 
-                case 0x30:
+                case flagComparisonNe:
                     if (left != right) {
-                        result = 1;
+                        conditionMet = 1;
                     }
                     break;
 
-                case 0x40:
+                case flagComparisonLt:
                     if (left < right) {
-                        result = 1;
+                        conditionMet = 1;
                     }
                     break;
 
-                case 0x50:
+                case flagComparisonGt:
                     if (left > right) {
-                        result = 1;
+                        conditionMet = 1;
                     }
                     break;
                 }
 
-                p += 4;
+                data += 4;
                 break;
 
-            case 4:
-                left = getShort(p + 1);
+            case conditionActorExists:
+                left = getShort(data + 1);
 
                 if (left & 0x1000) {
                     if (getActor(left & 0x1F) != NULL) {
-                        result = 1;
+                        conditionMet = 1;
                     }
-                } else if (func_8007CF18(left) != 1) {
-                    result = 1;
+                } else if (getActorSlotById(left) != 1) {
+                    conditionMet = 1;
                 }
 
-                p += 3;
+                data += 3;
                 break;
 
-            case 5:
-                left = flagValue = countActorsByRole(p[1]);
-                flagId = getShort(p + 2);
+            case conditionActorRoleCount:
+                left = flagValue = countActorsByRole(data[1]);
+                flagId = getShort(data + 2);
 
                 if (flagId != 0) {
                     vs_battle_setStateFlag(flagId, flagValue);
-                    result = 1;
+                    conditionMet = 1;
                 } else if (left != 0) {
-                    result = 1;
+                    conditionMet = 1;
                 }
 
-                p += 4;
+                data += 4;
                 break;
 
-            case 6:
+            case conditionInteractActors:
                 if (mode == 0) {
-                    actorId = resolveActorId(getShort(p + 1));
-                    otherActorId = resolveActorId(getShort(p + 3));
+                    actorId = resolveActorId(getShort(data + 1));
+                    otherActorId = resolveActorId(getShort(data + 3));
 
                     if (actorId != 1 && otherActorId != 1 && arg1 == actorId
                         && arg2 == otherActorId) {
-                        result = 1;
+                        conditionMet = 1;
                     }
                 }
 
-                p += 5;
+                data += 5;
                 break;
 
-            case 7:
-                actorId = resolveActorId(getShort(p + 1));
+            case conditionActorHpPercent:
+                actorId = resolveActorId(getShort(data + 1));
 
                 if (actorId == 1) {
                     negate = 0;
                     break;
                 }
 
-                left = flagValue = func_8007C218(actorId);
-                flagId = getShort(p + 3);
+                left = flagValue = getActorHpPercent(actorId);
+                flagId = getShort(data + 3);
 
                 if (flagId != 0) {
                     vs_battle_setStateFlag(flagId, flagValue);
-                    result = 1;
+                    conditionMet = 1;
                 } else if (left != 0) {
-                    result = 1;
+                    conditionMet = 1;
                 }
 
-                p += 5;
+                data += 5;
                 break;
 
-            case 8:
-                if (mode == 1 && ((u_char*)arg2)[0] == p[1]
-                    && ((u_char*)arg2)[2] == p[2]) {
-                    result = 1;
+            case conditionInteractFacingTile:
+                if (mode == 1 && ((u_char*)arg2)[0] == data[1]
+                    && ((u_char*)arg2)[2] == data[2]) {
+                    conditionMet = 1;
                 }
 
-                p += 3;
+                data += 3;
                 break;
 
-            case 9:
+            case conditionPlayerStopped:
                 if (!(vs_battle_getActorFlags(0) & 0x104000)) {
-                    result = 1;
+                    conditionMet = 1;
                 }
 
-                ++p;
+                ++data;
                 break;
 
-            case 10:
-                left = flagValue = itemIdIsInInventory(getShort(p + 1));
-                flagId = getShort(p + 3);
+            case conditionItemOwned:
+                left = flagValue = itemIdIsInInventory(getShort(data + 1));
+                flagId = getShort(data + 3);
 
                 if (flagId != 0) {
                     vs_battle_setStateFlag(flagId, flagValue);
-                    result = 1;
+                    conditionMet = 1;
                 } else if (left != 0) {
-                    result = 1;
+                    conditionMet = 1;
                 }
 
-                p += 5;
+                data += 5;
                 break;
 
-            case 11:
-                if ((short)func_800A0024(p[1], &position.unk0) >= 0
-                    && position.unk0.unk0.x == p[2] && position.unk0.unk0.z == p[3]
-                    && (p[4] == 0 || -(position.unk0.unk4.vy / 128) + 1 == p[4])
-                    && (p[5] == 0 || (position.unk0.unk0.extra >> 2) + 1 == p[5])) {
-                    result = 1;
+            case conditionUnk11:
+                if ((short)func_800A0024(data[1], &position.unk0) >= 0
+                    && position.unk0.unk0.x == data[2] && position.unk0.unk0.z == data[3]
+                    && (data[4] == 0 || -(position.unk0.unk4.vy / 128) + 1 == data[4])
+                    && (data[5] == 0 || (position.unk0.unk0.extra >> 2) + 1 == data[5])) {
+                    conditionMet = 1;
                 }
 
-                p += 6;
+                data += 6;
                 break;
 
-            case 12:
-                left = flagValue = -func_800A92B8(p[1], p[2]) / 128;
-                flagId = getShort(p + 3);
+            case conditionUnk12:
+                left = flagValue = -func_800A92B8(data[1], data[2]) / 128;
+                flagId = getShort(data + 3);
 
                 if (flagId != 0) {
                     vs_battle_setStateFlag(flagId, flagValue);
-                    result = 1;
+                    conditionMet = 1;
                 } else if (left != 0) {
-                    result = 1;
+                    conditionMet = 1;
                 }
 
-                p += 5;
+                data += 5;
                 break;
 
-            case 13:
-                actorId = resolveActorId(getShort(p + 1));
+            case conditionActorOnTile:
+                actorId = resolveActorId(getShort(data + 1));
 
                 if (actorId == 1) {
                     negate = 0;
@@ -6122,15 +6476,15 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
 
                 vs_battle_getActorPosition(actorId, &position);
 
-                if (position.unk0.unk0.x == p[3] && position.unk0.unk0.z == p[4]) {
-                    result = 1;
+                if (position.unk0.unk0.x == data[3] && position.unk0.unk0.z == data[4]) {
+                    conditionMet = 1;
                 }
 
-                p += 5;
+                data += 5;
                 break;
 
-            case 14:
-                actorId = resolveActorId(getShort(p + 1));
+            case conditionActorInRectangle:
+                actorId = resolveActorId(getShort(data + 1));
 
                 if (actorId == 1) {
                     negate = 0;
@@ -6139,17 +6493,18 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
 
                 vs_battle_getActorPosition(actorId, &position);
 
-                if (position.unk0.unk0.x >= p[3] && position.unk0.unk0.x < p[3] + p[5]
-                    && position.unk0.unk0.z >= p[4]
-                    && position.unk0.unk0.z < p[4] + p[6]) {
-                    result = 1;
+                if (position.unk0.unk0.x >= data[3]
+                    && position.unk0.unk0.x < data[3] + data[5]
+                    && position.unk0.unk0.z >= data[4]
+                    && position.unk0.unk0.z < data[4] + data[6]) {
+                    conditionMet = 1;
                 }
 
-                p += 7;
+                data += 7;
                 break;
 
-            case 16:
-                actorId = resolveActorId(getShort(p + 1));
+            case conditionUnk16:
+                actorId = resolveActorId(getShort(data + 1));
 
                 if (actorId == 1) {
                     negate = 0;
@@ -6157,23 +6512,23 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
                 }
 
                 if (func_8007CFCC(actorId) != 0) {
-                    result = 1;
+                    conditionMet = 1;
                 }
 
-                p += 3;
+                data += 3;
                 break;
 
-            case 0xFE:
+            case conditionNot:
                 negate = 1;
-                ++p;
+                ++data;
                 continue;
 
             default:
-                sprintf(buf, "UNKNOWN TRIGGER DETECTED:%02x", *p);
+                sprintf(buf, "UNKNOWN TRIGGER DETECTED:%02x", *data);
                 break;
             }
 
-            if (result == negate) {
+            if (conditionMet == negate) {
                 break;
             }
 
@@ -6182,23 +6537,30 @@ short func_800BEC58(short type, int arg1, int arg2, short mode)
     }
 }
 
-void parseEvt(u_char* data)
+/**
+ * Sets up the engine to run an event's scripts, resetting everything they share.
+ * @param data The event, with offsets to the strings at +2, to the text box shapes after
+ * the built in ones at +4, to the vibration patterns at +6, and the script at +0x10.
+ */
+static void initEvent(u_char* data)
 {
     short i;
-    u_char* table;
+    u_char* shapes;
+    u_char* vibration;
 
     scriptStrings = (u_short*)(data + *(u_short*)(data + 2));
-    table = data + *(u_short*)(data + 4);
+    shapes = data + *(u_short*)(data + 4);
 
     for (i = 9; i < 16; ++i) {
-        D_800EB588[i] = ((u_short*)table)[i - 8] ? table + ((u_short*)table)[i - 8] : 0;
+        textBoxShapes[i] =
+            ((u_short*)shapes)[i - 8] ? shapes + ((u_short*)shapes)[i - 8] : 0;
     }
 
-    table = data + *(u_short*)(data + 6);
+    vibration = data + *(u_short*)(data + 6);
 
     for (i = 0; i < 8; ++i) {
         vibrationPatterns[i] =
-            ((u_short*)table)[i] ? (char*)table + ((u_short*)table)[i] : 0;
+            ((u_short*)vibration)[i] ? (char*)vibration + ((u_short*)vibration)[i] : 0;
     }
 
     scriptSlots[0] = data + 16;
@@ -6206,7 +6568,7 @@ void parseEvt(u_char* data)
     scriptSkipMode = scriptSkipOff;
     skipRequested = 0;
 
-    vs_battle_setStateFlag(168, 0);
+    vs_battle_setStateFlag(skippingScene, 0);
 
     scriptWaitFrames[1] = scriptWaitFrames[2] = scriptWaitFrames[3] = 0;
     effectCancelled = 0;
@@ -6217,7 +6579,7 @@ void parseEvt(u_char* data)
     scriptWarpState = scriptWarpIdle;
     cameraReturned = 0;
     scriptWaitFrames[0] = 0;
-    D_800F4C22 = 0;
+    mainScriptEnded = 0;
 
     for (i = 0; i < 8; ++i) {
         textBoxStatuses[i] = 0;
@@ -6232,118 +6594,126 @@ void parseEvt(u_char* data)
     scriptMusicSlot = vs_main_getcurrentMusicSlot();
     evtCdSlot = NULL;
 
-    for (i = 16; i < 32; ++i) {
+    for (i = scriptScratch; i < scriptScratch + 16; ++i) {
         vs_battle_setStateFlag(i, 0);
     }
 }
 
-int func_800BF850(void)
+/**
+ * Starts or advances the event system by one frame.
+ * @return eventRequestBusy while an event is starting, loading or running, otherwise
+ * eventRequestNone.
+ */
+int updateEvent(void)
 {
     short i;
     UNUSED int _[2];
 
-    if (D_800F4C34 == 0) {
-        return 0;
+    if (eventState == eventIdle) {
+        return eventRequestNone;
     }
 
-    if (D_800F4C34 == 1) {
-        if (D_800F4BB8 != 0) {
-            D_800F4C34 = 2;
-            D_800F4BB8 = 0;
-            func_800BBBE8();
+    if (eventState == eventRequested) {
+        if (eventReady != 0) {
+            eventState = eventStarting;
+            eventReady = 0;
+            initScriptCamera();
             func_8007CEC0();
 
             for (i = 0; i < 17; ++i) {
-                D_800F4B70[i] = 0;
+                actorMoved[i] = 0;
             }
 
-            return 2;
+            return eventRequestBusy;
         }
 
-        return 0;
+        return eventRequestNone;
     }
 
-    if (D_800F4C34 == 2) {
+    if (eventState == eventStarting) {
         fogDepthOverridden = 0;
         nextEvtQueued = 0;
 
-        switch (D_800F4BE0) {
-        case 1:
-            parseEvt(evtBuffer);
-            D_800F4C34 = 4;
+        switch (eventSource) {
+        case eventFromEntryScript:
+            initEvent(evtBuffer);
+            eventState = eventRunning;
             break;
 
-        case 2:
-            parseEvt(mpdRoomDoorSection + ((short*)mpdRoomDoorSection)[evtFile]);
-            D_800F4C34 = 4;
+        case eventFromTriggeredScripts:
+            initEvent(mpdTriggeredScripts + ((short*)mpdTriggeredScripts)[evtFile]);
+            eventState = eventRunning;
             break;
 
-        case 0:
-            func_800C00E8(evtFile, evtBuffer);
-            D_800F4C34 = 3;
+        case eventFromEvt:
+            loadEvt(evtFile, evtBuffer);
+            eventState = eventLoading;
             break;
         }
 
-        return 2;
+        return eventRequestBusy;
     }
 
-    if (D_800F4C34 == 3) {
+    if (eventState == eventLoading) {
         if (evtCdSlot->state == CdQueueStateLoaded) {
+
             vs_main_freeCdQueueSlot(evtCdSlot);
 
             if (nextEvtQueued != 0) {
                 vs_main_memcpy(evtBuffer, nextEvtBuffer, 0x1800);
                 vs_main_freeHeapR(nextEvtBuffer);
+
                 nextEvtQueued = 0;
             }
 
-            parseEvt(evtBuffer);
-            D_800F4C34 = 4;
+            initEvent(evtBuffer);
+
+            eventState = eventRunning;
         }
 
-        return 2;
+        return eventRequestBusy;
     }
 
     updateCameraAttachment();
 
-    if (D_800F4C22 == 0) {
-        if (func_800BFBB8(scriptSlots, 0) != 0) {
+    if (mainScriptEnded == 0) {
+        if (runScript(scriptSlots, 0) != 0) {
             if (cameraReturned == 0 && nextEvtQueued == 0
                 && scriptWarpState == scriptWarpIdle) {
                 returnToGameplayCamera(-1, -1);
             }
 
-            D_800F4C22 = 1;
+            mainScriptEnded = 1;
         }
 
         for (i = 1; i < 4; ++i) {
             if (scriptSlots[i] != NULL) {
-                func_800BFBB8(&scriptSlots[i], i);
+                runScript(&scriptSlots[i], i);
             }
         }
     }
 
-    func_800BC9E0();
-    func_800BDAB4();
+    updateCamera();
+    updateScreenEffectTweens();
     applyCameraState();
-    func_800BB9B0();
-    func_800BBAFC();
+    updateGimTweens();
+    updateParticleTween();
 
     if (scanlinesEnabled != 0) {
         drawScanlines();
     }
 
-    if (D_800F4C22 != 0 && getCameraIdleFlags() == 255) {
+    if (mainScriptEnded != 0 && getCameraIdleFlags() == cameraIdleAll) {
         if (nextEvtQueued != 0) {
-            D_800F4C34 = 3;
-            D_800F4BE0 = 0;
+            eventState = eventLoading;
+            eventSource = eventFromEvt;
         } else {
-            func_800BFD9C();
-            D_800F4C34 = 0;
+            releaseScriptControl();
+            eventState = eventIdle;
         }
 
-        D_800F4C22 = 0;
+        mainScriptEnded = 0;
     }
 
-    return 2;
+    return eventRequestBusy;
 }

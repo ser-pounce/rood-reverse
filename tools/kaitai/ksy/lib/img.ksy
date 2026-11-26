@@ -1,3 +1,5 @@
+# .as<T> cast used to work around kaitai's naming lint warning.
+
 meta:
   id: img
   endian: le
@@ -68,7 +70,7 @@ types:
         type: clut
         size: 'mode == 0 ? 32 : 512'
         repeat: expr
-        repeat-expr: num_cluts
+        repeat-expr: num_cluts.as<u4>
         if: not cluts_after
       - id: indices
         type: indices(mode)
@@ -77,7 +79,7 @@ types:
         type: clut
         size: 'mode == 0 ? 32 : 512'
         repeat: expr
-        repeat-expr: num_cluts
+        repeat-expr: num_cluts.as<u4>
         if: cluts_after
     instances:
       cluts:

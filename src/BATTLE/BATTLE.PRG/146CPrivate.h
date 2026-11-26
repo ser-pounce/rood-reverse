@@ -100,8 +100,8 @@ VS_HIDDEN(pauseBattleTimer);
 int cullOccludingGeometry(int);
 VS_HIDDEN(cullOccludingGeometry);
 
-int func_8007BE10(int);
-VS_HIDDEN(func_8007BE10);
+int setSwitchZoneMusic(int enable);
+VS_HIDDEN(setSwitchZoneMusic);
 
 void startEffect(int, int);
 VS_HIDDEN(startEffect);
@@ -133,8 +133,8 @@ VS_HIDDEN(disableAllActors);
 void setWeaponDrawn(int, int);
 VS_HIDDEN(setWeaponDrawn);
 
-int func_8007C218(int);
-VS_HIDDEN(func_8007C218);
+int getActorHpPercent(int);
+VS_HIDDEN(getActorHpPercent);
 
 void fullyRestoreActor(int);
 VS_HIDDEN(fullyRestoreActor);
@@ -216,8 +216,8 @@ VS_HIDDEN(selectEventData);
 int getEmptyObjectDataSlot(void);
 VS_HIDDEN(getEmptyObjectDataSlot);
 
-int func_8007CF18(int);
-VS_HIDDEN(func_8007CF18);
+int getActorSlotById(int);
+VS_HIDDEN(getActorSlotById);
 
 int func_8007CFCC(int);
 VS_HIDDEN(func_8007CFCC);
@@ -243,8 +243,8 @@ VS_HIDDEN(isActionUnlocked);
 void setActionUnlocked(u_int);
 VS_HIDDEN(setActionUnlocked);
 
-void func_8007D260(int arg0);
-VS_HIDDEN(func_8007D260);
+void releaseActorControl(int actorId);
+VS_HIDDEN(releaseActorControl);
 
 void despawnActor(int);
 VS_HIDDEN(despawnActor);
@@ -252,14 +252,14 @@ VS_HIDDEN(despawnActor);
 int func_8008C458(int, int, CVECTOR*, SVECTOR*);
 VS_HIDDEN(func_8008C458);
 
-void func_8007DE88(VECTOR* arg0);
-VS_HIDDEN(func_8007DE88);
+void getFramebufferEffectScale(VECTOR* arg0);
+VS_HIDDEN(getFramebufferEffectScale);
 
-void func_8007DEA8(CVECTOR* arg0);
-VS_HIDDEN(func_8007DEA8);
+void getFramebufferEffectTint(CVECTOR* arg0);
+VS_HIDDEN(getFramebufferEffectTint);
 
-void func_8007DECC(VECTOR* arg0);
-VS_HIDDEN(func_8007DECC);
+void getFramebufferEffectOffset(VECTOR* arg0);
+VS_HIDDEN(getFramebufferEffectOffset);
 
 int claimOverlayBuffer(int owner);
 VS_HIDDEN(claimOverlayBuffer);
@@ -304,8 +304,8 @@ VS_HIDDEN(setCloudstoneFreezeTimer);
 short func_8008DA24(int arg0, int arg1);
 VS_HIDDEN(func_8008DA24);
 
-short func_8008DC7C(int arg0, int arg1);
-VS_HIDDEN(func_8008DC7C);
+short getTerrainHeight(int x, int z);
+VS_HIDDEN(getTerrainHeight);
 
 short func_8008DD0C(int arg0, int arg1);
 VS_HIDDEN(func_8008DD0C);

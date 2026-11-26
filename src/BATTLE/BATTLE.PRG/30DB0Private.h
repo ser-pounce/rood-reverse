@@ -44,11 +44,11 @@ VS_HIDDEN(func_8009D88C);
 void playWeaponSfx(int, int);
 VS_HIDDEN(playWeaponSfx);
 
-void func_8009DC38(int);
-VS_HIDDEN(func_8009DC38);
+void cancelActorMotion(int actorId);
+VS_HIDDEN(cancelActorMotion);
 
-void func_8009DC8C(int);
-VS_HIDDEN(func_8009DC8C);
+void resetActorMotionState(int actorId);
+VS_HIDDEN(resetActorMotionState);
 
 void func_8009DD00(int, SVECTOR*, int);
 VS_HIDDEN(func_8009DD00);

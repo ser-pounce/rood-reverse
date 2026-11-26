@@ -119,7 +119,7 @@ enum ActorRole {
 
 typedef struct Actor {
     struct Actor* next;
-    int id;
+    int slot;
     u_char unk8;
     u_char unk9;
     u_char unkA;
@@ -132,7 +132,7 @@ typedef struct Actor {
         u_short u16[6];
         u_char u8[12];
     } commandArgs;
-    u_short unk18;
+    u_short id;
     u_short subType;
     u_short role;
     u_char unk1E;

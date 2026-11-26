@@ -1844,8 +1844,8 @@ void func_800AB9A4(void* arg)
     case 4:
         if (arg0->unk5AC_3) {
             object = D_800F45E0[arg0->unk0.unk13];
-            func_800A190C(object->unk0.unk12, 0xF0, &boneA, 1);
-            func_800A190C(object->unk0.unk12, 0xF1, &boneB, 1);
+            getActorPoint(object->unk0.unk12, 0xF0, &boneA, 1);
+            getActorPoint(object->unk0.unk12, 0xF1, &boneB, 1);
             object->unk0.position.vx = arg0->unk0.position.vx;
             object->unk0.position.vz = arg0->unk0.position.vz;
             object->unk0.position.vy = (boneA.vy + boneB.vy) / 2 + 60;

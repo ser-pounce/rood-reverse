@@ -176,12 +176,12 @@ typedef struct {
 typedef struct {
     int roomSectionOffset;
     u_short roomSectionLen;
-    int clearedSectionOffset;
-    u_short clearedSectionLen;
-    int scriptSectionOffset;
-    u_short scriptSectionLen;
-    int doorSectionOffset;
-    u_short doorSectionLen;
+    int triggerSectionOffset;
+    u_short triggerSectionLen;
+    int entryScriptOffset;
+    u_short entryScriptLen;
+    int triggeredScriptsOffset;
+    u_short triggeredScriptsLen;
     int enemySectionOffset;
     int enemySectionLen;
     int lootSectionOffset;
@@ -313,7 +313,7 @@ extern int renderAllGeometry;
 extern vs_CharInitData* D_800F188C;
 extern int D_800F18A8;
 extern int D_800F18AC;
-extern int D_800F18B0;
+extern int switchZoneMusic;
 extern D_800F18C8_t D_800F18C8;
 extern int D_800F18E0;
 extern void* D_800F18E4;
@@ -337,7 +337,7 @@ extern int D_800F1A20;
 extern SVECTOR D_800F1A28;
 extern short D_800F1A2C;
 extern VECTOR D_800F1A30;
-extern int D_800F1A40;
+extern int framebufferEffectUsesPreviousFrame;
 extern u_int D_800F1A44;
 extern int D_800F1A50[];
 extern VECTOR D_800F1A68;
@@ -533,7 +533,7 @@ void vs_battle_saveEnemyState(int actorId, int arg1)
 int insertCombatant(Actor* actor)
 {
 
-    if ((actor->role & actorRoleCombatant) && (actor->id != 0)) {
+    if ((actor->role & actorRoleCombatant) && (actor->slot != 0)) {
         int i;
 
         for (i = 0; i < 16; ++i) {
@@ -542,7 +542,7 @@ int insertCombatant(Actor* actor)
             }
         }
 
-        if (actor->id != 0) {
+        if (actor->slot != 0) {
             actor->next = vs_battle_actors[0]->next;
             vs_battle_actors[0]->next = actor;
         } else {
@@ -557,7 +557,7 @@ int insertCombatant(Actor* actor)
 
 int removeCombatant(Actor* actor)
 {
-    if (actor->id != 0) {
+    if (actor->slot != 0) {
         int i;
 
         for (i = 0; i < 16; ++i) {
@@ -1385,14 +1385,14 @@ void dropLoot(Actor* enemy)
         int insertLoot = 1;
 
         while (node != NULL) {
-            if (node->actorId == enemy->id) {
+            if (node->actorId == enemy->slot) {
                 insertLoot = 0;
             }
             node = node->next;
         }
 
         if (insertLoot != 0) {
-            int actorId = enemy->id;
+            int actorId = enemy->slot;
             vs_LootListNode* next = lootListHead;
             lootListHead = lootList;
             lootList->actorId = actorId;
@@ -3449,7 +3449,7 @@ void func_80070CAC(void)
                 list->targets[list->targetCount].unk0.position.vx =
                     room[i].unk0 * 128 + 64;
                 list->targets[list->targetCount].unk0.position.vy =
-                    (func_8008DC7C((room[i].unk0 << 7) | 64, (room[i].unk2 << 7) | 64)
+                    (getTerrainHeight((room[i].unk0 << 7) | 64, (room[i].unk2 << 7) | 64)
                         << 17)
                     >> 17;
                 list->targets[list->targetCount].unk0.position.vz =
@@ -3867,7 +3867,7 @@ void func_800719FC(UNUSED int arg0)
                     }
                 }
             } else {
-                func_800A190C(i, 255, &D_800F19CC->unk29C0[count].unk0, 0);
+                getActorPoint(i, 255, &D_800F19CC->unk29C0[count].unk0, 0);
                 if (func_800C1564(
                         &D_800F19CC->unk29B0, &D_800F19CC->unk29C0[count].unk0)) {
                     D_800F19CC->unk29C0[count].unk8 = 16;
@@ -3919,7 +3919,7 @@ void func_80071F68(int arg0)
         D_800F19CC->unk29A0.unk4.values[3] = spec->angle * 8;
     }
 
-    func_800A190C(D_800F19CC->unk8.unk4.unk0.hit.targetActor, 250,
+    getActorPoint(D_800F19CC->unk8.unk4.unk0.hit.targetActor, 250,
         &D_800F19CC->unk29A0.unk8.vec, 0);
 
     if (D_800F19CC->unk2984) {
@@ -3959,7 +3959,7 @@ void func_80071F68(int arg0)
                     }
                 }
             } else {
-                func_800A190C(i, 255, &D_800F19CC->unk29C0[count].unk0, 0);
+                getActorPoint(i, 255, &D_800F19CC->unk29C0[count].unk0, 0);
 
                 if (func_800C1564(
                         &D_800F19CC->unk29A0, &D_800F19CC->unk29C0[count].unk0)) {
@@ -3983,7 +3983,8 @@ void func_80071F68(int arg0)
             D_800F19CC->unk29C0[count].unk0.vx = room[j].unk0 * 128 + 64;
             D_800F19CC->unk29C0[count].unk0.vz = room[j].unk2 * 128 + 64;
             D_800F19CC->unk29C0[count].unk0.vy =
-                (func_8008DC7C((room[j].unk0 << 7) | 64, (room[j].unk2 << 7) | 64) << 17)
+                (getTerrainHeight((room[j].unk0 << 7) | 64, (room[j].unk2 << 7) | 64)
+                    << 17)
                 >> 17;
 
             if (room[j].unk10 < 64
@@ -4104,7 +4105,7 @@ void func_80072734(int arg0)
                         }
                     }
                 } else {
-                    func_800A190C(i, 255, &D_800F19CC->unk29C0[count].unk0, 0);
+                    getActorPoint(i, 255, &D_800F19CC->unk29C0[count].unk0, 0);
                     D_800F19CC->unk29C0[count].unkA = -1;
                     D_800F19CC->unk29C0[count].unk9 = i;
                     ++count;
@@ -4114,7 +4115,7 @@ void func_80072734(int arg0)
     }
 
     D_800F19CC->unk2C00 = count;
-    func_800A190C(D_800F19CC->unk8.unk4.unk0.hit.targetActor, 250,
+    getActorPoint(D_800F19CC->unk8.unk4.unk0.hit.targetActor, 250,
         &D_800F19CC->unk29A0.unk8.vec, 0);
 
     if (D_800F19CC->unk8.unk4.unk0.hit.targetActor) {
@@ -4156,7 +4157,7 @@ void func_80072BA8(int action)
         D_800F19CC->unk29A0.unk4.values[1] = 4;
         D_800F19CC->unk29A0.unk4.values[2] = 4;
         D_800F19CC->unk29A0.unk4.values[3] = 0;
-        func_800A190C(0, 250, &D_800F19CC->unk29A0.unk8.vec, 0);
+        getActorPoint(0, 250, &D_800F19CC->unk29A0.unk8.vec, 0);
         func_800C05EC(&D_800F19CC->unk29A0, NULL, 0, NULL);
 
         D_800F19CC->unk29B0.unk0 = 2;
@@ -4167,7 +4168,7 @@ void func_80072BA8(int action)
         D_800F19CC->unk29B0.unk4.values[1] = 4;
         D_800F19CC->unk29B0.unk4.values[2] = 4;
         D_800F19CC->unk29B0.unk4.values[3] = 0;
-        func_800A190C(1, 250, &D_800F19CC->unk29B0.unk8.vec, 0);
+        getActorPoint(1, 250, &D_800F19CC->unk29B0.unk8.vec, 0);
         func_800C0700(&D_800F19CC->unk29B0);
 
         for (limb = 0, count = 0; limb < 6; ++limb) {
@@ -4443,13 +4444,13 @@ void func_80073718(void)
 
     D_800F196C = 3;
     cameraMode = 2;
-    vs_battle_setStateFlag(0xAC, vs_battle_characterState->weaponDrawn & 1);
+    vs_battle_setStateFlag(savedWeaponDrawn, vs_battle_characterState->weaponDrawn & 1);
     vs_battle_setStateFlag(
-        0xAF, (vs_battle_cameraCurrentSpherical.delta.pitch / 512) & 7);
+        savedCameraFacing, (vs_battle_cameraCurrentSpherical.delta.pitch / 512) & 7);
     if (vs_battle_cameraCurrentSpherical.initialDistance == 0x600) {
-        vs_battle_setStateFlag(0xB0, 0);
+        vs_battle_setStateFlag(savedCameraZoom, 0);
     } else {
-        vs_battle_setStateFlag(0xB0, 1);
+        vs_battle_setStateFlag(savedCameraZoom, 1);
     }
 
     for (i = 0; i < 16; ++i) {
@@ -4480,13 +4481,13 @@ void func_80073718(void)
 
 void func_80073870(void)
 {
-    func_800BEC30();
+    signalEventReady();
     func_80073718();
 }
 
 void func_80073898(void)
 {
-    if ((func_800BEB10() << 16) != 0) {
+    if ((getEventId() << 16) != 0) {
         D_800F196C = 3;
         cameraMode = 1;
         return;
@@ -4512,9 +4513,9 @@ void func_800738E4(void)
     func_800DEC88(NULL);
     func_800DC638();
 
-    if ((func_800BEC58(0xA, 0, 0, 0) == 1)
+    if ((requestEvent(eventTriggerStep | eventTriggerDefeat, 0, 0, 0) == eventRequestMade)
         || ((vs_main_battleTimer.mode != battleTimerOff)
-            && (func_800BEC58(0x10, 0, 0, 0) == 1))) {
+            && (requestEvent(eventTriggerTimer, 0, 0, 0) == eventRequestMade))) {
         func_80073870();
         return;
     }
@@ -4987,8 +4988,7 @@ int func_80074860(int arg0)
 
     vs_battle_getActorPosition(arg0, &sp10);
     func_80074798(&sp10, sp20);
-    // BUG: arg2 should be an actor ID?
-    return func_800BEC58(4, 0, (int)sp20, 1) == 1;
+    return requestEvent(eventTriggerInteract, 0, (int)sp20, 1) == eventRequestMade;
 }
 
 MpdRoomSectionA* func_800748B8(int arg0)
@@ -5001,7 +5001,7 @@ MpdRoomSectionA* func_800748B8(int arg0)
     vs_battle_getActorPosition(arg0, &sp10);
     func_80074798(&sp10, sp20);
     temp_s1 = func_8008BC04(s0[0], s0[2], s0[1]);
-    if (((((func_8008DC7C((s0[0] << 7) | 0x40, (s0[2] << 7) | 0x40) << 0x11) >> 0x11)
+    if (((((getTerrainHeight((s0[0] << 7) | 0x40, (s0[2] << 7) | 0x40) << 0x11) >> 0x11)
              - sp10.unk0.unk4.vy)
             + 0x3F)
         >= 0x7FU) {
@@ -5024,7 +5024,7 @@ MpdRoomSection13* func_80074950(int arg0)
 
     if ((temp_v0 != NULL) && (temp_v0->unk12 == temp_s2)) {
         if (!getStateFlag((temp_v0->unk10 + 0x3C0))) {
-            int v = ((func_8008DC7C((s1[0] << 7) | 0x40, (s1[2] << 7) | 0x40) << 0x11)
+            int v = ((getTerrainHeight((s1[0] << 7) | 0x40, (s1[2] << 7) | 0x40) << 0x11)
                         >> 0x11)
                   + 0x60;
             if (sp10.unk0.unk4.vy == v) {
@@ -5123,7 +5123,8 @@ int func_80074BAC(int actorIndex, ActorLocation* position)
         if (D_800F196C != 3) {
             MpdRoomSection9* trigger;
 
-            if (cell->unk0_13 && func_800BEC58(2, 0, 0, 0) == 1) {
+            if (cell->unk0_13
+                && requestEvent(eventTriggerStep, 0, 0, 0) == eventRequestMade) {
                 func_80073898();
                 actor->currentTile = coordinates->unk0;
                 actor->currentTile.extra = layer;
@@ -5307,7 +5308,8 @@ int func_800751B8(int arg0, ActorLocation* arg1)
                     vs_battle_actors[arg0]->stats->currentHP = 0;
                     func_800792E4(0, arg0, 0);
 
-                    if (func_800BEC58(0xC, 0, 0, 0) == 1) {
+                    if (requestEvent(eventTriggerInteract | eventTriggerDefeat, 0, 0, 0)
+                        == eventRequestMade) {
                         return 1;
                     }
                     return 2;
@@ -5728,7 +5730,7 @@ int func_80075554(void)
                 state = 1;
             }
 
-            func_80072EC4(actor->id, state);
+            func_80072EC4(actor->slot, state);
             state = (D_800F19CC->unk298C == 0xFF) << 3;
             break;
         default:
@@ -5894,10 +5896,10 @@ Actor* func_800765B0(
         vs_main_bzero(temp_v0, sizeof temp_v0->unk0);
         temp_v0->unk0.unk0.stats = &temp_v0->unk0.unk50;
         temp_v0->unk0.unk0.unk44 = (EntityBase*)&temp_v0->unk9B4.unk0;
-        temp_v0->unk0.unk0.unk18 = 0xFE;
+        temp_v0->unk0.unk0.id = 0xFE;
         temp_v0->unk0.unk0.role = actorRoleModelOnly;
         temp_v0->unk0.unk0.unk40 = 0;
-        temp_v0->unk0.unk0.id = index;
+        temp_v0->unk0.unk0.slot = index;
         temp_v0->unk0.unk0.next = NULL;
         temp_v0->unk0.unk0.unk26 = 0;
         objData.dataType = 6;
@@ -6100,8 +6102,8 @@ void func_80076D50(u_int id, int arg1, int arg2, int arg3, int arg4)
     Actor* temp_s1 = vs_battle_actors[id];
     vs_ActorStats* stats = temp_s1->stats;
 
-    temp_s1->id = id;
-    temp_s1->unk18 = arg1;
+    temp_s1->slot = id;
+    temp_s1->id = arg1;
     temp_s1->subType = 0;
     temp_s1->unk2A = arg2;
     temp_s1->unk2B = arg3;
@@ -6177,9 +6179,9 @@ void func_80076F24(int id, vs_CharInitData* arg1, int arg2, int arg3, int arg4, 
     vs_ActorStats* stats;
 
     temp_s0 = vs_battle_actors[id];
-    temp_s0->id = id;
+    temp_s0->slot = id;
     stats = temp_s0->stats;
-    temp_s0->unk18 = arg1->unk2;
+    temp_s0->id = arg1->unk2;
     temp_s0->subType = arg1->subType;
     temp_s0->unk2A = arg2;
     temp_s0->unk2B = arg3;
@@ -7264,7 +7266,7 @@ int func_800792E4(int arg0, int arg1, int arg2)
             enemyDefeated(arg0, arg1, arg2);
             if (arg1 == 0) {
                 func_8009722C();
-                func_800BEC58(0x40, 0, 0, 0);
+                requestEvent(eventTriggerForced, 0, 0, 0);
                 func_80073898();
                 ret = 1;
             } else if (vs_battle_actors[arg1]->unk26 == 0) {
@@ -7352,7 +7354,8 @@ void func_800793C0(void)
     if (D_800F196C == 3) {
         return;
     }
-    if (func_800BEC58(12, 0, 0, 0) == 1) {
+    if (requestEvent(eventTriggerInteract | eventTriggerDefeat, 0, 0, 0)
+        == eventRequestMade) {
         func_80073898();
         return;
     }
@@ -7460,7 +7463,8 @@ void vs_battle_exec(void)
                                 break;
                             }
 
-                            if (func_800BEC58(0x20, 0, 0, 0) == 1) {
+                            if (requestEvent(eventTriggerIdle, 0, 0, 0)
+                                == eventRequestMade) {
                                 func_80073898();
                                 break;
                             }
@@ -7506,7 +7510,8 @@ void vs_battle_exec(void)
                                     i = func_800A3760(0, 0xA0, 0x80);
 
                                     if ((i >= 0) && (vs_battle_actors[i]->unk24 == 4)
-                                        && (func_800BEC58(4, 0, i, 0) == 1)) {
+                                        && (requestEvent(eventTriggerInteract, 0, i, 0)
+                                            == eventRequestMade)) {
                                         func_80073898();
                                         break;
                                     }
@@ -7620,7 +7625,8 @@ void vs_battle_exec(void)
                                 func_800C8778();
                                 func_80075554();
 
-                                if (func_800BEC58(0xFF, 0, 0, 0) == 0) {
+                                if (requestEvent(eventTriggerPoll, 0, 0, 0)
+                                    == eventRequestNone) {
                                     if ((vs_main_startState == 3)
                                         || (vs_main_startState == 4)) {
                                         vs_main_resetGame();
@@ -7798,7 +7804,7 @@ void vs_battle_exec(void)
                         }
                     }
 
-                    func_800BF850();
+                    updateEvent();
 
                     switch (D_800F196C) {
                     case 1:
@@ -8513,7 +8519,12 @@ int cullOccludingGeometry(int cull)
     return renderAllGeometry = ~cull & 1;
 }
 
-int func_8007BE10(int arg0) { return D_800F18B0 = arg0; }
+/**
+ * Sets whether loading a zone with different music than the current music switches to
+ * it, otherwise the music keeps playing.
+ * @param enable 1 to switch the music.
+ */
+int setSwitchZoneMusic(int enable) { return switchZoneMusic = enable; }
 
 void startEffect(int effectId, int actorId)
 {
@@ -8631,20 +8642,27 @@ void func_8007C1D8(int arg0, int arg1)
     }
 }
 
-int func_8007C218(int arg0)
+/**
+ * Gets an actor's HP as a percentage of its maximum, at least 1 while it is alive.
+ * @return The percentage, or 0 if the actor has no stats or is dead.
+ */
+int getActorHpPercent(int actor)
 {
-    int var_v1;
-    vs_ActorStats* stats = vs_battle_actors[arg0]->stats;
+    vs_ActorStats* stats = vs_battle_actors[actor]->stats;
 
     if (stats != NULL) {
         if (stats->currentHP > 0) {
-            var_v1 = (stats->currentHP * 0x64) / stats->maxHP;
-            if (var_v1 == 0) {
-                var_v1 = 1;
+
+            int percent = (stats->currentHP * 100) / stats->maxHP;
+
+            if (percent == 0) {
+                percent = 1;
             }
-            return var_v1;
+
+            return percent;
         }
     }
+
     return 0;
 }
 
@@ -9104,15 +9122,20 @@ void func_8007CEC0(void)
     }
 }
 
-int func_8007CF18(int arg0)
+/**
+ * Finds the slot of an actor from its id.
+ * @return The slot, or 1 if there is no such actor.
+ */
+int getActorSlotById(int id)
 {
     u_int i;
 
     for (i = 0; i < 16; ++i) {
-        if ((vs_battle_actors[i] != 0) && (vs_battle_actors[i]->unk18 == arg0)) {
+        if ((vs_battle_actors[i] != 0) && (vs_battle_actors[i]->id == id)) {
             return i;
         }
     }
+
     return 1;
 }
 
@@ -9234,13 +9257,19 @@ void setActorInactive(int actorId, int inactive)
     }
 }
 
-void func_8007D260(int arg0)
+/**
+ * Returns an actor to normal control: idle, with any movement command cancelled.
+ * @param actorId Actor id.
+ */
+void releaseActorControl(int actorId)
 {
-    Actor* temp_a1 = vs_battle_actors[arg0];
-    if ((temp_a1 != NULL) && (temp_a1->unk8 != 0x20)) {
-        temp_a1->unk8 = 0;
+    Actor* actor = vs_battle_actors[actorId];
+
+    if ((actor != NULL) && (actor->unk8 != 0x20)) {
+        actor->unk8 = 0;
     }
-    func_8009DC38(arg0);
+
+    cancelActorMotion(actorId);
 }
 
 int isActionUnlocked(u_int arg0)
@@ -9277,7 +9306,7 @@ void func_8007D360(void)
     D_800F1A68.vy = 0;
     D_800F1A68.vz = 0;
     D_800F1A44 = 0;
-    D_800F1A40 = 0;
+    framebufferEffectUsesPreviousFrame = 0;
 }
 
 void func_8007D3F8(void)
@@ -9344,7 +9373,7 @@ void func_8007D734(void* arg0)
                 setRGB0(&D_800F1ABC->poly[(vs_main_frameBuf * 5) + i], D_800F1A78.r,
                     D_800F1A78.g, D_800F1A78.b);
 
-                if (!(D_800F1A2C & 0xFFF) && D_800F1A40) {
+                if (!(D_800F1A2C & 0xFFF) && framebufferEffectUsesPreviousFrame) {
                     D_800F1ABC->poly[(vs_main_frameBuf * 5) + i].tpage = GetTPage(
                         2, D_800F1B9C, i * 64 + ((vs_main_frameBuf ^ 1) * 320), 0);
                 } else {
@@ -9389,10 +9418,11 @@ void func_8007D734(void* arg0)
                 sprite->x0 = D_800F1A68.vx + i * 64;
                 sprite->y0 = D_800F1A68.vy;
                 AddPrim(arg0 + (D_800F1A44 * 4), &D_800F1ABC->sprite[index]);
-                tpage = D_800F1A40 ? GetTPage(2, D_800F1B9C,
-                                         i * 64 + ((vs_main_frameBuf ^ 1) * 320), 0)
-                                   : GetTPage(2, D_800F1B9C,
-                                         i * 64 + ((vs_main_frameBuf & 1) * 320), 0);
+                tpage = framebufferEffectUsesPreviousFrame
+                          ? GetTPage(
+                                2, D_800F1B9C, i * 64 + ((vs_main_frameBuf ^ 1) * 320), 0)
+                          : GetTPage(2, D_800F1B9C,
+                                i * 64 + ((vs_main_frameBuf & 1) * 320), 0);
                 SetDrawMode(&D_800F1ABC->drawModes[(vs_main_frameBuf * 5) + i], 0, 1,
                     tpage, &clip);
                 AddPrim(arg0 + (D_800F1A44 * 4),
@@ -9437,53 +9467,73 @@ void setFramebufferEffect(int enable)
     }
 }
 
-void func_8007DDAC(int arg0) { D_800F1A2C = arg0; }
+/** Sets the rotation of the frame buffer effect, a full turn is ONE. */
+void vs_battle_setFramebufferEffectSpin(int angle) { D_800F1A2C = angle; }
 
-void func_8007DDB8(VECTOR* arg0)
+/** Sets the scale of the frame buffer effect, ONE is normal size. */
+void vs_battle_setFramebufferEffectScale(VECTOR* scale)
 {
-    D_800F1A30.vx = arg0->vx;
-    D_800F1A30.vy = arg0->vy;
+    D_800F1A30.vx = scale->vx;
+    D_800F1A30.vy = scale->vy;
 }
 
-void func_8007DDD4(CVECTOR* arg0) { D_800F1A78 = *arg0; }
+/** Sets the tint of the frame buffer effect. */
+void vs_battle_setFramebufferEffectTint(CVECTOR* tint) { D_800F1A78 = *tint; }
 
-void func_8007DDF8(VECTOR* arg0) { D_800F1A68 = *arg0; }
+/** Sets the offset of the frame buffer effect, in pixels. */
+void vs_battle_setFramebufferEffectOffset(VECTOR* offset) { D_800F1A68 = *offset; }
 
-void func_8007DE2C(int arg0) { D_800F1B9C = arg0; }
+/** Sets the blend mode of the frame buffer effect. */
+void vs_battle_setFramebufferEffectBlendMode(int blendMode) { D_800F1B9C = blendMode; }
 
 void func_8007DE38(int arg0) { D_800F1A20 = arg0; }
 
-void func_8007DE44(u_int arg0)
+/**
+ * Sets the ordering table index the frame buffer effect is drawn at. Ignored if it is
+ * 0x800 or more.
+ */
+void vs_battle_setFramebufferEffectDepth(u_int depth)
 {
-    if (arg0 < 0x800) {
-        D_800F1A44 = arg0;
+    if (depth < 0x800) {
+        D_800F1A44 = depth;
     }
 }
 
-void func_8007DE5C(int arg0) { D_800F1A40 = arg0; }
-
-int func_8007DE68(void) { return D_800F1B98; }
-
-short func_8007DE78(void) { return D_800F1A2C; }
-
-void func_8007DE88(VECTOR* arg0)
+/**
+ * Sets whether the frame buffer effect reads the previous frame, the other half of the
+ * double buffer, instead of the current one.
+ */
+void vs_battle_setFramebufferEffectUsePreviousFrame(int usePreviousFrame)
 {
-    arg0->vx = D_800F1A30.vx;
-    arg0->vy = D_800F1A30.vx;
-    arg0->vz = 0;
+    framebufferEffectUsesPreviousFrame = usePreviousFrame;
 }
 
-void func_8007DEA8(CVECTOR* arg0) { *arg0 = D_800F1A78; }
+int getFramebufferEffectState(void) { return D_800F1B98; }
 
-void func_8007DECC(VECTOR* arg0) { *arg0 = D_800F1A68; }
+short getFramebufferEffectSpin(void) { return D_800F1A2C; }
 
-int func_8007DF00(void) { return D_800F1B9C; }
+void getFramebufferEffectScale(VECTOR* scale)
+{
+    scale->vx = D_800F1A30.vx;
+    // y is read from x, unlike the setter
+    scale->vy = D_800F1A30.vx;
+    scale->vz = 0;
+}
+
+void getFramebufferEffectTint(CVECTOR* tint) { *tint = D_800F1A78; }
+
+void getFramebufferEffectOffset(VECTOR* offset) { *offset = D_800F1A68; }
+
+int getFramebufferEffectBlendMode(void) { return D_800F1B9C; }
 
 int func_8007DF10(void) { return D_800F1A20; }
 
-int func_8007DF20(void) { return D_800F1A44; }
+int getFramebufferEffectDepth(void) { return D_800F1A44; }
 
-int func_8007DF30(void) { return D_800F1A40; }
+int getFramebufferEffectUsesPreviousFrame(void)
+{
+    return framebufferEffectUsesPreviousFrame;
+}
 
 void func_8007DF40(void) { }
 
@@ -14459,7 +14509,7 @@ int updateBattleTimer(void)
     vs_battle_setStateFlag(0xA3, vs_main_battleTimer.time.t.h);
 
     if ((var_s2 == 0) && (vs_main_battleTimer.time.t.f == 0)
-        && (func_800BEC58(16, 0, 0, 0) == 1)) {
+        && (requestEvent(eventTriggerTimer, 0, 0, 0) == eventRequestMade)) {
         var_s1 = 1;
     }
 
@@ -14488,7 +14538,9 @@ int func_80088554(void)
                     var_s1 = func_800792E4(0, i, 0);
 
                     if ((var_s1 == 0) && (i != 0)) {
-                        if (func_800BEC58(0xC, 0, 0, 0) == 1) {
+                        if (requestEvent(
+                                eventTriggerInteract | eventTriggerDefeat, 0, 0, 0)
+                            == eventRequestMade) {
                             var_s1 = 1;
                         } else {
                             var_s1 = 2;
@@ -14613,7 +14665,10 @@ int func_80088554(void)
                                 var_s1 = func_800792E4(0, i, 0);
 
                                 if ((var_s1 == 0) && (i != 0)) {
-                                    if (func_800BEC58(0xC, 0, 0, 0) == 1) {
+                                    if (requestEvent(
+                                            eventTriggerInteract | eventTriggerDefeat, 0,
+                                            0, 0)
+                                        == eventRequestMade) {
                                         var_s1 = 1;
                                     } else {
                                         var_s1 = 2;
@@ -14767,13 +14822,13 @@ void finishLoadZnd(int id)
     zoneContext.zndData = NULL;
 
     if (vs_main_startState == 1) {
-        func_800BEB9C(1);
+        resetZoneFlags(1);
     } else {
-        func_800BEB9C(0);
+        resetZoneFlags(0);
     }
 
     if (vs_main_getCurrentMusicId() != musicId) {
-        if (D_800F18B0 != 0) {
+        if (switchZoneMusic != 0) {
             vs_main_stopMusic();
 
             for (i = 0; i < 4;) {
@@ -14795,7 +14850,7 @@ void finishLoadZnd(int id)
 
 void func_80089098(void)
 {
-    func_800BEBEC();
+    zoneUnloadNop();
     vsBattleNop2(0);
     if (zoneContext.zndEnemies != NULL) {
         vs_main_freeHeap(zoneContext.zndEnemies);
@@ -15264,17 +15319,17 @@ void func_80089DC0(int arg0)
         int arg2;
         int new_var;
         int arg4;
-        int arg0 = ((MpdHeader*)mpdHeader)->clearedSectionOffset;
+        int arg0 = ((MpdHeader*)mpdHeader)->triggerSectionOffset;
         arg0 += (int)mpdHeader;
-        arg2 = ((MpdHeader*)mpdHeader)->scriptSectionOffset;
+        arg2 = ((MpdHeader*)mpdHeader)->entryScriptOffset;
         arg2 += ((int)mpdHeader);
-        arg4 = ((MpdHeader*)mpdHeader)->doorSectionOffset;
+        arg4 = ((MpdHeader*)mpdHeader)->triggeredScriptsOffset;
         arg4 += ((int)mpdHeader);
-        arg5 = ((MpdHeader*)mpdHeader)->doorSectionLen;
+        arg5 = ((MpdHeader*)mpdHeader)->triggeredScriptsLen;
         new_var = 1;
-        temp_s4 = loadMpdClearedScriptDoorSections((void*)(arg0),
-            ((MpdHeader*)mpdHeader)->clearedSectionLen, (void*)(arg2),
-            ((MpdHeader*)mpdHeader)->scriptSectionLen, (void*)(arg4), arg5,
+        temp_s4 = loadMpdEventSections((void*)(arg0),
+            ((MpdHeader*)mpdHeader)->triggerSectionLen, (void*)(arg2),
+            ((MpdHeader*)mpdHeader)->entryScriptLen, (void*)(arg4), arg5,
             vs_main_startState == new_var);
     }
 
@@ -15365,8 +15420,8 @@ void func_80089DC0(int arg0)
         func_8008EA90(1);
         func_80073718();
     } else {
-        if (func_800BEC58(1, 0, 0, 0) == 1) {
-            func_800BEC30();
+        if (requestEvent(eventTriggerMapLoad, 0, 0, 0) == eventRequestMade) {
+            signalEventReady();
             func_8008EA90(1);
             func_80073718();
         } else {
@@ -15409,7 +15464,7 @@ void func_8008A3A0(void)
 
     DrawSync(0);
     vs_main_gametimeUpdate(0);
-    func_800BEB34();
+    unloadMpdEventSections();
     setRoomSeen();
     func_8008ABF0(0);
     if (D_800F18E4 != NULL) {
@@ -16104,7 +16159,7 @@ D_800F1D08_t* func_8008BAC8(int arg0, int arg1, int arg2)
         D_800F1D08.count = 0;
         temp_s1 = vs_battle_roomData.header.doorSectionLen / 12;
 
-        vs_main_stateFlags.unkAC[7] = rand();
+        vs_main_stateFlags.unkB2[1] = rand();
 
         for (i = 0; i < temp_s1; ++i, ++var_s0) {
             new_var = var_s0;
@@ -16641,7 +16696,7 @@ void func_8008CEB0(void)
             continue;
         }
         coordinate = object->x / ONE;
-        height = func_8008DC7C(coordinate, object->z / ONE);
+        height = getTerrainHeight(coordinate, object->z / ONE);
         height <<= 17;
         height >>= 17;
         coordinate = object->y;
@@ -17017,14 +17072,14 @@ short func_8008DA24(int arg0, int arg1)
     return temp_s6;
 }
 
-short func_8008DC7C(int arg0, int arg1)
+short getTerrainHeight(int x, int z)
 {
     MpdRoomCollisionMapSection* collisionMap = vs_battle_roomData.collisionMapSection;
     int var_a2 = 0x8000;
 
-    if ((collisionMap != NULL) && ((u_int)(arg0 >> 7) < collisionMap->width)
-        && ((u_int)(arg1 >> 7) < collisionMap->height)) {
-        var_a2 = func_80099514(arg0 >> 5, arg1 >> 5, 0);
+    if ((collisionMap != NULL) && ((u_int)(x >> 7) < collisionMap->width)
+        && ((u_int)(z >> 7) < collisionMap->height)) {
+        var_a2 = func_80099514(x >> 5, z >> 5, 0);
         var_a2 = (((collisionMap->unk4 - ((var_a2 & 0x7F) * 2)) * 8) & 0x7FFF)
                | ((var_a2 & 0x80) << 8);
     }
@@ -17143,7 +17198,7 @@ void func_8008DF14(void)
                     }
                     var_s2 = 0;
                 }
-                j = func_8008DC7C(var_s3->unk0 << 7, var_s3->unk2 << 7) << 0x11;
+                j = getTerrainHeight(var_s3->unk0 << 7, var_s3->unk2 << 7) << 0x11;
                 func_8008E19C(
                     var_s3->unk0 << 7, var_s3->unk2 << 7, j >> 0x11, var_s3->unkB);
             }
@@ -17751,10 +17806,10 @@ void func_8008F440(void)
                         particle->position.vx / 128, particle->position.vz / 128, 0);
                     if ((cell != NULL) && (cell->unk0_0 != 31)) {
                         particle->unkC = 1;
-                        projection =
-                            (func_8008DC7C(particle->position.vx, particle->position.vz)
-                                << 17)
-                            >> 17;
+                        projection = (getTerrainHeight(
+                                          particle->position.vx, particle->position.vz)
+                                         << 17)
+                                  >> 17;
                         particle->position.vy = projection;
                     } else {
                         func_80090A1C(particle);
@@ -17972,7 +18027,7 @@ void func_8008FDC4(void)
                     particle->unkC = 1;
                     particle->unkD = 0;
                     projection =
-                        (func_8008DC7C(particle->position.vx, particle->position.vz)
+                        (getTerrainHeight(particle->position.vx, particle->position.vz)
                             << 17)
                         >> 17;
                     particle->position.vy = projection;

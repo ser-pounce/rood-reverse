@@ -1071,13 +1071,13 @@ int renderTimeAttackStart(void)
 
     } else if (screenState == 2) {
         setFrameRate(frameRateHalf);
-        func_8007DDAC(0);
-        func_8007DDB8(&D_801096F0[0]);
-        func_8007DDD4(&colors[1]);
-        func_8007DDF8((D_801096F0 + 2));
-        func_8007DE2C(0);
-        func_8007DE44(0U);
-        func_8007DE5C(0);
+        vs_battle_setFramebufferEffectSpin(0);
+        vs_battle_setFramebufferEffectScale(&D_801096F0[0]);
+        vs_battle_setFramebufferEffectTint(&colors[1]);
+        vs_battle_setFramebufferEffectOffset((D_801096F0 + 2));
+        vs_battle_setFramebufferEffectBlendMode(0);
+        vs_battle_setFramebufferEffectDepth(0U);
+        vs_battle_setFramebufferEffectUsePreviousFrame(0);
         setFramebufferEffect(1);
 
         ++screenState;
@@ -1108,15 +1108,15 @@ int renderTimeAttackStart(void)
         if (screenTimer >= 45) {
 
             if (screenTimer == 45) {
-                func_8007DE2C(1);
-                func_8007DDB8(&D_801096F0[1]);
-                func_8007DDD4(&colors[0]);
+                vs_battle_setFramebufferEffectBlendMode(1);
+                vs_battle_setFramebufferEffectScale(&D_801096F0[1]);
+                vs_battle_setFramebufferEffectTint(&colors[0]);
             } else if (screenTimer == 0x2E) {
-                func_8007DE2C(0);
+                vs_battle_setFramebufferEffectBlendMode(0);
             } else if (screenTimer == 0x37) {
-                func_8007DDD4(&colors[2]);
+                vs_battle_setFramebufferEffectTint(&colors[2]);
             } else if (screenTimer == 0x3C) {
-                func_8007DDB8(&D_801096F0[0]);
+                vs_battle_setFramebufferEffectScale(&D_801096F0[0]);
             }
 
             x = 104 - screenTimer;
@@ -1147,7 +1147,7 @@ int renderTimeAttackStart(void)
 
     } else if (screenState == 4) {
         setFrameRate(frameRateFull);
-        func_8007DDB8(&D_801096F0[2]);
+        vs_battle_setFramebufferEffectScale(&D_801096F0[2]);
         setFramebufferEffect(0);
         func_8007E0A8(0x1D, 2, 5);
 
@@ -2359,10 +2359,10 @@ int initCubePuzzleStart(void)
 
 int initCubePuzzleEnd(void)
 {
-    if (vs_main_stateFlags.puzzleSetMaxTimer != 0) {
+    if (vs_main_stateFlags.puzzleTimerHours != 0) {
         vs_main_stateFlags.puzzleTimerMins = 59;
         vs_main_stateFlags.puzzleTimerSeconds = 59;
-        vs_main_stateFlags.puzzleSetMaxTimer = 0;
+        vs_main_stateFlags.puzzleTimerHours = 0;
         vs_main_stateFlags.puzzleTimerHundredths = 99;
     }
 

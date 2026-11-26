@@ -882,8 +882,8 @@ void func_800A41D0(D_800F4538_t* actor, int mode)
         object->unk0.position.vx = x * 128 + 64;
         object->unk0.position.vz = z * 128 + 64;
         object->unk0.facing = (object->unk0.facing + step * (ONE / 4)) & 0xFFF;
-        func_800A190C(object->unk0.unk12, 0xF0, &points[0], 1);
-        func_800A190C(object->unk0.unk12, 0xF1, &points[1], 1);
+        getActorPoint(object->unk0.unk12, 0xF0, &points[0], 1);
+        getActorPoint(object->unk0.unk12, 0xF1, &points[1], 1);
         object->unk0.position.vy = (points[0].vy + points[1].vy) / 2 + 60;
         object->unk0.unk1A = 0xFC;
         object->unk0.unk34.vy = 24;
@@ -2220,7 +2220,7 @@ int func_800A6EE8(SVECTOR* arg0, int arg1, int arg2, int arg3)
         D_800F49F0 = ent;
 
         if (arg3 == 0) {
-            h = func_8008DC7C(x, z);
+            h = getTerrainHeight(x, z);
         } else {
             h = func_8008DA24(x, z);
         }
@@ -3069,7 +3069,7 @@ int func_800A8B34(SVECTOR* arg0, int arg1)
         return 0xFF;
     }
 
-    h = func_8008DC7C(arg0->vx, arg0->vz);
+    h = getTerrainHeight(arg0->vx, arg0->vz);
 
     if (h < 0) {
         return 0xFF;

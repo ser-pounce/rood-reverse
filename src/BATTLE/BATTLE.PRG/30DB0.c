@@ -2322,7 +2322,7 @@ void func_8009D934(int arg0, int arg1, int arg2)
         temp_s1 = D_800E909C[temp_s0->unk5B1];
     }
 
-    if (func_800BEB00() == 4) {
+    if (getEventState() == eventRunning) {
         temp_s0->unk0.weaponDrawn = arg1;
         vs_battle_setActorAnimation(arg0, 1, 0, 16);
         return;
@@ -2367,31 +2367,39 @@ void playWeaponSfx(int actor, int sheathe)
     }
 }
 
-void func_8009DC38(int arg0)
+/**
+ * Cancels the movement command of an actor and clears its movement state.
+ * @param actorId Actor id.
+ */
+void cancelActorMotion(int actorId)
 {
-    D_800F4538_t* temp_s0 = D_800F4538[arg0];
-    if (temp_s0 != NULL) {
-        func_8009DC8C(arg0);
-        temp_s0->unk0.unk1A = 0;
-        temp_s0->unk0.unk18 = 0;
-        *(int*)&temp_s0->unk0.unk34 = 0;
+    D_800F4538_t* actor = D_800F4538[actorId];
+    if (actor != NULL) {
+        resetActorMotionState(actorId);
+        actor->unk0.unk1A = 0;
+        actor->unk0.unk18 = 0;
+        *(int*)&actor->unk0.unk34 = 0;
     }
 }
 
-void func_8009DC8C(int arg0)
+/**
+ * Clears the flags and phase that the movement code keeps for an actor.
+ * @param actorId Actor id.
+ */
+void resetActorMotionState(int actorId)
 {
-    D_800F4538_t* temp_a3 = D_800F4538[arg0];
+    D_800F4538_t* actor = D_800F4538[actorId];
 
-    if (temp_a3 == NULL) {
+    if (actor == NULL) {
         return;
     }
 
-    temp_a3->unk0.unk11 = 0;
-    temp_a3->unk0.unkA_0 = 0;
-    temp_a3->unk5AC_20 = 0;
-    temp_a3->unk0.unkB_4 = 0;
-    temp_a3->unk0.unkA_3 = 0;
-    temp_a3->unk0.unk9_6 = 0;
+    actor->unk0.unk11 = 0;
+    actor->unk0.unkA_0 = 0;
+    actor->unk5AC_20 = 0;
+    actor->unk0.unkB_4 = 0;
+    actor->unk0.unkA_3 = 0;
+    actor->unk0.unk9_6 = 0;
 }
 
 void func_8009DD00(int arg0, SVECTOR* arg1, int arg2)
@@ -3946,7 +3954,8 @@ retry:
 
     actor->animationId = anim;
 
-    if (func_800BEB00() == 4 || actor->unk187C != found || D_800F49DC != actor->unk6E3) {
+    if (getEventState() == eventRunning || actor->unk187C != found
+        || D_800F49DC != actor->unk6E3) {
         actor->unk6E3 = D_800F49DC;
         actor->unk187C = found;
         actor->unk5BC = *frames;

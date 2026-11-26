@@ -5,6 +5,7 @@
 #include "4DEA8Private.h"
 #include "battleUi.h"
 #include "src/SLUS_010.40/cd.h"
+#include "src/SLUS_010.40/gameFlags.h"
 #include "src/SLUS_010.40/pad.h"
 #include "src/SLUS_010.40/sound.h"
 #include "build/src/include/lbas.h"
@@ -13,17 +14,24 @@
 extern int (*normalOpcodeTable[])(u_char*, short);
 extern vs_CdFile D_800F4BF0;
 
-int func_800BFE34(u_char*);
+int getOpcodeLength(u_char*);
 void func_800C0150(void);
 
-extern unsigned char D_800F4B70[17];
+extern unsigned char actorMoved[17];
 
-short func_800BFBB8(u_char** arg0, short arg1)
+/**
+ * Runs the script of a slot until it yields, waits or ends.
+ * @param next The next opcode of the slot, updated as it runs and set to NULL if the
+ * script ends.
+ * @param slot The slot, 0 is the main script.
+ * @return 1 if the script finished the scene, otherwise 0.
+ */
+short runScript(u_char** next, short slot)
 {
-    int ret;
-    u_char* script = *arg0;
+    int result;
+    u_char* script = *next;
 
-    if ((arg1 == 0) && (scriptSkipMode == scriptSkippable)
+    if ((slot == 0) && (scriptSkipMode == scriptSkippable)
         && ((vs_main_buttonsPressed.all & PADstart) || (skipRequested != 0))) {
         skipRequested = 0;
         scriptWaitFrames[3] = 0;
@@ -44,57 +52,62 @@ short func_800BFBB8(u_char** arg0, short arg1)
         func_800C0150();
         startScreenTransitionOut(0, 0xFF, 0);
         vs_battle_disableDispMask();
-        vs_battle_setStateFlag(0xA8, 1);
+        vs_battle_setStateFlag(skippingScene, 1);
         scriptSkipMode = scriptSkipping;
     }
 
     while (1) {
         if (scriptSkipMode != scriptSkipping) {
-            ret = normalOpcodeTable[*script](script, arg1);
+            result = normalOpcodeTable[*script](script, slot);
         } else {
-            ret = vs_battle_skipOpcodeTable[*script](script, arg1);
+            result = vs_battle_skipOpcodeTable[*script](script, slot);
         }
 
-        switch (ret) {
-        case 0:
-            script += func_800BFE34(script);
+        switch (result) {
+        case scriptNext:
+            script += getOpcodeLength(script);
             continue;
 
-        case 1:
+        case scriptWait:
             break;
 
-        case 3:
-            *arg0 = NULL;
+        case scriptEnd:
+            *next = NULL;
             return 0;
 
-        case 2:
+        case scriptFinish:
             return 1;
 
-        case 4:
-            script += func_800BFE34(script);
+        case scriptYield:
+            script += getOpcodeLength(script);
             break;
 
         default:
-            script = (u_char*)ret;
+            script = (u_char*)result;
+
             continue;
         }
 
-        *arg0 = script;
+        *next = script;
+
         return 0;
     }
 }
 
-void func_800BFD9C(void)
+/**
+ * Returns the actors and the camera that scripts have been controlling to the game.
+ */
+void releaseScriptControl(void)
 {
     int i;
 
     for (i = 0; i < 17; i++) {
-        if (D_800F4B70[i] != 0) {
-            func_8007D260(i);
+        if (actorMoved[i] != 0) {
+            releaseActorControl(i);
         }
     }
 
-    func_800BBDDC();
+    freeScriptCamera();
 }
 
 short getShort(u_char* arg0)
@@ -105,13 +118,13 @@ short getShort(u_char* arg0)
     return arg0[0] | (arg0[1] << 8);
 }
 
-int func_800BFE34(u_char* arg0) { return D_800E9C30[arg0[0]]; }
+int getOpcodeLength(u_char* arg0) { return opcodeLengths[arg0[0]]; }
 
 int resolveActorId(u_short arg0)
 {
     switch (arg0 >> 12) {
     case 0:
-        return func_8007CF18(arg0 & 0xFFF);
+        return getActorSlotById(arg0 & 0xFFF);
     case 1:
         return arg0 & 0x1F;
     case 2:
@@ -119,7 +132,14 @@ int resolveActorId(u_short arg0)
     }
 }
 
-int func_800BFEBC(short mode, short frame, short duration)
+/**
+ * Evaluates an easing curve.
+ * @param mode Easing curve, see Easing.
+ * @param frame Time elapsed, clamped to duration.
+ * @param duration Total time.
+ * @return Progress from 0 to ONE.
+ */
+int evaluateEasing(short mode, short frame, short duration)
 {
     short position = frame;
     int value;
@@ -133,12 +153,16 @@ int func_800BFEBC(short mode, short frame, short duration)
     switch (mode) {
     case easingLinear:
         return position * ONE / duration;
+
     case easingSineOut:
         return rsin(position * (ONE / 4) / duration);
+
     case easingSineInOut:
         return (rcos(position * (ONE / 2) / duration + ONE / 2) + ONE) >> 1;
+
     case easingSineIn:
         return rsin(position * (ONE / 4) / duration - ONE / 4) + ONE;
+
     default:
         mode -= easingCustom0;
         power = customEasings[mode].power;
@@ -163,10 +187,13 @@ int func_800BFEBC(short mode, short frame, short duration)
         switch (customEasings[mode].curve) {
         case easingSineOut:
             return rsin(value / 4);
+
         case easingSineInOut:
             return (rcos(value / 2 + ONE / 2) + ONE) >> 1;
+
         case easingSineIn:
             return rsin(value / 4 - ONE / 4) + ONE;
+
         case easingLinear:
         default:
             return value;
@@ -174,12 +201,17 @@ int func_800BFEBC(short mode, short frame, short duration)
     }
 }
 
-void func_800C00E8(int arg0, void* arg1)
+/**
+ * Starts loading an EVT file from disc.
+ * @param file Unused, the file is taken from evtFile.
+ * @param buffer Receives the file.
+ */
+void loadEvt(UNUSED int file, void* buffer)
 {
     D_800F4BF0.size = VS_0000_EVT_SIZE;
     D_800F4BF0.lba = (evtFile * 3) + VS_0000_EVT_LBA; // .EVT files must be sequential
     evtCdSlot = vs_main_allocateCdQueueSlot(&D_800F4BF0);
-    vs_main_cdEnqueue(evtCdSlot, arg1);
+    vs_main_cdEnqueue(evtCdSlot, buffer);
 }
 
 void func_800C0150(void)

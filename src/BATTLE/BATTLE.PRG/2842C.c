@@ -1200,7 +1200,7 @@ int func_8009306C(func_80092F74_t* arg0)
     addVector(&arg0->unk1C, &arg0->unk2C);
     applyVector(&arg0->unk1C, 0xFFF, 0xFFF, 0xFFF, &=);
 
-    height = func_8008DC7C(arg0->unkC.vx / 16, arg0->unkC.vz / 16) << 17;
+    height = getTerrainHeight(arg0->unkC.vx / 16, arg0->unkC.vz / 16) << 17;
     height >>= 17;
 
     if (height < arg0->unkC.vy / 16) {
@@ -1587,7 +1587,7 @@ int func_80093B68(int arg0, int arg1, u_int arg2, int arg3)
     if (limb != 255) {
         result = func_800A1AF8(arg0, limb, &p->unk0, 2);
     } else {
-        result = func_800A190C(arg0, 255, &p->unk0, 2);
+        result = getActorPoint(arg0, 255, &p->unk0, 2);
     }
 
     if (result != 0) {
@@ -1610,7 +1610,7 @@ int func_80093B68(int arg0, int arg1, u_int arg2, int arg3)
 
     arg3 &= 127;
 
-    if (func_800A190C(arg0, 251, &position, 0) != 0) {
+    if (getActorPoint(arg0, 251, &position, 0) != 0) {
         return -2;
     }
 
@@ -1797,7 +1797,7 @@ void func_800941FC(void)
         }
 
         if (label->unk8.u8[0] < 3) {
-            if (func_800A190C(label->unk8.u8[1], 251, &position, 0) != 0) {
+            if (getActorPoint(label->unk8.u8[1], 251, &position, 0) != 0) {
                 label->unk8.u8[0] = 0;
                 ++removed;
                 continue;
@@ -2518,8 +2518,8 @@ void func_80095C18(int actor, int kind)
     } else {
         long depth;
 
-        if (func_800A190C(actor, 255, &other, 0) == 0) {
-            if (func_800A190C(0, 255, &position, 0)) {
+        if (getActorPoint(actor, 255, &other, 0) == 0) {
+            if (getActorPoint(0, 255, &position, 0)) {
                 return;
             }
 

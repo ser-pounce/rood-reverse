@@ -178,7 +178,7 @@ void func_800E5998(void)
     Actor* actor = vs_battle_actors[0]->next;
 
     while (actor != NULL) {
-        if (D_800F5878[actor->id]->unk16 == 0x10) {
+        if (D_800F5878[actor->slot]->unk16 == 0x10) {
             Actor* other = vs_battle_actors[0]->next;
 
             while (other != NULL) {
@@ -188,7 +188,7 @@ void func_800E5998(void)
                 other = other->next;
             }
             if (other != NULL) {
-                D_800F5878[actor->id]->unk16 = other->id;
+                D_800F5878[actor->slot]->unk16 = other->slot;
             }
         }
         actor = actor->next;
@@ -310,7 +310,7 @@ int func_800E5FDC(int arg0, int arg1)
         x = arg0 + D_800F16EC[i * 2].dx;
         z = arg1 + D_800F16EC[i * 2].dz;
         if (x < 32 && z < 32 && !(D_800F58B8[z][x] & 0x70)) {
-            return func_8008DC7C(x << 7 | 0x40, z << 7 | 0x40) >> 6;
+            return getTerrainHeight(x << 7 | 0x40, z << 7 | 0x40) >> 6;
         }
     }
     return -1;
@@ -342,7 +342,7 @@ int func_800E6178(Actor* actor, short arg1)
     func_800E78F4_t* state;
     D_800F4538_t* model;
     vs_ActorStats* stats;
-    int id = actor->id;
+    int id = actor->slot;
     int packed;
     u_int radius;
     SVECTOR result;
@@ -378,7 +378,7 @@ int func_800E6178(Actor* actor, short arg1)
     model = (D_800F4538_t*)actor->unk44;
     state->unk58 = model;
     state->unk5C = actor->stats;
-    func_800A190C(state->unk88, 250, &result, 0);
+    getActorPoint(state->unk88, 250, &result, 0);
     state->unk82 = result.vy - model->unk0.position.vy;
     radius = model->unk63C;
 

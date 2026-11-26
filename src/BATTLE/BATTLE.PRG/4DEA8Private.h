@@ -23,55 +23,88 @@ enum ScriptWarpState {
 // Actor selectors, as taken by many script opcodes: the top nibble is the kind, the rest
 // the operand (see resolveActorId and expandActorSelector)
 enum ActorSelector {
-    actorSelectorById = 0x0000, // | id of the actor to find (Actor.unk18)
+    actorSelectorById = 0x0000, // | id of the actor to find (Actor.id)
     actorSelectorSlot = 0x1000, // | slot in vs_battle_actors
     actorSelectorNone = 0x2000, // where a single actor is expected: no actor
     actorSelectorAll = 0x2000, // where a list of actors is expected: every actor
 };
 
-// Return values of script opcode handlers, as interpreted by func_800BFBB8
+// Return values of script opcode handlers, as interpreted by runScript. Any other value
+// is the address of the opcode to jump to.
 enum ScriptResult {
     scriptNext = 0, // advance to the next opcode and keep running
-    scriptRepeat = 1, // not finished: stop and run this opcode again next frame
+    scriptWait = 1, // not finished: stop and run this opcode again next frame
     scriptFinish = 2, // the main script has finished, which ends the scene
     scriptEnd = 3, // terminate this script
     scriptYield = 4, // advance past this opcode, resume next frame
 };
 
-void func_800BBDDC(void);
-VS_HIDDEN(func_800BBDDC);
+void freeScriptCamera(void);
+VS_HIDDEN(freeScriptCamera);
 
-short func_800BEB00(void);
-VS_HIDDEN(func_800BEB00);
+// States of the event that is being started or run, see updateEvent
+enum EventState {
+    eventIdle = 0,
+    eventRequested = 1, // waiting for the game to be ready to start it
+    eventStarting = 2,
+    eventLoading = 3, // waiting for the EVT file to load from disc
+    eventRunning = 4, // the scripts are running
+};
 
-short func_800BEB10(void);
-VS_HIDDEN(func_800BEB10);
+short getEventState(void);
+VS_HIDDEN(getEventState);
 
-void func_800BEB34(void);
-VS_HIDDEN(func_800BEB34);
+enum EventSource {
+    eventFromEvt,
+    eventFromEntryScript,
+    eventFromTriggeredScripts,
+};
 
-void func_800BEB9C(int);
-VS_HIDDEN(func_800BEB9C);
+short getEventId(void);
+VS_HIDDEN(getEventId);
 
-void func_800BEBEC(void);
-VS_HIDDEN(func_800BEBEC);
+void unloadMpdEventSections(void);
+VS_HIDDEN(unloadMpdEventSections);
 
-char getStateFlag(short);
+void resetZoneFlags(int firstLoad);
+VS_HIDDEN(resetZoneFlags);
+
+void zoneUnloadNop(void);
+VS_HIDDEN(zoneUnloadNop);
+
+char getStateFlag(short id);
 VS_HIDDEN(getStateFlag);
 
-int func_800BEC30(void);
-VS_HIDDEN(func_800BEC30);
+int signalEventReady(void);
+VS_HIDDEN(signalEventReady);
 
-short func_800BEC58(short, int, int, short);
-VS_HIDDEN(func_800BEC58);
+enum EventTrigger {
+    eventTriggerMapLoad = 1,
+    eventTriggerStep = 2,
+    eventTriggerInteract = 4,
+    eventTriggerDefeat = 8,
+    eventTriggerTimer = 0x10,
+    eventTriggerIdle = 0x20,
+    eventTriggerForced = 0x40,
+    eventTriggerPoll = 0xFF,
+};
 
-int loadMpdClearedScriptDoorSections(void* clearedSection, u_short clearedSectionLen,
-    void* scriptSection, u_short scriptSectionLen, void* doorSection,
-    u_short doorSectionLen, int startState);
-VS_HIDDEN(loadMpdClearedScriptDoorSections);
+enum EventRequestResult {
+    eventRequestNone,
+    eventRequestMade,
+    eventRequestBusy,
+};
 
-int func_800BF850(void);
-VS_HIDDEN(func_800BF850);
+short requestEvent(short trigger, int arg1, int arg2, short mode);
+VS_HIDDEN(requestEvent);
+
+int loadMpdEventSections(void* triggerSection, u_short triggerSectionLen,
+    void* entryScript, u_short entryScriptLen, void* triggeredScripts,
+    u_short triggeredScriptsLen, int firstLoad);
+VS_HIDDEN(loadMpdEventSections);
+
+int updateEvent(void);
+VS_HIDDEN(updateEvent);
 
 extern char textBoxStatuses[];
 VS_HIDDEN(textBoxStatuses);
@@ -82,8 +115,7 @@ VS_HIDDEN(stopMusicOnSkip);
 extern char scriptSkipMode;
 VS_HIDDEN(scriptSkipMode);
 
-// Easing curves, taken by func_800BFEBC. The first four are built in, the rest are set
-// up with opcode 5F.
+// Easing curves. The first four are built in, the rest are configured with opcode 5F.
 enum Easing {
     easingLinear,
     easingSineOut,
@@ -109,11 +141,11 @@ VS_HIDDEN(scriptWaitFrames);
 extern char skipRequested;
 VS_HIDDEN(skipRequested);
 
-extern u_char D_800E9C30[];
-VS_HIDDEN(D_800E9C30);
+extern u_char opcodeLengths[];
+VS_HIDDEN(opcodeLengths);
 
-extern u_char* D_800EB588[];
-VS_HIDDEN(D_800EB588);
+extern u_char* textBoxShapes[];
+VS_HIDDEN(textBoxShapes);
 
 extern vs_CdQueueSlot* evtCdSlot;
 VS_HIDDEN(evtCdSlot);

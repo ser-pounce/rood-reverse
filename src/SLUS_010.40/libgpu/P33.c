@@ -1,3 +1,8 @@
 #include "common.h"
+#include <libgte.h>
+#include <libgpu.h>
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libgpu/P33", SetDrawTPage);
+void SetDrawTPage(DR_TPAGE* p, int dfe, int dtd, int tpage)
+{
+    setDrawTPage(p, dfe, dtd, tpage);
+}

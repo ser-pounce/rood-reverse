@@ -1,3 +1,5 @@
 #include "common.h"
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libsnd/UT_ROFF", SsUtReverbOff);
+extern void _SpuInit(int mode);
+
+void SsUtReverbOff(void) { _SpuInit(0); }

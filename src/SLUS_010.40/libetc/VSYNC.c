@@ -6,6 +6,9 @@ extern volatile long D_80030FE4;
 extern long D_80030FE8;
 extern volatile long D_80032114;
 
+void std_out_puts(const char*);
+int ChangeClearPAD(int);
+void ChangeClearRCnt(int, int);
 void func_8001F83C(long count, long timeout);
 
 long VSync(long mode)
@@ -45,4 +48,16 @@ long VSync(long mode)
     return elapsed;
 }
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libetc/VSYNC", func_8001F83C);
+void func_8001F83C(long count, long timeout)
+{
+    volatile long ticks = timeout << 15;
+
+    while (D_80032114 < count) {
+        if (--ticks == -1) {
+            std_out_puts("VSync: timeout\n");
+            ChangeClearPAD(0);
+            ChangeClearRCnt(3, 0);
+            return;
+        }
+    }
+}

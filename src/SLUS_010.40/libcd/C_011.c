@@ -4,7 +4,16 @@
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libcd/C_011", StCdInterrupt);
 
-INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libcd/C_011", func_80022E80);
+void func_80022E80(u_long* dst, u_long* src, u_int count)
+{
+    u_int i = 0;
+
+    if (count != 0) {
+        do {
+            *dst++ = *src++;
+        } while (++i < count);
+    }
+}
 
 INCLUDE_ASM("build/src/SLUS_010.40/nonmatchings/libcd/C_011", func_80022EAC);
 
